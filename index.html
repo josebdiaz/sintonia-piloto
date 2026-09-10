@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Café-coworking Sintonía</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f4f1ec; --card:#ffffff; --card-2:#faf8f4; --ink:#211f1a; --muted:#6a655c;
+    --line:#e4ded4; --line-2:#d6cec1;
+    --pine:#0f6e63; --pine-ink:#0a4f47; --pine-soft:#e0efec;
+    --honey:#c67a1e; --honey-soft:#f7ebd8;
+    --ok:#1f8a52; --ok-soft:#e4f2ea;
+    --stop:#b23b2e; --stop-soft:#f7e4e1;
+    --shadow:0 1px 2px rgba(33,31,26,.05), 0 10px 30px -16px rgba(33,31,26,.25);
+    --r:14px;
+    --disp:"Bricolage Grotesque",Georgia,serif;
+    --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#151310; --card:#1e1b17; --card-2:#191612; --ink:#efeae1; --muted:#a49d90;
+      --line:#2c281f; --line-2:#3a3529;
+      --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
+      --honey:#dd9c44; --honey-soft:#2f2513;
+      --ok:#44b878; --ok-soft:#12281d;
+      --stop:#e07567; --stop-soft:#331714;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px -18px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#151310; --card:#1e1b17; --card-2:#191612; --ink:#efeae1; --muted:#a49d90;
+    --line:#2c281f; --line-2:#3a3529;
+    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
+    --honey:#dd9c44; --honey-soft:#2f2513;
+    --ok:#44b878; --ok-soft:#12281d;
+    --stop:#e07567; --stop-soft:#331714;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px -18px rgba(0,0,0,.8);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);
+    font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  img{max-width:100%}
+  .wrap{max-width:660px;margin:0 auto;padding:22px 20px 64px}
+  a{color:var(--pine-ink)}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+  .logo{display:flex;align-items:center;gap:9px;font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:-.01em}
+  .logo .mark{width:26px;height:26px;border-radius:50%;background:
+    radial-gradient(circle at 50% 50%,transparent 5px,var(--pine) 5.5px 7px,transparent 7.5px 10px,var(--honey) 10.5px 12px,transparent 12.5px);
+    border:1.5px solid var(--line-2)}
+  .theme-btn{border:1px solid var(--line-2);background:var(--card);color:var(--muted);
+    font-family:var(--body);font-size:12px;border-radius:20px;padding:6px 13px;cursor:pointer}
+  .theme-btn:hover{color:var(--ink);border-color:var(--ink)}
+  .hero{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    padding:30px 28px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--pine);margin:0 0 12px}
+  .hero h1{font-family:var(--disp);font-weight:700;font-size:33px;line-height:1.06;letter-spacing:-.025em;
+    margin:0 0 12px;text-wrap:balance}
+  .hero p.lead{font-size:16.5px;color:var(--muted);margin:0;max-width:48ch}
+  .facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .fact{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;
+    background:var(--card-2);border:1px solid var(--line);border-radius:20px;padding:7px 13px}
+  .fact b{color:var(--pine-ink);font-weight:600}
+  .nocharge{margin-top:16px;display:flex;gap:12px;align-items:flex-start;
+    background:var(--honey-soft);border:1px solid var(--honey);border-radius:12px;padding:14px 16px}
+  .nocharge .i{font-size:20px;line-height:1;flex:none}
+  .nocharge b{color:var(--honey)}
+  .nocharge .s{font-size:13.5px}
+  .section{margin-top:16px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--r);padding:22px 24px;box-shadow:var(--shadow)}
+  .section h2{font-family:var(--disp);font-weight:600;font-size:19px;letter-spacing:-.01em;margin:0 0 6px}
+  .section .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+  .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+  .steps li{display:flex;gap:14px;align-items:flex-start}
+  .steps .n{font-family:var(--disp);font-weight:700;font-size:14px;width:28px;height:28px;flex:none;
+    border-radius:50%;display:grid;place-items:center;background:var(--pine-soft);color:var(--pine-ink)}
+  .steps .st b{display:block;font-size:15px;margin-bottom:1px}
+  .steps .st span{font-size:13.5px;color:var(--muted)}
+  .q{margin-bottom:16px}
+  .q:last-of-type{margin-bottom:0}
+  .q .qt{font-size:15px;font-weight:600;margin-bottom:9px}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .opts button{font-family:var(--body);font-size:14px;font-weight:500;cursor:pointer;
+    border:1.5px solid var(--line-2);background:var(--card);color:var(--ink);
+    border-radius:10px;padding:9px 15px;transition:border-color .12s,background .12s}
+  .opts button:hover{border-color:var(--pine)}
+  .opts button[aria-pressed="true"]{border-color:var(--pine);background:var(--pine-soft);color:var(--pine-ink)}
+  .opts button:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  .btn{font-family:var(--disp);font-weight:600;font-size:16px;cursor:pointer;border:none;
+    background:var(--pine);color:#fff;border-radius:11px;padding:14px 22px;width:100%;
+    transition:transform .05s,opacity .15s;letter-spacing:.01em}
+  .btn:hover{opacity:.93}
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.secondary{background:transparent;color:var(--pine-ink);border:1.5px solid var(--line-2);font-size:14px;padding:11px}
+  .btn-row{margin-top:18px}
+  .price-card{border:1px dashed var(--line-2);border-radius:12px;padding:16px;margin-bottom:16px;background:var(--card-2)}
+  .price-card .plabel{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  .price-card .pval{font-family:var(--disp);font-weight:700;font-size:24px;letter-spacing:-.01em}
+  .price-card .pval s{color:var(--muted);font-weight:500;font-size:16px}
+  .price-card .pnote{font-size:13px;color:var(--honey);font-weight:600;margin-top:6px}
+  .consent{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);
+    border-radius:10px;margin-bottom:11px;cursor:pointer;background:var(--card-2)}
+  .consent input{width:19px;height:19px;flex:none;margin-top:1px;accent-color:var(--pine);cursor:pointer}
+  .consent .ct{font-size:13.5px}
+  .consent .ct b{font-weight:600}
+  .guardrails{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  .guardrails li{display:flex;gap:10px;font-size:13.5px;color:var(--muted)}
+  .guardrails li::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--pine);flex:none;margin-top:7px}
+  .guardrails li b{color:var(--ink);font-weight:600}
+  .doubt{margin-top:14px;text-align:center}
+  .doubt button{background:none;border:none;color:var(--muted);font-family:var(--body);font-size:13px;
+    text-decoration:underline;cursor:pointer}
+  .fail,.done{text-align:center;padding:8px 4px}
+  .fail .em,.done .em{font-size:34px}
+  .done h2{color:var(--ok)}
+  .foot{margin-top:22px;font-size:12px;color:var(--muted);line-height:1.6;text-align:center}
+  .foot b{color:var(--ink)}
+  /* panel */
+  .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .live{font-size:12px;font-weight:600;color:var(--ok);white-space:nowrap;margin-top:4px}
+  .live.off{color:var(--muted)}
+  .funnel{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+  .fstep{background:var(--card-2);border:1px solid var(--line);border-radius:11px;padding:13px 12px;text-align:center}
+  .fstep .fn{font-family:var(--disp);font-weight:700;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+  .fstep .fl{font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:.02em}
+  .fstep .fr{font-size:11px;color:var(--pine-ink);margin-top:3px;font-variant-numeric:tabular-nums}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+  .kpi{border:1px solid var(--line);border-radius:11px;padding:13px 14px}
+  .kpi .kl{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .kpi .kv{font-family:var(--disp);font-weight:700;font-size:22px;margin-top:4px;font-variant-numeric:tabular-nums}
+  .kpi .kt{font-size:11.5px;margin-top:3px}
+  .kpi .kt.good{color:var(--ok)} .kpi .kt.bad{color:var(--stop)} .kpi .kt.warn{color:var(--honey)}
+  .pverdict{border-radius:11px;padding:14px 16px;margin-bottom:16px;font-size:14px;display:flex;gap:12px;align-items:flex-start}
+  .pverdict .vb{font-family:var(--disp);font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;
+    padding:5px 11px;border-radius:7px;white-space:nowrap;flex:none}
+  .v-go{background:var(--ok-soft);border:1px solid var(--ok)} .v-go .vb{background:var(--ok);color:#fff}
+  .v-it{background:var(--honey-soft);border:1px solid var(--honey)} .v-it .vb{background:var(--honey);color:#fff}
+  .v-ki{background:var(--stop-soft);border:1px solid var(--stop)} .v-ki .vb{background:var(--stop);color:#fff}
+  .v-pe{background:var(--pine-soft);border:1px solid var(--pine)} .v-pe .vb{background:var(--pine);color:#fff}
+  .bysrc{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px}
+  .bysrc th,.bysrc td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  .bysrc th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .bysrc td.num{text-align:right}
+  .bysrc tr.unk td{color:var(--muted)}
+  .panel-note{font-size:12px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line);padding-top:12px;margin:0}
+  .prefresh{background:none;border:1px solid var(--line-2);color:var(--muted);border-radius:8px;
+    padding:6px 12px;font-family:var(--body);font-size:12px;cursor:pointer;margin-top:4px}
+  @media (max-width:520px){.funnel{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:1fr}.hero h1{font-size:27px}}
+  [hidden]{display:none!important}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="logo"><span class="mark"></span> Sintonía</div>
+    <button class="theme-btn" id="themeBtn">◐ tema</button>
+  </div>
+
+  <header class="hero">
+    <p class="kicker">Café-coworking · grupo pequeño</p>
+    <h1>Trabaja acompañado, no en solitario.</h1>
+    <p class="lead">Una sesión de coworking en un café, en grupo pequeño, pensada para quienes trabajan en remoto y quieren romper la rutina de hacerlo siempre solos. Llegas, te ubicas, trabajas tu propia lista — pero con gente cerca.</p>
+    <div class="facts">
+      <span class="fact">🗓️ <b>90 min</b> de sesión</span>
+      <span class="fact">👥 grupo de <b>4 a 8</b></span>
+      <span class="fact">☕ café público</span>
+      <span class="fact">🚪 entras y sales libre</span>
+    </div>
+    <div class="nocharge">
+      <span class="i">✋</span>
+      <span class="s"><b>Hoy no se cobra nada.</b> Estás reservando un cupo en una prueba piloto. No se te pedirá tarjeta ni pago en ningún momento de esta página.</span>
+    </div>
+  </header>
+
+  <section class="section">
+    <h2>Cómo es la sesión</h2>
+    <p class="sub">Sin dinámicas forzadas ni presentarte ante todos. La compañía surge de trabajar cerca.</p>
+    <ul class="steps">
+      <li><span class="n">1</span><span class="st"><b>Llegas al café</b><span>Te recibimos, te ubicas y pides lo que quieras consumir (a tu cuenta).</span></span></li>
+      <li><span class="n">2</span><span class="st"><b>Trabajas lo tuyo, 90 minutos</b><span>Tu propia lista de pendientes. Un breve arranque para saber en qué anda cada quien, y a trabajar.</span></span></li>
+      <li><span class="n">3</span><span class="st"><b>Cierre corto</b><span>Un momento opcional al final para conocer a quien te dio curiosidad. Sin obligación.</span></span></li>
+    </ul>
+  </section>
+
+  <section class="section" id="screenerSec">
+    <h2>¿Es para ti?</h2>
+    <p class="sub">Tres preguntas rápidas para asegurarnos de que la sesión te calce.</p>
+    <div class="q" data-q="remoto">
+      <div class="qt">1 · ¿Cómo trabajas hoy?</div>
+      <div class="opts">
+        <button data-v="1">Remoto</button>
+        <button data-v="1">Híbrido</button>
+        <button data-v="0">Presencial / oficina</button>
+        <button data-v="0">No estoy trabajando ahora</button>
+      </div>
+    </div>
+    <div class="q" data-q="solo">
+      <div class="qt">2 · Trabajando en remoto, ¿sientes que te falta compañía o cambio de entorno?</div>
+      <div class="opts">
+        <button data-v="1">Sí, seguido</button>
+        <button data-v="1">A veces</button>
+        <button data-v="0">Casi nunca</button>
+      </div>
+    </div>
+    <div class="q" data-q="ganas">
+      <div class="qt">3 · ¿Te gustaría ampliar tu vida social fuera del trabajo?</div>
+      <div class="opts">
+        <button data-v="1">Sí</button>
+        <button data-v="1">Me da algo de pereza, pero sí</button>
+        <button data-v="0">La verdad, no</button>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="toReserve" disabled>Continuar</button>
+    </div>
+  </section>
+
+  <section class="section" id="failSec" hidden>
+    <div class="fail">
+      <div class="em">🙏</div>
+      <h2>Gracias por tu interés</h2>
+      <p class="sub" style="margin:8px auto 0;max-width:42ch">Esta primera sesión está pensada para personas que trabajan en remoto o híbrido y buscan más compañía. Por ahora no encaja del todo contigo, pero te avisaremos cuando abramos otros formatos.</p>
+    </div>
+  </section>
+
+  <section class="section" id="reserveSec" hidden>
+    <h2>Reserva tu cupo</h2>
+    <p class="sub">Cupos limitados por sesión. Reservar no garantiza el cupo hasta que confirmemos fecha contigo por WhatsApp.</p>
+    <div class="price-card">
+      <p class="plabel">Pase Sintonía</p>
+      <div class="pval">COP 39.900 <s>+ valor de la actividad</s></div>
+      <div class="pnote">Hoy no se cobra — reserva sin pago para el piloto.</div>
+    </div>
+    <label class="consent">
+      <input type="checkbox" id="c-consent">
+      <span class="ct"><b>Doy mi consentimiento</b> para participar en esta prueba piloto de investigación. Puedo retirarme en cualquier momento.</span>
+    </label>
+    <label class="consent">
+      <input type="checkbox" id="c-nocharge">
+      <span class="ct">Entiendo que <b>hoy no se realiza ningún cobro</b> y que esta reserva no me compromete a pagar.</span>
+    </label>
+    <div class="btn-row">
+      <button class="btn" id="confirmBtn" disabled>Confirmar mi cupo (sin cobro)</button>
+    </div>
+    <div class="doubt"><button id="doubtBtn">Tengo dudas sobre el cobro</button></div>
+    <div style="margin-top:20px;border-top:1px solid var(--line);padding-top:16px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--muted)">Antes de reservar, lo importante</div>
+      <ul class="guardrails">
+        <li><b>Sin cobro sin reconfirmación:</b> cualquier pago futuro se acordaría aparte y explícitamente.</li>
+        <li><b>No es dating ni terapia:</b> es una sesión de trabajo acompañado; no prometemos amistad ni bienestar.</li>
+        <li><b>Cupo no garantizado:</b> confirmamos fecha y lugar contigo antes de la sesión.</li>
+        <li><b>Tus datos:</b> no pedimos datos de contacto en esta página; te escribimos por el mismo WhatsApp.</li>
+        <li><b>Costos a la vista:</b> lo único que pagas es tu propio consumo en el café.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="doneSec" hidden>
+    <div class="done">
+      <div class="em">☕✅</div>
+      <h2>¡Cupo reservado!</h2>
+      <p class="sub" style="margin:8px auto 0;max-width:42ch">Te escribiremos por WhatsApp para confirmar la fecha, el café y la hora. Recuerda: <b>hoy no se te cobró nada</b>.</p>
+    </div>
+  </section>
+
+  <section class="section" id="doubtSec" hidden>
+    <h2>Sobre el cobro</h2>
+    <p class="sub" style="margin-bottom:0">Queremos que quede claro: <b>en esta página no se cobra absolutamente nada</b> y no se pide tarjeta. El valor de "COP 39.900" es solo la referencia de lo que costaría el pase en el futuro; sirve para entender si la idea tiene sentido para ti. Lo único que pagarías el día de la sesión es tu propio consumo en el café. Si algo no quedó claro, escríbenos por el mismo WhatsApp por donde llegaste.</p>
+    <div class="btn-row"><button class="btn secondary" id="backFromDoubt">Volver a la reserva</button></div>
+  </section>
+
+  <!-- PANEL (?panel=1) -->
+  <section class="section" id="panelSec" hidden>
+    <div class="panel-head">
+      <div><h2>Panel de control · H1 · WTP</h2><p class="sub" style="margin:0">Embudo en vivo · eventos anónimos</p></div>
+      <span class="live" id="liveDot">● en vivo</span>
+    </div>
+    <div class="funnel" id="funnel"></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="pverdict v-pe" id="pVerdict"><span class="vb">—</span><div>Cargando datos…</div></div>
+    <table class="bysrc" id="bySrc"></table>
+    <button class="prefresh" id="pRefresh">↻ actualizar</button>
+    <p class="panel-note" id="pNote"></p>
+  </section>
+
+  <p class="foot">
+    Prueba piloto de investigación · Proyecto <b>Sintonía</b> · Maestría en Gestión de la Innovación, Universidad Icesi.<br>
+    Participación voluntaria y anónima en esta página. No es un servicio comercial ni una promesa de amistad, bienestar o acompañamiento clínico.
+  </p>
+</div>
+
+<script>
+"use strict";
+/* ===================================================================
+ *  CONFIGURA AQUÍ  ·  pega la URL del Web App de Apps Script (/exec)
+ * =================================================================== */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbz7IKTqs8X91IdBli9Y2nBZkI7gqIBRv3Bo8fj3Y0YxJJOA9a9CsvN1SgA_-43MnZTslw/exec";  // p. ej. https://script.google.com/macros/s/AKfy.../exec
+/* =================================================================== */
+
+const KNOWN_SRC=["wa_directo","wa_grupo","com_remoto","linkedin","ig","referido"];
+const params=new URLSearchParams(location.search);
+const SRC=(params.get("utm_source")||"desconocido").toLowerCase();
+const QUALIFIED_SRC=KNOWN_SRC.includes(SRC);
+const PANEL=params.get("panel")==="1"||params.get("view")==="panel";
+const CONFIGURED=/script\.google\.com/.test(ENDPOINT);
+
+/* --- registro de eventos anónimos (POST fire-and-forget) --- */
+function record(type,extra){
+  if(!CONFIGURED) return;
+  const row={type,src:SRC,qualified_src:QUALIFIED_SRC,ts:Date.now(),...(extra||{})};
+  try{
+    fetch(ENDPOINT,{method:"POST",mode:"no-cors",keepalive:true,
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(row)});
+  }catch(e){}
+}
+if(!PANEL){
+  window.addEventListener("load",()=>setTimeout(()=>record("sintonia_page_view"),300));
+}
+
+/* --- screener --- */
+const answers={};
+document.querySelectorAll("[data-q]").forEach(q=>{
+  const key=q.getAttribute("data-q");
+  q.querySelectorAll(".opts button").forEach(b=>{
+    b.addEventListener("click",()=>{
+      q.querySelectorAll(".opts button").forEach(o=>o.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");
+      answers[key]=+b.getAttribute("data-v");
+      document.getElementById("toReserve").disabled=Object.keys(answers).length<3;
+    });
+  });
+});
+function show(id){ ["screenerSec","failSec","reserveSec","doneSec","doubtSec"]
+  .forEach(s=>document.getElementById(s).hidden=s!==id); window.scrollTo({top:0,behavior:"smooth"}); }
+document.getElementById("toReserve").addEventListener("click",()=>{
+  const pass=answers.remoto===1&&answers.ganas===1;
+  if(pass){ record("screener_pass"); show("reserveSec"); }
+  else{ record("screener_fail"); show("failSec"); }
+});
+
+/* --- reserva --- */
+const cc=document.getElementById("c-consent"), cn=document.getElementById("c-nocharge"),
+      confirmBtn=document.getElementById("confirmBtn");
+let ctaFired=false;
+function syncConfirm(){
+  confirmBtn.disabled=!(cc.checked&&cn.checked);
+  if((cc.checked||cn.checked)&&!ctaFired){ ctaFired=true; record("cta_clicked"); }
+}
+cc.addEventListener("change",syncConfirm);
+cn.addEventListener("change",syncConfirm);
+confirmBtn.addEventListener("click",()=>{ record("sintonia_reservation_completed",{understood_no_charge:true,consent:true}); show("doneSec"); });
+document.getElementById("doubtBtn").addEventListener("click",()=>{ record("charge_doubt"); show("doubtSec"); });
+document.getElementById("backFromDoubt").addEventListener("click",()=>show("reserveSec"));
+
+/* --- tema --- */
+const root=document.documentElement;
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const cur=root.getAttribute("data-theme");
+  const dark=window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const now=cur?cur:(dark?"dark":"light");
+  root.setAttribute("data-theme",now==="dark"?"light":"dark");
+});
+
+/* ================= PANEL DE CONTROL ================= */
+function panelLayout(){
+  document.querySelector("header.hero").hidden=true;
+  document.querySelectorAll(".section").forEach(s=>{ if(s.id!=="panelSec") s.hidden=true; });
+  document.getElementById("panelSec").hidden=false;
+  document.getElementById("pRefresh").addEventListener("click",panelFetch);
+}
+function panelMsg(cls,txt){
+  document.getElementById("liveDot").className="live off";
+  document.getElementById("liveDot").textContent="○ sin conexión";
+  document.getElementById("pVerdict").className="pverdict "+cls;
+  document.getElementById("pVerdict").innerHTML='<span class="vb">panel</span><div>'+txt+'</div>';
+}
+let lastRows=[];
+function panelFetch(){
+  if(!CONFIGURED){ panelMsg("v-it","Falta configurar el ENDPOINT de Apps Script en el archivo (ver la guía). Mientras tanto, los datos también están en tu hoja de Google."); return; }
+  fetch(ENDPOINT,{method:"GET"}).then(r=>r.json()).then(j=>{
+    lastRows=(j.events||[]).filter(x=>x&&x.type);
+    document.getElementById("liveDot").className="live";
+    document.getElementById("liveDot").textContent="● en vivo";
+    renderPanel(lastRows);
+  }).catch(()=>{ if(!lastRows.length) panelMsg("v-it","No se pudo leer el endpoint desde el navegador. Revisa que el Web App esté desplegado con acceso «Cualquier usuario», o consulta los datos directamente en tu hoja de Google."); });
+}
+function renderPanel(rows){
+  const c=t=>rows.filter(r=>r.type===t).length;
+  const pv=c("sintonia_page_view"), sp=c("screener_pass"),
+        cta=c("cta_clicked"), res=c("sintonia_reservation_completed"), doubt=c("charge_doubt");
+  const qv=rows.filter(r=>r.type==="screener_pass"&&(r.qualified_src===true||r.qualified_src==="TRUE")).length;
+  const conv=qv>0?res/qv*100:0;
+  document.getElementById("funnel").innerHTML=[
+    ["Visitas",pv,""],
+    ["Califican",sp,pv?Math.round(sp/pv*100)+"%":""],
+    ["Clic reservar",cta,sp?Math.round(cta/sp*100)+"%":""],
+    ["Reservan",res,cta?Math.round(res/cta*100)+"%":""]
+  ].map(x=>`<div class="fstep"><div class="fn">${x[1]}</div><div class="fl">${x[0]}</div><div class="fr">${x[2]}</div></div>`).join("");
+  const convClass=conv>=5?"good":(conv>=2?"warn":"bad");
+  const resClass=res>=2?"good":"bad";
+  const muClass=qv>=20?(qv<=40?"good":"warn"):"bad";
+  document.getElementById("kpis").innerHTML=[
+    ["Conversión",conv.toFixed(1)+"%","umbral ≥ 5%",convClass],
+    ["Reservas",res,"meta ≥ 2",resClass],
+    ["Visitas calificadas",qv,"muestra 20–40",muClass]
+  ].map(k=>`<div class="kpi"><div class="kl">${k[0]}</div><div class="kv">${k[1]}</div><div class="kt ${k[3]}">${k[2]}</div></div>`).join("");
+  let vk="v-pe", vb="PENDIENTE", say;
+  if(qv<20){ say=`Aún faltan visitas calificadas (${qv}/20 mín.). No se decide todavía.`; }
+  else if(conv>=5&&res>=2){ vk="v-go"; vb="PERSEVERAR"; say=`Conversión ${conv.toFixed(1)}% (≥5%) y ${res} reservas (≥2). Confirma en la scorecard antes de dar por buena la señal.`; }
+  else if(conv>=2&&conv<5){ vk="v-it"; vb="ITERAR"; say=`Conversión ${conv.toFixed(1)}% (2–4,9%): iterar mensaje, actividad, reversibilidad o precio.`; }
+  else if((conv<2&&qv>=40)||(res===0&&qv>=40)){ vk="v-ki"; vb="DESCARTAR"; say=`${res===0?"0 reservas":conv.toFixed(1)+"%"} con ${qv} visitas (≥40): descartar la combinación precio-oferta, no la necesidad de Mateo.`; }
+  else { say=`Señal débil (${conv.toFixed(1)}%, ${res} reservas) con ${qv} visitas: sigue hasta ≥40 antes de descartar.`; }
+  if(doubt>0) say+=` ⚠ ${doubt} persona(s) marcaron dudas sobre el cobro — vigila la comprensión del no-cobro (stop rule).`;
+  document.getElementById("pVerdict").className="pverdict "+vk;
+  document.getElementById("pVerdict").innerHTML=`<span class="vb">${vb}</span><div>${say}<br><span style="color:var(--muted);font-size:12px">Veredicto preliminar · la decisión oficial se registra en la scorecard con el umbral original.</span></div>`;
+  const srcs=["wa_directo","wa_grupo","com_remoto","linkedin","ig","referido","interno","desconocido"];
+  let body='<tr><th>Fuente</th><th class="num">Visitas</th><th class="num">Califican</th><th class="num">Reservan</th></tr>';
+  srcs.forEach(s=>{
+    const rr=rows.filter(r=>r.src===s);
+    const p=rr.filter(r=>r.type==="sintonia_page_view").length;
+    const q=rr.filter(r=>r.type==="screener_pass").length;
+    const re=rr.filter(r=>r.type==="sintonia_reservation_completed").length;
+    if(p||q||re) body+=`<tr class="${KNOWN_SRC.includes(s)?"":"unk"}"><td>${s}${KNOWN_SRC.includes(s)?"":" · no calificada"}</td><td class="num">${p}</td><td class="num">${q}</td><td class="num">${re}</td></tr>`;
+  });
+  document.getElementById("bySrc").innerHTML=body;
+  document.getElementById("pNote").innerHTML=`Los conteos son <b>eventos</b>, no personas únicas — como el canal principal es WhatsApp directo, concilia la unicidad con tus envíos. Denominador del umbral = <b>visitas calificadas</b> (canal etiquetado + pasa el screener). Última lectura: ${new Date().toLocaleTimeString("es-CO")}.`;
+}
+if(PANEL){ panelLayout(); panelFetch(); setInterval(panelFetch,10000); }
+</script>
+</body>
+</html>
