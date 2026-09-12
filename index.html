@@ -95,6 +95,655 @@
   .btn:active{transform:translateY(1px)}
   .btn:disabled{opacity:.4;cursor:not-allowed}
   .btn.secondary{background:transparent;color:var(--pine-ink);border:1.5px solid var(--line-2);font-size:14px;padding:11px}
+  .btn-row{margin-top:18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .price-card{border:1px dashed var(--line-2);border-radius:12px;padding:16px;margin-bottom:16px;background:var(--card-2)}
+  .price-card .plabel{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  .price-card .pval{font-family:var(--disp);font-weight:700;font-size:24px;letter-spacing:-.01em}
+  .price-card .pval s{color:var(--muted);font-weight:500;font-size:16px}
+  .price-card .pnote{font-size:13px;color:var(--honey);font-weight:600;margin-top:6px}
+  .consent{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);
+    border-radius:10px;margin-bottom:11px;cursor:pointer;background:var(--card-2)}
+  .consent input{width:19px;height:19px;flex:none;margin-top:1px;accent-color:var(--pine);cursor:pointer}
+  .consent .ct{font-size:13.5px}
+  .consent .ct b{font-weight:600}
+  .guardrails{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  .guardrails li{display:flex;gap:10px;font-size:13.5px;color:var(--muted)}
+  .guardrails li::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--pine);flex:none;margin-top:7px}
+  .guardrails li b{color:var(--ink);font-weight:600}
+  .doubt{margin-top:14px;text-align:center}
+  .doubt button{background:none;border:none;color:var(--muted);font-family:var(--body);font-size:13px;
+    text-decoration:underline;cursor:pointer}
+  .fail,.done{text-align:center;padding:8px 4px}
+  .fail .em,.done .em{font-size:34px}
+  .done h2{color:var(--ok)}
+  .foot{margin-top:22px;font-size:12px;color:var(--muted);line-height:1.6;text-align:center}
+  .foot b{color:var(--ink)}
+  /* panel */
+  .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .live{font-size:12px;font-weight:600;color:var(--ok);white-space:nowrap;margin-top:4px}
+  .live.off{color:var(--muted)}
+  .funnel{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+  .fstep{background:var(--card-2);border:1px solid var(--line);border-radius:11px;padding:13px 12px;text-align:center}
+  .fstep .fn{font-family:var(--disp);font-weight:700;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+  .fstep .fl{font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:.02em}
+  .fstep .fr{font-size:11px;color:var(--pine-ink);margin-top:3px;font-variant-numeric:tabular-nums}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+  .kpi{border:1px solid var(--line);border-radius:11px;padding:13px 14px}
+  .kpi .kl{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .kpi .kv{font-family:var(--disp);font-weight:700;font-size:22px;margin-top:4px;font-variant-numeric:tabular-nums}
+  .kpi .kt{font-size:11.5px;margin-top:3px}
+  .kpi .kt.good{color:var(--ok)} .kpi .kt.bad{color:var(--stop)} .kpi .kt.warn{color:var(--honey)}
+  .pverdict{border-radius:11px;padding:14px 16px;margin-bottom:16px;font-size:14px;display:flex;gap:12px;align-items:flex-start}
+  .pverdict .vb{font-family:var(--disp);font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;
+    padding:5px 11px;border-radius:7px;white-space:nowrap;flex:none}
+  .v-go{background:var(--ok-soft);border:1px solid var(--ok)} .v-go .vb{background:var(--ok);color:#fff}
+  .v-it{background:var(--honey-soft);border:1px solid var(--honey)} .v-it .vb{background:var(--honey);color:#fff}
+  .v-ki{background:var(--stop-soft);border:1px solid var(--stop)} .v-ki .vb{background:var(--stop);color:#fff}
+  .v-pe{background:var(--pine-soft);border:1px solid var(--pine)} .v-pe .vb{background:var(--pine);color:#fff}
+  .bysrc{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px}
+  .bysrc th,.bysrc td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  .bysrc th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .bysrc td.num{text-align:right}
+  .bysrc tr.unk td{color:var(--muted)}
+  .panel-note{font-size:12px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line);padding-top:12px;margin:0}
+  .prefresh{background:none;border:1px solid var(--line-2);color:var(--muted);border-radius:8px;
+    padding:6px 12px;font-family:var(--body);font-size:12px;cursor:pointer;margin-top:4px}
+  /* generador de enlaces */
+  .gen{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:18px}
+  .gen h3{font-family:var(--disp);font-weight:600;font-size:15px;margin:0 0 4px}
+  .gen .gsub{font-size:12px;color:var(--muted);margin:0 0 14px}
+  .gen .grow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .gen label{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px}
+  .gen select,.gen input{width:100%;font-family:var(--body);font-size:14px;padding:9px 11px;border:1px solid var(--line-2);border-radius:9px;background:var(--card);color:var(--ink)}
+  .gen .out{display:flex;gap:8px;align-items:stretch}
+  .gen .out input{flex:1;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--pine-ink)}
+  .gen #genUid{font-family:ui-monospace,Menlo,monospace;color:var(--pine-ink);text-transform:none;letter-spacing:0}
+  .genhist{margin-top:14px}
+  .genhist table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .genhist td,.genhist th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+  .genhist th{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .genhist td:first-child{font-family:ui-monospace,Menlo,monospace}
+  .genhist .cp{border:1px solid var(--line-2);background:var(--card);color:var(--pine-ink);border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;font-family:var(--body)}
+  .genhist .cp:hover{border-color:var(--pine)}
+  @media (max-width:520px){.funnel{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:1fr}.hero h1{font-size:27px}}
+  /* wizard: migas de pan + pasos */
+  .wizard{padding-top:16px}
+  .crumbs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:18px;padding-bottom:15px;border-bottom:1px solid var(--line)}
+  .crumb{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-size:13px;font-weight:600;
+    color:var(--muted);background:none;border:none;padding:4px 3px}
+  button.crumb{cursor:pointer}
+  button.crumb:hover{color:var(--ink)}
+  .crumb .ci{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;
+    background:var(--line);color:var(--muted)}
+  .crumb.active{color:var(--ink)}
+  .crumb.active .ci{background:var(--pine);color:#fff}
+  .crumb.done .ci{background:var(--pine-soft);color:var(--pine-ink)}
+  .csep{color:var(--line-2);font-size:15px}
+  .step h2{scroll-margin-top:14px;outline:none}
+  .stephint{font-size:12px;color:var(--muted);margin:0;flex-basis:100%;text-align:center}
+  .linkbtn{background:none;border:none;color:var(--honey);font-family:var(--body);font-size:12.5px;font-weight:600;
+    text-decoration:underline;cursor:pointer;padding:0;margin-left:8px}
+  .foldable{margin-top:18px;border-top:1px solid var(--line);padding-top:4px}
+  .foldable summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);padding:9px 0;list-style:none}
+  .foldable summary::-webkit-details-marker{display:none}
+  .foldable summary::before{content:"›";display:inline-block;margin-right:8px;transition:transform .15s}
+  .foldable[open] summary::before{transform:rotate(90deg)}
+  .foldable .guardrails{margin-top:4px}
+  /* modales */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(20,18,14,.55);
+    display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:16px;max-width:440px;width:100%;
+    padding:26px 26px 22px;box-shadow:0 24px 60px -20px rgba(0,0,0,.5);position:relative}
+  .modal h3{font-family:var(--disp);font-weight:700;font-size:20px;margin:0 0 10px;letter-spacing:-.01em}
+  .modal p{font-size:14px;color:var(--ink);margin:0 0 18px;line-height:1.55}
+  .mrow{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+  .mrow .btn{width:auto}
+  .mclose{position:absolute;top:10px;right:13px;background:none;border:none;font-size:24px;line-height:1;
+    color:var(--muted);cursor:pointer}
+  .mclose:hover{color:var(--ink)}
+  body.modal-open{overflow:hidden}
+  [hidden]{display:none!important}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="logo"><span class="mark"></span> Sintonía</div>
+    <button class="theme-btn" id="themeBtn">◐ tema</button>
+  </div>
+
+  <header class="hero">
+    <p class="kicker">Café-coworking · grupo pequeño</p>
+    <h1>Trabaja acompañado, no en solitario.</h1>
+    <p class="lead">Una sesión de coworking en un café, en grupo pequeño, pensada para quienes trabajan en remoto y quieren romper la rutina de hacerlo siempre solos. Llegas, te ubicas, trabajas tu propia lista — pero con gente cerca.</p>
+    <div class="facts">
+      <span class="fact">🗓️ <b>90 min</b> de sesión</span>
+      <span class="fact">👥 grupo de <b>4 a 8</b></span>
+      <span class="fact">☕ café público</span>
+      <span class="fact">🚪 entras y sales libre</span>
+    </div>
+    <div class="nocharge">
+      <span class="i">✋</span>
+      <span class="s"><b>Hoy no se cobra nada.</b> Estás reservando un cupo en una prueba piloto. No se te pedirá tarjeta ni pago en ningún momento de esta página.</span>
+    </div>
+  </header>
+
+  <section class="section">
+    <h2>Cómo es la sesión</h2>
+    <p class="sub">Sin dinámicas forzadas ni presentarte ante todos. La compañía surge de trabajar cerca.</p>
+    <ul class="steps">
+      <li><span class="n">1</span><span class="st"><b>Llegas al café</b><span>Te recibimos, te ubicas y pides lo que quieras consumir (a tu cuenta).</span></span></li>
+      <li><span class="n">2</span><span class="st"><b>Trabajas lo tuyo, 90 minutos</b><span>Tu propia lista de pendientes. Un breve arranque para saber en qué anda cada quien, y a trabajar.</span></span></li>
+      <li><span class="n">3</span><span class="st"><b>Cierre corto</b><span>Un momento opcional al final para conocer a quien te dio curiosidad. Sin obligación.</span></span></li>
+    </ul>
+  </section>
+
+  <section class="section wizard" id="wizard">
+    <nav class="crumbs" id="crumbs" aria-label="Progreso">
+      <button class="crumb" type="button" data-go="perfil"><span class="ci">1</span> Perfil</button>
+      <span class="csep" aria-hidden="true">›</span>
+      <button class="crumb" type="button" data-go="reserva"><span class="ci">2</span> Reserva</button>
+      <span class="csep" aria-hidden="true">›</span>
+      <span class="crumb" data-step="listo"><span class="ci">3</span> Listo</span>
+    </nav>
+
+    <!-- PASO 1 · PERFIL -->
+    <div class="step" id="step-perfil">
+      <h2 tabindex="-1">¿Es para ti?</h2>
+      <p class="sub">Tres preguntas rápidas para asegurarnos de que la sesión te calce.</p>
+      <div class="q" data-q="remoto">
+        <div class="qt">1 · ¿Cómo trabajas hoy?</div>
+        <div class="opts">
+          <button type="button" data-v="1">Remoto</button>
+          <button type="button" data-v="1">Híbrido</button>
+          <button type="button" data-v="0">Presencial / oficina</button>
+          <button type="button" data-v="0">No estoy trabajando ahora</button>
+        </div>
+      </div>
+      <div class="q" data-q="solo">
+        <div class="qt">2 · Trabajando en remoto, ¿sientes que te falta compañía o cambio de entorno?</div>
+        <div class="opts">
+          <button type="button" data-v="1">Sí, seguido</button>
+          <button type="button" data-v="1">A veces</button>
+          <button type="button" data-v="0">Casi nunca</button>
+        </div>
+      </div>
+      <div class="q" data-q="ganas">
+        <div class="qt">3 · ¿Te gustaría ampliar tu vida social fuera del trabajo?</div>
+        <div class="opts">
+          <button type="button" data-v="1">Sí</button>
+          <button type="button" data-v="1">Me da algo de pereza, pero sí</button>
+          <button type="button" data-v="0">La verdad, no</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="toReserve" disabled>Continuar</button>
+        <p class="stephint" id="perfilHint">Responde las 3 preguntas para continuar.</p>
+      </div>
+    </div>
+
+    <!-- PASO 1b · NO CALIFICA (salida) -->
+    <div class="step" id="step-fail" hidden>
+      <div class="fail">
+        <div class="em">🙏</div>
+        <h2 tabindex="-1">Gracias por tu interés</h2>
+        <p class="sub" style="margin:8px auto 0;max-width:42ch">Esta primera sesión está pensada para personas que trabajan en remoto o híbrido y buscan más compañía. Por ahora no encaja del todo contigo, pero te avisaremos cuando abramos otros formatos.</p>
+        <div class="btn-row" style="justify-content:center">
+          <button class="btn secondary" type="button" data-go="perfil" style="width:auto">‹ Volver a las preguntas</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2 · RESERVA -->
+    <div class="step" id="step-reserva" hidden>
+      <h2 tabindex="-1">Reserva tu cupo</h2>
+      <p class="sub">Cupos limitados por sesión. Reservar no garantiza el cupo hasta que confirmemos la fecha contigo.</p>
+      <div class="price-card">
+        <p class="plabel">Pase Sintonía</p>
+        <div class="pval">COP 39.900 <s>+ valor de la actividad</s></div>
+        <div class="pnote">Hoy no se cobra — reserva sin pago para el piloto.
+          <button type="button" class="linkbtn" id="doubtBtn">¿Cómo funciona el cobro?</button></div>
+      </div>
+      <label class="consent">
+        <input type="checkbox" id="c-consent">
+        <span class="ct"><b>Doy mi consentimiento</b> para participar en esta prueba piloto de investigación. Puedo retirarme en cualquier momento.</span>
+      </label>
+      <label class="consent">
+        <input type="checkbox" id="c-nocharge">
+        <span class="ct">Entiendo que <b>hoy no se realiza ningún cobro</b> y que esta reserva no me compromete a pagar.</span>
+      </label>
+      <div class="btn-row">
+        <button class="btn secondary" type="button" data-go="perfil" style="width:auto;flex:none">‹ Atrás</button>
+        <button class="btn" id="confirmBtn" disabled style="flex:1">Confirmar mi cupo (sin cobro)</button>
+      </div>
+      <p class="stephint" id="reservaHint">Marca las dos casillas para poder confirmar.</p>
+      <details class="foldable">
+        <summary>Antes de reservar, lo importante</summary>
+        <ul class="guardrails">
+          <li><b>Sin cobro sin reconfirmación:</b> cualquier pago futuro se acordaría aparte y explícitamente.</li>
+          <li><b>No es dating ni terapia:</b> es una sesión de trabajo acompañado; no prometemos amistad ni bienestar.</li>
+          <li><b>Cupo no garantizado:</b> confirmamos fecha y lugar contigo antes de la sesión.</li>
+          <li><b>Tus datos:</b> reservar no pide datos personales. Al final puedes, si quieres, dejar un contacto para futuras pruebas — es opcional.</li>
+          <li><b>Costos a la vista:</b> lo único que pagas es tu propio consumo en el café.</li>
+        </ul>
+      </details>
+    </div>
+
+    <!-- PASO 3 · LISTO -->
+    <div class="step" id="step-listo" hidden>
+      <div class="done">
+        <div class="em">☕✅</div>
+        <h2 tabindex="-1">¡Cupo reservado!</h2>
+        <p class="sub" style="margin:8px auto 0;max-width:46ch">Te contactaremos <b>por el mismo medio por el que llegaste a esta página</b> para confirmar fecha, café y hora. Recuerda: <b>hoy no se te cobró nada</b>.</p>
+      </div>
+      <div id="optinBox" style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px;text-align:left">
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px">Opcional · avísame de futuras sesiones</div>
+        <p style="font-size:12.5px;color:var(--muted);margin:0 0 11px">Dejar un contacto es <b>voluntario</b> y no hace falta para tu reserva. Lo usamos solo para avisarte de esta y próximas pruebas.</p>
+        <input id="optinContact" type="text" placeholder="Tu WhatsApp o correo" autocomplete="off"
+          style="width:100%;font-family:var(--body);font-size:14px;padding:11px 12px;border:1px solid var(--line-2);border-radius:9px;background:var(--card);color:var(--ink)">
+        <label class="consent" style="margin-top:11px"><input type="checkbox" id="optinConsent">
+          <span class="ct">Acepto que me contacten para esta y futuras pruebas de Sintonía.</span></label>
+        <button class="btn" id="optinBtn" disabled style="margin-top:4px">Registrarme para futuras pruebas</button>
+      </div>
+      <div id="optinDone" hidden style="margin-top:16px;text-align:center;color:var(--ok);font-weight:600">¡Listo! Te avisaremos 🙌</div>
+    </div>
+  </section>
+
+  <!-- MODAL · sobre el cobro -->
+  <div class="modal-backdrop" id="mCobro" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mCobroT">
+      <button class="mclose" type="button" data-close aria-label="Cerrar">×</button>
+      <h3 id="mCobroT">Sobre el cobro</h3>
+      <p><b>En esta página no se cobra nada</b> y no se pide tarjeta. El valor de "COP 39.900" es solo la referencia de lo que costaría el pase en el futuro; sirve para entender si la idea tiene sentido para ti. Lo único que pagarías el día de la sesión es tu propio consumo en el café.</p>
+      <div class="mrow"><button class="btn" type="button" data-close>Entendido</button></div>
+    </div>
+  </div>
+
+  <!-- MODAL · confirmar reserva -->
+  <div class="modal-backdrop" id="mConfirm" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mConfirmT">
+      <button class="mclose" type="button" data-close aria-label="Cerrar">×</button>
+      <h3 id="mConfirmT">Confirmar tu cupo</h3>
+      <p>Vas a reservar la sesión de <b>café-coworking</b>. <b>Hoy no se cobra nada</b>; te contactaremos por el medio por el que llegaste para acordar fecha y lugar.</p>
+      <div class="mrow">
+        <button class="btn secondary" type="button" data-close>Cancelar</button>
+        <button class="btn" type="button" id="mConfirmYes">Sí, reservar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL (?panel=1) -->
+  <section class="section" id="panelSec" hidden>
+    <div class="panel-head">
+      <div><h2>Panel de control · H1 · WTP</h2><p class="sub" style="margin:0">Embudo en vivo · eventos anónimos</p></div>
+      <span class="live" id="liveDot">● en vivo</span>
+    </div>
+
+    <div class="gen">
+      <h3>🔗 Generador de enlaces</h3>
+      <p class="gsub">Arma el enlace con su identificador único. Escribe el nombre de la persona, o déjalo vacío para numerar por canal (p. ej. linkedin01, linkedin02…).</p>
+      <div class="grow">
+        <div>
+          <label>Canal</label>
+          <select id="genCanal">
+            <option value="wa_directo">WhatsApp directo</option>
+            <option value="wa_grupo">WhatsApp grupo</option>
+            <option value="com_remoto">Comunidades remoto</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="ig">Instagram</option>
+            <option value="referido">Referido</option>
+            <option value="interno">Interno (calibración)</option>
+          </select>
+        </div>
+        <div>
+          <label>Nombre de la persona (opcional)</label>
+          <input id="genNombre" type="text" placeholder="p. ej. Ana Pérez" autocomplete="off">
+        </div>
+      </div>
+      <label>Enlace · identificador: <span id="genUid">—</span></label>
+      <div class="out">
+        <input id="genLink" type="text" readonly>
+        <button class="copy" id="genCopy">Copiar y registrar</button>
+      </div>
+      <div class="genhist" id="genHist"></div>
+    </div>
+
+    <div class="funnel" id="funnel"></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="pverdict v-pe" id="pVerdict"><span class="vb">—</span><div>Cargando datos…</div></div>
+    <table class="bysrc" id="bySrc"></table>
+    <button class="prefresh" id="pRefresh">↻ actualizar</button>
+    <p class="panel-note" id="pNote"></p>
+  </section>
+
+  <p class="foot">
+    Prueba piloto de investigación · Proyecto <b>Sintonía</b> · Maestría en Gestión de la Innovación, Universidad Icesi.<br>
+    Participación voluntaria y anónima en esta página. No es un servicio comercial ni una promesa de amistad, bienestar o acompañamiento clínico.
+  </p>
+</div>
+
+<script>
+"use strict";
+/* ===================================================================
+ *  CONFIGURA AQUÍ  ·  pega la URL del Web App de Apps Script (/exec)
+ * =================================================================== */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbw7atq-EgvVx01UusXhVExdS_0-wxONNf7egV-9YPmiS_xCIezfdvFvgxa65u_prBOn6g/exec";  // p. ej. https://script.google.com/macros/s/AKfy.../exec
+/* =================================================================== */
+
+const KNOWN_SRC=["wa_directo","wa_grupo","com_remoto","linkedin","ig","referido"];
+const params=new URLSearchParams(location.search);
+const SRC=(params.get("utm_source")||"desconocido").toLowerCase();
+const QUALIFIED_SRC=KNOWN_SRC.includes(SRC);
+const PANEL=params.get("panel")==="1"||params.get("view")==="panel";
+const CONFIGURED=/script\.google\.com/.test(ENDPOINT);
+
+/* --- identificador único por usuario (para deserción real) --- */
+/* viene del enlace de invitación (&u=CODE); si falta, se genera y persiste por navegador */
+let UID=(params.get("u")||"").trim();
+if(!UID){
+  try{ UID=localStorage.getItem("sintonia_uid")||""; }catch(e){}
+  if(!UID){ UID="anon_"+Math.random().toString(36).slice(2,9);
+    try{ localStorage.setItem("sintonia_uid",UID); }catch(e){} }
+}
+
+/* --- registro de eventos anónimos (POST fire-and-forget) --- */
+function record(type,extra){
+  if(!CONFIGURED) return;
+  const row={type,src:SRC,qualified_src:QUALIFIED_SRC,uid:UID,ts:Date.now(),...(extra||{})};
+  try{
+    fetch(ENDPOINT,{method:"POST",mode:"no-cors",keepalive:true,
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(row)});
+  }catch(e){}
+}
+/* --- opt-in de contacto (va a una hoja SEPARADA de los eventos) --- */
+function recordContact(contact){
+  if(!CONFIGURED) return;
+  const row={kind:"contact",uid:UID,src:SRC,contact:contact,ts:Date.now()};
+  try{
+    fetch(ENDPOINT,{method:"POST",mode:"no-cors",keepalive:true,
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(row)});
+  }catch(e){}
+}
+if(!PANEL){
+  window.addEventListener("load",()=>setTimeout(()=>record("sintonia_page_view"),300));
+}
+
+/* ---------- flujo por pasos (sin scroll al tope) ---------- */
+const STEPS={perfil:"step-perfil",reserva:"step-reserva",listo:"step-listo",fail:"step-fail"};
+const CRUMB_ORDER=["perfil","reserva","listo"];
+const reached={perfil:true,reserva:false,listo:false};
+function setCrumbs(step){
+  const anchor=(step==="fail")?"perfil":step;
+  const idx=CRUMB_ORDER.indexOf(anchor);
+  document.querySelectorAll("#crumbs .crumb").forEach(c=>{
+    const s=c.getAttribute("data-go")||c.getAttribute("data-step");
+    const i=CRUMB_ORDER.indexOf(s);
+    c.classList.toggle("active", s===anchor);
+    c.classList.toggle("done", i>-1 && i<idx);
+  });
+}
+function goStep(step,opts){
+  opts=opts||{};
+  if(reached.hasOwnProperty(step)) reached[step]=true;
+  Object.keys(STEPS).forEach(k=>{ document.getElementById(STEPS[k]).hidden=(k!==step); });
+  setCrumbs(step);
+  const h=document.querySelector("#"+STEPS[step]+" h2");
+  if(h){ try{ h.focus({preventScroll:true}); }catch(e){} }
+  if(!opts.noScroll){                       // solo ajusta si el asistente quedó fuera de vista
+    const w=document.getElementById("wizard").getBoundingClientRect();
+    if(w.top<0 || w.top>window.innerHeight*0.6){
+      document.getElementById("wizard").scrollIntoView({behavior:"smooth",block:"start"});
+    }
+  }
+}
+document.querySelectorAll("[data-go]").forEach(b=>{
+  b.addEventListener("click",()=>{ const t=b.getAttribute("data-go"); if(t&&reached[t]) goStep(t); });
+});
+
+/* ---------- screener ---------- */
+const answers={};
+document.querySelectorAll("#step-perfil [data-q]").forEach(q=>{
+  const key=q.getAttribute("data-q");
+  q.querySelectorAll(".opts button").forEach(b=>{
+    b.addEventListener("click",()=>{
+      q.querySelectorAll(".opts button").forEach(o=>o.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");
+      answers[key]=+b.getAttribute("data-v");
+      const done=Object.keys(answers).length>=3;
+      document.getElementById("toReserve").disabled=!done;
+      document.getElementById("perfilHint").hidden=done;
+    });
+  });
+});
+document.getElementById("toReserve").addEventListener("click",()=>{
+  const pass=answers.remoto===1&&answers.ganas===1;
+  if(pass){ record("screener_pass"); goStep("reserva"); }
+  else{ record("screener_fail"); goStep("fail"); }
+});
+
+/* ---------- reserva ---------- */
+const cc=document.getElementById("c-consent"), cn=document.getElementById("c-nocharge"),
+      confirmBtn=document.getElementById("confirmBtn");
+let ctaFired=false;
+function syncConfirm(){
+  const ok=cc.checked&&cn.checked;
+  confirmBtn.disabled=!ok;
+  document.getElementById("reservaHint").hidden=ok;
+  if((cc.checked||cn.checked)&&!ctaFired){ ctaFired=true; record("cta_clicked"); }
+}
+cc.addEventListener("change",syncConfirm);
+cn.addEventListener("change",syncConfirm);
+confirmBtn.addEventListener("click",()=>openModal("mConfirm"));
+
+/* ---------- modales ---------- */
+function openModal(id){
+  const m=document.getElementById(id); m.hidden=false; document.body.classList.add("modal-open");
+  const f=m.querySelector(".btn"); if(f){ try{ f.focus({preventScroll:true}); }catch(e){} }
+}
+function closeModal(id){
+  document.getElementById(id).hidden=true;
+  if(!document.querySelector(".modal-backdrop:not([hidden])")) document.body.classList.remove("modal-open");
+}
+document.querySelectorAll(".modal-backdrop").forEach(bd=>{
+  bd.addEventListener("click",e=>{ if(e.target===bd||e.target.hasAttribute("data-close")) closeModal(bd.id); });
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape")
+  document.querySelectorAll(".modal-backdrop:not([hidden])").forEach(m=>closeModal(m.id)); });
+document.getElementById("doubtBtn").addEventListener("click",()=>{ record("charge_doubt"); openModal("mCobro"); });
+document.getElementById("mConfirmYes").addEventListener("click",()=>{
+  record("sintonia_reservation_completed",{understood_no_charge:true,consent:true});
+  closeModal("mConfirm"); goStep("listo");
+});
+setCrumbs("perfil");
+
+/* --- opt-in de futuras pruebas (cierre) --- */
+const oC=document.getElementById("optinContact"), oK=document.getElementById("optinConsent"), oB=document.getElementById("optinBtn");
+function syncOpt(){ oB.disabled=!(oK.checked && oC.value.trim().length>=5); }
+oC.addEventListener("input",syncOpt);
+oK.addEventListener("change",syncOpt);
+oB.addEventListener("click",()=>{
+  recordContact(oC.value.trim());
+  record("registro_opt_in");            // evento anónimo para el embudo (sin el contacto)
+  document.getElementById("optinBox").hidden=true;
+  document.getElementById("optinDone").hidden=false;
+});
+
+/* --- tema --- */
+const root=document.documentElement;
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const cur=root.getAttribute("data-theme");
+  const dark=window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const now=cur?cur:(dark?"dark":"light");
+  root.setAttribute("data-theme",now==="dark"?"light":"dark");
+});
+
+/* ================= PANEL DE CONTROL ================= */
+function panelLayout(){
+  document.querySelector("header.hero").hidden=true;
+  document.querySelectorAll(".section").forEach(s=>{ if(s.id!=="panelSec") s.hidden=true; });
+  document.getElementById("panelSec").hidden=false;
+  document.getElementById("pRefresh").addEventListener("click",panelFetch);
+  initGenerator();
+}
+
+/* ---------- generador de enlaces UTM + uid ---------- */
+const GEN_KEY="sintonia_gen_history";
+function genHistList(){ try{ return JSON.parse(localStorage.getItem(GEN_KEY))||[]; }catch(e){ return []; } }
+function genHistSave(a){ try{ localStorage.setItem(GEN_KEY,JSON.stringify(a)); }catch(e){} }
+function slug(s){ return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()
+  .replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,24); }
+function usedUids(){
+  var set=new Set();
+  (lastRows||[]).forEach(function(r){ if(r.uid) set.add(String(r.uid)); });
+  genHistList().forEach(function(h){ set.add(h.uid); });
+  return set;
+}
+function nextSeq(channel){
+  var re=new RegExp("^"+channel+"(\\d+)$"), max=0;
+  usedUids().forEach(function(u){ var m=re.exec(u); if(m){ var n=+m[1]; if(n>max) max=n; } });
+  var n=max+1; return channel+(n<10?("0"+n):(""+n));
+}
+function baseUrl(){ return location.origin+location.pathname; }
+function genPreview(){
+  var nombre=document.getElementById("genNombre").value.trim();
+  var canal=document.getElementById("genCanal").value;
+  var uid=nombre?slug(nombre):nextSeq(canal);
+  var link=baseUrl()+"?utm_source="+encodeURIComponent(canal)+"&u="+encodeURIComponent(uid);
+  document.getElementById("genUid").textContent=uid||"—";
+  document.getElementById("genLink").value=link;
+  return {canal:canal,uid:uid,link:link};
+}
+function copyText(t,btn){
+  var ok=function(){ if(btn){ var o=btn.textContent; btn.textContent="¡Copiado!"; setTimeout(function(){ btn.textContent=o; },1400); } };
+  var fb=function(){ var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); }catch(e){} document.body.removeChild(ta); ok(); };
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok,fb); else fb(); }
+  catch(e){ fb(); }
+}
+function renderHist(){
+  var el=document.getElementById("genHist");
+  var h=genHistList().slice().reverse().slice(0,15);
+  if(!h.length){ el.innerHTML=""; return; }
+  var b='<table><tr><th>ID</th><th>Canal</th><th></th></tr>';
+  h.forEach(function(x){ b+='<tr><td>'+x.uid+'</td><td>'+x.canal+'</td><td><button class="cp" data-link="'+x.link.replace(/"/g,"&quot;")+'">Copiar</button></td></tr>'; });
+  b+='</table>';
+  el.innerHTML=b;
+  el.querySelectorAll(".cp").forEach(function(btn){ btn.addEventListener("click",function(){ copyText(btn.getAttribute("data-link"),btn); }); });
+}
+function initGenerator(){
+  document.getElementById("genCanal").addEventListener("change",genPreview);
+  document.getElementById("genNombre").addEventListener("input",genPreview);
+  document.getElementById("genCopy").addEventListener("click",function(){
+    var g=genPreview();
+    if(!g.uid) return;
+    var list=genHistList();
+    if(!list.some(function(x){ return x.uid===g.uid && x.canal===g.canal; })){
+      list.push({uid:g.uid,canal:g.canal,link:g.link,ts:Date.now()}); genHistSave(list);
+    }
+    copyText(g.link,document.getElementById("genCopy"));
+    document.getElementById("genNombre").value="";
+    renderHist(); genPreview();
+  });
+  renderHist(); genPreview();
+}
+function panelMsg(cls,txt){
+  document.getElementById("liveDot").className="live off";
+  document.getElementById("liveDot").textContent="○ sin conexión";
+  document.getElementById("pVerdict").className="pverdict "+cls;
+  document.getElementById("pVerdict").innerHTML='<span class="vb">panel</span><div>'+txt+'</div>';
+}
+let lastRows=[];
+function panelFetch(){
+  if(!CONFIGURED){ panelMsg("v-it","Falta configurar el ENDPOINT de Apps Script en el archivo (ver la guía). Mientras tanto, los datos también están en tu hoja de Google."); return; }
+  fetch(ENDPOINT,{method:"GET"}).then(r=>r.json()).then(j=>{
+    lastRows=(j.events||[]).filter(x=>x&&x.type);
+    document.getElementById("liveDot").className="live";
+    document.getElementById("liveDot").textContent="● en vivo";
+    renderPanel(lastRows);
+  }).catch(()=>{ if(!lastRows.length) panelMsg("v-it","No se pudo leer el endpoint desde el navegador. Revisa que el Web App esté desplegado con acceso «Cualquier usuario», o consulta los datos directamente en tu hoja de Google."); });
+}
+function renderPanel(rows){
+  /* deserción real: se cuenta por USUARIO único (uid), no por evento */
+  const uid=r=>r.uid||("t"+r.ts);
+  const usersWith=t=>{ const s=new Set(); rows.forEach(r=>{ if(r.type===t) s.add(uid(r)); }); return s; };
+  const pv=usersWith("sintonia_page_view").size, sp=usersWith("screener_pass").size,
+        cta=usersWith("cta_clicked").size, res=usersWith("sintonia_reservation_completed").size,
+        optin=usersWith("registro_opt_in").size;
+  const doubt=rows.filter(r=>r.type==="charge_doubt").length;
+  const qvSet=new Set(); rows.forEach(r=>{ if(r.type==="screener_pass"&&(r.qualified_src===true||r.qualified_src==="TRUE")) qvSet.add(uid(r)); });
+  const qv=qvSet.size;
+  const conv=qv>0?res/qv*100:0;
+  document.getElementById("funnel").innerHTML=[
+    ["Visitas únicas",pv,""],
+    ["Califican",sp,pv?Math.round(sp/pv*100)+"%":""],
+    ["Clic reservar",cta,sp?Math.round(cta/sp*100)+"%":""],
+    ["Reservan",res,cta?Math.round(res/cta*100)+"%":""]
+  ].map(x=>`<div class="fstep"><div class="fn">${x[1]}</div><div class="fl">${x[0]}</div><div class="fr">${x[2]}</div></div>`).join("");
+  const convClass=conv>=5?"good":(conv>=2?"warn":"bad");
+  const resClass=res>=2?"good":"bad";
+  const muClass=qv>=20?(qv<=40?"good":"warn"):"bad";
+  document.getElementById("kpis").innerHTML=[
+    ["Conversión",conv.toFixed(1)+"%","umbral ≥ 5%",convClass],
+    ["Reservas",res,"meta ≥ 2",resClass],
+    ["Visitas calificadas",qv,"muestra 20–40",muClass]
+  ].map(k=>`<div class="kpi"><div class="kl">${k[0]}</div><div class="kv">${k[1]}</div><div class="kt ${k[3]}">${k[2]}</div></div>`).join("");
+  let vk="v-pe", vb="PENDIENTE", say;
+  if(qv<20){ say=`Aún faltan visitas calificadas (${qv}/20 mín.). No se decide todavía.`; }
+  else if(conv>=5&&res>=2){ vk="v-go"; vb="PERSEVERAR"; say=`Conversión ${conv.toFixed(1)}% (≥5%) y ${res} reservas (≥2). Confirma en la scorecard antes de dar por buena la señal.`; }
+  else if(conv>=2&&conv<5){ vk="v-it"; vb="ITERAR"; say=`Conversión ${conv.toFixed(1)}% (2–4,9%): iterar mensaje, actividad, reversibilidad o precio.`; }
+  else if((conv<2&&qv>=40)||(res===0&&qv>=40)){ vk="v-ki"; vb="DESCARTAR"; say=`${res===0?"0 reservas":conv.toFixed(1)+"%"} con ${qv} visitas (≥40): descartar la combinación precio-oferta, no la necesidad de Mateo.`; }
+  else { say=`Señal débil (${conv.toFixed(1)}%, ${res} reservas) con ${qv} visitas: sigue hasta ≥40 antes de descartar.`; }
+  if(doubt>0) say+=` ⚠ ${doubt} persona(s) marcaron dudas sobre el cobro — vigila la comprensión del no-cobro (stop rule).`;
+  document.getElementById("pVerdict").className="pverdict "+vk;
+  document.getElementById("pVerdict").innerHTML=`<span class="vb">${vb}</span><div>${say}<br><span style="color:var(--muted);font-size:12px">Veredicto preliminar · la decisión oficial se registra en la scorecard con el umbral original.</span></div>`;
+  const srcs=["wa_directo","wa_grupo","com_remoto","linkedin","ig","referido","interno","desconocido"];
+  let body='<tr><th>Fuente</th><th class="num">Visitas</th><th class="num">Califican</th><th class="num">Reservan</th></tr>';
+  srcs.forEach(s=>{
+    const rr=rows.filter(r=>r.src===s);
+    const uset=t=>new Set(rr.filter(r=>r.type===t).map(r=>r.uid||("t"+r.ts))).size;
+    const p=uset("sintonia_page_view"), q=uset("screener_pass"), re=uset("sintonia_reservation_completed");
+    if(p||q||re) body+=`<tr class="${KNOWN_SRC.includes(s)?"":"unk"}"><td>${s}${KNOWN_SRC.includes(s)?"":" · no calificada"}</td><td class="num">${p}</td><td class="num">${q}</td><td class="num">${re}</td></tr>`;
+  });
+  document.getElementById("bySrc").innerHTML=body;
+  document.getElementById("pNote").innerHTML=`Conteos por <b>usuario único</b> (identificador <code>uid</code> del enlace de invitación) — así la deserción del embudo es real, no logs de sesión. Denominador del umbral = <b>visitas calificadas únicas</b> (canal etiquetado + pasa el screener). Opt-ins a futuras pruebas: <b>${optin}</b>. Última lectura: ${new Date().toLocaleTimeString("es-CO")}.`;
+  if(document.getElementById("genLink")) genPreview();   // mantiene la numeración por canal al día
+}
+if(PANEL){ panelLayout(); panelFetch(); setInterval(panelFetch,10000); }
+</script>
+</body>
+</html>
+  .nocharge b{color:var(--honey)}
+  .nocharge .s{font-size:13.5px}
+  .section{margin-top:16px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--r);padding:22px 24px;box-shadow:var(--shadow)}
+  .section h2{font-family:var(--disp);font-weight:600;font-size:19px;letter-spacing:-.01em;margin:0 0 6px}
+  .section .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+  .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+  .steps li{display:flex;gap:14px;align-items:flex-start}
+  .steps .n{font-family:var(--disp);font-weight:700;font-size:14px;width:28px;height:28px;flex:none;
+    border-radius:50%;display:grid;place-items:center;background:var(--pine-soft);color:var(--pine-ink)}
+  .steps .st b{display:block;font-size:15px;margin-bottom:1px}
+  .steps .st span{font-size:13.5px;color:var(--muted)}
+  .q{margin-bottom:16px}
+  .q:last-of-type{margin-bottom:0}
+  .q .qt{font-size:15px;font-weight:600;margin-bottom:9px}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .opts button{font-family:var(--body);font-size:14px;font-weight:500;cursor:pointer;
+    border:1.5px solid var(--line-2);background:var(--card);color:var(--ink);
+    border-radius:10px;padding:9px 15px;transition:border-color .12s,background .12s}
+  .opts button:hover{border-color:var(--pine)}
+  .opts button[aria-pressed="true"]{border-color:var(--pine);background:var(--pine-soft);color:var(--pine-ink)}
+  .opts button:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  .btn{font-family:var(--disp);font-weight:600;font-size:16px;cursor:pointer;border:none;
+    background:var(--pine);color:#fff;border-radius:11px;padding:14px 22px;width:100%;
+    transition:transform .05s,opacity .15s;letter-spacing:.01em}
+  .btn:hover{opacity:.93}
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.secondary{background:transparent;color:var(--pine-ink);border:1.5px solid var(--line-2);font-size:14px;padding:11px}
   .btn-row{margin-top:18px}
   .price-card{border:1px dashed var(--line-2);border-radius:12px;padding:16px;margin-bottom:16px;background:var(--card-2)}
   .price-card .plabel{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
