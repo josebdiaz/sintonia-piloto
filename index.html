@@ -148,6 +148,23 @@
   .panel-note{font-size:12px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line);padding-top:12px;margin:0}
   .prefresh{background:none;border:1px solid var(--line-2);color:var(--muted);border-radius:8px;
     padding:6px 12px;font-family:var(--body);font-size:12px;cursor:pointer;margin-top:4px}
+  /* generador de enlaces */
+  .gen{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:18px}
+  .gen h3{font-family:var(--disp);font-weight:600;font-size:15px;margin:0 0 4px}
+  .gen .gsub{font-size:12px;color:var(--muted);margin:0 0 14px}
+  .gen .grow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .gen label{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px}
+  .gen select,.gen input{width:100%;font-family:var(--body);font-size:14px;padding:9px 11px;border:1px solid var(--line-2);border-radius:9px;background:var(--card);color:var(--ink)}
+  .gen .out{display:flex;gap:8px;align-items:stretch}
+  .gen .out input{flex:1;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--pine-ink)}
+  .gen #genUid{font-family:ui-monospace,Menlo,monospace;color:var(--pine-ink);text-transform:none;letter-spacing:0}
+  .genhist{margin-top:14px}
+  .genhist table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .genhist td,.genhist th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+  .genhist th{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .genhist td:first-child{font-family:ui-monospace,Menlo,monospace}
+  .genhist .cp{border:1px solid var(--line-2);background:var(--card);color:var(--pine-ink);border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;font-family:var(--body)}
+  .genhist .cp:hover{border-color:var(--pine)}
   @media (max-width:520px){.funnel{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:1fr}.hero h1{font-size:27px}}
   [hidden]{display:none!important}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -253,7 +270,7 @@
         <li><b>Sin cobro sin reconfirmación:</b> cualquier pago futuro se acordaría aparte y explícitamente.</li>
         <li><b>No es dating ni terapia:</b> es una sesión de trabajo acompañado; no prometemos amistad ni bienestar.</li>
         <li><b>Cupo no garantizado:</b> confirmamos fecha y lugar contigo antes de la sesión.</li>
-        <li><b>Tus datos:</b> no pedimos datos de contacto en esta página; te escribimos por el mismo WhatsApp.</li>
+        <li><b>Tus datos:</b> reservar no pide datos personales. Al final puedes, si quieres, dejar un contacto para futuras pruebas — es opcional.</li>
         <li><b>Costos a la vista:</b> lo único que pagas es tu propio consumo en el café.</li>
       </ul>
     </div>
@@ -263,8 +280,18 @@
     <div class="done">
       <div class="em">☕✅</div>
       <h2>¡Cupo reservado!</h2>
-      <p class="sub" style="margin:8px auto 0;max-width:42ch">Te escribiremos por WhatsApp para confirmar la fecha, el café y la hora. Recuerda: <b>hoy no se te cobró nada</b>.</p>
+      <p class="sub" style="margin:8px auto 0;max-width:46ch">Te contactaremos <b>por el mismo medio por el que llegaste a esta página</b> para confirmar fecha, café y hora. Recuerda: <b>hoy no se te cobró nada</b>.</p>
     </div>
+    <div id="optinBox" style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px;text-align:left">
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px">Opcional · avísame de futuras sesiones</div>
+      <p style="font-size:12.5px;color:var(--muted);margin:0 0 11px">Dejar un contacto es <b>voluntario</b> y no hace falta para tu reserva. Lo usamos solo para avisarte de esta y próximas pruebas.</p>
+      <input id="optinContact" type="text" placeholder="Tu WhatsApp o correo" autocomplete="off"
+        style="width:100%;font-family:var(--body);font-size:14px;padding:11px 12px;border:1px solid var(--line-2);border-radius:9px;background:var(--card);color:var(--ink)">
+      <label class="consent" style="margin-top:11px"><input type="checkbox" id="optinConsent">
+        <span class="ct">Acepto que me contacten para esta y futuras pruebas de Sintonía.</span></label>
+      <button class="btn" id="optinBtn" disabled style="margin-top:4px">Registrarme para futuras pruebas</button>
+    </div>
+    <div id="optinDone" hidden style="margin-top:16px;text-align:center;color:var(--ok);font-weight:600">¡Listo! Te avisaremos 🙌</div>
   </section>
 
   <section class="section" id="doubtSec" hidden>
@@ -279,6 +306,36 @@
       <div><h2>Panel de control · H1 · WTP</h2><p class="sub" style="margin:0">Embudo en vivo · eventos anónimos</p></div>
       <span class="live" id="liveDot">● en vivo</span>
     </div>
+
+    <div class="gen">
+      <h3>🔗 Generador de enlaces</h3>
+      <p class="gsub">Arma el enlace con su identificador único. Escribe el nombre de la persona, o déjalo vacío para numerar por canal (p. ej. linkedin01, linkedin02…).</p>
+      <div class="grow">
+        <div>
+          <label>Canal</label>
+          <select id="genCanal">
+            <option value="wa_directo">WhatsApp directo</option>
+            <option value="wa_grupo">WhatsApp grupo</option>
+            <option value="com_remoto">Comunidades remoto</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="ig">Instagram</option>
+            <option value="referido">Referido</option>
+            <option value="interno">Interno (calibración)</option>
+          </select>
+        </div>
+        <div>
+          <label>Nombre de la persona (opcional)</label>
+          <input id="genNombre" type="text" placeholder="p. ej. Ana Pérez" autocomplete="off">
+        </div>
+      </div>
+      <label>Enlace · identificador: <span id="genUid">—</span></label>
+      <div class="out">
+        <input id="genLink" type="text" readonly>
+        <button class="copy" id="genCopy">Copiar y registrar</button>
+      </div>
+      <div class="genhist" id="genHist"></div>
+    </div>
+
     <div class="funnel" id="funnel"></div>
     <div class="kpis" id="kpis"></div>
     <div class="pverdict v-pe" id="pVerdict"><span class="vb">—</span><div>Cargando datos…</div></div>
@@ -298,7 +355,7 @@
 /* ===================================================================
  *  CONFIGURA AQUÍ  ·  pega la URL del Web App de Apps Script (/exec)
  * =================================================================== */
-const ENDPOINT = "https://script.google.com/macros/s/AKfycbxTvvfCIhuX7ycTOz5g-pTIhKMFbrOaa2CFdXDn4bscAD9N1dQ9foNYDI1C4M7RrvdD-Q/exec";  // p. ej. https://script.google.com/macros/s/AKfy.../exec
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbw7atq-EgvVx01UusXhVExdS_0-wxONNf7egV-9YPmiS_xCIezfdvFvgxa65u_prBOn6g/exec";  // p. ej. https://script.google.com/macros/s/AKfy.../exec
 /* =================================================================== */
 
 const KNOWN_SRC=["wa_directo","wa_grupo","com_remoto","linkedin","ig","referido"];
@@ -308,10 +365,29 @@ const QUALIFIED_SRC=KNOWN_SRC.includes(SRC);
 const PANEL=params.get("panel")==="1"||params.get("view")==="panel";
 const CONFIGURED=/script\.google\.com/.test(ENDPOINT);
 
+/* --- identificador único por usuario (para deserción real) --- */
+/* viene del enlace de invitación (&u=CODE); si falta, se genera y persiste por navegador */
+let UID=(params.get("u")||"").trim();
+if(!UID){
+  try{ UID=localStorage.getItem("sintonia_uid")||""; }catch(e){}
+  if(!UID){ UID="anon_"+Math.random().toString(36).slice(2,9);
+    try{ localStorage.setItem("sintonia_uid",UID); }catch(e){} }
+}
+
 /* --- registro de eventos anónimos (POST fire-and-forget) --- */
 function record(type,extra){
   if(!CONFIGURED) return;
-  const row={type,src:SRC,qualified_src:QUALIFIED_SRC,ts:Date.now(),...(extra||{})};
+  const row={type,src:SRC,qualified_src:QUALIFIED_SRC,uid:UID,ts:Date.now(),...(extra||{})};
+  try{
+    fetch(ENDPOINT,{method:"POST",mode:"no-cors",keepalive:true,
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(row)});
+  }catch(e){}
+}
+/* --- opt-in de contacto (va a una hoja SEPARADA de los eventos) --- */
+function recordContact(contact){
+  if(!CONFIGURED) return;
+  const row={kind:"contact",uid:UID,src:SRC,contact:contact,ts:Date.now()};
   try{
     fetch(ENDPOINT,{method:"POST",mode:"no-cors",keepalive:true,
       headers:{"Content-Type":"text/plain;charset=utf-8"},
@@ -357,6 +433,18 @@ confirmBtn.addEventListener("click",()=>{ record("sintonia_reservation_completed
 document.getElementById("doubtBtn").addEventListener("click",()=>{ record("charge_doubt"); show("doubtSec"); });
 document.getElementById("backFromDoubt").addEventListener("click",()=>show("reserveSec"));
 
+/* --- opt-in de futuras pruebas (cierre) --- */
+const oC=document.getElementById("optinContact"), oK=document.getElementById("optinConsent"), oB=document.getElementById("optinBtn");
+function syncOpt(){ oB.disabled=!(oK.checked && oC.value.trim().length>=5); }
+oC.addEventListener("input",syncOpt);
+oK.addEventListener("change",syncOpt);
+oB.addEventListener("click",()=>{
+  recordContact(oC.value.trim());
+  record("registro_opt_in");            // evento anónimo para el embudo (sin el contacto)
+  document.getElementById("optinBox").hidden=true;
+  document.getElementById("optinDone").hidden=false;
+});
+
 /* --- tema --- */
 const root=document.documentElement;
 document.getElementById("themeBtn").addEventListener("click",()=>{
@@ -372,6 +460,68 @@ function panelLayout(){
   document.querySelectorAll(".section").forEach(s=>{ if(s.id!=="panelSec") s.hidden=true; });
   document.getElementById("panelSec").hidden=false;
   document.getElementById("pRefresh").addEventListener("click",panelFetch);
+  initGenerator();
+}
+
+/* ---------- generador de enlaces UTM + uid ---------- */
+const GEN_KEY="sintonia_gen_history";
+function genHistList(){ try{ return JSON.parse(localStorage.getItem(GEN_KEY))||[]; }catch(e){ return []; } }
+function genHistSave(a){ try{ localStorage.setItem(GEN_KEY,JSON.stringify(a)); }catch(e){} }
+function slug(s){ return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()
+  .replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,24); }
+function usedUids(){
+  var set=new Set();
+  (lastRows||[]).forEach(function(r){ if(r.uid) set.add(String(r.uid)); });
+  genHistList().forEach(function(h){ set.add(h.uid); });
+  return set;
+}
+function nextSeq(channel){
+  var re=new RegExp("^"+channel+"(\\d+)$"), max=0;
+  usedUids().forEach(function(u){ var m=re.exec(u); if(m){ var n=+m[1]; if(n>max) max=n; } });
+  var n=max+1; return channel+(n<10?("0"+n):(""+n));
+}
+function baseUrl(){ return location.origin+location.pathname; }
+function genPreview(){
+  var nombre=document.getElementById("genNombre").value.trim();
+  var canal=document.getElementById("genCanal").value;
+  var uid=nombre?slug(nombre):nextSeq(canal);
+  var link=baseUrl()+"?utm_source="+encodeURIComponent(canal)+"&u="+encodeURIComponent(uid);
+  document.getElementById("genUid").textContent=uid||"—";
+  document.getElementById("genLink").value=link;
+  return {canal:canal,uid:uid,link:link};
+}
+function copyText(t,btn){
+  var ok=function(){ if(btn){ var o=btn.textContent; btn.textContent="¡Copiado!"; setTimeout(function(){ btn.textContent=o; },1400); } };
+  var fb=function(){ var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); }catch(e){} document.body.removeChild(ta); ok(); };
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok,fb); else fb(); }
+  catch(e){ fb(); }
+}
+function renderHist(){
+  var el=document.getElementById("genHist");
+  var h=genHistList().slice().reverse().slice(0,15);
+  if(!h.length){ el.innerHTML=""; return; }
+  var b='<table><tr><th>ID</th><th>Canal</th><th></th></tr>';
+  h.forEach(function(x){ b+='<tr><td>'+x.uid+'</td><td>'+x.canal+'</td><td><button class="cp" data-link="'+x.link.replace(/"/g,"&quot;")+'">Copiar</button></td></tr>'; });
+  b+='</table>';
+  el.innerHTML=b;
+  el.querySelectorAll(".cp").forEach(function(btn){ btn.addEventListener("click",function(){ copyText(btn.getAttribute("data-link"),btn); }); });
+}
+function initGenerator(){
+  document.getElementById("genCanal").addEventListener("change",genPreview);
+  document.getElementById("genNombre").addEventListener("input",genPreview);
+  document.getElementById("genCopy").addEventListener("click",function(){
+    var g=genPreview();
+    if(!g.uid) return;
+    var list=genHistList();
+    if(!list.some(function(x){ return x.uid===g.uid && x.canal===g.canal; })){
+      list.push({uid:g.uid,canal:g.canal,link:g.link,ts:Date.now()}); genHistSave(list);
+    }
+    copyText(g.link,document.getElementById("genCopy"));
+    document.getElementById("genNombre").value="";
+    renderHist(); genPreview();
+  });
+  renderHist(); genPreview();
 }
 function panelMsg(cls,txt){
   document.getElementById("liveDot").className="live off";
@@ -390,13 +540,18 @@ function panelFetch(){
   }).catch(()=>{ if(!lastRows.length) panelMsg("v-it","No se pudo leer el endpoint desde el navegador. Revisa que el Web App esté desplegado con acceso «Cualquier usuario», o consulta los datos directamente en tu hoja de Google."); });
 }
 function renderPanel(rows){
-  const c=t=>rows.filter(r=>r.type===t).length;
-  const pv=c("sintonia_page_view"), sp=c("screener_pass"),
-        cta=c("cta_clicked"), res=c("sintonia_reservation_completed"), doubt=c("charge_doubt");
-  const qv=rows.filter(r=>r.type==="screener_pass"&&(r.qualified_src===true||r.qualified_src==="TRUE")).length;
+  /* deserción real: se cuenta por USUARIO único (uid), no por evento */
+  const uid=r=>r.uid||("t"+r.ts);
+  const usersWith=t=>{ const s=new Set(); rows.forEach(r=>{ if(r.type===t) s.add(uid(r)); }); return s; };
+  const pv=usersWith("sintonia_page_view").size, sp=usersWith("screener_pass").size,
+        cta=usersWith("cta_clicked").size, res=usersWith("sintonia_reservation_completed").size,
+        optin=usersWith("registro_opt_in").size;
+  const doubt=rows.filter(r=>r.type==="charge_doubt").length;
+  const qvSet=new Set(); rows.forEach(r=>{ if(r.type==="screener_pass"&&(r.qualified_src===true||r.qualified_src==="TRUE")) qvSet.add(uid(r)); });
+  const qv=qvSet.size;
   const conv=qv>0?res/qv*100:0;
   document.getElementById("funnel").innerHTML=[
-    ["Visitas",pv,""],
+    ["Visitas únicas",pv,""],
     ["Califican",sp,pv?Math.round(sp/pv*100)+"%":""],
     ["Clic reservar",cta,sp?Math.round(cta/sp*100)+"%":""],
     ["Reservan",res,cta?Math.round(res/cta*100)+"%":""]
@@ -422,13 +577,13 @@ function renderPanel(rows){
   let body='<tr><th>Fuente</th><th class="num">Visitas</th><th class="num">Califican</th><th class="num">Reservan</th></tr>';
   srcs.forEach(s=>{
     const rr=rows.filter(r=>r.src===s);
-    const p=rr.filter(r=>r.type==="sintonia_page_view").length;
-    const q=rr.filter(r=>r.type==="screener_pass").length;
-    const re=rr.filter(r=>r.type==="sintonia_reservation_completed").length;
+    const uset=t=>new Set(rr.filter(r=>r.type===t).map(r=>r.uid||("t"+r.ts))).size;
+    const p=uset("sintonia_page_view"), q=uset("screener_pass"), re=uset("sintonia_reservation_completed");
     if(p||q||re) body+=`<tr class="${KNOWN_SRC.includes(s)?"":"unk"}"><td>${s}${KNOWN_SRC.includes(s)?"":" · no calificada"}</td><td class="num">${p}</td><td class="num">${q}</td><td class="num">${re}</td></tr>`;
   });
   document.getElementById("bySrc").innerHTML=body;
-  document.getElementById("pNote").innerHTML=`Los conteos son <b>eventos</b>, no personas únicas — como el canal principal es WhatsApp directo, concilia la unicidad con tus envíos. Denominador del umbral = <b>visitas calificadas</b> (canal etiquetado + pasa el screener). Última lectura: ${new Date().toLocaleTimeString("es-CO")}.`;
+  document.getElementById("pNote").innerHTML=`Conteos por <b>usuario único</b> (identificador <code>uid</code> del enlace de invitación) — así la deserción del embudo es real, no logs de sesión. Denominador del umbral = <b>visitas calificadas únicas</b> (canal etiquetado + pasa el screener). Opt-ins a futuras pruebas: <b>${optin}</b>. Última lectura: ${new Date().toLocaleTimeString("es-CO")}.`;
+  if(document.getElementById("genLink")) genPreview();   // mantiene la numeración por canal al día
 }
 if(PANEL){ panelLayout(); panelFetch(); setInterval(panelFetch,10000); }
 </script>
