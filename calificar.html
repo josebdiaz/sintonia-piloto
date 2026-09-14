@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sintoniza tu experiencia</title>
+<meta property="og:title" content="Sintoniza tu experiencia · Sintonía">
+<meta property="og:description" content="Cuéntanos qué tal estuvo el plan. Toma 30 segundos y es anónimo.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f4f1ec; --card:#ffffff; --card-2:#faf8f4; --ink:#211f1a; --muted:#6a655c;
+    --line:#e7e1d7; --line-2:#d6cec1; --pine:#0f6e63; --pine-ink:#0a4f47; --pine-soft:#e0efec;
+    --honey:#c67a1e; --honey-soft:#f7ebd8; --ok:#1f8a52;
+    --shadow:0 1px 2px rgba(33,31,26,.05),0 12px 30px -18px rgba(33,31,26,.28);
+    --disp:"Bricolage Grotesque",Georgia,serif; --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  :root[data-theme="dark"]{
+    --bg:#151310;--card:#1e1b17;--card-2:#191612;--ink:#efeae1;--muted:#a49d90;--line:#2c281f;--line-2:#3a3529;
+    --pine:#41b9a9;--pine-ink:#8fe0d4;--pine-soft:#12302b;--honey:#dd9c44;--honey-soft:#2f2513;--ok:#42b877;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 36px -20px rgba(0,0,0,.85);}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:440px;margin:0 auto;padding:22px 18px 56px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .logo{display:flex;align-items:center;gap:9px;font-family:var(--disp);font-weight:700;font-size:16px}
+  .logo .mark{width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 50% 50%,transparent 4px,var(--pine) 4.5px 6px,transparent 6.5px 9px,var(--honey) 9.5px 11px,transparent 11.5px);border:1.5px solid var(--line-2)}
+  .theme-btn{border:1px solid var(--line-2);background:var(--card);color:var(--muted);font-family:var(--body);font-size:12px;border-radius:20px;padding:5px 12px;cursor:pointer}
+
+  .hero{text-align:center;margin:8px 0 20px}
+  .kick{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--pine);margin:0 0 8px;font-weight:600}
+  h1{font-family:var(--disp);font-weight:700;font-size:28px;letter-spacing:-.02em;margin:0 0 8px;text-wrap:balance}
+  .hero p{color:var(--muted);font-size:14px;margin:0}
+
+  .q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;box-shadow:var(--shadow);margin-bottom:14px}
+  .q .qt{font-family:var(--disp);font-weight:600;font-size:16.5px;margin:0 0 14px}
+  .sig{display:flex;gap:8px;align-items:flex-end;height:80px}
+  .sig button{flex:1;background:var(--card-2);border:1px solid var(--line-2);border-radius:9px;cursor:pointer;
+    display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;font-family:var(--disp);font-weight:700;font-size:13px;color:var(--muted);
+    transition:transform .08s ease, background .12s, color .12s}
+  .sig button:hover{border-color:var(--pine)}
+  .sig button.on{background:var(--pine);color:#fff;border-color:var(--pine)}
+  .sig button.pop{transform:translateY(-4px) scale(1.04)}
+  .sig button:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  .scale{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:8px}
+
+  .word{margin-top:2px}
+  .word input{width:100%;font-family:var(--body);font-size:15px;padding:11px 13px;border:1px solid var(--line-2);border-radius:10px;background:var(--card);color:var(--ink)}
+  .word input:focus{outline:2px solid var(--pine);border-color:var(--pine)}
+
+  .meter{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+  .meter .lbl{font-size:12px;color:var(--muted);white-space:nowrap}
+  .bars{flex:1;display:flex;gap:4px}
+  .bars span{flex:1;height:10px;border-radius:3px;background:var(--line-2)}
+  .bars span.on{background:var(--honey)}
+  .meter .cnt{font-family:var(--disp);font-weight:700;font-size:14px;color:var(--pine-ink);white-space:nowrap}
+
+  .btn{font-family:var(--disp);font-weight:600;font-size:16px;cursor:pointer;border:none;background:var(--pine);color:#fff;border-radius:12px;padding:15px;width:100%}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .hint{font-size:12px;color:var(--muted);text-align:center;margin:10px 0 0}
+
+  .done{text-align:center;padding:20px 8px}
+  .done .radio{font-size:56px;line-height:1}
+  .done h2{font-family:var(--disp);font-weight:700;font-size:24px;color:var(--ok);margin:12px 0 6px}
+  .done p{color:var(--muted);font-size:14px;margin:0}
+  .foot{margin-top:20px;font-size:11.5px;color:var(--muted);text-align:center;line-height:1.6}
+  /* panel */
+  .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;box-shadow:var(--shadow)}
+  .kpi .kl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .kpi .kv{font-family:var(--disp);font-weight:700;font-size:23px;margin-top:3px}
+  .kpi .kv small{font-size:13px;color:var(--muted);font-weight:500}
+  .dim{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .dim .dt{font-family:var(--disp);font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:baseline}
+  .dim .dt .pill{font-family:var(--body);font-size:13px;color:var(--pine-ink);font-weight:600}
+  .avgbars{display:flex;gap:6px;align-items:flex-end;height:44px;margin:12px 0 8px}
+  .avgbars span{flex:1;background:var(--card-2);border:1px solid var(--line-2);border-radius:6px}
+  .avgbars span:nth-child(1){height:44%}.avgbars span:nth-child(2){height:58%}.avgbars span:nth-child(3){height:72%}.avgbars span:nth-child(4){height:86%}.avgbars span:nth-child(5){height:100%}
+  .avgbars span.on{background:var(--pine);border-color:var(--pine)}
+  .dist{display:flex;gap:6px}
+  .dist .d{flex:1;text-align:center;font-size:11px;color:var(--muted)}
+  .dist .d b{display:block;font-family:var(--disp);font-weight:700;font-size:15px;color:var(--ink)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .chip{background:var(--honey-soft);color:var(--honey);border-radius:16px;padding:4px 11px;font-size:12.5px}
+  .chips .empty{color:var(--muted);font-size:12.5px}
+  [hidden]{display:none!important}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="logo"><span class="mark"></span> Sintonía</div>
+    <button class="theme-btn" id="themeBtn">◐ tema</button>
+  </div>
+
+  <div id="form">
+    <div class="hero">
+      <p class="kick">📻 30 segundos · anónimo</p>
+      <h1>Sintoniza tu experiencia</h1>
+      <p>Sube la señal según qué tanto. No hay respuestas buenas ni malas.</p>
+    </div>
+
+    <div class="meter">
+      <span class="lbl">Tu señal</span>
+      <div class="bars" id="progress"><span></span><span></span><span></span></div>
+      <span class="cnt" id="cnt">0/3</span>
+    </div>
+
+    <div class="q" data-q="agrado">
+      <p class="qt">¿Qué tal estuvo el plan?</p>
+      <div class="sig">
+        <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
+      </div>
+      <div class="scale"><span>nada</span><span>muchísimo</span></div>
+    </div>
+
+    <div class="q" data-q="comodidad">
+      <p class="qt">¿Qué tan cómod@ te sentiste?</p>
+      <div class="sig">
+        <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
+      </div>
+      <div class="scale"><span>incómod@</span><span>muy a gusto</span></div>
+    </div>
+
+    <div class="q" data-q="facilidad">
+      <p class="qt">¿Fue fácil participar, sin sentir presión?</p>
+      <div class="sig">
+        <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
+      </div>
+      <div class="scale"><span>me costó</span><span>muy fácil</span></div>
+    </div>
+
+    <div class="q word">
+      <p class="qt">Una palabra para el plan <span style="font-weight:400;color:var(--muted);font-size:13px">(opcional)</span></p>
+      <input type="text" id="palabra" maxlength="40" placeholder="p. ej. tranqui, chévere, raro…" autocomplete="off">
+    </div>
+
+    <button class="btn" id="send" disabled>Enviar mi señal</button>
+    <p class="hint">Tu respuesta es voluntaria y anónima. Nos ayuda a mejorar el plan, no a evaluarte a ti.</p>
+  </div>
+
+  <div id="thanks" hidden>
+    <div class="done">
+      <div class="radio">📻✨</div>
+      <h2>¡Gracias por sintonizar!</h2>
+      <p>Recibimos tu señal. Nos ayuda un montón a afinar el próximo plan.</p>
+    </div>
+  </div>
+
+  <!-- PANEL (?panel=1) -->
+  <div id="panel" hidden>
+    <div class="hero">
+      <p class="kick">📊 Panel · calificaciones anónimas</p>
+      <h1>Cómo sintonizó el grupo</h1>
+      <p id="pcount">Cargando…</p>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div id="dims"></div>
+    <div class="dim"><div class="dt">Palabras para el plan</div><div class="chips" id="chips"></div></div>
+    <button class="btn" id="prefresh" style="background:transparent;color:var(--pine-ink);border:1.5px solid var(--line-2)">↻ actualizar</button>
+    <p class="foot" id="pnote"></p>
+  </div>
+
+  <p class="foot">Prueba piloto · Proyecto <b>Sintonía</b> · Universidad Icesi</p>
+</div>
+
+<script>
+"use strict";
+const ENDPOINT="https://script.google.com/macros/s/AKfycbyG1i-yLsBQTtz6XxQDX0iY_JKfrm9kfVb3E9KactGnlT8q96RU_htMgqzxXJvgB_5W_g/exec";   // termina en /exec (mismo Web App del piloto)
+const CONFIGURED=/script\.google\.com/.test(ENDPOINT);
+const params=new URLSearchParams(location.search);
+const PANEL=params.get("panel")==="1"||params.get("view")==="panel";
+const SRC=(params.get("utm_source")||"desconocido").toLowerCase();
+let UID=(params.get("u")||"").trim();
+if(!UID){ try{UID=localStorage.getItem("sintonia_uid")||"";}catch(e){} if(!UID){UID="anon_"+Math.random().toString(36).slice(2,9);try{localStorage.setItem("sintonia_uid",UID);}catch(e){}} }
+
+const ans={};
+document.querySelectorAll(".q[data-q]").forEach(q=>{
+  const key=q.getAttribute("data-q");
+  q.querySelectorAll(".sig button").forEach(b=>{
+    b.addEventListener("click",()=>{
+      const v=+b.getAttribute("data-v");
+      ans[key]=v;
+      q.querySelectorAll(".sig button").forEach(o=>{
+        const ov=+o.getAttribute("data-v");
+        o.classList.toggle("on", ov<=v);
+      });
+      b.classList.add("pop"); setTimeout(()=>b.classList.remove("pop"),160);
+      sync();
+    });
+  });
+});
+function sync(){
+  const n=["agrado","comodidad","facilidad"].filter(k=>ans[k]).length;
+  document.getElementById("cnt").textContent=n+"/3";
+  document.querySelectorAll("#progress span").forEach((s,i)=>s.classList.toggle("on", i<n));
+  document.getElementById("send").disabled = n<3;
+}
+document.getElementById("send").addEventListener("click",()=>{
+  const row={kind:"rating",uid:UID,src:SRC,agrado:ans.agrado,comodidad:ans.comodidad,facilidad:ans.facilidad,
+    palabra:(document.getElementById("palabra").value||"").trim(),ts:Date.now()};
+  if(CONFIGURED){ try{ fetch(ENDPOINT,{method:"POST",mode:"no-cors",keepalive:true,
+    headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(row)}); }catch(e){} }
+  document.getElementById("form").hidden=true;
+  document.getElementById("thanks").hidden=false;
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+const root=document.documentElement;
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const cur=root.getAttribute("data-theme");
+  root.setAttribute("data-theme", cur==="dark"?"light":"dark");
+});
+
+/* ---------- PANEL ---------- */
+const DIMS=[["agrado","¿Qué tal el plan?"],["comodidad","Comodidad"],["facilidad","Fue fácil participar"]];
+function avg(a){ return a.length? a.reduce((x,y)=>x+y,0)/a.length : null; }
+function renderRatings(rows){
+  rows=(rows||[]).filter(r=>r&&(r.agrado||r.comodidad||r.facilidad));
+  const n=rows.length;
+  document.getElementById("pcount").textContent = n? (n+" respuesta"+(n===1?"":"s")) : "Aún no hay respuestas.";
+  // KPIs
+  const means={};
+  DIMS.forEach(([k])=>{ means[k]=avg(rows.map(r=>+r[k]).filter(v=>v>=1&&v<=5)); });
+  document.getElementById("kpis").innerHTML=[
+    ["Respuestas", n],
+    ["Agrado", means.agrado],["Comodidad", means.comodidad],["Facilidad", means.facilidad]
+  ].map((k,i)=>`<div class="kpi"><div class="kl">${k[0]}</div><div class="kv">${i===0?k[1]:(k[1]==null?"—":k[1].toFixed(1)+' <small>/5</small>')}</div></div>`).join("");
+  // dims
+  document.getElementById("dims").innerHTML=DIMS.map(([k,label])=>{
+    const vals=rows.map(r=>+r[k]).filter(v=>v>=1&&v<=5);
+    const m=avg(vals); const rounded=m==null?0:Math.round(m);
+    const bars=[1,2,3,4,5].map(i=>`<span class="${i<=rounded?"on":""}"></span>`).join("");
+    const dist=[1,2,3,4,5].map(i=>{const c=vals.filter(v=>v===i).length;return `<div class="d"><b>${c}</b>${i}</div>`;}).join("");
+    return `<div class="dim"><div class="dt">${label}<span class="pill">${m==null?"—":m.toFixed(1)+" /5"}</span></div>
+      <div class="avgbars">${bars}</div><div class="dist">${dist}</div></div>`;
+  }).join("");
+  // palabras
+  const words=rows.map(r=>(r.palabra||"").trim()).filter(Boolean);
+  document.getElementById("chips").innerHTML = words.length? words.map(w=>`<span class="chip">${w.replace(/</g,"&lt;")}</span>`).join("") : '<span class="empty">Sin palabras todavía.</span>';
+  document.getElementById("pnote").innerHTML=`Calificaciones anónimas y voluntarias · n pequeño (piloto): son señal <b>Emergente</b>, no concluyente · complementan la observación del microencuentro, no la reemplazan. Última lectura: ${new Date().toLocaleTimeString("es-CO")}.`;
+}
+function fetchRatings(){
+  if(!CONFIGURED){ document.getElementById("pcount").textContent="Falta configurar el ENDPOINT (ver la guía)."; return; }
+  fetch(ENDPOINT+"?data=ratings",{method:"GET"}).then(r=>r.json()).then(j=>renderRatings(j.ratings||[]))
+    .catch(()=>{ document.getElementById("pcount").textContent="No se pudo leer el endpoint. Revisa el acceso «Cualquier usuario» o consulta la hoja de Google."; });
+}
+if(PANEL){
+  document.getElementById("form").hidden=true;
+  document.getElementById("panel").hidden=false;
+  document.getElementById("prefresh").addEventListener("click",fetchRatings);
+  fetchRatings();
+  setInterval(fetchRatings,15000);
+}
+</script>
+</body>
+</html>
