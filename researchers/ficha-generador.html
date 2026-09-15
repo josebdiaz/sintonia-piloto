@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&display=swap">
+<title>Ficha de llegada H2</title>
+<style>
+  :root{
+    --bg:#f4f1ec; --card:#ffffff; --card-2:#faf8f4; --ink:#211f1a; --muted:#6a655c;
+    --line:#e7e1d7; --line-2:#d6cec1;
+    --pine:#0f6e63; --pine-ink:#0a4f47; --pine-soft:#e0efec;
+    --honey:#c67a1e; --honey-soft:#f7ebd8;
+    --stop:#b23b2e; --stop-soft:#f7e4e1;
+    --shadow:0 1px 2px rgba(33,31,26,.05), 0 12px 30px -18px rgba(33,31,26,.28);
+    --disp:"Bricolage Grotesque",Georgia,serif;
+    --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  :root[data-theme="dark"]{
+    --bg:#151310; --card:#1e1b17; --card-2:#191612; --ink:#efeae1; --muted:#a49d90;
+    --line:#2c281f; --line-2:#3a3529;
+    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
+    --honey:#dd9c44; --honey-soft:#2f2513;
+    --stop:#e07567; --stop-soft:#331714;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 36px -20px rgba(0,0,0,.85);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:26px 20px 64px}
+  .head{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-end;margin-bottom:20px}
+  .eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--pine);margin:0 0 8px}
+  h1{font-family:var(--disp);font-weight:700;font-size:28px;letter-spacing:-.025em;margin:0;line-height:1.05}
+  .head .sub{color:var(--muted);font-size:13.5px;margin:8px 0 0;max-width:56ch}
+  .theme-btn{border:1px solid var(--line-2);background:var(--card);color:var(--muted);font-family:var(--body);font-size:12px;border-radius:20px;padding:6px 13px;cursor:pointer;white-space:nowrap}
+  .theme-btn:hover{color:var(--ink);border-color:var(--ink)}
+
+  /* gate */
+  .gate{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--honey);border-radius:12px;padding:16px 20px;box-shadow:var(--shadow);margin-bottom:18px}
+  .gate h2{font-family:var(--disp);font-weight:600;font-size:15px;margin:0 0 4px}
+  .gate .gsub{font-size:12px;color:var(--muted);margin:0 0 12px}
+  .chk{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:4px 18px}
+  .chk li{display:flex;gap:10px;align-items:flex-start;padding:6px 4px;cursor:pointer;font-size:13px}
+  .chk input{margin-top:2px;width:16px;height:16px;accent-color:var(--pine);flex:none;cursor:pointer}
+  .chk .flag{font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--stop);font-weight:700;border:1px solid var(--stop);border-radius:4px;padding:0 5px;margin-right:6px}
+  .gatetag{margin-top:12px;display:inline-block;font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:20px}
+  .gatetag.no{background:var(--honey-soft);color:var(--honey)}
+  .gatetag.yes{background:var(--pine-soft);color:var(--pine-ink)}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+  .panel > h2{font-family:var(--disp);font-weight:600;font-size:16px;margin:0;padding:15px 20px;border-bottom:1px solid var(--line);background:var(--card-2)}
+  .panel .body{padding:18px 20px}
+  .field{margin-bottom:14px}
+  .field:last-child{margin-bottom:0}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:5px}
+  .field label .opt{color:var(--muted);font-weight:400}
+  .field input,.field textarea{width:100%;font-family:var(--body);font-size:14px;padding:9px 11px;border:1px solid var(--line-2);border-radius:9px;background:var(--card);color:var(--ink)}
+  .field textarea{min-height:52px;resize:vertical;line-height:1.45}
+  .field input:focus,.field textarea:focus{outline:2px solid var(--pine);outline-offset:0;border-color:var(--pine)}
+
+  /* preview */
+  .preview{position:sticky;top:16px}
+  .ficha{font-size:13.5px}
+  .ficha .ftitle{font-family:var(--disp);font-weight:700;font-size:18px;letter-spacing:-.01em;margin:0 0 2px}
+  .ficha .fkick{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--pine);margin:0 0 14px}
+  .ficha .blk{display:flex;gap:11px;padding:11px 0;border-top:1px solid var(--line)}
+  .ficha .blk:first-of-type{border-top:none}
+  .ficha .ic{font-size:16px;line-height:1.3;flex:none;width:20px;text-align:center}
+  .ficha .bt{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 2px}
+  .ficha .bv{margin:0;white-space:pre-wrap;color:var(--ink)}
+  .ficha .bv.ph{color:var(--muted);font-style:italic}
+  .safe{margin-top:14px;background:var(--pine-soft);border-radius:9px;padding:10px 13px;font-size:12px;color:var(--pine-ink)}
+  .copyrow{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .btn{font-family:var(--disp);font-weight:600;font-size:14px;cursor:pointer;border:none;background:var(--pine);color:#fff;border-radius:10px;padding:11px 18px}
+  .btn:hover{opacity:.93}
+  .btn.done{background:var(--card);color:var(--pine-ink);border:1px solid var(--pine)}
+  .copyhint{font-size:11.5px;color:var(--muted)}
+
+  .foot{margin-top:22px;font-size:12px;color:var(--muted);line-height:1.6;text-align:center}
+  .foot b{color:var(--ink)}
+  [hidden]{display:none!important}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:760px){.cols{grid-template-columns:1fr}.preview{position:static}.chk{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="rnav" aria-label="Herramientas de investigadores">
+  <div class="rnav-in">
+    <a class="rnav-brand" href="./index.html"><span class="rnav-dot"></span> Sintonía · Investigadores</a>
+    <button class="rnav-toggle" id="rnavToggle" aria-label="Abrir menú" aria-expanded="false">&#9776;</button>
+    <div class="rnav-links" id="rnavLinks">
+      <a href="./index.html" data-page="index.html">Home</a>
+      <a href="./scorecards.html" data-page="scorecards.html">Scorecards</a>
+      <a href="./ejecucion.html" data-page="ejecucion.html">Ejecución</a>
+      <a href="./registro-h3.html" data-page="registro-h3.html">Registro H3</a>
+      <a href="./ficha-generador.html" data-page="ficha-generador.html">Ficha H2</a>
+      <a href="./guia-hosting.md" data-page="guia-hosting.md">Guía hosting</a>
+      <a href="../index.html" class="rnav-out">Sitio público &#8599;</a>
+    </div>
+  </div>
+</nav>
+<style>
+  .rnav{background:var(--card,#fff);border-bottom:1px solid var(--line,#e4ded4);position:sticky;top:0;z-index:80}
+  .rnav-in{max-width:900px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .rnav-brand{font-family:var(--disp,Georgia,serif);font-weight:700;font-size:14.5px;color:var(--ink,#211f1a);text-decoration:none;display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .rnav-dot{width:9px;height:9px;border-radius:50%;background:var(--pine,#0f6e63);flex:none}
+  .rnav-links{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center}
+  .rnav-links a{font-family:var(--body,sans-serif);font-size:13px;color:var(--muted,#6a655c);text-decoration:none;padding:4px 1px;border-bottom:2px solid transparent;white-space:nowrap}
+  .rnav-links a:hover{color:var(--ink,#211f1a)}
+  .rnav-links a.active{color:var(--pine-ink,#0a4f47);border-color:var(--pine,#0f6e63);font-weight:600}
+  .rnav-links a.rnav-out{color:var(--honey,#c67a1e)}
+  .rnav-toggle{display:none;border:1px solid var(--line-2,#d6cec1);background:none;border-radius:8px;padding:5px 10px;font-size:15px;cursor:pointer;color:var(--ink,#211f1a)}
+  @media (max-width:760px){
+    .rnav-toggle{display:inline-flex}
+    .rnav-links{display:none;flex-direction:column;width:100%;gap:10px;padding-top:10px;align-items:flex-start}
+    .rnav-links.open{display:flex}
+  }
+</style>
+<script>
+(function(){
+  var p=location.pathname.split("/").pop()||"index.html";
+  document.querySelectorAll(".rnav-links a[data-page]").forEach(function(a){
+    if(a.getAttribute("data-page")===p) a.classList.add("active");
+  });
+  var t=document.getElementById("rnavToggle"), l=document.getElementById("rnavLinks");
+  if(t) t.addEventListener("click",function(){
+    var open=l.classList.toggle("open");
+    t.setAttribute("aria-expanded",open?"true":"false");
+  });
+})();
+</script>
+
+<div class="wrap">
+  <div class="head">
+    <div>
+      <p class="eyebrow">Experimento H2 · Llegada autónoma · última milla</p>
+      <h1>Ficha de llegada</h1>
+      <p class="sub">Llena los datos del lugar y la actividad; a la derecha se arma la ficha que envías al participante. Objetivo: que la información reduzca la incertidumbre lo suficiente para superar la última milla — sin acompañarlo.</p>
+    </div>
+    <button class="theme-btn" id="themeBtn">◐ tema</button>
+  </div>
+
+  <div class="gate">
+    <h2>Antes de usar · Gate de actividad (sección 3.2)</h2>
+    <p class="gsub">La ficha solo entra a prueba si el lugar cumple TODO esto. La seguridad es excluyente: una ausencia crítica elimina la candidata.</p>
+    <ul class="chk" id="gate">
+      <li><input type="checkbox" data-g="1"><span><span class="flag">excluyente</span>Seguridad completa: lugar público/institucional, reglas, salida, contacto, protocolo.</span></li>
+      <li><input type="checkbox" data-g="2"><span>Costo total conocido y visible antes de ir.</span></li>
+      <li><input type="checkbox" data-g="3"><span>Acceso documentado: ruta, transbordos, parqueadero, foto, hora pico y plan B.</span></li>
+      <li><input type="checkbox" data-g="4"><span>Duración: actividad 60–120 min; puerta a puerta ≤ 180 min.</span></li>
+      <li><input type="checkbox" data-g="5"><span>Actividad concreta y cohorte 4–8.</span></li>
+      <li><input type="checkbox" data-g="6"><span>Responsable remoto y contacto del venue probados.</span></li>
+    </ul>
+    <span class="gatetag no" id="gatetag">◻ Gate incompleto</span>
+  </div>
+
+  <div class="cols">
+    <!-- FORM -->
+    <div class="panel">
+      <h2>Datos del lugar y la actividad</h2>
+      <div class="body" id="form">
+        <div class="field"><label>Actividad</label><input id="f_act" type="text" placeholder="p. ej. Café-coworking en grupo"></div>
+        <div class="field"><label>Lugar / venue</label><input id="f_lugar" type="text" placeholder="Nombre del café o sitio"></div>
+        <div class="field"><label>Dirección</label><input id="f_dir" type="text" placeholder="Calle, número, barrio, ciudad"></div>
+        <div class="field"><label>Cómo llegar <span class="opt">· transporte y transbordos</span></label><textarea id="f_ruta" placeholder="Ruta sugerida, buses/estaciones, transbordos, referencia de bajada"></textarea></div>
+        <div class="field"><label>Parqueadero <span class="opt">· si aplica</span></label><input id="f_parq" type="text" placeholder="Dónde parquear, costo aprox., alternativas"></div>
+        <div class="field"><label>Punto de acceso / referencia visual</label><input id="f_acc" type="text" placeholder="Entrada exacta, esquina, local, seña visible (adjunta foto por aparte)"></div>
+        <div class="field"><label>Fecha y hora</label><input id="f_cuando" type="text" placeholder="p. ej. jueves 25, 4:00 p. m."></div>
+        <div class="field"><label>Margen y hora pico</label><input id="f_pico" type="text" placeholder="p. ej. llega 10 min antes; evita 5–6 p. m."></div>
+        <div class="field"><label>Duración estimada puerta a puerta</label><input id="f_dur" type="text" placeholder="p. ej. ~2 h en total"></div>
+        <div class="field"><label>Plan B <span class="opt">· si algo falla</span></label><textarea id="f_planb" placeholder="Qué hacer si no encuentra el sitio, si llueve, si se retrasa…"></textarea></div>
+        <div class="field"><label>Contacto de contingencia</label><input id="f_contacto" type="text" placeholder="Nombre + WhatsApp de quien responde en el momento"></div>
+        <div class="field"><label>Recuerda <span class="opt">· qué llevar / notas</span></label><input id="f_recuerda" type="text" placeholder="p. ej. lleva tu computador y audífonos"></div>
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="panel preview">
+      <h2>Vista para el participante</h2>
+      <div class="body">
+        <div class="ficha" id="ficha">
+          <p class="fkick">📍 Tu ficha de llegada</p>
+          <p class="ftitle" id="p_act">Café-coworking en grupo</p>
+          <div class="blk"><span class="ic">📍</span><div><p class="bt">Dónde</p><p class="bv" id="p_donde"></p></div></div>
+          <div class="blk"><span class="ic">🚌</span><div><p class="bt">Cómo llegar</p><p class="bv" id="p_ruta"></p></div></div>
+          <div class="blk"><span class="ic">🅿️</span><div><p class="bt">Parqueadero</p><p class="bv" id="p_parq"></p></div></div>
+          <div class="blk"><span class="ic">🕒</span><div><p class="bt">Cuándo</p><p class="bv" id="p_cuando"></p></div></div>
+          <div class="blk"><span class="ic">🧭</span><div><p class="bt">Si algo pasa</p><p class="bv" id="p_planb"></p></div></div>
+          <div class="blk"><span class="ic">🎒</span><div><p class="bt">Recuerda</p><p class="bv" id="p_recuerda"></p></div></div>
+        </div>
+        <div class="safe">Puedes salir cuando quieras y escribirnos si necesitas algo. Vas por tu cuenta — sin que nadie te siga el rastro.</div>
+        <div class="copyrow">
+          <button class="btn" id="copyBtn">Copiar ficha para WhatsApp</button>
+          <span class="copyhint">Se copia en texto plano, lista para pegar.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">
+    Experimento H2 · Proyecto <b>Sintonía</b> · La ficha se prueba con <b>4 usuarios Mateo situacionales</b>, mismo destino y misma ventana. Sin rastreo continuo; responsable remoto y contacto del venue probados antes de ejecutar.
+  </p>
+</div>
+
+<script>
+"use strict";
+const KEY="sintonia_ficha_h2";
+const FIELDS=["f_act","f_lugar","f_dir","f_ruta","f_parq","f_acc","f_cuando","f_pico","f_dur","f_planb","f_contacto","f_recuerda"];
+let store={};
+try{ store=JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ store={}; }
+
+function val(id){ return (document.getElementById(id).value||"").trim(); }
+function setPH(el,text,ph){ el.textContent=text||ph; el.classList.toggle("ph",!text); }
+
+function render(){
+  const act=val("f_act")||"la actividad";
+  document.getElementById("p_act").textContent=val("f_act")||"Café-coworking en grupo";
+
+  const lugar=val("f_lugar"), dir=val("f_dir");
+  setPH(document.getElementById("p_donde"), [lugar,dir].filter(Boolean).join("\n"), "[Lugar y dirección]");
+
+  const ruta=val("f_ruta"), acc=val("f_acc");
+  setPH(document.getElementById("p_ruta"), [ruta, acc?("Acceso: "+acc):""].filter(Boolean).join("\n"), "[Cómo llegar y punto de acceso]");
+
+  setPH(document.getElementById("p_parq"), val("f_parq"), "[Parqueadero / transporte]");
+
+  const cuando=val("f_cuando"), pico=val("f_pico"), dur=val("f_dur");
+  setPH(document.getElementById("p_cuando"),
+    [cuando, pico, dur?("Duración: "+dur):""].filter(Boolean).join("\n"), "[Fecha, hora, margen y duración]");
+
+  const planb=val("f_planb"), contacto=val("f_contacto");
+  setPH(document.getElementById("p_planb"),
+    [planb, contacto?("Escríbenos: "+contacto):""].filter(Boolean).join("\n"), "[Plan B y contacto de contingencia]");
+
+  setPH(document.getElementById("p_recuerda"), val("f_recuerda"), "[Qué llevar / notas]");
+}
+
+function fichaText(){
+  const L=[]; const g=id=>val(id);
+  L.push("📍 Tu ficha de llegada — "+(g("f_act")||"actividad Sintonía"));
+  L.push("");
+  if(g("f_lugar")||g("f_dir")) L.push("Dónde: "+[g("f_lugar"),g("f_dir")].filter(Boolean).join(", "));
+  if(g("f_ruta")) L.push("Cómo llegar: "+g("f_ruta"));
+  if(g("f_acc")) L.push("Punto de acceso: "+g("f_acc"));
+  if(g("f_parq")) L.push("Parqueadero: "+g("f_parq"));
+  const cuando=[g("f_cuando"),g("f_pico"),g("f_dur")?("duración "+g("f_dur")):""].filter(Boolean).join(" · ");
+  if(cuando) L.push("Cuándo: "+cuando);
+  if(g("f_planb")) L.push("Si algo pasa: "+g("f_planb"));
+  if(g("f_contacto")) L.push("Escríbenos: "+g("f_contacto")+" — puedes salir o pedir ayuda cuando quieras.");
+  if(g("f_recuerda")) L.push("Recuerda: "+g("f_recuerda"));
+  return L.join("\n");
+}
+
+FIELDS.forEach(id=>{
+  const el=document.getElementById(id);
+  if(store[id]!=null) el.value=store[id];
+  el.addEventListener("input",()=>{ store[id]=el.value; try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){} render(); });
+});
+
+/* gate */
+const gateEl=document.getElementById("gate");
+gateEl.querySelectorAll("input").forEach(cb=>{
+  const k="g"+cb.getAttribute("data-g");
+  if(store[k]) cb.checked=true;
+  cb.addEventListener("change",()=>{ store[k]=cb.checked; try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){} gateStatus(); });
+});
+function gateStatus(){
+  const all=[...gateEl.querySelectorAll("input")];
+  const done=all.every(c=>c.checked);
+  const t=document.getElementById("gatetag");
+  t.className="gatetag "+(done?"yes":"no");
+  t.textContent=done?"✓ Gate completo — la candidata puede probarse":"◻ Gate incompleto";
+}
+
+/* copiar */
+const copyBtn=document.getElementById("copyBtn");
+copyBtn.addEventListener("click",()=>{
+  const t=fichaText();
+  const ok=()=>{ copyBtn.textContent="¡Copiada!"; copyBtn.classList.add("done"); setTimeout(()=>{ copyBtn.textContent="Copiar ficha para WhatsApp"; copyBtn.classList.remove("done"); },1600); };
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok,fb); else fb(); }catch(e){ fb(); }
+  function fb(){ const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); ok(); }
+});
+
+/* tema */
+const root=document.documentElement;
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const cur=root.getAttribute("data-theme");
+  const dark=window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const now=cur?cur:(dark?"dark":"light");
+  root.setAttribute("data-theme",now==="dark"?"light":"dark");
+});
+
+render(); gateStatus();
+</script>
+</body>
+</html>

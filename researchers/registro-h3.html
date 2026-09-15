@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<title>Registro H3 · Interacción</title>
+<style>
+  :root{
+    --bg:#f4f1ec; --card:#ffffff; --card-2:#faf8f4; --ink:#211f1a; --muted:#6a655c;
+    --line:#e7e1d7; --line-2:#d6cec1;
+    --pine:#0f6e63; --pine-ink:#0a4f47; --pine-soft:#e0efec;
+    --honey:#a86616; --honey-soft:#f7ecda;
+    --go:#1f8a52; --go-soft:#e4f2ea; --iter:#a86616; --iter-soft:#f7ecda;
+    --kill:#c0392b; --kill-soft:#f9e6e3; --stop:#7a1f1f; --stop-soft:#f4dedb; --wait:#2b6cb0; --wait-soft:#e6eef7;
+    --shadow:0 1px 2px rgba(33,31,26,.05),0 12px 30px -18px rgba(33,31,26,.28);
+    --disp:"Bricolage Grotesque",Georgia,serif; --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  :root[data-theme="dark"]{
+    --bg:#151310;--card:#1e1b17;--card-2:#191612;--ink:#efeae1;--muted:#a49d90;--line:#2c281f;--line-2:#3a3529;
+    --pine:#41b9a9;--pine-ink:#8fe0d4;--pine-soft:#12302b;--honey:#d99a3c;--honey-soft:#2e2313;
+    --go:#42b877;--go-soft:#12281d;--iter:#d99a3c;--iter-soft:#2e2313;--kill:#e2685a;--kill-soft:#301715;--stop:#e2685a;--stop-soft:#3a1512;--wait:#5b9bd8;--wait-soft:#13202e;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 36px -20px rgba(0,0,0,.85);}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px;margin:0 auto;padding:26px 20px 64px}
+  .head{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:flex-end;margin-bottom:18px;border-bottom:2px solid var(--ink);padding-bottom:16px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pine);margin:0 0 7px}
+  h1{font-family:var(--disp);font-weight:700;font-size:25px;letter-spacing:-.02em;margin:0;line-height:1.05}
+  .head .sub{color:var(--muted);font-size:13px;margin:7px 0 0;max-width:54ch}
+  .theme-btn{border:1px solid var(--line-2);background:var(--card);color:var(--muted);font-family:var(--body);font-size:12px;border-radius:20px;padding:6px 13px;cursor:pointer;white-space:nowrap}
+
+  .block{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-top:14px;box-shadow:var(--shadow);overflow:hidden}
+  .block>h2{margin:0;padding:13px 18px;font-family:var(--disp);font-weight:600;font-size:15px;border-bottom:1px solid var(--line);background:var(--card-2);display:flex;align-items:center;gap:9px}
+  .block>h2 .n{font-family:var(--mono);font-size:12px;color:var(--pine)}
+  .block .body{padding:16px 18px}
+  .hint{font-size:12px;color:var(--muted);margin:0 0 14px}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .field{display:flex;flex-direction:column;gap:5px;margin-bottom:13px}
+  .field:last-child{margin-bottom:0}
+  .field label{font-size:12.5px;font-weight:600}
+  .field .h{font-size:11px;color:var(--muted);font-weight:400}
+  .field input,.field select,.field textarea{font-family:var(--body);font-size:14px;padding:9px 11px;border:1px solid var(--line-2);border-radius:9px;background:var(--card);color:var(--ink);width:100%}
+  .field input[type=number]{font-family:var(--mono)}
+  .field textarea{min-height:52px;resize:vertical;line-height:1.45}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--pine);border-color:var(--pine)}
+  .field.danger{background:var(--stop-soft);border:1px solid var(--kill);border-radius:9px;padding:11px 13px;flex-direction:row;align-items:flex-start;gap:10px}
+  .field.danger input{width:18px;height:18px;flex:none;margin-top:1px;accent-color:var(--kill)}
+  .field.danger label{color:var(--stop)}
+
+  table.px{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.px th,table.px td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:center}
+  table.px th{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  table.px td:first-child,table.px th:first-child{text-align:left}
+  table.px input{width:100%;font-family:var(--mono);font-size:14px;padding:7px 6px;border:1px solid var(--line-2);border-radius:7px;background:var(--card);color:var(--ink);text-align:center}
+  table.px input:focus{outline:2px solid var(--pine);border-color:var(--pine)}
+  table.px input[type=checkbox]{width:18px;height:18px;accent-color:var(--pine)}
+  .distro{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:10px}
+  .distro b{color:var(--ink)}
+
+  .verdict{border-radius:11px;padding:16px 18px;display:flex;gap:16px;align-items:flex-start}
+  .verdict .badge{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:.05em;text-transform:uppercase;padding:7px 13px;border-radius:8px;white-space:nowrap;flex:none}
+  .verdict .say{font-size:13.5px;line-height:1.55}
+  .verdict .say .rule{display:block;margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .metrics{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .metrics .m{font-family:var(--mono);font-size:12px;background:var(--card-2);border:1px solid var(--line);border-radius:7px;padding:6px 10px}
+  .metrics .m b{color:var(--ink)}
+  .go{background:var(--go-soft);color:var(--go)} .go-b{background:var(--go);color:#fff}
+  .iter{background:var(--iter-soft);color:var(--iter)} .iter-b{background:var(--iter);color:#fff}
+  .kill{background:var(--kill-soft);color:var(--kill)} .kill-b{background:var(--kill);color:#fff}
+  .stopc{background:var(--stop-soft);color:var(--stop)} .stop-b{background:var(--stop);color:#fff}
+  .wait{background:var(--wait-soft);color:var(--wait)} .wait-b{background:var(--wait);color:#fff}
+  .v-go{background:var(--go-soft);border:1px solid var(--go)} .v-iter{background:var(--iter-soft);border:1px solid var(--iter)}
+  .v-kill{background:var(--kill-soft);border:1px solid var(--kill)} .v-stop{background:var(--stop-soft);border:1.5px solid var(--stop)} .v-wait{background:var(--wait-soft);border:1px dashed var(--wait)}
+
+  .rep{display:flex;flex-wrap:wrap;gap:9px;margin:2px 0 6px}
+  .rep label{font-family:var(--mono);font-size:12px;border:1px solid var(--line-2);border-radius:20px;padding:6px 13px;cursor:pointer;color:var(--muted);font-weight:600}
+  .rep input{position:absolute;opacity:0;pointer-events:none}
+  .rep label.on{background:var(--pine-soft);color:var(--pine-ink);border-color:var(--pine)}
+  .ceiling{font-size:12px;color:var(--iter);background:var(--iter-soft);border:1px solid var(--iter);border-radius:8px;padding:9px 12px;margin-top:8px}
+  .interp label{font-style:italic;font-size:14px;display:block;margin-bottom:6px}
+
+  /* hoja de cata imprimible */
+  .cata{border:1px dashed var(--line-2);border-radius:10px;padding:14px 16px;background:var(--card-2)}
+  .cata h3{font-family:var(--disp);font-weight:600;font-size:14px;margin:0 0 3px}
+  .cata p{font-size:12px;color:var(--muted);margin:0 0 12px}
+  table.cataT{width:100%;border-collapse:collapse;font-size:13px}
+  table.cataT th,table.cataT td{border:1px solid var(--line-2);padding:9px 8px;text-align:left;vertical-align:top}
+  table.cataT th{background:var(--card);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  table.cataT td.blank{height:44px}
+  .fav{margin-top:10px;font-size:13px}
+  .foot{margin-top:22px;font-size:11.5px;color:var(--muted);line-height:1.6;text-align:center;font-family:var(--mono)}
+  @media print{.noprint{display:none!important}.block{box-shadow:none;break-inside:avoid}}
+  [hidden]{display:none!important}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:560px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="rnav" aria-label="Herramientas de investigadores">
+  <div class="rnav-in">
+    <a class="rnav-brand" href="./index.html"><span class="rnav-dot"></span> Sintonía · Investigadores</a>
+    <button class="rnav-toggle" id="rnavToggle" aria-label="Abrir menú" aria-expanded="false">&#9776;</button>
+    <div class="rnav-links" id="rnavLinks">
+      <a href="./index.html" data-page="index.html">Home</a>
+      <a href="./scorecards.html" data-page="scorecards.html">Scorecards</a>
+      <a href="./ejecucion.html" data-page="ejecucion.html">Ejecución</a>
+      <a href="./registro-h3.html" data-page="registro-h3.html">Registro H3</a>
+      <a href="./ficha-generador.html" data-page="ficha-generador.html">Ficha H2</a>
+      <a href="./guia-hosting.md" data-page="guia-hosting.md">Guía hosting</a>
+      <a href="../index.html" class="rnav-out">Sitio público &#8599;</a>
+    </div>
+  </div>
+</nav>
+<style>
+  .rnav{background:var(--card,#fff);border-bottom:1px solid var(--line,#e4ded4);position:sticky;top:0;z-index:80}
+  .rnav-in{max-width:900px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .rnav-brand{font-family:var(--disp,Georgia,serif);font-weight:700;font-size:14.5px;color:var(--ink,#211f1a);text-decoration:none;display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .rnav-dot{width:9px;height:9px;border-radius:50%;background:var(--pine,#0f6e63);flex:none}
+  .rnav-links{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center}
+  .rnav-links a{font-family:var(--body,sans-serif);font-size:13px;color:var(--muted,#6a655c);text-decoration:none;padding:4px 1px;border-bottom:2px solid transparent;white-space:nowrap}
+  .rnav-links a:hover{color:var(--ink,#211f1a)}
+  .rnav-links a.active{color:var(--pine-ink,#0a4f47);border-color:var(--pine,#0f6e63);font-weight:600}
+  .rnav-links a.rnav-out{color:var(--honey,#c67a1e)}
+  .rnav-toggle{display:none;border:1px solid var(--line-2,#d6cec1);background:none;border-radius:8px;padding:5px 10px;font-size:15px;cursor:pointer;color:var(--ink,#211f1a)}
+  @media (max-width:760px){
+    .rnav-toggle{display:inline-flex}
+    .rnav-links{display:none;flex-direction:column;width:100%;gap:10px;padding-top:10px;align-items:flex-start}
+    .rnav-links.open{display:flex}
+  }
+</style>
+<script>
+(function(){
+  var p=location.pathname.split("/").pop()||"index.html";
+  document.querySelectorAll(".rnav-links a[data-page]").forEach(function(a){
+    if(a.getAttribute("data-page")===p) a.classList.add("active");
+  });
+  var t=document.getElementById("rnavToggle"), l=document.getElementById("rnavLinks");
+  if(t) t.addEventListener("click",function(){
+    var open=l.classList.toggle("open");
+    t.setAttribute("aria-expanded",open?"true":"false");
+  });
+})();
+</script>
+
+<div class="wrap">
+  <div class="head">
+    <div>
+      <p class="eyebrow">Agente Piloto · H3 · Interacción autoguiada</p>
+      <h1>Instrumento de registro</h1>
+      <p class="sub">Registra la conducta observada; la lectura del equipo va aparte. El veredicto usa las cifras del análisis de video (más precisas) y aplica la regla con el umbral original.</p>
+    </div>
+    <button class="theme-btn noprint" id="themeBtn">◐ tema</button>
+  </div>
+
+  <!-- META -->
+  <div class="block">
+    <h2><span class="n">0</span> Datos de la sesión</h2>
+    <div class="body">
+      <div class="grid2">
+        <div class="field"><label>Fecha y hora</label><input id="m_fecha" type="text" placeholder="jueves 17 sep, 4:00 p. m."></div>
+        <div class="field"><label>Lugar</label><input id="m_lugar" type="text" placeholder="Tierradentro Café, San Antonio"></div>
+      </div>
+      <div class="field danger" style="background:var(--pine-soft);border-color:var(--pine)"><input type="checkbox" id="m_consent"><label style="color:var(--pine-ink)">Consentimiento informado <b>firmado</b> por los 4 (incluye grabación). Sin firma no se graba ni se inicia.</label></div>
+      <div class="field"><label>Participantes (códigos anónimos)</label><span class="h">Usa P1–P4; no nombres. Los mismos siguen a H4.</span></div>
+    </div>
+  </div>
+
+  <!-- EN VIVO -->
+  <div class="block">
+    <h2><span class="n">1</span> Registro en vivo · observador</h2>
+    <div class="body">
+      <p class="hint">Durante la cata (25 min). Marca lo observable, sin interpretar.</p>
+      <table class="px">
+        <tr><th>Participante</th><th>Entró a la acción<br>sin prompt personal</th><th>Seguridad<br>percibida (1–5)</th><th>Se retiró</th></tr>
+        <tr><td>P1</td><td><input type="checkbox" data-k="p1_act"></td><td><input type="number" min="1" max="5" data-k="p1_seg"></td><td><input type="checkbox" data-k="p1_ret"></td></tr>
+        <tr><td>P2</td><td><input type="checkbox" data-k="p2_act"></td><td><input type="number" min="1" max="5" data-k="p2_seg"></td><td><input type="checkbox" data-k="p2_ret"></td></tr>
+        <tr><td>P3</td><td><input type="checkbox" data-k="p3_act"></td><td><input type="number" min="1" max="5" data-k="p3_seg"></td><td><input type="checkbox" data-k="p3_ret"></td></tr>
+        <tr><td>P4</td><td><input type="checkbox" data-k="p4_act"></td><td><input type="number" min="1" max="5" data-k="p4_seg"></td><td><input type="checkbox" data-k="p4_ret"></td></tr>
+      </table>
+      <div class="grid2" style="margin-top:14px">
+        <div class="field"><label>Prompts críticos del host</label><span class="h">arranque · distribución · bloqueo</span><input type="number" min="0" data-k="prompts"></div>
+        <div class="field"><label>Elección del favorito</label><select data-k="eleccion"><option value="">—</option><option value="colectiva">Colectiva</option><option value="impuesta">La impuso alguien</option></select></div>
+      </div>
+      <div class="field danger"><input type="checkbox" data-k="incidente"><label>Presión, exclusión o incidente durante la dinámica <span class="h" style="color:var(--kill)">(stop rule → detener)</span></label></div>
+    </div>
+  </div>
+
+  <!-- ANÁLISIS DE VIDEO -->
+  <div class="block">
+    <h2><span class="n">2</span> Análisis de video · después</h2>
+    <div class="body">
+      <p class="hint">Revisando la grabación cenital. Recuenta turnos y voz con precisión; confirma o corrige lo del registro en vivo.</p>
+      <table class="px">
+        <tr><th>Participante</th><th>Turnos de habla (conteo)</th><th>% de voz</th></tr>
+        <tr><td>P1</td><td><input type="number" min="0" data-k="t1" data-turn></td><td class="pct" data-pct="1">—</td></tr>
+        <tr><td>P2</td><td><input type="number" min="0" data-k="t2" data-turn></td><td class="pct" data-pct="2">—</td></tr>
+        <tr><td>P3</td><td><input type="number" min="0" data-k="t3" data-turn></td><td class="pct" data-pct="3">—</td></tr>
+        <tr><td>P4</td><td><input type="number" min="0" data-k="t4" data-turn></td><td class="pct" data-pct="4">—</td></tr>
+      </table>
+      <div class="distro" id="distro">Turno máximo de una persona: <b>—</b></div>
+      <div class="field" style="margin-top:14px"><label>¿Quién inició la micro misión?</label><input type="text" data-k="inicio" placeholder="P2 probó y anotó primero…"></div>
+      <div class="field"><label>Marcas de tiempo de prompts críticos</label><span class="h">confirma el conteo en vivo</span><textarea data-k="ts_prompts" placeholder="03:12 arranque · 11:40 abrir turno a P4…"></textarea></div>
+      <div class="field"><label>Momentos de presión, exclusión o incomodidad</label><textarea data-k="ts_presion" placeholder="Cita minuto y qué se observó. Vacío si no hubo."></textarea></div>
+      <div class="field"><label>Notas de participación no verbal</label><span class="h">gestos, quién se aparta, quién sostiene la tarea</span><textarea data-k="noverbal"></textarea></div>
+      <div class="field"><label>Confirmado del video · participan sin prompt personal (de 4)</label><span class="h">deja vacío para usar el conteo en vivo</span><input type="number" min="0" max="4" data-k="participan_video"></div>
+    </div>
+  </div>
+
+  <!-- VEREDICTO -->
+  <div class="block">
+    <h2><span class="n">3</span> Veredicto (automático)</h2>
+    <div class="body">
+      <div class="verdict v-wait" id="verdict"><span class="badge wait-b">EN ESPERA</span><div class="say">Completa participación, prompts, turnos y seguridad para calcular.</div></div>
+      <div id="metrics"></div>
+    </div>
+  </div>
+
+  <!-- CIERRE -->
+  <div class="block">
+    <h2><span class="n">4</span> Cierre · clasificación e interpretación</h2>
+    <div class="body">
+      <div class="field"><label>Clasificación del hallazgo</label>
+        <div class="rep" id="rep">
+          <label data-val="Robusto"><input type="radio" name="rep" value="Robusto">Robusto</label>
+          <label data-val="Emergente"><input type="radio" name="rep" value="Emergente">Emergente</label>
+          <label data-val="Pendiente"><input type="radio" name="rep" value="Pendiente">Pendiente</label>
+        </div>
+        <div class="ceiling" id="ceiling" hidden>⚠ Con n=4 el techo natural es <b>Emergente</b>. Declarar Robusto exige justificarlo por recurrencia o triangulación.</div>
+      </div>
+      <div class="field interp"><label>Lectura del equipo — interpretación, separada de la evidencia</label><textarea data-k="lectura" placeholder="Primero el dato; aquí la lectura, etiquetada como interpretación."></textarea></div>
+      <div class="field"><label>Implicaciones</label><textarea data-k="implica" placeholder="JTBD de Mateo · matriz de oportunidades · siguiente fase / enlace con H4."></textarea></div>
+    </div>
+  </div>
+
+  <!-- HOJA DE CATA -->
+  <div class="block">
+    <h2><span class="n">★</span> Hoja de cata compartida (para imprimir)</h2>
+    <div class="body">
+      <div class="cata">
+        <h3>Cata a ciegas · A · B · C</h3>
+        <p>Va en el centro de la mesa. Cada quien anota su nota; entre los 4 eligen un favorito del grupo.</p>
+        <table class="cataT">
+          <tr><th>Café</th><th>Aroma / sabor (notas)</th><th>Mi favorito ✓</th></tr>
+          <tr><td><b>A</b></td><td class="blank"></td><td></td></tr>
+          <tr><td><b>B</b></td><td class="blank"></td><td></td></tr>
+          <tr><td><b>C</b></td><td class="blank"></td><td></td></tr>
+        </table>
+        <p class="fav"><b>Favorito del grupo:</b> ________ &nbsp;·&nbsp; <b>¿Por qué?</b> ______________________________</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">Proyecto Sintonía · H3 · Lo escrito se guarda en este navegador · El veredicto es preliminar; la decisión oficial se registra con el umbral original.</p>
+</div>
+
+<script>
+"use strict";
+const KEY="sintonia_registro_h3";
+let S={};
+try{ S=JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ S={}; }
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+
+const els=document.querySelectorAll("[data-k]");
+els.forEach(el=>{
+  const k=el.getAttribute("data-k");
+  if(S[k]!=null){ if(el.type==="checkbox") el.checked=S[k]; else el.value=S[k]; }
+  el.addEventListener("input",()=>{ S[k]= el.type==="checkbox"?el.checked:el.value; save(); recompute(); });
+  el.addEventListener("change",()=>{ S[k]= el.type==="checkbox"?el.checked:el.value; save(); recompute(); });
+});
+document.querySelectorAll("#rep input").forEach(r=>{
+  if(S.rep===r.value) r.checked=true;
+  r.addEventListener("change",()=>{ S.rep=r.value; save(); recompute(); });
+});
+
+function num(k){ const v=S[k]; return (v===""||v==null||isNaN(+v))?null:+v; }
+function turns(){ return [num("t1"),num("t2"),num("t3"),num("t4")]; }
+
+function recompute(){
+  // % de voz
+  const t=turns(); const sum=t.reduce((a,b)=>a+(b||0),0);
+  let maxPct=null;
+  document.querySelectorAll(".pct").forEach(td=>{
+    const i=+td.getAttribute("data-pct")-1; const v=t[i];
+    if(sum>0 && v!=null){ const p=Math.round(v/sum*100); td.textContent=p+"%"; if(maxPct==null||p>maxPct)maxPct=p; }
+    else td.textContent="—";
+  });
+  document.getElementById("distro").innerHTML="Turno máximo de una persona: <b>"+(maxPct==null?"—":maxPct+"%")+"</b>"+(sum>0?" · total "+sum+" turnos":"");
+
+  // participan sin prompt (video override o conteo en vivo)
+  let participan=num("participan_video");
+  if(participan==null){ participan=["p1_act","p2_act","p3_act","p4_act"].filter(k=>S[k]===true).length; }
+  // seguridad = mínimo entre los que tienen valor
+  const segs=["p1_seg","p2_seg","p3_seg","p4_seg"].map(num).filter(v=>v!=null);
+  const segMin=segs.length?Math.min(...segs):null;
+  const prompts=num("prompts");
+
+  // R/E/P ceiling
+  document.getElementById("ceiling").hidden = S.rep!=="Robusto";
+  document.querySelectorAll("#rep label").forEach(l=>l.classList.toggle("on", l.getAttribute("data-val")===S.rep));
+
+  const v=decide({participan, prompts, maxPct, segMin, incidente:S.incidente===true, sum});
+  const vd=document.getElementById("verdict");
+  vd.className="verdict v-"+v.k;
+  vd.innerHTML='<span class="badge '+v.k+'-b">'+v.s+'</span><div class="say">'+v.say+'</div>';
+  document.getElementById("metrics").innerHTML = v.metrics ? '<div class="metrics">'+v.metrics.map(m=>'<span class="m">'+m[0]+': <b>'+m[1]+'</b></span>').join("")+'</div>' : "";
+}
+
+function decide(v){
+  if(v.incidente) return {s:"STOP",k:"stop",say:'Presión, exclusión o incidente → detener la dinámica (y descartar esta dinámica, no el principio “activity first”). <span class="rule">Una stop rule detiene la prueba aunque el número guste.</span>'};
+  const ready = v.participan!=null && v.prompts!=null && v.maxPct!=null && v.segMin!=null;
+  if(!ready) return {s:"EN ESPERA",k:"wait",say:'Completa participación, prompts, turnos y seguridad para calcular. <span class="rule">No se decide sin registro completo.</span>'};
+  const m=[["Participan",v.participan+"/4"],["Prompts",v.prompts],["Turno máx",v.maxPct+"%"],["Seguridad mín",v.segMin+"/5"]];
+  if(v.participan<=1) return {s:"DESCARTAR",k:"kill",say:v.participan+' de 4 participan (≤1) → descartar esta dinámica, no el principio “activity first”.',metrics:m};
+  if(v.participan>=3 && v.prompts<=2 && v.maxPct<=50 && v.segMin>=4)
+    return {s:"PERSEVERAR",k:"go",say:v.participan+' de 4 participan, '+v.prompts+' prompts (≤2), turno máx '+v.maxPct+'% (≤50%), seguridad '+v.segMin+'/5 (≥4) → conservar actividad y micro misión; reducir presencia del host. <span class="rule">Regla: ≥3/4, ≤2 prompts, ≤50% turnos, seguridad ≥4.</span>',metrics:m};
+  if(v.participan===2) return {s:"ITERAR",k:"iter",say:'2 de 4 participan → ajustar arquitectura social o nivel de apoyo.',metrics:m};
+  const f=[];
+  if(v.prompts>2)f.push(v.prompts+" prompts (>2)");
+  if(v.maxPct>50)f.push("turno máx "+v.maxPct+"% (>50%)");
+  if(v.segMin<4)f.push("seguridad "+v.segMin+"/5 (<4)");
+  return {s:"ITERAR",k:"iter",say:v.participan+' de 4 participan pero '+f.join(", ")+' → iterar arquitectura social o apoyo.',metrics:m};
+}
+
+const root=document.documentElement;
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const cur=root.getAttribute("data-theme");
+  root.setAttribute("data-theme", cur==="dark"?"light":"dark");
+});
+recompute();
+</script>
+</body>
+</html>

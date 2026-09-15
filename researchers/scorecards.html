@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap">
+<title>Scorecards Piloto P4</title>
+<style>
+  :root{
+    --bg:#eef2f1; --panel:#ffffff; --panel-2:#f6f8f7; --ink:#141d1c;
+    --muted:#5a6a67; --line:#d8e0de; --line-strong:#c3cecb;
+    --accent:#0f6e63; --accent-ink:#0a4f47; --accent-soft:#e2efec;
+    --go:#1f8a52; --go-soft:#e4f2ea;
+    --iter:#a86616; --iter-soft:#f7ecda;
+    --kill:#c0392b; --kill-soft:#f9e6e3;
+    --stop:#7a1f1f; --stop-soft:#f4dedb;
+    --wait:#2b6cb0; --wait-soft:#e6eef7;
+    --shadow:0 1px 2px rgba(20,29,28,.04), 0 6px 20px -12px rgba(20,29,28,.18);
+    --radius:10px;
+    --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+    --serif:"IBM Plex Serif",Georgia,serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0d1312; --panel:#141c1b; --panel-2:#101817; --ink:#e7edeb; --muted:#93a29f;
+      --line:#243230; --line-strong:#324340;
+      --accent:#3fb8a8; --accent-ink:#8fe0d4; --accent-soft:#16302c;
+      --go:#42b877; --go-soft:#12281d;
+      --iter:#d99a3c; --iter-soft:#2e2313;
+      --kill:#e2685a; --kill-soft:#301715;
+      --stop:#e2685a; --stop-soft:#3a1512;
+      --wait:#5b9bd8; --wait-soft:#13202e;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d1312; --panel:#141c1b; --panel-2:#101817; --ink:#e7edeb; --muted:#93a29f;
+    --line:#243230; --line-strong:#324340;
+    --accent:#3fb8a8; --accent-ink:#8fe0d4; --accent-soft:#16302c;
+    --go:#42b877; --go-soft:#12281d;
+    --iter:#d99a3c; --iter-soft:#2e2313;
+    --kill:#e2685a; --kill-soft:#301715;
+    --stop:#e2685a; --stop-soft:#3a1512;
+    --wait:#5b9bd8; --wait-soft:#13202e;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -14px rgba(0,0,0,.7);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px}
+
+  /* ---- masthead ---- */
+  .masthead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;
+    gap:18px;padding-bottom:20px;border-bottom:2px solid var(--ink)}
+  .brand .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+  .brand h1{font-size:27px;font-weight:700;margin:0;letter-spacing:-.02em;line-height:1.05}
+  .brand .sub{color:var(--muted);font-size:13px;margin-top:6px;max-width:52ch}
+  .legend{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+  .legend .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;
+    padding:3px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
+  .theme-btn{border:1px solid var(--line-strong);background:var(--panel);color:var(--muted);
+    font-family:var(--mono);font-size:11px;border-radius:20px;padding:5px 12px;cursor:pointer}
+  .theme-btn:hover{color:var(--ink);border-color:var(--ink)}
+
+  /* ---- tabs ---- */
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 6px}
+  .tab{flex:1 1 200px;text-align:left;border:1px solid var(--line);background:var(--panel);
+    border-radius:var(--radius);padding:12px 14px;cursor:pointer;transition:border-color .15s,transform .05s;
+    display:flex;flex-direction:column;gap:3px;min-width:0}
+  .tab:hover{border-color:var(--line-strong)}
+  .tab .t-id{font-family:var(--mono);font-weight:600;font-size:12px;color:var(--accent);
+    display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .tab .t-name{font-weight:600;font-size:14px;letter-spacing:-.01em}
+  .tab .t-mom{font-size:11.5px;color:var(--muted)}
+  .tab[aria-selected="true"]{border-color:var(--ink);box-shadow:var(--shadow);
+    outline:2px solid var(--ink);outline-offset:-2px}
+  .tab .dot{width:9px;height:9px;border-radius:50%;flex:none}
+
+  .card-verdict-mini{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;
+    padding:2px 7px;border-radius:5px;text-transform:uppercase}
+
+  /* ---- experiment panel ---- */
+  .exp{margin-top:14px}
+  .exp[hidden]{display:none}
+  .ex-head{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;box-shadow:var(--shadow);display:grid;
+    grid-template-columns:1fr auto;gap:14px 20px;align-items:start}
+  .ex-head h2{margin:0;font-size:20px;letter-spacing:-.02em}
+  .ex-head .mom{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 5px}
+  .ex-head .risk{margin:10px 0 0;font-size:13.5px;color:var(--muted);max-width:62ch}
+  .ex-head .risk b{color:var(--ink);font-weight:600}
+  .evi{justify-self:end;text-align:right;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .evi .bar{display:flex;gap:3px;margin-top:5px;justify-content:flex-end}
+  .evi .pip{width:12px;height:6px;border-radius:2px;background:var(--line-strong)}
+  .evi .pip.on{background:var(--accent)}
+
+  /* ---- section blocks ---- */
+  .block{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    margin-top:12px;box-shadow:var(--shadow);overflow:hidden}
+  .block > h3{margin:0;padding:13px 20px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:10px;background:var(--panel-2)}
+  .block > h3 .step{color:var(--accent);font-weight:600}
+  .block .body{padding:16px 20px}
+
+  /* umbral */
+  .umbral{border-left:3px solid var(--accent)}
+  .umbral .body{font-family:var(--mono);font-size:13px;line-height:1.6;color:var(--ink)}
+  .umbral .lock{font-family:var(--sans);font-size:11px;color:var(--muted);
+    display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;
+    background:var(--accent-soft);color:var(--accent-ink);padding:3px 9px;border-radius:20px;font-weight:600}
+  .stim{display:block;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-strong);
+    font-family:var(--sans);font-size:12px;color:var(--muted)}
+  .stim b{color:var(--iter)}
+
+  /* checklist */
+  .chk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+  .chk li{display:flex;gap:11px;align-items:flex-start;padding:9px 8px;border-radius:8px;cursor:pointer}
+  .chk li:hover{background:var(--panel-2)}
+  .chk input{margin-top:2px;width:17px;height:17px;accent-color:var(--accent);flex:none;cursor:pointer}
+  .chk .txt{font-size:13.5px}
+  .chk .gate-flag{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--kill);font-weight:600;border:1px solid var(--kill);border-radius:4px;padding:0 5px;margin-right:7px;
+    display:inline-block;vertical-align:middle}
+  .subhead{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--accent);margin:16px 0 6px;padding-left:8px}
+  .subhead:first-child{margin-top:0}
+  .ready-tag{margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:600;
+    padding:3px 10px;border-radius:20px}
+  .ready-tag.no{background:var(--iter-soft);color:var(--iter)}
+  .ready-tag.yes{background:var(--go-soft);color:var(--go)}
+
+  /* registro form */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{font-size:12.5px;font-weight:600;color:var(--ink)}
+  .field .hint{font-size:11px;color:var(--muted);font-weight:400}
+  .field input,.field select,.field textarea{font-family:var(--sans);font-size:14px;
+    padding:9px 11px;border:1px solid var(--line-strong);border-radius:8px;background:var(--panel);
+    color:var(--ink);width:100%}
+  .field input[type=number]{font-family:var(--mono)}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);
+    outline-offset:0;border-color:var(--accent)}
+  .field.danger{grid-column:1/-1;flex-direction:row;align-items:flex-start;gap:11px;
+    background:var(--stop-soft);border:1px solid var(--kill);border-radius:8px;padding:11px 13px}
+  .field.danger input{width:18px;height:18px;flex:none;margin-top:1px;accent-color:var(--kill)}
+  .field.danger label{color:var(--stop);font-weight:600}
+  .field.danger .hint{color:var(--kill)}
+
+  /* decision */
+  .decide{border-top:3px solid var(--line-strong)}
+  .stepper{display:flex;gap:0;margin-bottom:16px;flex-wrap:wrap}
+  .stepper .s{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;
+    color:var(--muted);padding-right:14px;margin-right:14px;border-right:1px solid var(--line);
+    text-transform:uppercase;letter-spacing:.06em}
+  .stepper .s:last-child{border:none}
+  .stepper .s .num{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
+    font-size:11px;font-weight:600;background:var(--line);color:var(--muted)}
+  .stepper .s.done .num{background:var(--go);color:#fff}
+  .stepper .s.warn .num{background:var(--iter);color:#fff}
+  .stepper .s.active{color:var(--ink)}
+  .stepper .s.active .num{background:var(--accent);color:#fff}
+
+  .verdict{border-radius:10px;padding:18px 20px;display:flex;gap:18px;align-items:flex-start}
+  .verdict .badge{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.06em;
+    padding:8px 14px;border-radius:8px;white-space:nowrap;flex:none;text-transform:uppercase}
+  .verdict .say{font-size:14px;line-height:1.55}
+  .verdict .say .rule{display:block;margin-top:7px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .metrics{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .metrics .m{font-family:var(--mono);font-size:12px;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:7px;padding:6px 11px}
+  .metrics .m b{color:var(--ink)}
+  .warn-seq{margin-top:14px;background:var(--iter-soft);border:1px solid var(--iter);color:var(--iter);
+    border-radius:8px;padding:10px 13px;font-size:12.5px;display:flex;gap:9px;align-items:flex-start}
+
+  /* color roles applied to verdict + legend + tabs */
+  .go{background:var(--go-soft);color:var(--go)} .go-b{background:var(--go);color:#fff}
+  .iter{background:var(--iter-soft);color:var(--iter)} .iter-b{background:var(--iter);color:#fff}
+  .kill{background:var(--kill-soft);color:var(--kill)} .kill-b{background:var(--kill);color:#fff}
+  .stopc{background:var(--stop-soft);color:var(--stop)} .stop-b{background:var(--stop);color:#fff}
+  .wait{background:var(--wait-soft);color:var(--wait)} .wait-b{background:var(--wait);color:#fff}
+  .v-go{background:var(--go-soft);border:1px solid var(--go)}
+  .v-iter{background:var(--iter-soft);border:1px solid var(--iter)}
+  .v-kill{background:var(--kill-soft);border:1px solid var(--kill)}
+  .v-stop{background:var(--stop-soft);border:1.5px solid var(--stop)}
+  .v-wait{background:var(--wait-soft);border:1px dashed var(--wait)}
+
+  /* stop rules watch */
+  .watch{list-style:none;margin:12px 0 0;padding:0;display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px}
+  .watch li{font-size:12px;color:var(--muted);display:flex;gap:8px;padding:6px 0}
+  .watch li::before{content:"◈";color:var(--kill);font-size:10px;margin-top:2px}
+  .watch li b{color:var(--ink);font-weight:600}
+
+  /* cierre interpretive */
+  .cierre .body{display:flex;flex-direction:column;gap:18px}
+  .rep{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .rep .opt{font-family:var(--mono);font-size:12px;border:1px solid var(--line-strong);
+    border-radius:20px;padding:6px 14px;cursor:pointer;font-weight:600;color:var(--muted)}
+  .rep input{position:absolute;opacity:0;pointer-events:none}
+  .rep .opt.sel-rob{background:var(--kill-soft);color:var(--kill);border-color:var(--kill)}
+  .rep .opt.sel-eme{background:var(--accent-soft);color:var(--accent-ink);border-color:var(--accent)}
+  .rep .opt.sel-pen{background:var(--wait-soft);color:var(--wait);border-color:var(--wait)}
+  .ceiling{font-size:12px;color:var(--iter);background:var(--iter-soft);border-radius:7px;
+    padding:8px 12px;display:flex;gap:8px;align-items:flex-start;border:1px solid var(--iter)}
+  .interpret label{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink);
+    display:block;margin-bottom:6px}
+  .interpret textarea{font-family:var(--serif);min-height:64px;resize:vertical;line-height:1.55}
+  .impl{display:grid;gap:12px}
+  .impl .field label{font-family:var(--sans)}
+  .impl textarea{min-height:52px;resize:vertical}
+
+  .foot{margin-top:26px;font-size:11.5px;color:var(--muted);text-align:center;line-height:1.6;
+    font-family:var(--mono)}
+  .foot a{color:var(--accent)}
+  @media (max-width:560px){
+    .ex-head{grid-template-columns:1fr}.evi{justify-self:start;text-align:left}
+    .evi .bar{justify-content:flex-start}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<nav class="rnav" aria-label="Herramientas de investigadores">
+  <div class="rnav-in">
+    <a class="rnav-brand" href="./index.html"><span class="rnav-dot"></span> Sintonía · Investigadores</a>
+    <button class="rnav-toggle" id="rnavToggle" aria-label="Abrir menú" aria-expanded="false">&#9776;</button>
+    <div class="rnav-links" id="rnavLinks">
+      <a href="./index.html" data-page="index.html">Home</a>
+      <a href="./scorecards.html" data-page="scorecards.html">Scorecards</a>
+      <a href="./ejecucion.html" data-page="ejecucion.html">Ejecución</a>
+      <a href="./registro-h3.html" data-page="registro-h3.html">Registro H3</a>
+      <a href="./ficha-generador.html" data-page="ficha-generador.html">Ficha H2</a>
+      <a href="./guia-hosting.md" data-page="guia-hosting.md">Guía hosting</a>
+      <a href="../index.html" class="rnav-out">Sitio público &#8599;</a>
+    </div>
+  </div>
+</nav>
+<style>
+  .rnav{background:var(--card,#fff);border-bottom:1px solid var(--line,#e4ded4);position:sticky;top:0;z-index:80}
+  .rnav-in{max-width:900px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .rnav-brand{font-family:var(--disp,Georgia,serif);font-weight:700;font-size:14.5px;color:var(--ink,#211f1a);text-decoration:none;display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .rnav-dot{width:9px;height:9px;border-radius:50%;background:var(--pine,#0f6e63);flex:none}
+  .rnav-links{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center}
+  .rnav-links a{font-family:var(--body,sans-serif);font-size:13px;color:var(--muted,#6a655c);text-decoration:none;padding:4px 1px;border-bottom:2px solid transparent;white-space:nowrap}
+  .rnav-links a:hover{color:var(--ink,#211f1a)}
+  .rnav-links a.active{color:var(--pine-ink,#0a4f47);border-color:var(--pine,#0f6e63);font-weight:600}
+  .rnav-links a.rnav-out{color:var(--honey,#c67a1e)}
+  .rnav-toggle{display:none;border:1px solid var(--line-2,#d6cec1);background:none;border-radius:8px;padding:5px 10px;font-size:15px;cursor:pointer;color:var(--ink,#211f1a)}
+  @media (max-width:760px){
+    .rnav-toggle{display:inline-flex}
+    .rnav-links{display:none;flex-direction:column;width:100%;gap:10px;padding-top:10px;align-items:flex-start}
+    .rnav-links.open{display:flex}
+  }
+</style>
+<script>
+(function(){
+  var p=location.pathname.split("/").pop()||"index.html";
+  document.querySelectorAll(".rnav-links a[data-page]").forEach(function(a){
+    if(a.getAttribute("data-page")===p) a.classList.add("active");
+  });
+  var t=document.getElementById("rnavToggle"), l=document.getElementById("rnavLinks");
+  if(t) t.addEventListener("click",function(){
+    var open=l.classList.toggle("open");
+    t.setAttribute("aria-expanded",open?"true":"false");
+  });
+})();
+</script>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">
+      <p class="eyebrow">Agente Piloto · Sintonía · Periodo 4</p>
+      <h1>Scorecards de experimentación</h1>
+      <p class="sub">Cuatro mecanismos, una regla: producir evidencia observable y honesta antes de decidir <b>perseverar · iterar · descartar</b>. Alcance del paquete: <b>Mateo</b>.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end">
+      <button class="theme-btn" id="themeBtn">◐ tema</button>
+      <div class="legend">
+        <span class="k go-b">Perseverar</span>
+        <span class="k iter-b">Iterar</span>
+        <span class="k kill-b">Descartar</span>
+        <span class="k stop-b">Stop</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+  <main id="panels"></main>
+
+  <p class="foot">
+    El umbral y la muestra mínima se fijan ANTES de registrar y no se mueven tras ver resultados.<br>
+    Los datos que escribas se guardan solo en este navegador. Techo natural de un hallazgo con n=4 o 20–40 visitas: <b>Emergente</b>.
+  </p>
+</div>
+
+<script>
+"use strict";
+/* ------------------------------------------------------------------ *
+ * Configuración de los cuatro experimentos (Guía de validación P4)   *
+ * ------------------------------------------------------------------ */
+const GATE = {
+  head:"Gate de selección de actividad (§3.2) — obligatorio",
+  items:[
+    {t:"Seguridad completa: lugar público o institucional, reglas, salida, contacto, protocolo.", gate:true},
+    {t:"Costo total conocido y visible antes de reservar (entrada, materiales, transporte, parqueadero, consumo)."},
+    {t:"Acceso documentado: ruta, transbordos, parqueadero, foto del acceso, hora pico y plan B."},
+    {t:"Duración controlada: actividad 60–120 min; total puerta a puerta ≤ 180 min."},
+    {t:"Actividad concreta (“hacer antes que hablar”) y cohorte 4–8 sin perfiles nominales."},
+    {t:"Interacción cooperativa/paralela; dependencia de conversación ≤3; cargas ≤3; novedad 2–4."}
+  ]
+};
+
+const EXPS = [
+  {
+    id:"H1", name:"Disposición a pagar", short:"WTP",
+    mom:"Activación · compromiso previo", evi:1,
+    status:"Pendiente crítica",
+    risk:"El compromiso económico aparece <b>antes</b> de conocer nominalmente al grupo.",
+    umbral:"Reservas completas / visitas calificadas ≥ 5% y ≥ 2 reservas. Muestra: 20–40 visitas calificadas.",
+    stim:true,
+    prep:[
+      {h:"Preparar"},
+      {t:"Landing privada con UNA actividad de referencia y reserva SIN cobro."},
+      {t:"Texto visible de ausencia de cobro + consentimiento obligatorio."},
+      {t:"Destino analítico autorizado antes de invitar; eventos definidos: page_view · CTA clicked · reservation_completed."},
+      {t:"Umbral escrito y muestra 20–40 fijados antes de invitar; excluir tráfico no segmentado; registrar la fuente de cada visita."},
+      {t:"Guardrails visibles: no cobrar sin reconfirmación · alcance · cupo no garantizado · datos · devolución."}
+    ],
+    fields:[
+      {k:"visitas", label:"Visitas únicas calificadas", hint:"pasaron el screener Mateo", type:"number", min:0, req:true},
+      {k:"reservas", label:"Reservas completas", hint:"reservation_completed", type:"number", min:0, req:true},
+      {k:"comprension", label:"Comprensión de la ausencia de cobro", type:"select", req:true,
+        opts:[["","—"],["buena","Buena / clara"],["deficiente","Deficiente / confusa"]]},
+      {k:"razon", label:"Razón de abandono (textual)", hint:"registro, no interpretación", type:"text"},
+      {k:"stop_engano", label:"Engaño o confusión material sobre el cobro", hint:"stop rule", type:"stop"}
+    ],
+    watch:[["Devolución","pausar y corregir ante cualquier confusión sobre cobro o reembolso."],
+           ["Consentimiento","nadie participa por presión del equipo o aliado."]]
+  },
+  {
+    id:"H2", name:"Llegada autónoma", short:"última milla",
+    mom:"Activación · última milla", evi:3,
+    status:"Prioridad alta",
+    risk:"La información reduce la incertidumbre lo suficiente para superar la <b>última milla</b> real.",
+    umbral:"≥ 3 de 4 llegan sin ayuda crítica, esfuerzo mediano ≤ 3/5, cero incidente. Muestra: 4 usuarios Mateo situacionales.",
+    gate:true,
+    prep:[
+      {h:"Preparar"},
+      {t:"Ficha de llegada completa: acceso, ruta, parqueadero, señales, recordatorio y contacto de contingencia."},
+      {t:"4 usuarios Mateo situacionales con variación de cautela y complejidad; mismo destino, ficha y ventana horaria."},
+      {t:"Definición escrita de “ayuda crítica” (evita abandonar, corrige destino/acceso, resuelve seguridad, exige respuesta <5 min) vs. fricción menor."}
+    ],
+    fields:[
+      {k:"llegadas", label:"Llegan correctamente SIN ayuda crítica", hint:"de 4", type:"number", min:0, max:4, req:true},
+      {k:"esfuerzo", label:"Esfuerzo mediano percibido", hint:"escala 1–5", type:"number", min:1, max:5, req:true},
+      {k:"desvios", label:"Desvíos / punto de abandono (textual)", type:"text"},
+      {k:"incidente", label:"Incidente de seguridad NO mitigado", hint:"descarta el mecanismo", type:"stop"},
+      {k:"stop_riesgo", label:"Riesgo físico durante el walkthrough", hint:"stop rule", type:"stop"}
+    ],
+    watch:[["Emergencia","no ejecutar sin responsable remoto y contacto del venue probados."],
+           ["Vulnerabilidad","sin rastreo continuo; detener ante riesgo físico o emocional."]]
+  },
+  {
+    id:"H3", name:"Interacción autoguiada", short:"activity first",
+    mom:"Interacción", evi:3,
+    status:"Prioridad alta",
+    risk:"El grupo inicia y sostiene la interacción <b>sin depender del facilitador</b> ni sentirse obligado.",
+    umbral:"≥ 3 de 4 participan sin prompt personal, ≤ 2 prompts críticos, nadie > 50% de turnos, seguridad ≥ 4/5. Muestra: 4 usuarios.",
+    gate:true,
+    prep:[
+      {h:"Preparar"},
+      {t:"Micro misión concreta: una primera acción común."},
+      {t:"Microencuentro Mago de Oz de 25 min: 4 usuarios + host simulado discreto."},
+      {t:"Triggers de activación del host definidos por escrito (solo ante señales observables)."},
+      {t:"Misma actividad, tiempo y consigna para todos."}
+    ],
+    fields:[
+      {k:"participan", label:"Entran a la acción sin prompt personal", hint:"de 4", type:"number", min:0, max:4, req:true},
+      {k:"prompts", label:"Prompts críticos del host usados", type:"number", min:0, req:true},
+      {k:"maxturnos", label:"Mayor % de turnos de una sola persona", hint:"distribución de voz", type:"number", min:0, max:100, req:true},
+      {k:"seguridad", label:"Seguridad percibida", hint:"escala 1–5", type:"number", min:1, max:5, req:true},
+      {k:"stop_inc", label:"Presión, exclusión o incidente", hint:"stop rule — detener la dinámica", type:"stop"}
+    ],
+    watch:[["Interacción","detener toda dinámica que fuerce intimidad o exponga a alguien."],
+           ["Alcance","retirar cualquier afirmación de amistad, bienestar o reducción de soledad."]]
+  },
+  {
+    id:"H4", name:"Continuidad recíproca", short:"doble opt-in",
+    mom:"Continuidad", evi:2,
+    status:"Pendiente crítica",
+    risk:"El agrado se convierte en <b>doble opt-in</b> y luego en una <b>acción fechada</b>. Depende de haber corrido H3.",
+    umbral:"≥ 2 de 4 con doble opt-in en 72 h y ≥ 1 acción fechada en 14 días. Muestra: 4 usuarios del mismo microencuentro.",
+    prep:[
+      {h:"Preparar"},
+      {t:"Cierre “Pulso privado” que separa agrado / intención / siguiente acción (agrado e intención NO cuentan como continuidad)."},
+      {t:"Ventana definida: señal privada · doble opt-in a 72 h · seguimiento de acción a 14 días."},
+      {t:"4 usuarios del MISMO microencuentro (requiere haber corrido H3)."}
+    ],
+    fields:[
+      {k:"opt", label:"Logran doble opt-in en 72 h", hint:"de 4", type:"number", min:0, max:4, req:true},
+      {k:"accion", label:"Acciones fechadas en 14 días", hint:"de 4", type:"number", min:0, max:4, req:true},
+      {k:"agrado", label:"Agrado promedio (registro)", hint:"1–5 · no cuenta como continuidad", type:"number", min:0, max:5},
+      {k:"stop_contacto", label:"Contacto unilateral / no deseado", hint:"stop rule — silencio ≠ consentimiento", type:"stop"}
+    ],
+    watch:[["Continuidad","silencio ≠ consentimiento; cancelar el vínculo ante señal unilateral."],
+           ["Privacidad","no se comparten contactos hasta el doble opt-in recíproco."]]
+  }
+];
+
+/* ------------------------------------------------------------------ *
+ * Motor de decisión — reglas provisionales de la guía P4             *
+ * ------------------------------------------------------------------ */
+const V = (s,k,say,extra)=>({s,k,say,...extra});
+const espera = ()=>V("EN ESPERA","wait","Completa el registro para calcular la decisión. <span class='rule'>Regla de secuencia: no se decide si Registrar no está completo.</span>");
+const stop = say=>V("STOP","stop", say+" <span class='rule'>Una stop rule detiene la prueba aunque el número sea favorable.</span>");
+const persev=(say,m)=>V("PERSEVERAR","go",say,{metrics:m});
+const iter=(say,m)=>V("ITERAR","iter",say,{metrics:m});
+const kill=(say,m)=>V("DESCARTAR","kill",say,{metrics:m});
+const pend=(say,m)=>V("PENDIENTE","wait",say,{metrics:m});
+const ready=(v,keys)=>keys.every(k=>v[k]!==""&&v[k]!=null&&v[k]!==undefined);
+
+const ENGINE = {
+  H1(v){
+    if(v.stop_engano) return stop("Engaño o confusión material sobre el cobro.");
+    if(!ready(v,["visitas","reservas","comprension"])) return espera();
+    const vis=+v.visitas, res=+v.reservas, conv=vis>0?res/vis*100:0;
+    const m=[["Conversión",conv.toFixed(1)+"%"],["Reservas",res],["Visitas",vis]];
+    if(vis<20) return pend(`Aún no alcanzas la muestra mínima de <b>20 visitas</b> calificadas (llevas ${vis}). Sigue recolectando antes de decidir.`,m);
+    if(conv>=5 && res>=2){
+      if(v.comprension==="deficiente") return iter(`Conversión ${conv.toFixed(1)}% con ${res} reservas, pero <b>comprensión deficiente</b> del precio → iterar el mensaje. <span class='rule'>Regla: ≥5% con comprensión deficiente ⇒ iterar.</span>`,m);
+      return persev(`Conversión ${conv.toFixed(1)}% (≥5%) y ${res} reservas (≥2) → mantener precio y promesa; pasar a depósito reembolsable con nueva confirmación, política, responsable y plazo. <span class='rule'>Regla: ≥5% y ≥2 reservas ⇒ perseverar.</span>`,m);
+    }
+    if(conv>=2 && conv<5) return iter(`Conversión ${conv.toFixed(1)}% (2–4,9%) → iterar mensaje, actividad, reversibilidad o precio. <span class='rule'>Regla: 2–4,9% ⇒ iterar.</span>`,m);
+    if((conv<2 && vis>=40) || (res===0 && vis>=40)) return kill(`${res===0?"0 reservas":"Conversión "+conv.toFixed(1)+"%"} con ${vis} visitas (≥40) → descartar la <b>combinación precio-oferta actual, no la necesidad de Mateo</b>. <span class='rule'>Regla: &lt;2% o 0 reservas con ≥40 ⇒ descartar.</span>`,m);
+    return pend(`Señal débil (${conv.toFixed(1)}%, ${res} reservas) con ${vis} visitas: aún no hay muestra suficiente para descartar. Sigue hasta ≥40 visitas calificadas.`,m);
+  },
+  H2(v){
+    if(v.stop_riesgo) return stop("Riesgo físico durante el walkthrough → detener.");
+    if(!ready(v,["llegadas","esfuerzo"])) return espera();
+    const ll=+v.llegadas, esf=+v.esfuerzo;
+    const m=[["Llegan sin ayuda",ll+"/4"],["Esfuerzo",esf+"/5"]];
+    if(v.incidente) return kill("Incidente de seguridad no mitigado → descartar el mecanismo y rediseñar la asistencia. <span class='rule'>Un incidente pesa más que la métrica.</span>",m);
+    if(ll<=1) return kill(`${ll} de 4 sin ayuda crítica (≤1) → descartar el mecanismo; rediseñar la asistencia. <span class='rule'>Regla: ≤1 de 4 ⇒ descartar.</span>`,m);
+    if(ll>=3 && esf<=3) return persev(`${ll} de 4 sin ayuda crítica y esfuerzo mediano ${esf}/5 (≤3), cero incidente → conservar la ficha y probar en otra actividad. <span class='rule'>Regla: ≥3/4, esfuerzo ≤3, cero incidente ⇒ perseverar.</span>`,m);
+    if(ll===2) return iter("2 de 4 sin ayuda crítica → iterar contenido, orden, contingencia o canal. <span class='rule'>Regla: 2 de 4 ⇒ iterar.</span>",m);
+    return iter(`${ll} de 4 llegan pero esfuerzo mediano ${esf}/5 (alto) con fallas reparables → corregir la información. <span class='rule'>Regla: esfuerzo 4–5/5 reparable ⇒ iterar.</span>`,m);
+  },
+  H3(v){
+    if(v.stop_inc) return stop("Presión, exclusión o incidente → detener la dinámica (y descartar esta dinámica, no el principio “activity first”).");
+    if(!ready(v,["participan","prompts","maxturnos","seguridad"])) return espera();
+    const p=+v.participan, pr=+v.prompts, mt=+v.maxturnos, seg=+v.seguridad;
+    const m=[["Participan",p+"/4"],["Prompts",pr],["Turno máx",mt+"%"],["Seguridad",seg+"/5"]];
+    if(p<=1) return kill(`${p} de 4 participan (≤1) → descartar esta dinámica, no el principio “activity first”. <span class='rule'>Regla: ≤1 de 4 ⇒ descartar dinámica.</span>`,m);
+    if(p>=3 && pr<=2 && mt<=50 && seg>=4) return persev(`${p} de 4 participan, ${pr} prompts (≤2), turno máx ${mt}% (≤50%), seguridad ${seg}/5 (≥4) → conservar actividad y micro misión; reducir presencia del host si el grupo fluye. <span class='rule'>Regla: ≥3/4, ≤2 prompts, ≤50% turnos, seg ≥4 ⇒ perseverar.</span>`,m);
+    if(p===2) return iter("2 de 4 participan → ajustar arquitectura social o nivel de apoyo. <span class='rule'>Regla: 2 de 4 ⇒ iterar.</span>",m);
+    const f=[];
+    if(pr>2) f.push(`${pr} prompts (&gt;2)`);
+    if(mt>50) f.push(`turno máx ${mt}% (&gt;50%)`);
+    if(seg<4) f.push(`seguridad ${seg}/5 (&lt;4)`);
+    return iter(`${p} de 4 participan pero ${f.join(", ")} → iterar arquitectura social o nivel de apoyo. <span class='rule'>Distribución desigual con señales de mejora ⇒ iterar.</span>`,m);
+  },
+  H4(v){
+    if(v.stop_contacto) return stop("Contacto unilateral / no deseado → cancelar el emparejamiento y registrar incidente. Silencio nunca es consentimiento.");
+    if(!ready(v,["opt","accion"])) return espera();
+    const d=+v.opt, a=+v.accion;
+    const m=[["Doble opt-in",d+"/4"],["Acción fechada",a+"/4"]];
+    if(d===0) return kill("0 de 4 con doble opt-in → descartar el mecanismo de continuidad recíproca. <span class='rule'>Regla: 0 de 4 ⇒ descartar.</span>",m);
+    if(d>=2 && a>=1) return persev(`${d} de 4 con doble opt-in en 72 h (≥2) y ${a} acción(es) fechada(s) (≥1) → conservar la señal recíproca y probar repetición. <span class='rule'>Regla: ≥2 opt-in y ≥1 acción ⇒ perseverar.</span>`,m);
+    if(d===1) return iter("1 doble opt-in → reducir carga, mejorar timing u ofrecer una acción más concreta. <span class='rule'>Regla: 1 opt-in ⇒ iterar.</span>",m);
+    return iter(`${d} doble opt-in pero 0 acciones fechadas: <b>intención sin acción</b> → ofrecer una acción más concreta. <span class='rule'>Agrado/intención sin acción ⇒ iterar.</span>`,m);
+  }
+};
+
+/* ------------------------------------------------------------------ *
+ * Estado + persistencia local                                        *
+ * ------------------------------------------------------------------ */
+const KEY="sintonia-piloto-p4-v1";
+let STATE={};
+try{ STATE=JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ STATE={}; }
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(STATE)); }catch(e){} }
+function get(id){ return STATE[id]||(STATE[id]={prep:{},reg:{},rep:"",interp:"",impl:{},salv:""}); }
+
+/* ------------------------------------------------------------------ *
+ * Render                                                             *
+ * ------------------------------------------------------------------ */
+const tabsEl=document.getElementById("tabs");
+const panelsEl=document.getElementById("panels");
+let active="H1";
+
+function prepList(exp){
+  const st=get(exp.id).prep;
+  let html="";
+  if(exp.gate){
+    html+=`<div class="subhead">${GATE.head}</div><ul class="chk" data-scope="gate">`;
+    GATE.items.forEach((it,i)=>{
+      const id=`${exp.id}-gate-${i}`, on=st[id]?"checked":"";
+      html+=`<li><input type="checkbox" id="${id}" data-prep="${id}" ${on}>
+        <span class="txt"><label for="${id}">${it.gate?`<span class="gate-flag">excluyente</span>`:""}${it.t}</label></span></li>`;
+    });
+    html+=`</ul>`;
+  }
+  exp.prep.forEach((it,i)=>{
+    if(it.h){ html+=`<div class="subhead">${it.h}</div><ul class="chk">`; return; }
+    const id=`${exp.id}-prep-${i}`, on=st[id]?"checked":"";
+    html+=`<li><input type="checkbox" id="${id}" data-prep="${id}" ${on}>
+      <span class="txt"><label for="${id}">${it.t}</label></span></li>`;
+  });
+  html+=`</ul>`;
+  return html;
+}
+
+function fieldHTML(exp,f){
+  const st=get(exp.id).reg; const val=st[f.k]??"";
+  if(f.type==="stop"){
+    const on=val===true||val==="on"?"checked":"";
+    return `<div class="field danger"><input type="checkbox" id="${exp.id}-${f.k}" data-reg="${f.k}" data-type="stop" ${on}>
+      <div><label for="${exp.id}-${f.k}">${f.label}</label>${f.hint?`<div class="hint">${f.hint}</div>`:""}</div></div>`;
+  }
+  let ctrl;
+  if(f.type==="select"){
+    ctrl=`<select data-reg="${f.k}" id="${exp.id}-${f.k}">`+
+      f.opts.map(o=>`<option value="${o[0]}" ${val===o[0]?"selected":""}>${o[1]}</option>`).join("")+`</select>`;
+  }else if(f.type==="text"){
+    ctrl=`<input type="text" data-reg="${f.k}" id="${exp.id}-${f.k}" value="${String(val).replace(/"/g,"&quot;")}" placeholder="…">`;
+  }else{
+    ctrl=`<input type="number" data-reg="${f.k}" id="${exp.id}-${f.k}" value="${val}" ${f.min!=null?`min="${f.min}"`:""} ${f.max!=null?`max="${f.max}"`:""} step="1">`;
+  }
+  return `<div class="field"><label for="${exp.id}-${f.k}">${f.label}${f.req?" *":""} ${f.hint?`<span class="hint">· ${f.hint}</span>`:""}</label>${ctrl}</div>`;
+}
+
+function pips(n){ let s=""; for(let i=0;i<5;i++) s+=`<span class="pip ${i<n?"on":""}"></span>`; return s; }
+
+function panelHTML(exp){
+  const regFields=exp.fields.map(f=>fieldHTML(exp,f)).join("");
+  const watch=exp.watch.map(w=>`<li><b>${w[0]}:</b> ${w[1]}</li>`).join("");
+  const st=get(exp.id);
+  return `<section class="exp" data-exp="${exp.id}" ${exp.id===active?"":"hidden"}>
+    <div class="ex-head">
+      <div>
+        <p class="mom">${exp.mom}</p>
+        <h2>${exp.id} · ${exp.name}</h2>
+        <p class="risk"><b>Supuesto más riesgoso:</b> ${exp.risk}</p>
+      </div>
+      <div class="evi">${exp.status}<br>evidencia ${exp.evi}/5<div class="bar">${pips(exp.evi)}</div></div>
+    </div>
+
+    <div class="block umbral">
+      <h3><span class="step">Umbral</span> · fijado antes de probar</h3>
+      <div class="body">
+        <span class="lock">🔒 no se mueve tras ver resultados</span><br>
+        ${exp.umbral}
+        ${exp.stim?`<span class="stim">El pase se muestra como <b>COP 39.900 + valor de la actividad</b>, hoy SIN cobro — estímulo experimental, nunca un precio validado.</span>`:""}
+      </div>
+    </div>
+
+    <div class="block">
+      <h3><span class="step">Preparar</span> · listo para probar
+        <span class="ready-tag no" data-ready="${exp.id}">◻ incompleto</span></h3>
+      <div class="body">${prepList(exp)}</div>
+    </div>
+
+    <div class="block">
+      <h3><span class="step">Registrar</span> · conducta observada, sin interpretación</h3>
+      <div class="body"><div class="grid">${regFields}</div></div>
+    </div>
+
+    <div class="block decide">
+      <h3><span class="step">Decidir</span> · regla perseverar / iterar / descartar</h3>
+      <div class="body">
+        <div class="stepper" data-stepper="${exp.id}">
+          <span class="s" data-step="prep"><span class="num">1</span> Preparar</span>
+          <span class="s" data-step="reg"><span class="num">2</span> Registrar</span>
+          <span class="s" data-step="dec"><span class="num">3</span> Decidir</span>
+        </div>
+        <div class="verdict v-wait" data-verdict="${exp.id}">
+          <span class="badge wait-b">EN ESPERA</span>
+          <div class="say">Completa el registro para calcular la decisión.</div>
+        </div>
+        <div data-metrics="${exp.id}"></div>
+        <div class="warn-seq" data-seqwarn="${exp.id}" hidden>⚠ <span></span></div>
+        <ul class="watch">${watch}</ul>
+      </div>
+    </div>
+
+    <div class="block cierre">
+      <h3><span class="step">Cierre</span> · clasificación e interpretación</h3>
+      <div class="body">
+        <div>
+          <div class="subhead" style="margin:0 0 8px">Clasificación del hallazgo</div>
+          <div class="rep" data-rep="${exp.id}">
+            <label class="opt" data-val="Robusto"><input type="radio" name="rep-${exp.id}" value="Robusto" ${st.rep==="Robusto"?"checked":""}>Robusto</label>
+            <label class="opt" data-val="Emergente"><input type="radio" name="rep-${exp.id}" value="Emergente" ${st.rep==="Emergente"?"checked":""}>Emergente</label>
+            <label class="opt" data-val="Pendiente"><input type="radio" name="rep-${exp.id}" value="Pendiente" ${st.rep==="Pendiente"?"checked":""}>Pendiente</label>
+          </div>
+          <div class="ceiling" data-ceiling="${exp.id}" hidden>⚠ Con n=4 / 20–40 visitas el techo natural es <b>Emergente</b>. Declarar Robusto exige justificarlo por recurrencia o triangulación.</div>
+        </div>
+        <div class="interpret">
+          <label>Lectura del equipo — interpretación, separada de la evidencia registrada arriba</label>
+          <textarea data-interp="${exp.id}" placeholder="Primero el dato; aquí la lectura del equipo, etiquetada como interpretación.">${st.interp||""}</textarea>
+        </div>
+        <div>
+          <div class="subhead" style="margin:0 0 8px">Implicaciones</div>
+          <div class="impl">
+            <div class="field"><label>a) JTBD de Mateo</label><textarea data-impl="jtbd" data-exp="${exp.id}">${(st.impl&&st.impl.jtbd)||""}</textarea></div>
+            <div class="field"><label>b) Matriz de oportunidades</label><textarea data-impl="matriz" data-exp="${exp.id}">${(st.impl&&st.impl.matriz)||""}</textarea></div>
+            <div class="field"><label>c) Siguiente fase — Aplicación del Reto de Innovación</label><textarea data-impl="fase" data-exp="${exp.id}">${(st.impl&&st.impl.fase)||""}</textarea></div>
+          </div>
+        </div>
+        <div class="field"><label>Salvaguardas activadas / stop rules disparadas</label><textarea data-salv="${exp.id}" placeholder="¿Se disparó alguna stop rule? ¿Cuál y qué se hizo?">${st.salv||""}</textarea></div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function verdictMini(exp){
+  const v=ENGINE[exp.id](get(exp.id).reg);
+  return `<span class="card-verdict-mini ${v.k}">${v.s}</span>`;
+}
+
+function renderTabs(){
+  tabsEl.innerHTML=EXPS.map(e=>{
+    const v=ENGINE[e.id](get(e.id).reg);
+    return `<button class="tab" role="tab" data-tab="${e.id}" aria-selected="${e.id===active}">
+      <span class="t-id"><span>${e.id} · ${e.short}</span><span class="dot ${v.k}-b"></span></span>
+      <span class="t-name">${e.name}</span>
+      <span class="t-mom">${e.mom.split(" · ")[0]} · <span class="card-verdict-mini ${v.k}">${v.s}</span></span>
+    </button>`;
+  }).join("");
+}
+
+function renderPanels(){ panelsEl.innerHTML=EXPS.map(panelHTML).join(""); }
+
+/* recompute a single experiment's derived UI */
+function refresh(id){
+  const exp=EXPS.find(e=>e.id===id);
+  const st=get(id);
+  // prepar.completeness
+  const boxes=[...panelsEl.querySelectorAll(`[data-exp="${id}"] [data-prep]`)];
+  const prepDone=boxes.length>0 && boxes.every(b=>b.checked);
+  const readyTag=panelsEl.querySelector(`[data-ready="${id}"]`);
+  if(readyTag){ readyTag.className="ready-tag "+(prepDone?"yes":"no");
+    readyTag.textContent=prepDone?"✓ listo para probar":"◻ incompleto"; }
+  // decision
+  const v=ENGINE[id](st.reg);
+  const vEl=panelsEl.querySelector(`[data-verdict="${id}"]`);
+  vEl.className="verdict v-"+v.k;
+  vEl.innerHTML=`<span class="badge ${v.k}-b">${v.s}</span><div class="say">${v.say}</div>`;
+  // metrics
+  const mEl=panelsEl.querySelector(`[data-metrics="${id}"]`);
+  mEl.innerHTML = v.metrics ? `<div class="metrics">${v.metrics.map(x=>`<span class="m">${x[0]}: <b>${x[1]}</b></span>`).join("")}</div>` : "";
+  // stepper
+  const regReq=exp.fields.filter(f=>f.req).map(f=>f.k);
+  const regDone=ready(st.reg,regReq);
+  const decided=v.s!=="EN ESPERA";
+  const sp=panelsEl.querySelector(`[data-stepper="${id}"]`);
+  const set=(sel,cls)=>{const el=sp.querySelector(`[data-step="${sel}"]`);el.className="s"+(cls?" "+cls:"");};
+  set("prep", prepDone?"done":"warn");
+  set("reg", regDone?"done":(decided?"":"active"));
+  set("dec", decided?(v.k==="wait"?"active":"done"):"active");
+  // sequence warning
+  const sw=panelsEl.querySelector(`[data-seqwarn="${id}"]`);
+  if(regDone && !prepDone){ sw.hidden=false;
+    sw.querySelector("span").textContent="Registro completo con Preparar incompleto. Según la regla de secuencia no deberías estar registrando ni decidiendo aún — completa la lista de listo-para-probar."; }
+  else sw.hidden=true;
+  // ceiling warning
+  const ce=panelsEl.querySelector(`[data-ceiling="${id}"]`);
+  if(ce) ce.hidden = st.rep!=="Robusto";
+  // rep chips
+  panelsEl.querySelectorAll(`[data-rep="${id}"] .opt`).forEach(o=>{
+    const val=o.getAttribute("data-val");
+    o.classList.toggle("sel-rob",st.rep===val&&val==="Robusto");
+    o.classList.toggle("sel-eme",st.rep===val&&val==="Emergente");
+    o.classList.toggle("sel-pen",st.rep===val&&val==="Pendiente");
+  });
+  // tab mini verdict
+  renderTabs();
+}
+
+/* ------------------------------------------------------------------ *
+ * Events                                                             *
+ * ------------------------------------------------------------------ */
+tabsEl.addEventListener("click",e=>{
+  const b=e.target.closest("[data-tab]"); if(!b) return;
+  active=b.getAttribute("data-tab");
+  panelsEl.querySelectorAll(".exp").forEach(s=>s.hidden = s.getAttribute("data-exp")!==active);
+  renderTabs();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+panelsEl.addEventListener("input",handle);
+panelsEl.addEventListener("change",handle);
+function handle(e){
+  const t=e.target;
+  const expSec=t.closest("[data-exp]"); if(!expSec) return;
+  const id=expSec.getAttribute("data-exp"); const st=get(id);
+  if(t.hasAttribute("data-prep")){ st.prep[t.getAttribute("data-prep")]=t.checked; }
+  else if(t.hasAttribute("data-reg")){
+    st.reg[t.getAttribute("data-reg")] = t.getAttribute("data-type")==="stop" ? t.checked : t.value;
+  }
+  else if(t.name && t.name.startsWith("rep-")){ st.rep=t.value; }
+  else if(t.hasAttribute("data-interp")){ st.interp=t.value; }
+  else if(t.hasAttribute("data-impl")){ st.impl=st.impl||{}; st.impl[t.getAttribute("data-impl")]=t.value; }
+  else if(t.hasAttribute("data-salv")){ st.salv=t.value; }
+  save(); refresh(id);
+}
+
+/* theme toggle */
+const root=document.documentElement;
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const cur=root.getAttribute("data-theme");
+  const sysDark=window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const now = cur ? cur : (sysDark?"dark":"light");
+  root.setAttribute("data-theme", now==="dark"?"light":"dark");
+});
+
+/* boot */
+renderTabs();
+renderPanels();
+EXPS.forEach(e=>refresh(e.id));
+
+</script>
+</body>
+</html>

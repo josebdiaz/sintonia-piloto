@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Investigadores · Sintonía P4</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f4f1ec; --card:#ffffff; --card-2:#faf8f4; --ink:#211f1a; --muted:#6a655c;
+    --line:#e4ded4; --line-2:#d6cec1;
+    --pine:#0f6e63; --pine-ink:#0a4f47; --pine-soft:#e0efec;
+    --honey:#c67a1e; --honey-soft:#f7ebd8;
+    --shadow:0 1px 2px rgba(33,31,26,.05), 0 10px 30px -16px rgba(33,31,26,.25);
+    --r:14px;
+    --disp:"Bricolage Grotesque",Georgia,serif;
+    --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  :root[data-theme="dark"]{
+    --bg:#151310; --card:#1e1b17; --card-2:#191612; --ink:#efeae1; --muted:#a49d90;
+    --line:#2c281f; --line-2:#3a3529;
+    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
+    --honey:#dd9c44; --honey-soft:#2f2513;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px -18px rgba(0,0,0,.8);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:28px 20px 70px}
+  a{color:var(--pine-ink)}
+  .kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--pine);margin:0 0 10px}
+  h1{font-family:var(--disp);font-weight:700;font-size:30px;line-height:1.1;letter-spacing:-.02em;margin:0 0 10px}
+  .lead{font-size:15.5px;color:var(--muted);max-width:64ch;margin:0 0 8px}
+  .warn{margin-top:14px;display:flex;gap:11px;align-items:flex-start;background:var(--honey-soft);border:1px solid var(--honey);border-radius:12px;padding:13px 15px;font-size:13.5px}
+  .warn b{color:var(--honey)}
+  .section{margin-top:28px}
+  .section h2{font-family:var(--disp);font-weight:600;font-size:19px;letter-spacing:-.01em;margin:0 0 6px}
+  .section .sub{color:var(--muted);font-size:13.5px;margin:0 0 16px;max-width:70ch}
+
+  /* orden de ejecución */
+  .flow{display:flex;flex-direction:column;gap:10px}
+  .fstep{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 17px;box-shadow:var(--shadow);display:flex;gap:14px}
+  .fstep .fn{font-family:var(--disp);font-weight:700;font-size:14px;width:30px;height:30px;flex:none;border-radius:50%;
+    display:grid;place-items:center;background:var(--pine-soft);color:var(--pine-ink)}
+  .fstep .ft{flex:1}
+  .fstep .ft b{display:block;font-size:15px;margin-bottom:2px}
+  .fstep .ft span{font-size:13px;color:var(--muted)}
+  .fstep .ft .mini{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .fstep .ft .mini a{font-size:12px;font-weight:600;color:var(--pine-ink);background:var(--pine-soft);border-radius:20px;padding:4px 11px;text-decoration:none}
+  .fstep .ft .mini a:hover{background:var(--pine);color:#fff}
+  .fstep .ft .mini span.doc{font-size:12px;color:var(--muted);background:var(--card-2);border:1px solid var(--line);border-radius:20px;padding:4px 11px}
+
+  /* tarjetas de herramientas */
+  .cards{display:flex;flex-direction:column;gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);
+    display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+  .card .ct{flex:1;min-width:220px}
+  .card .ct .ci{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--pine);margin:0 0 4px}
+  .card .ct b{display:block;font-size:15.5px;margin-bottom:3px}
+  .card .ct span{font-size:13px;color:var(--muted)}
+  .card .cbtn{font-family:var(--disp);font-weight:600;font-size:13.5px;color:#fff;background:var(--pine);
+    text-decoration:none;border-radius:9px;padding:9px 16px;white-space:nowrap}
+  .card .cbtn:hover{opacity:.9}
+  .card .cbtn.doc{background:transparent;color:var(--pine-ink);border:1.5px solid var(--line-2)}
+
+  /* mapa del sitio */
+  .tree{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);
+    font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.9;overflow-x:auto}
+  .tree .d{color:var(--muted)}
+  .tree a{color:var(--pine-ink);text-decoration:none}
+  .tree a:hover{text-decoration:underline}
+  .tree .note{color:var(--muted);font-family:var(--body)}
+
+  .foot{margin-top:30px;font-size:12px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line);padding-top:16px}
+  .foot b{color:var(--ink)}
+  @media (max-width:600px){ .card{flex-direction:column;align-items:stretch} .card .cbtn{text-align:center} }
+</style>
+</head>
+<body>
+<nav class="rnav" aria-label="Herramientas de investigadores">
+  <div class="rnav-in">
+    <a class="rnav-brand" href="./index.html"><span class="rnav-dot"></span> Sintonía · Investigadores</a>
+    <button class="rnav-toggle" id="rnavToggle" aria-label="Abrir menú" aria-expanded="false">&#9776;</button>
+    <div class="rnav-links" id="rnavLinks">
+      <a href="./index.html" data-page="index.html">Home</a>
+      <a href="./scorecards.html" data-page="scorecards.html">Scorecards</a>
+      <a href="./ejecucion.html" data-page="ejecucion.html">Ejecución</a>
+      <a href="./registro-h3.html" data-page="registro-h3.html">Registro H3</a>
+      <a href="./ficha-generador.html" data-page="ficha-generador.html">Ficha H2</a>
+      <a href="./guia-hosting.md" data-page="guia-hosting.md">Guía hosting</a>
+      <a href="../index.html" class="rnav-out">Sitio público &#8599;</a>
+    </div>
+  </div>
+</nav>
+<style>
+  .rnav{background:var(--card,#fff);border-bottom:1px solid var(--line,#e4ded4);position:sticky;top:0;z-index:80}
+  .rnav-in{max-width:900px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .rnav-brand{font-family:var(--disp,Georgia,serif);font-weight:700;font-size:14.5px;color:var(--ink,#211f1a);text-decoration:none;display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .rnav-dot{width:9px;height:9px;border-radius:50%;background:var(--pine,#0f6e63);flex:none}
+  .rnav-links{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center}
+  .rnav-links a{font-family:var(--body,sans-serif);font-size:13px;color:var(--muted,#6a655c);text-decoration:none;padding:4px 1px;border-bottom:2px solid transparent;white-space:nowrap}
+  .rnav-links a:hover{color:var(--ink,#211f1a)}
+  .rnav-links a.active{color:var(--pine-ink,#0a4f47);border-color:var(--pine,#0f6e63);font-weight:600}
+  .rnav-links a.rnav-out{color:var(--honey,#c67a1e)}
+  .rnav-toggle{display:none;border:1px solid var(--line-2,#d6cec1);background:none;border-radius:8px;padding:5px 10px;font-size:15px;cursor:pointer;color:var(--ink,#211f1a)}
+  @media (max-width:760px){
+    .rnav-toggle{display:inline-flex}
+    .rnav-links{display:none;flex-direction:column;width:100%;gap:10px;padding-top:10px;align-items:flex-start}
+    .rnav-links.open{display:flex}
+  }
+</style>
+<script>
+(function(){
+  var p=location.pathname.split("/").pop()||"index.html";
+  document.querySelectorAll(".rnav-links a[data-page]").forEach(function(a){
+    if(a.getAttribute("data-page")===p) a.classList.add("active");
+  });
+  var t=document.getElementById("rnavToggle"), l=document.getElementById("rnavLinks");
+  if(t) t.addEventListener("click",function(){
+    var open=l.classList.toggle("open");
+    t.setAttribute("aria-expanded",open?"true":"false");
+  });
+})();
+</script>
+
+<div class="wrap">
+  <p class="kicker">Uso interno del equipo · no compartir este enlace</p>
+  <h1>Herramientas de investigadores</h1>
+  <p class="lead">Todo lo que el equipo necesita para preparar, ejecutar, registrar y decidir los cuatro experimentos del Periodo 4 (H1–H4), enfocados en Mateo. Esta sección no está enlazada desde el sitio público ni indexada por buscadores.</p>
+  <div class="warn">
+    <span>⚠️</span>
+    <span><b>Antes de tocar cualquier herramienta:</b> el umbral de decisión de cada experimento se fija en la Scorecard y no se mueve después de ver los datos. Con n pequeño, el techo de un hallazgo es <b>Emergente</b>, nunca concluyente.</span>
+  </div>
+
+  <div class="section">
+    <h2>Orden de ejecución</h2>
+    <p class="sub">Cada experimento sigue el mismo ciclo: Preparar → Ejecutar → Registrar → Decidir. Así se recorre con las herramientas de esta sección.</p>
+    <div class="flow">
+      <div class="fstep">
+        <span class="fn">1</span>
+        <div class="ft">
+          <b>Preparar</b>
+          <span>Fija el umbral de decisión de H1–H4 antes de correr cualquier tanda. Se hace una sola vez por experimento, en la Scorecard.</span>
+          <div class="mini"><a href="./scorecards.html">Abrir Scorecards</a></div>
+        </div>
+      </div>
+      <div class="fstep">
+        <span class="fn">2</span>
+        <div class="ft">
+          <b>Ejecutar</b>
+          <span>El día de la tanda: qué decir, qué llevar, consentimientos y stop-rules de cada experimento, paso a paso.</span>
+          <div class="mini"><a href="./ejecucion.html">Abrir Tarjetas de ejecución</a>
+            <a href="./ficha-generador.html">Generar ficha de llegada (H2)</a></div>
+        </div>
+      </div>
+      <div class="fstep">
+        <span class="fn">3</span>
+        <div class="ft">
+          <b>Registrar</b>
+          <span>Datos en vivo del microencuentro (H3) más el análisis de la grabación, con el instrumento y el prompt de apoyo.</span>
+          <div class="mini"><a href="./registro-h3.html">Abrir Registro H3</a>
+            <a href="./prompt-analisis-video-h3.md">Prompt de análisis de video</a></div>
+        </div>
+      </div>
+      <div class="fstep">
+        <span class="fn">4</span>
+        <div class="ft">
+          <b>Decidir</b>
+          <span>Con los datos de vuelta en la Scorecard (algunos llegan solos desde los paneles públicos vía Apps Script), se aplica la regla de decisión fijada en el paso 1 — nunca al ojo.</span>
+          <div class="mini"><a href="./scorecards.html">Volver a Scorecards</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Herramientas</h2>
+    <p class="sub">Documentos de referencia y guías se abren o descargan; las demás son herramientas interactivas.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="ct"><p class="ci">Preparar · Decidir</p><b>Scorecards Piloto P4</b>
+          <span>Las 4 hipótesis (H1 WTP, H2 llegada, H3 interacción, H4 continuidad) con veredicto automático y clasificación Robusto/Emergente/Pendiente.</span></div>
+        <a class="cbtn" href="./scorecards.html">Abrir</a>
+      </div>
+      <div class="card">
+        <div class="ct"><p class="ci">Ejecutar</p><b>Tarjetas de ejecución H1–H4</b>
+          <span>Guía operativa del día de la tanda: qué decir, logística del café, consentimientos, stop-rules y cierre.</span></div>
+        <a class="cbtn" href="./ejecucion.html">Abrir</a>
+      </div>
+      <div class="card">
+        <div class="ct"><p class="ci">Ejecutar</p><b>Generador de ficha de llegada (H2)</b>
+          <span>Arma y previsualiza la ficha que se envía por WhatsApp antes de la sesión: mapa, menú y datos del anfitrión.</span></div>
+        <a class="cbtn" href="./ficha-generador.html">Abrir</a>
+      </div>
+      <div class="card">
+        <div class="ct"><p class="ci">Registrar</p><b>Instrumento de registro H3</b>
+          <span>Observación en vivo (participación, seguridad, incidentes) + análisis de la grabación, con veredicto automático.</span></div>
+        <a class="cbtn" href="./registro-h3.html">Abrir</a>
+      </div>
+      <div class="card">
+        <div class="ct"><p class="ci">Registrar · doc</p><b>Prompt de análisis de video (H3)</b>
+          <span>Instrucciones para analizar la grabación del microencuentro con rigor (timestamps, anonimización, sin decidir).</span></div>
+        <a class="cbtn doc" href="./prompt-analisis-video-h3.md">Ver</a>
+      </div>
+      <div class="card">
+        <div class="ct"><p class="ci">Setup · doc</p><b>Guía de hosting y Apps Script</b>
+          <span>Cómo publicar los sitios en GitHub Pages y montar el backend de Google Sheets + Apps Script.</span></div>
+        <a class="cbtn doc" href="./guia-hosting.md">Ver</a>
+      </div>
+      <div class="card">
+        <div class="ct"><p class="ci">Referencia · doc</p><b>Iteración futura: clusterización</b>
+          <span>Cómo pasar de agrupar a mano a proponer microgrupos con un algoritmo — pensado para probarse, no para prometerse.</span></div>
+        <a class="cbtn doc" href="./iteracion-clusterizacion.md">Ver</a>
+      </div>
+      <div class="card">
+        <div class="ct"><p class="ci">Referencia · doc</p><b>Prompt Lovable (H1)</b>
+          <span>Prompt para reconstruir la landing de H1 en Lovable si se necesita escalar fuera de GitHub Pages.</span></div>
+        <a class="cbtn doc" href="./prompt-lovable-h1.md">Ver</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Mapa del sitio</h2>
+    <p class="sub">El público solo ve la raíz. Esta sección vive en <code>/researchers/</code>, sin enlaces desde las páginas públicas y fuera de buscadores (<code>robots.txt</code>).</p>
+    <div class="tree">
+<span class="d">/</span> <span class="note">— sitio público, participantes</span><br>
+<span class="d">├─ </span><a href="../index.html">index.html</a> <span class="note">landing H1 · café-coworking</span><br>
+<span class="d">├─ </span><a href="../ficha.html">ficha.html</a> <span class="note">ficha de llegada H2</span><br>
+<span class="d">├─ </span><a href="../calificar.html">calificar.html</a> <span class="note">calificación gamificada H3</span><br>
+<span class="d">└─ </span><a href="../pulso.html">pulso.html</a> <span class="note">pulso privado H4</span><br>
+<br>
+<span class="d">/researchers/</span> <span class="note">— equipo, no indexado</span><br>
+<span class="d">├─ </span><a href="./index.html">index.html</a> <span class="note">este Home</span><br>
+<span class="d">├─ </span><a href="./scorecards.html">scorecards.html</a> <span class="note">Preparar · Decidir</span><br>
+<span class="d">├─ </span><a href="./ejecucion.html">ejecucion.html</a> <span class="note">Ejecutar</span><br>
+<span class="d">├─ </span><a href="./ficha-generador.html">ficha-generador.html</a> <span class="note">Ejecutar · genera la ficha pública</span><br>
+<span class="d">├─ </span><a href="./registro-h3.html">registro-h3.html</a> <span class="note">Registrar</span><br>
+<span class="d">├─ </span><a href="./guia-hosting.md">guia-hosting.md</a><br>
+<span class="d">├─ </span><a href="./prompt-analisis-video-h3.md">prompt-analisis-video-h3.md</a><br>
+<span class="d">├─ </span><a href="./iteracion-clusterizacion.md">iteracion-clusterizacion.md</a><br>
+<span class="d">└─ </span><a href="./prompt-lovable-h1.md">prompt-lovable-h1.md</a><br>
+    </div>
+  </div>
+
+  <p class="foot">
+    Prueba piloto de investigación · Proyecto <b>Sintonía</b> · Maestría en Gestión de la Innovación, Universidad Icesi.<br>
+    Las decisiones oficiales se registran en la Scorecard con el umbral fijado antes de ver los datos, no en los paneles públicos.
+  </p>
+</div>
+</body>
+</html>

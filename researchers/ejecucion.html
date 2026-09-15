@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&display=swap">
+<title>Tarjetas de ejecución P4</title>
+<style>
+  :root{
+    --bg:#f4f1ec; --card:#ffffff; --card-2:#faf8f4; --ink:#211f1a; --muted:#6a655c;
+    --line:#e7e1d7; --line-2:#d6cec1;
+    --pine:#0f6e63; --pine-ink:#0a4f47; --pine-soft:#e0efec;
+    --honey:#c67a1e; --honey-soft:#f7ebd8;
+    --stop:#b23b2e; --stop-soft:#f7e4e1;
+    --shadow:0 1px 2px rgba(33,31,26,.05),0 12px 30px -18px rgba(33,31,26,.28);
+    --disp:"Bricolage Grotesque",Georgia,serif; --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  :root[data-theme="dark"]{
+    --bg:#151310;--card:#1e1b17;--card-2:#191612;--ink:#efeae1;--muted:#a49d90;--line:#2c281f;--line-2:#3a3529;
+    --pine:#41b9a9;--pine-ink:#8fe0d4;--pine-soft:#12302b;--honey:#dd9c44;--honey-soft:#2f2513;--stop:#e07567;--stop-soft:#331714;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 36px -20px rgba(0,0,0,.85);}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:26px 20px 64px}
+  .head{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:flex-end;margin-bottom:16px}
+  .eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--pine);margin:0 0 8px}
+  h1{font-family:var(--disp);font-weight:700;font-size:27px;letter-spacing:-.025em;margin:0;line-height:1.05}
+  .head .sub{color:var(--muted);font-size:13.5px;margin:8px 0 0;max-width:56ch}
+  .theme-btn{border:1px solid var(--line-2);background:var(--card);color:var(--muted);font-family:var(--body);font-size:12px;border-radius:20px;padding:6px 13px;cursor:pointer;white-space:nowrap}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 16px;border-bottom:1px solid var(--line);padding-bottom:0}
+  .tab{border:1px solid var(--line);border-bottom:none;background:var(--card-2);color:var(--muted);
+    font-family:var(--disp);font-weight:600;font-size:14px;border-radius:10px 10px 0 0;padding:11px 16px;cursor:pointer;margin-bottom:-1px}
+  .tab .mm{display:block;font-family:var(--body);font-weight:400;font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+  .tab[aria-selected="true"]{background:var(--card);color:var(--ink);border-color:var(--line);border-bottom:1px solid var(--card)}
+  .tab[aria-selected="true"] .mm{color:var(--pine)}
+
+  .head2{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;box-shadow:var(--shadow);
+    display:grid;grid-template-columns:1fr auto;gap:12px 18px;align-items:start;margin-bottom:12px}
+  .head2 .mom{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--pine);margin:0 0 5px}
+  .head2 h2{font-family:var(--disp);font-weight:700;font-size:20px;margin:0;letter-spacing:-.02em}
+  .head2 .risk{margin:9px 0 0;font-size:13.5px;color:var(--muted);max-width:60ch}
+  .head2 .risk b{color:var(--ink);font-weight:600}
+  .evi{justify-self:end;text-align:right;font-size:11.5px;color:var(--muted);white-space:nowrap}
+  .evi .bar{display:flex;gap:3px;margin-top:5px;justify-content:flex-end}
+  .evi .pip{width:11px;height:6px;border-radius:2px;background:var(--line-2)}
+  .evi .pip.on{background:var(--pine)}
+
+  .locks{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .lock{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 12px;color:var(--muted)}
+  .lock b{color:var(--ink)}
+
+  .grid{display:flex;flex-direction:column;gap:12px}
+  .phase{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+  .ptop{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+  .pnum{font-family:var(--disp);font-weight:700;font-size:14px;width:28px;height:28px;flex:none;border-radius:8px;display:grid;place-items:center;background:var(--pine);color:#fff}
+  .ptitle{font-family:var(--disp);font-weight:600;font-size:16px}
+  .plabel{font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-top:1px}
+  ul.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  ul.list li{display:flex;gap:10px;font-size:13.5px;align-items:flex-start}
+  ul.list li .mk{flex:none;margin-top:1px;color:var(--pine);font-weight:700}
+  .tag{display:inline-block;font-size:11px;font-weight:600;background:var(--pine-soft);color:var(--pine-ink);border-radius:5px;padding:1px 6px}
+  .split{display:grid;gap:10px;margin-top:2px}
+  .mini{border-radius:10px;padding:11px 13px}
+  .mini .mh{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+  .mini.watch{background:var(--pine-soft)} .mini.watch .mh{color:var(--pine-ink)}
+  .mini.avoid{background:var(--honey-soft)} .mini.avoid .mh{color:var(--honey)}
+  .mini ul{margin:0;padding-left:15px;font-size:13px} .mini ul li{margin-bottom:3px}
+  .reg{display:grid;gap:8px}
+  .reg .r{display:flex;justify-content:space-between;gap:12px;align-items:baseline;border-bottom:1px dashed var(--line-2);padding-bottom:8px;font-size:13.5px}
+  .reg .r:last-child{border:none}
+  .reg .r .rv{font-family:var(--disp);font-weight:600;color:var(--pine-ink);white-space:nowrap;font-size:12.5px}
+  .phase.stop{border-color:var(--stop);background:var(--stop-soft)}
+  .phase.stop .pnum{background:var(--stop)} .phase.stop .ptitle{color:var(--stop)}
+  ul.stops{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  ul.stops li{display:flex;gap:10px;font-size:13.5px;align-items:flex-start}
+  ul.stops li::before{content:"■";color:var(--stop);font-size:9px;margin-top:4px;flex:none}
+  ul.stops b{font-weight:600}
+  .note{background:var(--honey-soft);border-radius:10px;padding:11px 14px;font-size:12.5px;color:var(--honey);margin-top:12px}
+  .note b{color:var(--honey)}
+  .howto{list-style:none;margin:0;padding:0;counter-reset:s;display:flex;flex-direction:column;gap:12px}
+  .howto li{position:relative;padding-left:36px;font-size:13.5px;line-height:1.55}
+  .howto li b{font-weight:600}
+  .howto li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--honey-soft);color:var(--honey);font-family:var(--disp);font-weight:700;font-size:12px;display:grid;place-items:center}
+  .msg{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:12px}
+  .msg .mh{font-family:var(--disp);font-weight:600;font-size:14px;margin-bottom:8px}
+  .msg pre{font-family:var(--body);font-size:13.5px;line-height:1.55;white-space:pre-wrap;margin:0;color:var(--ink)}
+  .foot{margin-top:22px;font-size:12px;color:var(--muted);line-height:1.6;text-align:center}
+  .foot b{color:var(--ink)}
+  [hidden]{display:none!important}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:640px){.grid{grid-template-columns:1fr}.head2{grid-template-columns:1fr}.evi{justify-self:start;text-align:left}.evi .bar{justify-content:flex-start}}
+</style>
+</head>
+<body>
+<nav class="rnav" aria-label="Herramientas de investigadores">
+  <div class="rnav-in">
+    <a class="rnav-brand" href="./index.html"><span class="rnav-dot"></span> Sintonía · Investigadores</a>
+    <button class="rnav-toggle" id="rnavToggle" aria-label="Abrir menú" aria-expanded="false">&#9776;</button>
+    <div class="rnav-links" id="rnavLinks">
+      <a href="./index.html" data-page="index.html">Home</a>
+      <a href="./scorecards.html" data-page="scorecards.html">Scorecards</a>
+      <a href="./ejecucion.html" data-page="ejecucion.html">Ejecución</a>
+      <a href="./registro-h3.html" data-page="registro-h3.html">Registro H3</a>
+      <a href="./ficha-generador.html" data-page="ficha-generador.html">Ficha H2</a>
+      <a href="./guia-hosting.md" data-page="guia-hosting.md">Guía hosting</a>
+      <a href="../index.html" class="rnav-out">Sitio público &#8599;</a>
+    </div>
+  </div>
+</nav>
+<style>
+  .rnav{background:var(--card,#fff);border-bottom:1px solid var(--line,#e4ded4);position:sticky;top:0;z-index:80}
+  .rnav-in{max-width:900px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .rnav-brand{font-family:var(--disp,Georgia,serif);font-weight:700;font-size:14.5px;color:var(--ink,#211f1a);text-decoration:none;display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .rnav-dot{width:9px;height:9px;border-radius:50%;background:var(--pine,#0f6e63);flex:none}
+  .rnav-links{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center}
+  .rnav-links a{font-family:var(--body,sans-serif);font-size:13px;color:var(--muted,#6a655c);text-decoration:none;padding:4px 1px;border-bottom:2px solid transparent;white-space:nowrap}
+  .rnav-links a:hover{color:var(--ink,#211f1a)}
+  .rnav-links a.active{color:var(--pine-ink,#0a4f47);border-color:var(--pine,#0f6e63);font-weight:600}
+  .rnav-links a.rnav-out{color:var(--honey,#c67a1e)}
+  .rnav-toggle{display:none;border:1px solid var(--line-2,#d6cec1);background:none;border-radius:8px;padding:5px 10px;font-size:15px;cursor:pointer;color:var(--ink,#211f1a)}
+  @media (max-width:760px){
+    .rnav-toggle{display:inline-flex}
+    .rnav-links{display:none;flex-direction:column;width:100%;gap:10px;padding-top:10px;align-items:flex-start}
+    .rnav-links.open{display:flex}
+  }
+</style>
+<script>
+(function(){
+  var p=location.pathname.split("/").pop()||"index.html";
+  document.querySelectorAll(".rnav-links a[data-page]").forEach(function(a){
+    if(a.getAttribute("data-page")===p) a.classList.add("active");
+  });
+  var t=document.getElementById("rnavToggle"), l=document.getElementById("rnavLinks");
+  if(t) t.addEventListener("click",function(){
+    var open=l.classList.toggle("open");
+    t.setAttribute("aria-expanded",open?"true":"false");
+  });
+})();
+</script>
+
+<div class="wrap">
+  <div class="head">
+    <div>
+      <p class="eyebrow">Agente Piloto · Modo Ejecutar · Periodo 4</p>
+      <h1>Tarjetas de ejecución</h1>
+      <p class="sub">Una tarjeta por experimento. Sigue el orden Antes → Durante → Registra, vigila las stop rules y cierra en la scorecard con el umbral original.</p>
+    </div>
+    <button class="theme-btn" id="themeBtn">◐ tema</button>
+  </div>
+
+  <div class="tabs" role="tablist" id="tabs">
+    <button class="tab" role="tab" data-tab="h1" aria-selected="true">H1 · WTP<span class="mm">Activación</span></button>
+    <button class="tab" role="tab" data-tab="h2" aria-selected="false">H2 · Llegada<span class="mm">Última milla</span></button>
+    <button class="tab" role="tab" data-tab="h3" aria-selected="false">H3 · Interacción<span class="mm">Durante</span></button>
+    <button class="tab" role="tab" data-tab="h4" aria-selected="false">H4 · Continuidad<span class="mm">Después</span></button>
+  </div>
+
+  <!-- ================= H1 ================= -->
+  <section class="panel" data-panel="h1">
+    <div class="head2">
+      <div>
+        <p class="mom">Activación · compromiso previo</p>
+        <h2>H1 · Disposición a pagar (WTP)</h2>
+        <p class="risk"><b>Supuesto más riesgoso:</b> el compromiso económico aparece antes de conocer nominalmente al grupo.</p>
+      </div>
+      <div class="evi">Pendiente crítica<br>evidencia 1/5<div class="bar"><span class="pip on"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div></div>
+    </div>
+    <div class="locks">
+      <span class="lock">🔒 <b>Umbral</b> ≥5% y ≥2 reservas / 20–40</span>
+      <span class="lock">💸 <b>COP 39.900 = estímulo</b></span>
+      <span class="lock">📊 intención ≠ conversión</span>
+    </div>
+    <div class="grid">
+      <div class="phase"><div class="ptop"><div class="pnum">1</div><div><div class="ptitle">Antes</div><div class="plabel">listo para probar</div></div></div>
+        <ul class="list">
+          <li><span class="mk">✓</span><span>Landing arriba con el <b>endpoint</b> conectado (una reserva de prueba llegó al Sheet).</span></li>
+          <li><span class="mk">✓</span><span>Panel abre en <span class="tag">?panel=1</span>; texto de no-cobro y guardrails visibles.</span></li>
+          <li><span class="mk">✓</span><span>Enlaces UTM por persona (generador) y mensaje neutro listos.</span></li>
+          <li><span class="mk">✓</span><span>Umbral confirmado y <b>bloqueado</b>.</span></li>
+        </ul></div>
+      <div class="phase"><div class="ptop"><div class="pnum">2</div><div><div class="ptitle">Durante</div><div class="plabel">envía y observa</div></div></div>
+        <div class="split">
+          <div class="mini watch"><div class="mh">Observa (sin interpretar)</div><ul><li>Inicio y abandono del flujo</li><li>Clic en reservar</li><li>Quién marca <b>dudas del cobro</b></li></ul></div>
+          <div class="mini avoid"><div class="mh">No hagas</div><ul><li>Empujar o insistir</li><li>Defender el concepto</li><li>Llenar silencios</li></ul></div>
+        </div></div>
+      <div class="phase"><div class="ptop"><div class="pnum">3</div><div><div class="ptitle">Registra</div><div class="plabel">conducta, no lectura</div></div></div>
+        <div class="reg">
+          <div class="r"><span>Reservas ÷ visitas calificadas únicas</span><span class="rv">del panel</span></div>
+          <div class="r"><span>Razón de abandono</span><span class="rv">textual</span></div>
+          <div class="r"><span>¿Entendió el no-cobro?</span><span class="rv">sí / no</span></div>
+        </div></div>
+      <div class="phase stop"><div class="ptop"><div class="pnum">!</div><div><div class="ptitle">Stop rules</div><div class="plabel">detienen aunque el número guste</div></div></div>
+        <ul class="stops">
+          <li><b>Cobro:</b> engaño o confusión material → detener.</li>
+          <li><b>Consentimiento:</b> si estás empujando a alguien → detener.</li>
+          <li><b>Privacidad:</b> no expongas contactos.</li>
+        </ul></div>
+      <div class="phase wide"><div class="ptop"><div class="pnum">5</div><div><div class="ptitle">Cierre</div><div class="plabel">hacia Decidir</div></div></div>
+        <ul class="list">
+          <li><span class="mk">→</span><span>Reúne <b>20–40 visitas calificadas</b>. La tanda con <span class="tag">?utm_source=interno</span> es calibración, no cuenta al umbral.</span></li>
+          <li><span class="mk">→</span><span>Pasa a <b>Decidir</b> en la scorecard con el umbral original. Con n bajo, techo <b>Emergente</b>.</span></li>
+        </ul>
+        <div class="msg"><div class="mh">💬 Mensaje neutro (WhatsApp)</div><pre>Hola [nombre] 👋 Pongámonos en sintonía: te invito a una sesión de café-coworking en grupo pequeño para trabajar acompañad@ un rato. Hoy sin costo y sin compromiso.
+[pega tu link con ?utm_source=wa_directo&u=CODE]
+Si te provoca, respóndeme y te confirmo el cupo 🙂</pre></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= H2 ================= -->
+  <section class="panel" data-panel="h2" hidden>
+    <div class="head2">
+      <div>
+        <p class="mom">Activación · última milla</p>
+        <h2>H2 · Llegada autónoma</h2>
+        <p class="risk"><b>Supuesto más riesgoso:</b> la información reduce la incertidumbre lo suficiente para superar la última milla real.</p>
+      </div>
+      <div class="evi">Prioridad alta<br>evidencia 3/5<div class="bar"><span class="pip on"></span><span class="pip on"></span><span class="pip on"></span><span class="pip"></span><span class="pip"></span></div></div>
+    </div>
+    <div class="locks">
+      <span class="lock">🔒 <b>Umbral</b> ≥3/4 sin ayuda crítica · esfuerzo ≤3/5 · cero incidente</span>
+      <span class="lock">📍 sin rastreo continuo</span>
+      <span class="lock">☎️ responsable remoto probado</span>
+    </div>
+
+    <div class="grid">
+      <div class="phase wide"><div class="ptop"><div class="pnum">🛠️</div><div><div class="ptitle">Cómo usar la herramienta (ficha de llegada)</div><div class="plabel">antes de reclutar</div></div></div>
+        <ol class="howto">
+          <li>Abre la <b>Ficha de llegada</b> y completa el <b>Gate de actividad</b> (sección 3.2 de la guía); la seguridad es excluyente. Si no queda "completo", no hay prueba.</li>
+          <li>Llena los datos del lugar (ej.: Tierradentro Café, San Antonio): dónde, cómo llegar, parqueadero, cuándo, anfitrión y qué llevar. La vista de la derecha arma la ficha.</li>
+          <li>Publica <span class="tag">ficha.html</span> en tu GitHub Pages y verifica que el <b>mapa, Waze y el menú</b> abran bien.</li>
+          <li>Comparte el <b>mismo enlace</b> por WhatsApp a los 4 usuarios, o copia el texto plano con el botón. Un solo destino y una sola ventana horaria.</li>
+          <li>Confirma responsable remoto y contacto del venue <b>probados</b> antes de arrancar.</li>
+        </ol>
+      </div>
+
+      <div class="phase"><div class="ptop"><div class="pnum">1</div><div><div class="ptitle">Antes</div><div class="plabel">listo para probar</div></div></div>
+        <ul class="list">
+          <li><span class="mk">✓</span><span>Gate de actividad <b>completo</b> y ficha lista (arriba).</span></li>
+          <li><span class="mk">✓</span><span>4 usuarios Mateo situacionales, con variación de cautela y complejidad logística.</span></li>
+          <li><span class="mk">✓</span><span>Definición escrita de <b>ayuda crítica</b> vs. fricción menor.</span></li>
+        </ul></div>
+      <div class="phase"><div class="ptop"><div class="pnum">2</div><div><div class="ptitle">Durante</div><div class="plabel">walkthrough</div></div></div>
+        <ul class="list">
+          <li><span class="mk">→</span><span>Real o contextual desde el punto de partida hasta el acceso.</span></li>
+          <li><span class="mk">→</span><span><b>Sin rastreo continuo.</b> Ofrece ruta alternativa, contacto del venue y salida libre.</span></li>
+          <li><span class="mk">→</span><span>Observa qué es <b>ayuda crítica</b> (evita abandonar, corrige acceso, resuelve seguridad, exige respuesta &lt;5 min).</span></li>
+        </ul></div>
+      <div class="phase"><div class="ptop"><div class="pnum">3</div><div><div class="ptitle">Registra</div><div class="plabel">por usuario</div></div></div>
+        <div class="reg">
+          <div class="r"><span>Llegada correcta</span><span class="rv">sí / no</span></div>
+          <div class="r"><span>Tiempo y desvíos</span><span class="rv">min</span></div>
+          <div class="r"><span>Ayuda crítica</span><span class="rv">sí / no</span></div>
+          <div class="r"><span>Esfuerzo percibido</span><span class="rv">1–5</span></div>
+          <div class="r"><span>Punto de abandono</span><span class="rv">textual</span></div>
+        </div>
+        <div class="note">Opción: <b>micro-encuesta post-llegada</b> (esfuerzo 1–5 + dónde dudó) para capturar el auto-reporte sin rastrearlo — complementa la observación.</div>
+      </div>
+      <div class="phase stop"><div class="ptop"><div class="pnum">!</div><div><div class="ptitle">Stop rules</div><div class="plabel">seguridad primero</div></div></div>
+        <ul class="stops">
+          <li><b>Riesgo físico</b> → detener.</li>
+          <li><b>Incidente de seguridad</b> no mitigado → descartar el mecanismo.</li>
+          <li><b>Vulnerabilidad:</b> detener ante malestar físico o emocional.</li>
+        </ul></div>
+      <div class="phase wide"><div class="ptop"><div class="pnum">5</div><div><div class="ptitle">Cierre</div><div class="plabel">hacia Decidir</div></div></div>
+        <ul class="list">
+          <li><span class="mk">→</span><span><b>Perseverar:</b> ≥3 de 4 sin ayuda crítica, esfuerzo mediano ≤3/5, cero incidente → conservar la ficha y probar en otra actividad.</span></li>
+          <li><span class="mk">→</span><span>Pasa a <b>Decidir</b> en la scorecard de H2 con el umbral original.</span></li>
+        </ul></div>
+    </div>
+  </section>
+
+  <!-- ================= H3 ================= -->
+  <section class="panel" data-panel="h3" hidden>
+    <div class="head2">
+      <div>
+        <p class="mom">Interacción · durante el encuentro</p>
+        <h2>H3 · Interacción autoguiada</h2>
+        <p class="risk"><b>Supuesto más riesgoso:</b> el grupo inicia y sostiene la interacción sin depender del facilitador ni sentirse obligado.</p>
+      </div>
+      <div class="evi">Prioridad alta<br>evidencia 3/5<div class="bar"><span class="pip on"></span><span class="pip on"></span><span class="pip on"></span><span class="pip"></span><span class="pip"></span></div></div>
+    </div>
+    <div class="locks">
+      <span class="lock">🔒 <b>Umbral</b> ≥3/4 participan · ≤2 prompts · nadie &gt;50% turnos · seguridad ≥4/5</span>
+      <span class="lock">🎭 host Mago de Oz, discreto</span>
+      <span class="lock">🎥 <b>grabación</b> con consentimiento firmado</span>
+    </div>
+    <div class="grid">
+      <div class="phase"><div class="ptop"><div class="pnum">🎬</div><div><div class="ptitle">Gestión en el café + cámara</div><div class="plabel">coordinar antes de la sesión</div></div></div>
+        <ol class="howto">
+          <li>Reserva con <b>Tierradentro (San Antonio)</b> una mesa o rincón apartado. Acuerda 3 cafés a ciegas (A/B/C), tazas idénticas, agua y que el <b>barista sirva</b>. La <b>cuota de la cata la asume el equipo</b> en esta sesión de prueba.</li>
+          <li>Ubica la mesa para <b>no captar a otros clientes</b>; confirma salida libre y el contacto del venue.</li>
+          <li>Instala una <b>cámara cenital</b> (desde arriba) enfocada a la mesa, la hoja y las manos — no a los rostros de terceros. Pide permiso al venue para instalarla; define responsable de la grabación y <b>almacenamiento seguro</b>.</li>
+          <li><b>Consentimiento informado firmado</b> por los 4 antes de empezar: propósito académico, que se graba video, uso, almacenamiento, anonimización y derecho a retirarse y a que se borre su grabación. <b>Sin firma no se graba ni se inicia.</b></li>
+        </ol>
+      </div>
+
+      <div class="phase"><div class="ptop"><div class="pnum">1</div><div><div class="ptitle">Antes</div><div class="plabel">montaje del microencuentro</div></div></div>
+        <ul class="list">
+          <li><span class="mk">✓</span><span>Gate de actividad completo (seguridad, costo visible, acceso, duración).</span></li>
+          <li><span class="mk">✓</span><span>Micro misión escrita: "prueben el café A y pongan su nota en la hoja del centro".</span></li>
+          <li><span class="mk">✓</span><span>Consigna única del host y <b>triggers</b> por escrito (arranque · distribución · bloqueo · seguridad · cierre).</span></li>
+          <li><span class="mk">✓</span><span>4 usuarios Mateo (los <b>mismos</b> que seguirán a H4).</span></li>
+        </ul></div>
+
+      <div class="phase"><div class="ptop"><div class="pnum">2</div><div><div class="ptitle">Durante</div><div class="plabel">la cata, 25 min</div></div></div>
+        <ul class="list">
+          <li><span class="mk">→</span><span>El <b>barista sirve</b> A/B/C a ciegas; los 4 prueban y anotan en la hoja compartida.</span></li>
+          <li><span class="mk">→</span><span>La conversación <b>emerge de elegir el favorito del grupo</b>, no de preguntas personales.</span></li>
+          <li><span class="mk">→</span><span>El host observa y se activa <b>solo ante un trigger</b>; la cámara graba la mesa, no a terceros.</span></li>
+        </ul></div>
+
+      <div class="phase"><div class="ptop"><div class="pnum">3</div><div><div class="ptitle">Registra</div><div class="plabel">participación</div></div></div>
+        <div class="reg">
+          <div class="r"><span>Entran a la acción sin prompt personal</span><span class="rv">de 4</span></div>
+          <div class="r"><span>Prompts críticos del host</span><span class="rv">nº</span></div>
+          <div class="r"><span>Turno máx. de una persona</span><span class="rv">%</span></div>
+          <div class="r"><span>Elección del favorito</span><span class="rv">colectiva / impuesta</span></div>
+          <div class="r"><span>Retiros</span><span class="rv">nº</span></div>
+          <div class="r"><span>Seguridad percibida</span><span class="rv">1–5</span></div>
+        </div>
+        <div class="note">La grabación cenital sirve para <b>recontar turnos y voz</b> después, sin interrumpir la sesión.</div></div>
+
+      <div class="phase stop"><div class="ptop"><div class="pnum">!</div><div><div class="ptitle">Stop rules</div><div class="plabel">consentimiento y seguridad</div></div></div>
+        <ul class="stops">
+          <li><b>Sin consentimiento firmado</b> → no se graba ni se inicia.</li>
+          <li>Alguien <b>retira el consentimiento</b> → detener la grabación y borrar su registro.</li>
+          <li>No captar a <b>terceros</b> sin su consentimiento (privacidad).</li>
+          <li><b>Presión, exclusión o incidente</b> → detener la dinámica.</li>
+          <li>Descartar la <b>dinámica</b>, nunca el principio "activity first".</li>
+        </ul></div>
+
+      <div class="phase"><div class="ptop"><div class="pnum">5</div><div><div class="ptitle">Cierre</div><div class="plabel">hacia Decidir</div></div></div>
+        <ul class="list">
+          <li><span class="mk">→</span><span><b>Perseverar:</b> ≥3 de 4 participan, ≤2 prompts, nadie &gt;50% de turnos, seguridad ≥4/5 → conservar actividad y micro misión; reducir presencia del host.</span></li>
+          <li><span class="mk">→</span><span>Guarda la grabación en <b>almacenamiento seguro</b> y bórrala a solicitud de quien participó.</span></li>
+          <li><span class="mk">→</span><span>Pasa a <b>Decidir</b> en la scorecard de H3, y enlaza con H4 (mismos 4 usuarios).</span></li>
+        </ul></div>
+    </div>
+  </section>
+
+  <!-- ================= H4 ================= -->
+  <section class="panel" data-panel="h4" hidden>
+    <div class="head2">
+      <div>
+        <p class="mom">Continuidad · después</p>
+        <h2>H4 · Continuidad recíproca</h2>
+        <p class="risk"><b>Supuesto más riesgoso:</b> el agrado se convierte en doble opt-in y luego en una acción fechada. Depende de haber corrido H3.</p>
+      </div>
+      <div class="evi">Pendiente crítica<br>evidencia 2/5<div class="bar"><span class="pip on"></span><span class="pip on"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div></div>
+    </div>
+    <div class="locks">
+      <span class="lock">🔒 <b>Umbral</b> ≥2/4 doble opt-in (72 h) y ≥1 acción fechada (14 d)</span>
+      <span class="lock">🤐 silencio ≠ consentimiento</span>
+      <span class="lock">🔗 no compartir contactos</span>
+      <span class="lock">🧩 depende de H3</span>
+    </div>
+    <div class="grid">
+      <div class="phase"><div class="ptop"><div class="pnum">🔁</div><div><div class="ptitle">Cómo funciona el doble opt-in</div><div class="plabel">la mecánica recíproca</div></div></div>
+        <ol class="howto">
+          <li>Al cerrar, cada persona marca <b>en privado</b> a quién del grupo le gustaría volver a ver. Nadie ve lo que marcaron los demás.</li>
+          <li>Hay <b>match solo si dos se marcan mutuamente</b> (doble opt-in). Un interés de un solo lado no basta.</li>
+          <li>Solo ante un match, y con permiso, el equipo <b>propone una acción fechada</b> al microgrupo o comparte el contacto. Antes no.</li>
+          <li>Silencio o sin match = <b>no se hace nada</b>. El silencio nunca es consentimiento.</li>
+        </ol>
+      </div>
+
+      <div class="phase"><div class="ptop"><div class="pnum">1</div><div><div class="ptitle">Antes</div><div class="plabel">diseño del cierre</div></div></div>
+        <ul class="list">
+          <li><span class="mk">✓</span><span>Cierre <b>"Pulso privado"</b> que separa <b>agrado</b>, <b>intención</b> y <b>siguiente acción</b>. Agrado e intención NO cuentan como continuidad.</span></li>
+          <li><span class="mk">✓</span><span>Ventana definida: señal privada al cierre · <b>doble opt-in a 72 h</b> · seguimiento de acción a <b>14 días</b>.</span></li>
+          <li><span class="mk">✓</span><span>Los <b>mismos 4</b> del microencuentro de H3; el consentimiento ya cubre este seguimiento.</span></li>
+          <li><span class="mk">✓</span><span>Canal privado listo (cada quien responde sin ver a los demás).</span></li>
+        </ul></div>
+
+      <div class="phase"><div class="ptop"><div class="pnum">2</div><div><div class="ptitle">Durante</div><div class="plabel">cierre + ventana</div></div></div>
+        <ul class="list">
+          <li><span class="mk">→</span><span>Al terminar la cata, cada persona responde en privado: agrado, si repetiría y a quién le gustaría volver a ver.</span></li>
+          <li><span class="mk">→</span><span>A las <b>72 h</b>: confirma dobles opt-in. Solo ahí se propone una acción con fecha.</span></li>
+          <li><span class="mk">→</span><span>A los <b>14 días</b>: verifica si la acción fechada ocurrió.</span></li>
+        </ul></div>
+
+      <div class="phase"><div class="ptop"><div class="pnum">3</div><div><div class="ptitle">Registra</div><div class="plabel">cada campo aparte</div></div></div>
+        <div class="reg">
+          <div class="r"><span>Agrado</span><span class="rv">1–5</span></div>
+          <div class="r"><span>Intención de repetir</span><span class="rv">sí / no</span></div>
+          <div class="r"><span>Doble opt-in en 72 h</span><span class="rv">de 4</span></div>
+          <div class="r"><span>Acción fechada en 14 d (y cuál)</span><span class="rv">de 4</span></div>
+          <div class="r"><span>Contacto no deseado</span><span class="rv">sí / no</span></div>
+        </div></div>
+
+      <div class="phase stop"><div class="ptop"><div class="pnum">!</div><div><div class="ptitle">Stop rules</div><div class="plabel">consentimiento</div></div></div>
+        <ul class="stops">
+          <li><b>Contacto unilateral</b> → cancelar el emparejamiento y registrar incidente.</li>
+          <li><b>Silencio nunca</b> es consentimiento.</li>
+          <li>No compartir contactos sin <b>doble opt-in</b>.</li>
+          <li>Revocación simple y salida sin explicación.</li>
+        </ul></div>
+
+      <div class="phase"><div class="ptop"><div class="pnum">5</div><div><div class="ptitle">Cierre</div><div class="plabel">hacia Decidir</div></div></div>
+        <ul class="list">
+          <li><span class="mk">→</span><span><b>Perseverar:</b> ≥2 de 4 logran doble opt-in en 72 h y ≥1 acción fechada en 14 días → conservar la señal recíproca y probar repetición.</span></li>
+          <li><span class="mk">→</span><span><b>Descartar mecanismo:</b> 0 de 4, o cualquier contacto no deseado.</span></li>
+          <li><span class="mk">→</span><span>Pasa a <b>Decidir</b> en la scorecard de H4.</span></li>
+        </ul></div>
+    </div>
+  </section>
+
+  <p class="foot">
+    Agente Piloto v1.0 · Proyecto <b>Sintonía</b> · Alcance del paquete: Mateo · El panel da un veredicto preliminar; la <b>decisión oficial</b> se registra en la scorecard con el umbral original.
+  </p>
+</div>
+
+<script>
+  const tabs=document.getElementById("tabs");
+  tabs.addEventListener("click",e=>{
+    const b=e.target.closest("[data-tab]"); if(!b) return;
+    const id=b.getAttribute("data-tab");
+    tabs.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected", t===b?"true":"false"));
+    document.querySelectorAll("[data-panel]").forEach(p=>p.hidden = p.getAttribute("data-panel")!==id);
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+  const root=document.documentElement;
+  document.getElementById("themeBtn").addEventListener("click",()=>{
+    const cur=root.getAttribute("data-theme");
+    const dark=window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const now=cur?cur:(dark?"dark":"light");
+    root.setAttribute("data-theme",now==="dark"?"light":"dark");
+  });
+</script>
+</body>
+</html>
