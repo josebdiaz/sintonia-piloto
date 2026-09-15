@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Piloto Sintonía P4</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#eae4d8; --stage:#fffdf9; --ink:#211f1a; --muted:#5f5a51; --faint:#8a8478;
+    --line:#e6e0d5; --line-2:#d6cec1;
+    --pine:#0f6e63; --pine-ink:#0a4f47; --pine-soft:#e0efec;
+    --honey:#c67a1e; --honey-ink:#9a5c12; --honey-soft:#f7ebd8;
+    --ok:#1f8a52; --ok-soft:#e4f2ea;
+    --warn:#c67a1e; --warn-soft:#f7ebd8;
+    --stop:#b23b2e; --stop-soft:#f7e4e1;
+    --shadow:0 1px 2px rgba(33,31,26,.05), 0 22px 50px -28px rgba(33,31,26,.42);
+    --disp:"Bricolage Grotesque",Georgia,serif;
+    --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#100e0b; --stage:#1c1915; --ink:#efeae1; --muted:#b3aa9b; --faint:#837b6e;
+    --line:#2c281f; --line-2:#3a3529;
+    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
+    --honey:#dd9c44; --honey-ink:#eab866; --honey-soft:#2f2513;
+    --ok:#44b878; --ok-soft:#12281d; --warn:#dd9c44; --warn-soft:#2f2513;
+    --stop:#e07567; --stop-soft:#331714;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 24px 56px -30px rgba(0,0,0,.9);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#100e0b; --stage:#1c1915; --ink:#efeae1; --muted:#b3aa9b; --faint:#837b6e;
+    --line:#2c281f; --line-2:#3a3529;
+    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
+    --honey:#dd9c44; --honey-ink:#eab866; --honey-soft:#2f2513;
+    --ok:#44b878; --ok-soft:#12281d; --warn:#dd9c44; --warn-soft:#2f2513;
+    --stop:#e07567; --stop-soft:#331714;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 24px 56px -30px rgba(0,0,0,.9);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+  a{color:var(--pine-ink)}
+  ::selection{background:var(--pine-soft)}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:13px 24px;border-bottom:1px solid var(--line);background:var(--bg);flex:none}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:-.01em}
+  .brand .dial{width:26px;height:26px;border-radius:50%;flex:none;
+    background:radial-gradient(circle at 50% 50%,transparent 4px,var(--pine) 4.5px 6.5px,transparent 7px 10px,var(--honey) 10.5px 12px,transparent 12.5px);
+    border:1.5px solid var(--line-2)}
+  .brand small{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--faint);letter-spacing:.02em}
+  .tbtn{border:1px solid var(--line-2);background:var(--stage);color:var(--muted);
+    font-family:var(--mono);font-size:12px;border-radius:20px;padding:7px 14px;cursor:pointer}
+  .tbtn:hover{color:var(--ink);border-color:var(--ink)}
+  .tbtn:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+
+  .deck{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;justify-content:center;padding:28px 24px}
+  .slide{display:none;width:100%;max-width:1060px;margin:auto;
+    background:var(--stage);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);
+    padding:52px 60px;min-height:min(600px,76vh)}
+  .slide.active{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.slide.active{animation:none}}
+
+  .eyebrow{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--pine);margin:0 0 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .eyebrow .freq{color:var(--honey-ink)}
+  .eyebrow .rule{flex:1;height:1px;background:var(--line);min-width:20px}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(38px,6vw,62px);line-height:1.02;letter-spacing:-.03em;
+    margin:0 0 18px;text-wrap:balance}
+  h2{font-family:var(--disp);font-weight:700;font-size:clamp(30px,4vw,42px);line-height:1.05;letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance}
+  h3{font-family:var(--disp);font-weight:700;font-size:18px;letter-spacing:.01em;margin:0 0 11px}
+  p.lead{font-size:clamp(17px,1.9vw,22px);color:var(--muted);margin:0;max-width:60ch;line-height:1.5}
+  .muted{color:var(--muted)}
+  .kv{font-family:var(--mono);font-size:14px}
+
+  .pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;font-weight:600;
+    letter-spacing:.03em;text-transform:uppercase;border-radius:22px;padding:8px 15px;white-space:nowrap}
+  .pill .d{width:9px;height:9px;border-radius:50%;flex:none}
+  .pill.frozen{background:var(--warn-soft);color:var(--honey-ink)} .pill.frozen .d{background:var(--honey)}
+  .pill.ready{background:var(--pine-soft);color:var(--pine-ink)} .pill.ready .d{background:var(--pine)}
+
+  .xhead{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  .jtbd{font-size:20px;color:var(--ink);border-left:4px solid var(--pine);padding:6px 0 6px 18px;margin:20px 0 26px;
+    max-width:66ch;font-style:italic;line-height:1.45}
+
+  .band{display:grid;gap:16px;margin-bottom:26px}
+  .band.cols3{grid-template-columns:repeat(3,1fr)}
+  .metric{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--bg)}
+  .metric .ml{font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+  .metric .mv{font-family:var(--disp);font-weight:700;font-size:25px;margin-top:6px;line-height:1.1;font-variant-numeric:tabular-nums}
+  .metric .mt{font-size:14px;color:var(--muted);margin-top:4px}
+
+  /* secuencia de aplicación (4 pasos) */
+  .seqlabel{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--pine);margin:0 0 14px}
+  .seq{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .sq{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
+  .sq .n{width:34px;height:34px;flex:none;border-radius:50%;background:var(--pine-soft);color:var(--pine-ink);
+    font-family:var(--disp);font-weight:800;font-size:15px;display:grid;place-items:center}
+  .sq .b{flex:1}
+  .sq .st{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--honey-ink)}
+  .sq h4{font-family:var(--disp);font-weight:700;font-size:17px;margin:2px 0 5px}
+  .sq p{font-size:14px;color:var(--muted);margin:0 0 10px;line-height:1.45}
+  .sq a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-size:13px;font-weight:600;
+    color:var(--pine-ink);background:var(--stage);border:1.5px solid var(--line-2);border-radius:9px;padding:7px 11px}
+  .sq a:hover{border-color:var(--pine)}
+  .sq a .tag{font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.03em;text-transform:uppercase;color:#fff;background:var(--pine);border-radius:5px;padding:2px 6px}
+  .sq a.pub .tag{background:var(--honey)}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .panelbox{border:1px solid var(--line);border-radius:16px;padding:22px 24px;background:var(--bg)}
+  .panelbox.accent{border-color:var(--pine);background:var(--pine-soft)}
+  .links{display:flex;flex-wrap:wrap;gap:11px}
+  .lk{display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-size:14.5px;font-weight:600;
+    color:var(--pine-ink);background:var(--stage);border:1.5px solid var(--line-2);border-radius:11px;padding:11px 15px}
+  .lk:hover{border-color:var(--pine)}
+  .lk:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  .lk .tag{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.03em;text-transform:uppercase;color:#fff;background:var(--pine);border-radius:5px;padding:2px 7px}
+  .lk.pub .tag{background:var(--honey)}
+  .lk.doc .tag{background:#2b6cb0}
+
+  .cycle{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px 0}
+  .cyc{border:1px solid var(--line);border-radius:16px;padding:20px 18px;background:var(--bg)}
+  .cyc .n{font-family:var(--mono);font-size:13px;color:var(--faint)}
+  .cyc h4{font-family:var(--disp);font-weight:700;font-size:20px;margin:8px 0 6px}
+  .cyc p{font-size:14px;color:var(--muted);margin:0;line-height:1.45}
+  .cyc.on{border-color:var(--pine);background:var(--pine-soft)}
+
+  .rules{display:flex;flex-direction:column;gap:13px;margin-top:14px}
+  .rule-i{display:flex;gap:14px;font-size:15.5px;align-items:flex-start}
+  .rule-i .rk{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--honey-ink);white-space:nowrap;
+    background:var(--warn-soft);border-radius:7px;padding:4px 11px;flex:none}
+
+  .grid-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .cardlet{border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:var(--bg)}
+  .cardlet .hnum{font-family:var(--disp);font-weight:800;font-size:16px;color:var(--pine)}
+  .cardlet p{font-size:14px;color:var(--muted);margin:7px 0 0;line-height:1.45}
+
+  .tbl{width:100%;border-collapse:collapse;font-size:15px}
+  .tbl th,.tbl td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl th{font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600}
+  .tbl td a{font-weight:600;text-decoration:none} .tbl td a:hover{text-decoration:underline}
+  .tbl .sec td{background:var(--bg);font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--pine);font-weight:600}
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px}
+
+  .cover-foot{margin-top:36px;display:flex;gap:28px;flex-wrap:wrap;align-items:center}
+  .cover-foot .who{font-size:16px;color:var(--muted);line-height:1.5}
+  .cover-foot .who b{color:var(--ink)}
+  .signal{display:flex;align-items:flex-end;gap:6px;height:40px}
+  .signal span{width:9px;border-radius:3px 3px 0 0;background:var(--pine)}
+  .signal span:nth-child(1){height:38%;opacity:.5}
+  .signal span:nth-child(2){height:62%;opacity:.68}
+  .signal span:nth-child(3){height:100%}
+  .signal span:nth-child(4){height:78%;background:var(--honey);opacity:.85}
+
+  .panelcall{margin-top:6px;background:var(--pine-soft);border:1px solid var(--pine);border-radius:14px;
+    padding:16px 20px;display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap}
+  .panelcall .pt{font-size:15px;color:var(--pine-ink);max-width:54ch;line-height:1.45}
+  .panelcall .pt b{font-weight:700}
+
+  .nav{flex:none;border-top:1px solid var(--line);background:var(--bg);padding:12px 24px;display:flex;align-items:center;gap:18px}
+  .arw-btn{border:1px solid var(--line-2);background:var(--stage);color:var(--ink);border-radius:10px;
+    width:42px;height:38px;font-size:18px;cursor:pointer;flex:none;line-height:1}
+  .arw-btn:hover{border-color:var(--pine);color:var(--pine-ink)}
+  .arw-btn:disabled{opacity:.35;cursor:not-allowed}
+  .arw-btn:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  .dialbar{flex:1;display:flex;align-items:center;height:38px;overflow-x:auto}
+  .tick{flex:1;min-width:30px;background:none;border:none;cursor:pointer;padding:0;height:38px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .tick .bar{width:2px;height:13px;background:var(--line-2);border-radius:2px;transition:height .15s,background .15s}
+  .tick .lb{font-family:var(--mono);font-size:10px;color:var(--faint);white-space:nowrap;opacity:0;transition:opacity .15s}
+  .tick:hover .bar{background:var(--pine)} .tick:hover .lb{opacity:1}
+  .tick.on .bar{height:24px;background:var(--pine)} .tick.on .lb{opacity:1;color:var(--pine-ink)}
+  .tick:focus-visible{outline:2px solid var(--pine);outline-offset:1px;border-radius:4px}
+  .counter{font-family:var(--mono);font-size:13px;color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
+
+  @media (max-width:760px){
+    .slide{padding:32px 26px;min-height:0}
+    .band.cols3,.two,.grid-cards,.cycle,.seq{grid-template-columns:1fr}
+    .dialbar{display:none}
+    .nav{justify-content:space-between}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dial"></span> Piloto Sintonía <small>· P4 / Mateo</small></div>
+  <button class="tbtn" id="themeBtn" type="button">◐ tema</button>
+</div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 · PORTADA -->
+  <section class="slide active" data-label="Portada">
+    <p class="eyebrow"><span class="freq">100.7</span> · en el aire <span class="rule"></span> Maestría en Gestión de la Innovación · Icesi</p>
+    <h1>Cuatro experimentos,<br>una misma sintonía.</h1>
+    <p class="lead">Estado y guía de implementación de la validación del Periodo 4 — H1 a H4, con las herramientas y los enlaces del sistema ya publicados y en vivo. Alcance del piloto: <b>Mateo</b>, el adulto joven que trabaja en remoto.</p>
+    <div class="cover-foot">
+      <div class="signal"><span></span><span></span><span></span><span></span></div>
+      <div class="who">Cada experimento se recorre igual: <b>Preparar → Ejecutar → Registrar → Decidir</b>.<br>El umbral se fija antes de ver los datos y no se mueve.</div>
+    </div>
+  </section>
+
+  <!-- 2 · EL CICLO -->
+  <section class="slide" data-label="El ciclo">
+    <p class="eyebrow"><span class="freq">Marco</span> · cómo se corre cada tanda <span class="rule"></span></p>
+    <h2>El mismo ciclo para los cuatro</h2>
+    <p class="lead">Ninguna herramienta se toca sin haber fijado antes su regla de decisión. Los cuatro experimentos comparten la misma disciplina.</p>
+    <div class="cycle">
+      <div class="cyc on"><div class="n">01</div><h4>Preparar</h4><p>Fijar el umbral en la Scorecard. Una sola vez por experimento.</p></div>
+      <div class="cyc"><div class="n">02</div><h4>Ejecutar</h4><p>El día de la tanda: guion, consentimientos y stop-rules.</p></div>
+      <div class="cyc"><div class="n">03</div><h4>Registrar</h4><p>Datos en vivo y del video; los paneles recogen lo digital.</p></div>
+      <div class="cyc"><div class="n">04</div><h4>Decidir</h4><p>Aplicar la regla fijada y registrarla en la Scorecard.</p></div>
+    </div>
+    <div class="rules">
+      <div class="rule-i"><span class="rk">n pequeño</span><div>Con 4 participantes por sesión, el techo de cualquier hallazgo es <b>Emergente</b>, nunca concluyente.</div></div>
+      <div class="rule-i"><span class="rk">COP 39.900</span><div>Es un <b>estímulo experimental</b> para medir disposición a pagar, no un precio validado.</div></div>
+      <div class="rule-i"><span class="rk">salvaguardas</span><div>Consentimiento, privacidad y "silencio ≠ consentimiento" son <b>criterios de detención</b>.</div></div>
+    </div>
+  </section>
+
+  <!-- 3 · NAVEGACIÓN / ARQUITECTURA -->
+  <section class="slide" data-label="Navegación">
+    <p class="eyebrow"><span class="freq">Sistema</span> · navegación y arquitectura <span class="rule"></span></p>
+    <h2>De lo general a lo particular</h2>
+    <p class="lead">El sitio se recorre en orden: del Home del equipo, a cada experimento con su secuencia, a los paneles. Dos frentes sobre un solo backend.</p>
+    <div class="two" style="margin-top:24px">
+      <div class="panelbox">
+        <h3>🌐 Raíz — participantes</h3>
+        <p class="muted" style="font-size:15px;margin:0 0 14px;line-height:1.45">Lo único que ve la gente: cuatro páginas, una por experimento.</p>
+        <div class="links"><a class="lk pub" target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/index.html"><span class="tag">público</span> Sitio público ↗</a></div>
+      </div>
+      <div class="panelbox accent">
+        <h3>🔒 /researchers/ — equipo</h3>
+        <p class="muted" style="font-size:15px;margin:0 0 14px;line-height:1.45">Home → H1 · H2 · H3 · H4 → Paneles → Scorecards. No indexado (no es privado, no compartir).</p>
+        <div class="links"><a class="lk" target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/index.html"><span class="tag">equipo</span> Abrir el Home ↗</a></div>
+      </div>
+    </div>
+    <div class="panelbox" style="margin-top:18px">
+      <h3>🗄️ Backend — un Apps Script, una hoja</h3>
+      <p class="muted" style="font-size:15px;margin:0;line-height:1.45">Un solo Web App (<span class="kv">/exec</span>) enruta por el campo <span class="kv">kind</span> hacia una hoja con cinco pestañas — <span class="kv">events · contactos · calificaciones · pulso · scorecards</span>. La sección Paneles lee esa hoja.</p>
+    </div>
+  </section>
+
+  <!-- 4 · H1 -->
+  <section class="slide" data-label="H1 · WTP">
+    <div class="xhead">
+      <div><p class="eyebrow"><span class="freq">88.1</span> · Experimento H1</p><h2>Disposición a pagar</h2></div>
+      <span class="pill frozen"><span class="d"></span> Congelado</span>
+    </div>
+    <p class="jtbd">¿Mateo valora lo suficiente un café-coworking en grupo pequeño como para reservar un cupo, aun con un estímulo de precio a la vista?</p>
+    <div class="band cols3">
+      <div class="metric"><div class="ml">Métrica</div><div class="mv">Visita → reserva</div><div class="mt">sobre visitas calificadas</div></div>
+      <div class="metric"><div class="ml">Umbral · perseverar</div><div class="mv">≥ 5% + ≥ 2</div><div class="mt">conversión y reservas</div></div>
+      <div class="metric"><div class="ml">Muestra</div><div class="mv">20–40</div><div class="mt">visitas calificadas</div></div>
+    </div>
+    <p class="seqlabel">Secuencia de aplicación</p>
+    <div class="seq">
+      <div class="sq"><div class="n">1</div><div class="b"><div class="st">Preparar</div><h4>Fija el umbral</h4><p>Ya escrito en la Scorecard.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/scorecards.html"><span class="tag">equipo</span> Scorecard ↗</a></div></div>
+      <div class="sq"><div class="n">2</div><div class="b"><div class="st">Ejecutar</div><h4>Genera enlaces y difunde</h4><p>UTM + id único desde el panel.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/index.html?panel=1"><span class="tag">panel</span> Panel + generador ↗</a></div></div>
+      <div class="sq"><div class="n">3</div><div class="b"><div class="st">Registrar</div><h4>Lee el embudo</h4><p>Se llena solo por id único.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/index.html?panel=1"><span class="tag">panel</span> Embudo ↗</a></div></div>
+      <div class="sq"><div class="n">4</div><div class="b"><div class="st">Decidir</div><h4>Aplica y registra</h4><p>Regla fija + botón Registrar decisión.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/scorecards.html"><span class="tag">equipo</span> Scorecard ↗</a></div></div>
+    </div>
+  </section>
+
+  <!-- 5 · H2 -->
+  <section class="slide" data-label="H2 · Llegada">
+    <div class="xhead">
+      <div><p class="eyebrow"><span class="freq">92.5</span> · Experimento H2</p><h2>Llegada autónoma</h2></div>
+      <span class="pill ready"><span class="d"></span> Listo para campo</span>
+    </div>
+    <p class="jtbd">¿Mateo llega al punto de encuentro por su cuenta, con baja fricción y sin incidentes, dándole solo una ficha de llegada clara?</p>
+    <div class="band cols3">
+      <div class="metric"><div class="ml">Métrica</div><div class="mv">Llegan solos</div><div class="mt">sin ayuda crítica</div></div>
+      <div class="metric"><div class="ml">Umbral · perseverar</div><div class="mv">≥ 3 de 4</div><div class="mt">esfuerzo ≤ 3/5</div></div>
+      <div class="metric"><div class="ml">Stop-rule</div><div class="mv">0 incidentes</div><div class="mt">de seguridad</div></div>
+    </div>
+    <p class="seqlabel">Secuencia de aplicación</p>
+    <div class="seq">
+      <div class="sq"><div class="n">1</div><div class="b"><div class="st">Preparar</div><h4>Define ayuda crítica</h4><p>Y fija el umbral.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/scorecards.html"><span class="tag">equipo</span> Scorecard ↗</a></div></div>
+      <div class="sq"><div class="n">2</div><div class="b"><div class="st">Ejecutar</div><h4>Arma y envía la ficha</h4><p>Mapa, menú y anfitrión por WhatsApp.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/ficha-generador.html"><span class="tag">equipo</span> Generador ↗</a></div></div>
+      <div class="sq"><div class="n">3</div><div class="b"><div class="st">Registrar</div><h4>Observa la llegada</h4><p>Se mide en vivo, sin panel digital.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/ejecucion.html"><span class="tag">equipo</span> Tarjeta ↗</a></div></div>
+      <div class="sq"><div class="n">4</div><div class="b"><div class="st">Decidir</div><h4>Aplica y registra</h4><p>Resultado a la Scorecard.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/scorecards.html"><span class="tag">equipo</span> Scorecard ↗</a></div></div>
+    </div>
+  </section>
+
+  <!-- 6 · H3 -->
+  <section class="slide" data-label="H3 · Interacción">
+    <div class="xhead">
+      <div><p class="eyebrow"><span class="freq">98.3</span> · Experimento H3</p><h2>Interacción autoguiada</h2></div>
+      <span class="pill ready"><span class="d"></span> Listo para campo</span>
+    </div>
+    <p class="jtbd">Con una actividad diseñada (cata de café a ciegas) y mínima intervención del anfitrión, ¿el grupo participa y conecta por sí mismo, sintiéndose seguro?</p>
+    <div class="band cols3">
+      <div class="metric"><div class="ml">Participación</div><div class="mv">≥ 3 de 4</div><div class="mt">sin prompt del host</div></div>
+      <div class="metric"><div class="ml">Equilibrio</div><div class="mv">≤ 2 · &lt;50%</div><div class="mt">prompts · turnos por persona</div></div>
+      <div class="metric"><div class="ml">Seguridad</div><div class="mv">≥ 4 / 5</div><div class="mt">percibida</div></div>
+    </div>
+    <p class="seqlabel">Secuencia de aplicación</p>
+    <div class="seq">
+      <div class="sq"><div class="n">1</div><div class="b"><div class="st">Preparar</div><h4>Café, cámara, consentimientos</h4><p>Y los disparadores del host.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/ejecucion.html"><span class="tag">equipo</span> Tarjeta ↗</a></div></div>
+      <div class="sq"><div class="n">2</div><div class="b"><div class="st">Ejecutar</div><h4>Corre la cata a ciegas</h4><p>25 min, host discreto.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/ejecucion.html"><span class="tag">equipo</span> Tarjeta ↗</a></div></div>
+      <div class="sq"><div class="n">3</div><div class="b"><div class="st">Registrar</div><h4>En vivo + video</h4><p>Instrumento y prompt de análisis.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/registro-h3.html"><span class="tag">equipo</span> Registro ↗</a></div></div>
+      <div class="sq"><div class="n">4</div><div class="b"><div class="st">Decidir</div><h4>Aplica y registra</h4><p>Cierra con la calificación pública.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/calificar.html"><span class="tag pub">público</span> Calificar ↗</a></div></div>
+    </div>
+  </section>
+
+  <!-- 7 · H4 -->
+  <section class="slide" data-label="H4 · Continuidad">
+    <div class="xhead">
+      <div><p class="eyebrow"><span class="freq">104.9</span> · Experimento H4</p><h2>Continuidad recíproca</h2></div>
+      <span class="pill ready"><span class="d"></span> Listo para campo</span>
+    </div>
+    <p class="jtbd">Tras el encuentro, ¿surgen ganas mutuas de repetir? Solo cuando dos personas se eligen entre sí (doble opt-in privado) proponemos un próximo plan.</p>
+    <div class="band cols3">
+      <div class="metric"><div class="ml">Señal recíproca</div><div class="mv">≥ 2 de 4</div><div class="mt">doble opt-in en 72 h</div></div>
+      <div class="metric"><div class="ml">Acción</div><div class="mv">≥ 1 fechada</div><div class="mt">en 14 días</div></div>
+      <div class="metric"><div class="ml">Salvaguarda</div><div class="mv">Silencio ≠ sí</div><div class="mt">sin contacto sin match</div></div>
+    </div>
+    <p class="seqlabel">Secuencia de aplicación</p>
+    <div class="seq">
+      <div class="sq"><div class="n">1</div><div class="b"><div class="st">Preparar</div><h4>Ventana y umbral</h4><p>72 h / 14 días. Requiere H3.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/scorecards.html"><span class="tag">equipo</span> Scorecard ↗</a></div></div>
+      <div class="sq"><div class="n">2</div><div class="b"><div class="st">Ejecutar</div><h4>Roster y enlaces</h4><p>Un enlace privado por persona.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/pulso.html?panel=1"><span class="tag">panel</span> Panel + roster ↗</a></div></div>
+      <div class="sq"><div class="n">3</div><div class="b"><div class="st">Registrar</div><h4>Lee los matches</h4><p>Coincidencias mutuas y opt-in.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/pulso.html?panel=1"><span class="tag">panel</span> Matches ↗</a></div></div>
+      <div class="sq"><div class="n">4</div><div class="b"><div class="st">Decidir</div><h4>Aplica y registra</h4><p>Señal recíproca + acción fechada.</p><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/scorecards.html"><span class="tag">equipo</span> Scorecard ↗</a></div></div>
+    </div>
+  </section>
+
+  <!-- 8 · PANELES -->
+  <section class="slide" data-label="Paneles">
+    <p class="eyebrow"><span class="freq">Paneles</span> · el dashboard del piloto <span class="rule"></span></p>
+    <h2>De la página a la decisión</h2>
+    <p class="lead">La sección Paneles reúne el tablero de decisiones registradas y los datos que llegan en vivo desde cada página pública.</p>
+    <div class="grid-cards" style="margin-top:24px">
+      <div class="cardlet"><div class="hnum">Tablero</div><p>Las 4 H con su estado y veredicto vigente, leídos de la pestaña <span class="kv">scorecards</span>.</p></div>
+      <div class="cardlet"><div class="hnum">KPIs en vivo</div><p>Embudo (H1), calificaciones (H3) y pulso (H4) resumidos, con acceso a cada panel completo.</p></div>
+      <div class="cardlet"><div class="hnum">Registrar</div><p>La Scorecard escribe la decisión oficial con un botón; aquí aparece al instante.</p></div>
+    </div>
+    <div class="panelcall" style="margin-top:18px">
+      <div class="pt"><b>La decisión oficial vive en el tablero</b>, con el umbral fijado antes de ver los datos. Los KPIs son señal preliminar, no la decisión.</div>
+      <a class="lk" target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/paneles.html"><span class="tag">equipo</span> Abrir Paneles ↗</a>
+    </div>
+  </section>
+
+  <!-- 9 · ÍNDICE -->
+  <section class="slide" data-label="Enlaces">
+    <p class="eyebrow"><span class="freq">Índice</span> · todos los enlaces en vivo <span class="rule"></span></p>
+    <h2>Mapa de enlaces</h2>
+    <div class="tblwrap" style="margin-top:20px">
+      <table class="tbl">
+        <tr><th>Recurso</th><th>Para</th><th>Enlace</th></tr>
+        <tr class="sec"><td colspan="3">Público · participantes</td></tr>
+        <tr><td>Landing H1 · café-coworking</td><td>WTP</td><td><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/index.html">/index.html ↗</a></td></tr>
+        <tr><td>Ficha de llegada H2</td><td>Llegada</td><td><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/ficha.html">/ficha.html ↗</a></td></tr>
+        <tr><td>Calificar H3</td><td>Interacción</td><td><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/calificar.html">/calificar.html ↗</a></td></tr>
+        <tr><td>Pulso privado H4</td><td>Continuidad</td><td><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/pulso.html">/pulso.html ↗</a></td></tr>
+        <tr class="sec"><td colspan="3">Equipo · /researchers/</td></tr>
+        <tr><td>Home · los 4 experimentos y el mapa</td><td>Todos</td><td><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/index.html">/researchers/ ↗</a></td></tr>
+        <tr><td>Hubs por experimento</td><td>H1–H4</td><td><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/h1.html">/h1 ↗</a> · <a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/h2.html">h2 ↗</a> · <a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/h3.html">h3 ↗</a> · <a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/h4.html">h4 ↗</a></td></tr>
+        <tr><td>Paneles · dashboard del piloto</td><td>Todos</td><td><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/paneles.html">/paneles.html ↗</a></td></tr>
+        <tr><td>Scorecards · preparar / decidir → BD</td><td>Todos</td><td><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/scorecards.html">/scorecards.html ↗</a></td></tr>
+        <tr><td>Tarjetas de ejecución · Registro H3 · Ficha H2</td><td>Instrum.</td><td><a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/ejecucion.html">/ejecucion ↗</a> · <a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/registro-h3.html">registro-h3 ↗</a> · <a target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/ficha-generador.html">ficha ↗</a></td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- 10 · PRÓXIMO -->
+  <section class="slide" data-label="Próximo">
+    <p class="eyebrow"><span class="freq">Siguiente</span> · lo que viene <span class="rule"></span></p>
+    <h2>Después de la primera ronda</h2>
+    <div class="two" style="margin-top:24px">
+      <div class="panelbox">
+        <h3>Pendientes de campo</h3>
+        <div class="rules" style="margin-top:4px">
+          <div class="rule-i"><span class="rk">H2</span><div>Confirmar la hora de la sesión en la ficha.</div></div>
+          <div class="rule-i"><span class="rk">H3</span><div>Cerrar el consentimiento firmado con cláusula de grabación.</div></div>
+          <div class="rule-i"><span class="rk">H1–H4</span><div>Correr la tanda y registrar la decisión en la Scorecard.</div></div>
+        </div>
+      </div>
+      <div class="panelbox accent">
+        <h3>Iteración futura</h3>
+        <p style="font-size:15px;margin:0 0 14px;line-height:1.5">Pasar de agrupar a mano a proponer microgrupos con un algoritmo, integrando las señales de H1–H4 (incluido el grafo de dobles opt-in). Se diseña <b>para probarse</b>, no para prometerse: con n=4 aún no hay datos para entrenar.</p>
+        <div class="links"><a class="lk doc" target="_blank" rel="noopener" href="https://josebdiaz.github.io/sintonia-piloto/researchers/iteracion-clusterizacion.md"><span class="tag">doc</span> Clusterización ↗</a></div>
+      </div>
+    </div>
+    <div class="cover-foot" style="margin-top:26px">
+      <div class="signal"><span></span><span></span><span></span><span></span></div>
+      <div class="who">Proyecto <b>Sintonía</b> · Maestría en Gestión de la Innovación, Universidad Icesi.<br>Antes de diseñar conexiones, diseñamos confianza.</div>
+    </div>
+  </section>
+
+</div>
+
+<nav class="nav" aria-label="Navegación del deck">
+  <button class="arw-btn" id="prev" type="button" aria-label="Anterior">‹</button>
+  <div class="dialbar" id="dialbar" role="tablist"></div>
+  <span class="counter" id="counter">01 / 10</span>
+  <button class="arw-btn" id="next" type="button" aria-label="Siguiente">›</button>
+</nav>
+
+<script>
+"use strict";
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var total = slides.length;
+  var freqs = ["100.7","Ciclo","Nav","88.1","92.5","98.3","104.9","Paneles","Índice","→"];
+  var cur = 0;
+  var dial = document.getElementById("dialbar");
+  var counter = document.getElementById("counter");
+  var prev = document.getElementById("prev");
+  var next = document.getElementById("next");
+  var deck = document.getElementById("deck");
+
+  slides.forEach(function(s,i){
+    var b = document.createElement("button");
+    b.className = "tick"; b.type = "button"; b.setAttribute("role","tab");
+    b.title = s.getAttribute("data-label") || ("Slide "+(i+1));
+    b.innerHTML = '<span class="lb">'+(freqs[i]||"")+'</span><span class="bar"></span>';
+    b.addEventListener("click", function(){ go(i); });
+    dial.appendChild(b);
+  });
+  var ticks = Array.prototype.slice.call(dial.querySelectorAll(".tick"));
+
+  function pad(n){ return (n<10?"0":"")+n; }
+  function go(i){
+    if(i<0) i=0; if(i>total-1) i=total-1;
+    slides[cur].classList.remove("active"); ticks[cur].classList.remove("on");
+    cur = i;
+    slides[cur].classList.add("active"); ticks[cur].classList.add("on");
+    ticks[cur].setAttribute("aria-selected","true");
+    counter.textContent = pad(cur+1)+" / "+pad(total);
+    prev.disabled = cur===0; next.disabled = cur===total-1;
+    deck.scrollTop = 0;
+  }
+  prev.addEventListener("click", function(){ go(cur-1); });
+  next.addEventListener("click", function(){ go(cur+1); });
+  document.addEventListener("keydown", function(e){
+    if(e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "){ e.preventDefault(); go(cur+1); }
+    else if(e.key==="ArrowLeft"||e.key==="PageUp"){ e.preventDefault(); go(cur-1); }
+    else if(e.key==="Home"){ e.preventDefault(); go(0); }
+    else if(e.key==="End"){ e.preventDefault(); go(total-1); }
+  });
+
+  var root = document.documentElement;
+  document.getElementById("themeBtn").addEventListener("click", function(){
+    var c = root.getAttribute("data-theme");
+    var d = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var n = c ? c : (d ? "dark" : "light");
+    root.setAttribute("data-theme", n==="dark" ? "light" : "dark");
+  });
+
+  go(0);
+})();
+</script>
+
+</body>
+</html>
