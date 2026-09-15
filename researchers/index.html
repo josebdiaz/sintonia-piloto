@@ -5,249 +5,216 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Investigadores · Sintonía P4</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
   :root{
-    --bg:#f4f1ec; --card:#ffffff; --card-2:#faf8f4; --ink:#211f1a; --muted:#6a655c;
-    --line:#e4ded4; --line-2:#d6cec1;
+    --bg:#f4f1ec; --card:#ffffff; --card-2:#faf8f4; --ink:#211f1a; --muted:#6a655c; --faint:#938c7e;
+    --line:#e6e0d5; --line-2:#d6cec1;
     --pine:#0f6e63; --pine-ink:#0a4f47; --pine-soft:#e0efec;
-    --honey:#c67a1e; --honey-soft:#f7ebd8;
-    --shadow:0 1px 2px rgba(33,31,26,.05), 0 10px 30px -16px rgba(33,31,26,.25);
-    --r:14px;
+    --honey:#c67a1e; --honey-ink:#9a5c12; --honey-soft:#f7ebd8;
+    --shadow:0 1px 2px rgba(33,31,26,.05), 0 14px 34px -20px rgba(33,31,26,.30);
     --disp:"Bricolage Grotesque",Georgia,serif;
     --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
   }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#141210;--card:#1e1b17;--card-2:#191612;--ink:#efeae1;--muted:#a89f90;--faint:#7d766a;
+    --line:#2c281f;--line-2:#3a3529;
+    --pine:#41b9a9;--pine-ink:#8fe0d4;--pine-soft:#12302b;
+    --honey:#dd9c44;--honey-ink:#eab866;--honey-soft:#2f2513;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 16px 40px -22px rgba(0,0,0,.9);}}
   :root[data-theme="dark"]{
-    --bg:#151310; --card:#1e1b17; --card-2:#191612; --ink:#efeae1; --muted:#a49d90;
-    --line:#2c281f; --line-2:#3a3529;
-    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
-    --honey:#dd9c44; --honey-soft:#2f2513;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px -18px rgba(0,0,0,.8);
-  }
+    --bg:#141210;--card:#1e1b17;--card-2:#191612;--ink:#efeae1;--muted:#a89f90;--faint:#7d766a;
+    --line:#2c281f;--line-2:#3a3529;
+    --pine:#41b9a9;--pine-ink:#8fe0d4;--pine-soft:#12302b;
+    --honey:#dd9c44;--honey-ink:#eab866;--honey-soft:#2f2513;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 16px 40px -22px rgba(0,0,0,.9);}
   *{box-sizing:border-box}
   html,body{margin:0}
   body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:900px;margin:0 auto;padding:28px 20px 70px}
   a{color:var(--pine-ink)}
-  .kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--pine);margin:0 0 10px}
-  h1{font-family:var(--disp);font-weight:700;font-size:30px;line-height:1.1;letter-spacing:-.02em;margin:0 0 10px}
-  .lead{font-size:15.5px;color:var(--muted);max-width:64ch;margin:0 0 8px}
-  .warn{margin-top:14px;display:flex;gap:11px;align-items:flex-start;background:var(--honey-soft);border:1px solid var(--honey);border-radius:12px;padding:13px 15px;font-size:13.5px}
-  .warn b{color:var(--honey)}
-  .section{margin-top:28px}
-  .section h2{font-family:var(--disp);font-weight:600;font-size:19px;letter-spacing:-.01em;margin:0 0 6px}
-  .section .sub{color:var(--muted);font-size:13.5px;margin:0 0 16px;max-width:70ch}
+  .wrap{max-width:1000px;margin:0 auto;padding:28px 20px 72px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--pine);margin:0 0 10px}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(30px,5vw,44px);line-height:1.03;letter-spacing:-.03em;margin:0 0 12px;text-wrap:balance}
+  p.lead{font-size:15.5px;color:var(--muted);max-width:66ch;margin:0}
+  .warn{margin-top:16px;display:flex;gap:11px;align-items:flex-start;background:var(--honey-soft);border:1px solid var(--honey);border-radius:12px;padding:13px 15px;font-size:13.5px}
+  .warn b{color:var(--honey-ink)}
+  .sect{margin-top:34px}
+  .sect-label{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--pine);margin:0 0 6px}
+  .sect-sub{color:var(--muted);font-size:13.5px;margin:0 0 16px;max-width:70ch}
+  h2{font-family:var(--disp);font-weight:700;font-size:20px;letter-spacing:-.01em;margin:0 0 14px}
 
-  /* orden de ejecución */
-  .flow{display:flex;flex-direction:column;gap:10px}
-  .fstep{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 17px;box-shadow:var(--shadow);display:flex;gap:14px}
-  .fstep .fn{font-family:var(--disp);font-weight:700;font-size:14px;width:30px;height:30px;flex:none;border-radius:50%;
-    display:grid;place-items:center;background:var(--pine-soft);color:var(--pine-ink)}
-  .fstep .ft{flex:1}
-  .fstep .ft b{display:block;font-size:15px;margin-bottom:2px}
-  .fstep .ft span{font-size:13px;color:var(--muted)}
-  .fstep .ft .mini{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-  .fstep .ft .mini a{font-size:12px;font-weight:600;color:var(--pine-ink);background:var(--pine-soft);border-radius:20px;padding:4px 11px;text-decoration:none}
-  .fstep .ft .mini a:hover{background:var(--pine);color:#fff}
-  .fstep .ft .mini span.doc{font-size:12px;color:var(--muted);background:var(--card-2);border:1px solid var(--line);border-radius:20px;padding:4px 11px}
+  /* experiment hub cards */
+  .exps{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .exp{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:20px 22px;box-shadow:var(--shadow);transition:border-color .12s,transform .05s}
+  .exp:hover{border-color:var(--pine);transform:translateY(-1px)}
+  .exp:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  .exp .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .exp .id{font-family:var(--disp);font-weight:800;font-size:15px;color:var(--pine);display:flex;align-items:center;gap:9px}
+  .exp .id .freq{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--honey-ink)}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;border-radius:20px;padding:4px 10px;white-space:nowrap}
+  .pill .d{width:7px;height:7px;border-radius:50%;flex:none}
+  .pill.frozen{background:var(--honey-soft);color:var(--honey-ink)} .pill.frozen .d{background:var(--honey)}
+  .pill.ready{background:var(--pine-soft);color:var(--pine-ink)} .pill.ready .d{background:var(--pine)}
+  .exp h3{font-family:var(--disp);font-weight:700;font-size:19px;margin:0 0 5px;letter-spacing:-.01em}
+  .exp p{font-size:13.5px;color:var(--muted);margin:0}
+  .exp .go{font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--pine-ink);margin-top:12px;display:inline-block}
 
-  /* tarjetas de herramientas */
-  .cards{display:flex;flex-direction:column;gap:12px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);
+  /* cycle */
+  .cycle{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .cyc{border:1px solid var(--line);border-radius:14px;padding:15px 16px;background:var(--card)}
+  .cyc .n{font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .cyc h4{font-family:var(--disp);font-weight:700;font-size:16px;margin:5px 0 4px}
+  .cyc p{font-size:12.5px;color:var(--muted);margin:0}
+
+  /* tools + docs */
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 17px;box-shadow:var(--shadow);
     display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
-  .card .ct{flex:1;min-width:220px}
-  .card .ct .ci{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--pine);margin:0 0 4px}
-  .card .ct b{display:block;font-size:15.5px;margin-bottom:3px}
-  .card .ct span{font-size:13px;color:var(--muted)}
-  .card .cbtn{font-family:var(--disp);font-weight:600;font-size:13.5px;color:#fff;background:var(--pine);
-    text-decoration:none;border-radius:9px;padding:9px 16px;white-space:nowrap}
+  .card .ct{flex:1;min-width:200px}
+  .card .ci{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--pine);margin:0 0 4px}
+  .card .ct b{display:block;font-size:15px;margin-bottom:3px}
+  .card .ct span{font-size:12.5px;color:var(--muted)}
+  .card .cbtn{font-family:var(--disp);font-weight:700;font-size:13px;color:#fff;background:var(--pine);text-decoration:none;border-radius:9px;padding:9px 15px;white-space:nowrap}
   .card .cbtn:hover{opacity:.9}
   .card .cbtn.doc{background:transparent;color:var(--pine-ink);border:1.5px solid var(--line-2)}
 
-  /* mapa del sitio */
   .tree{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);
-    font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.9;overflow-x:auto}
-  .tree .d{color:var(--muted)}
-  .tree a{color:var(--pine-ink);text-decoration:none}
-  .tree a:hover{text-decoration:underline}
+    font-family:var(--mono);font-size:12.5px;line-height:1.9;overflow-x:auto}
+  .tree .d{color:var(--faint)} .tree a{color:var(--pine-ink);text-decoration:none} .tree a:hover{text-decoration:underline}
   .tree .note{color:var(--muted);font-family:var(--body)}
-
-  .foot{margin-top:30px;font-size:12px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line);padding-top:16px}
+  .foot{margin-top:38px;font-size:12px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line);padding-top:16px}
   .foot b{color:var(--ink)}
-  @media (max-width:600px){ .card{flex-direction:column;align-items:stretch} .card .cbtn{text-align:center} }
+  @media (max-width:700px){ .exps,.cycle,.cards{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
-<nav class="rnav" aria-label="Herramientas de investigadores">
+<nav class="rnav" aria-label="Navegación de investigadores">
   <div class="rnav-in">
     <a class="rnav-brand" href="./index.html"><span class="rnav-dot"></span> Sintonía · Investigadores</a>
     <button class="rnav-toggle" id="rnavToggle" aria-label="Abrir menú" aria-expanded="false">&#9776;</button>
     <div class="rnav-links" id="rnavLinks">
       <a href="./index.html" data-page="index.html">Home</a>
+      <a href="./h1.html" data-page="h1.html">H1</a>
+      <a href="./h2.html" data-page="h2.html">H2</a>
+      <a href="./h3.html" data-page="h3.html">H3</a>
+      <a href="./h4.html" data-page="h4.html">H4</a>
+      <a href="./paneles.html" data-page="paneles.html">Paneles</a>
       <a href="./scorecards.html" data-page="scorecards.html">Scorecards</a>
-      <a href="./ejecucion.html" data-page="ejecucion.html">Ejecución</a>
-      <a href="./registro-h3.html" data-page="registro-h3.html">Registro H3</a>
-      <a href="./ficha-generador.html" data-page="ficha-generador.html">Ficha H2</a>
-      <a href="./guia-hosting.md" data-page="guia-hosting.md">Guía hosting</a>
       <a href="../index.html" class="rnav-out">Sitio público &#8599;</a>
     </div>
   </div>
 </nav>
 <style>
-  .rnav{background:var(--card,#fff);border-bottom:1px solid var(--line,#e4ded4);position:sticky;top:0;z-index:80}
-  .rnav-in{max-width:900px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
-  .rnav-brand{font-family:var(--disp,Georgia,serif);font-weight:700;font-size:14.5px;color:var(--ink,#211f1a);text-decoration:none;display:flex;align-items:center;gap:8px;white-space:nowrap}
-  .rnav-dot{width:9px;height:9px;border-radius:50%;background:var(--pine,#0f6e63);flex:none}
-  .rnav-links{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center}
-  .rnav-links a{font-family:var(--body,sans-serif);font-size:13px;color:var(--muted,#6a655c);text-decoration:none;padding:4px 1px;border-bottom:2px solid transparent;white-space:nowrap}
-  .rnav-links a:hover{color:var(--ink,#211f1a)}
-  .rnav-links a.active{color:var(--pine-ink,#0a4f47);border-color:var(--pine,#0f6e63);font-weight:600}
-  .rnav-links a.rnav-out{color:var(--honey,#c67a1e)}
-  .rnav-toggle{display:none;border:1px solid var(--line-2,#d6cec1);background:none;border-radius:8px;padding:5px 10px;font-size:15px;cursor:pointer;color:var(--ink,#211f1a)}
-  @media (max-width:760px){
+  .rnav{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:80}
+  .rnav-in{max-width:1000px;margin:0 auto;padding:11px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .rnav-brand{font-family:var(--disp);font-weight:700;font-size:14px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .rnav-dot{width:9px;height:9px;border-radius:50%;background:var(--pine);flex:none}
+  .rnav-links{display:flex;flex-wrap:wrap;gap:2px 6px;align-items:center}
+  .rnav-links a{font-family:var(--body);font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 10px;border-radius:8px;white-space:nowrap}
+  .rnav-links a:hover{color:var(--ink);background:var(--pine-soft)}
+  .rnav-links a.active{color:#fff;background:var(--pine)}
+  .rnav-links a.rnav-out{color:var(--honey);margin-left:4px}
+  .rnav-links a.rnav-out:hover{background:var(--honey-soft)}
+  .rnav-toggle{display:none;border:1px solid var(--line-2);background:none;border-radius:8px;padding:5px 10px;font-size:15px;cursor:pointer;color:var(--ink)}
+  @media (max-width:820px){
     .rnav-toggle{display:inline-flex}
-    .rnav-links{display:none;flex-direction:column;width:100%;gap:10px;padding-top:10px;align-items:flex-start}
+    .rnav-links{display:none;flex-direction:column;width:100%;gap:4px;padding-top:10px;align-items:flex-start}
     .rnav-links.open{display:flex}
+    .rnav-links a{width:100%}
   }
 </style>
-<script>
-(function(){
-  var p=location.pathname.split("/").pop()||"index.html";
-  document.querySelectorAll(".rnav-links a[data-page]").forEach(function(a){
-    if(a.getAttribute("data-page")===p) a.classList.add("active");
-  });
-  var t=document.getElementById("rnavToggle"), l=document.getElementById("rnavLinks");
-  if(t) t.addEventListener("click",function(){
-    var open=l.classList.toggle("open");
-    t.setAttribute("aria-expanded",open?"true":"false");
-  });
-})();
-</script>
 
 <div class="wrap">
-  <p class="kicker">Uso interno del equipo · no compartir este enlace</p>
+  <p class="eyebrow">Uso interno del equipo · no compartir este enlace</p>
   <h1>Herramientas de investigadores</h1>
-  <p class="lead">Todo lo que el equipo necesita para preparar, ejecutar, registrar y decidir los cuatro experimentos del Periodo 4 (H1–H4), enfocados en Mateo. Esta sección no está enlazada desde el sitio público ni indexada por buscadores.</p>
-  <div class="warn">
-    <span>⚠️</span>
-    <span><b>Antes de tocar cualquier herramienta:</b> el umbral de decisión de cada experimento se fija en la Scorecard y no se mueve después de ver los datos. Con n pequeño, el techo de un hallazgo es <b>Emergente</b>, nunca concluyente.</span>
-  </div>
+  <p class="lead">Todo lo necesario para preparar, ejecutar, registrar y decidir los cuatro experimentos del Periodo 4 (H1–H4), enfocados en Mateo. Empieza por el experimento que vas a correr; cada uno te lleva por su secuencia completa.</p>
+  <div class="warn"><span>⚠️</span><span><b>Antes de tocar cualquier herramienta:</b> el umbral de decisión de cada experimento se fija en la Scorecard y no se mueve después de ver los datos. Con n pequeño, el techo de un hallazgo es <b>Emergente</b>, nunca concluyente.</span></div>
 
-  <div class="section">
-    <h2>Orden de ejecución</h2>
-    <p class="sub">Cada experimento sigue el mismo ciclo: Preparar → Ejecutar → Registrar → Decidir. Así se recorre con las herramientas de esta sección.</p>
-    <div class="flow">
-      <div class="fstep">
-        <span class="fn">1</span>
-        <div class="ft">
-          <b>Preparar</b>
-          <span>Fija el umbral de decisión de H1–H4 antes de correr cualquier tanda. Se hace una sola vez por experimento, en la Scorecard.</span>
-          <div class="mini"><a href="./scorecards.html">Abrir Scorecards</a></div>
-        </div>
-      </div>
-      <div class="fstep">
-        <span class="fn">2</span>
-        <div class="ft">
-          <b>Ejecutar</b>
-          <span>El día de la tanda: qué decir, qué llevar, consentimientos y stop-rules de cada experimento, paso a paso.</span>
-          <div class="mini"><a href="./ejecucion.html">Abrir Tarjetas de ejecución</a>
-            <a href="./ficha-generador.html">Generar ficha de llegada (H2)</a></div>
-        </div>
-      </div>
-      <div class="fstep">
-        <span class="fn">3</span>
-        <div class="ft">
-          <b>Registrar</b>
-          <span>Datos en vivo del microencuentro (H3) más el análisis de la grabación, con el instrumento y el prompt de apoyo.</span>
-          <div class="mini"><a href="./registro-h3.html">Abrir Registro H3</a>
-            <a href="./prompt-analisis-video-h3.md">Prompt de análisis de video</a></div>
-        </div>
-      </div>
-      <div class="fstep">
-        <span class="fn">4</span>
-        <div class="ft">
-          <b>Decidir</b>
-          <span>Con los datos de vuelta en la Scorecard (algunos llegan solos desde los paneles públicos vía Apps Script), se aplica la regla de decisión fijada en el paso 1 — nunca al ojo.</span>
-          <div class="mini"><a href="./scorecards.html">Volver a Scorecards</a></div>
-        </div>
-      </div>
+  <div class="sect">
+    <p class="sect-label">Los cuatro experimentos · en orden</p>
+    <h2>¿Qué vas a correr?</h2>
+    <div class="exps">
+      <a class="exp" href="./h1.html">
+        <div class="top"><span class="id"><span class="freq">88.1</span> H1</span><span class="pill frozen"><span class="d"></span> Congelado</span></div>
+        <h3>Disposición a pagar</h3>
+        <p>¿Mateo reserva un cupo aun con un estímulo de precio a la vista?</p>
+        <span class="go">Ver secuencia →</span>
+      </a>
+      <a class="exp" href="./h2.html">
+        <div class="top"><span class="id"><span class="freq">92.5</span> H2</span><span class="pill ready"><span class="d"></span> Listo</span></div>
+        <h3>Llegada autónoma</h3>
+        <p>¿Llega por su cuenta, con baja fricción y sin incidentes, con una ficha clara?</p>
+        <span class="go">Ver secuencia →</span>
+      </a>
+      <a class="exp" href="./h3.html">
+        <div class="top"><span class="id"><span class="freq">98.3</span> H3</span><span class="pill ready"><span class="d"></span> Listo</span></div>
+        <h3>Interacción autoguiada</h3>
+        <p>Con la cata a ciegas, ¿el grupo participa y conecta por sí mismo, seguro?</p>
+        <span class="go">Ver secuencia →</span>
+      </a>
+      <a class="exp" href="./h4.html">
+        <div class="top"><span class="id"><span class="freq">104.9</span> H4</span><span class="pill ready"><span class="d"></span> Listo</span></div>
+        <h3>Continuidad recíproca</h3>
+        <p>¿Surge doble opt-in mutuo y una acción fechada tras el encuentro?</p>
+        <span class="go">Ver secuencia →</span>
+      </a>
     </div>
   </div>
 
-  <div class="section">
-    <h2>Herramientas</h2>
-    <p class="sub">Documentos de referencia y guías se abren o descargan; las demás son herramientas interactivas.</p>
+  <div class="sect">
+    <p class="sect-label">Cómo se recorre cada uno</p>
+    <h2>El mismo ciclo para los cuatro</h2>
+    <div class="cycle">
+      <div class="cyc"><div class="n">01</div><h4>Preparar</h4><p>Fijar el umbral en la Scorecard. Una sola vez por experimento.</p></div>
+      <div class="cyc"><div class="n">02</div><h4>Ejecutar</h4><p>El día de la tanda: guion, consentimientos y stop-rules.</p></div>
+      <div class="cyc"><div class="n">03</div><h4>Registrar</h4><p>Datos en vivo y del video; los paneles recogen lo digital.</p></div>
+      <div class="cyc"><div class="n">04</div><h4>Decidir</h4><p>Aplicar la regla fijada y registrarla en la Scorecard.</p></div>
+    </div>
+  </div>
+
+  <div class="sect">
+    <p class="sect-label">Instrumentos y datos</p>
+    <h2>Herramientas transversales</h2>
     <div class="cards">
-      <div class="card">
-        <div class="ct"><p class="ci">Preparar · Decidir</p><b>Scorecards Piloto P4</b>
-          <span>Las 4 hipótesis (H1 WTP, H2 llegada, H3 interacción, H4 continuidad) con veredicto automático y clasificación Robusto/Emergente/Pendiente.</span></div>
-        <a class="cbtn" href="./scorecards.html">Abrir</a>
-      </div>
-      <div class="card">
-        <div class="ct"><p class="ci">Ejecutar</p><b>Tarjetas de ejecución H1–H4</b>
-          <span>Guía operativa del día de la tanda: qué decir, logística del café, consentimientos, stop-rules y cierre.</span></div>
-        <a class="cbtn" href="./ejecucion.html">Abrir</a>
-      </div>
-      <div class="card">
-        <div class="ct"><p class="ci">Ejecutar</p><b>Generador de ficha de llegada (H2)</b>
-          <span>Arma y previsualiza la ficha que se envía por WhatsApp antes de la sesión: mapa, menú y datos del anfitrión.</span></div>
-        <a class="cbtn" href="./ficha-generador.html">Abrir</a>
-      </div>
-      <div class="card">
-        <div class="ct"><p class="ci">Registrar</p><b>Instrumento de registro H3</b>
-          <span>Observación en vivo (participación, seguridad, incidentes) + análisis de la grabación, con veredicto automático.</span></div>
-        <a class="cbtn" href="./registro-h3.html">Abrir</a>
-      </div>
-      <div class="card">
-        <div class="ct"><p class="ci">Registrar · doc</p><b>Prompt de análisis de video (H3)</b>
-          <span>Instrucciones para analizar la grabación del microencuentro con rigor (timestamps, anonimización, sin decidir).</span></div>
-        <a class="cbtn doc" href="./prompt-analisis-video-h3.md">Ver</a>
-      </div>
-      <div class="card">
-        <div class="ct"><p class="ci">Setup · doc</p><b>Guía de hosting y Apps Script</b>
-          <span>Cómo publicar los sitios en GitHub Pages y montar el backend de Google Sheets + Apps Script.</span></div>
-        <a class="cbtn doc" href="./guia-hosting.md">Ver</a>
-      </div>
-      <div class="card">
-        <div class="ct"><p class="ci">Referencia · doc</p><b>Iteración futura: clusterización</b>
-          <span>Cómo pasar de agrupar a mano a proponer microgrupos con un algoritmo — pensado para probarse, no para prometerse.</span></div>
-        <a class="cbtn doc" href="./iteracion-clusterizacion.md">Ver</a>
-      </div>
-      <div class="card">
-        <div class="ct"><p class="ci">Referencia · doc</p><b>Prompt Lovable (H1)</b>
-          <span>Prompt para reconstruir la landing de H1 en Lovable si se necesita escalar fuera de GitHub Pages.</span></div>
-        <a class="cbtn doc" href="./prompt-lovable-h1.md">Ver</a>
-      </div>
+      <div class="card"><div class="ct"><p class="ci">Preparar · Decidir</p><b>Scorecards P4</b><span>Las 4 hipótesis con veredicto automático, clasificación R/E/P y botón para registrar la decisión oficial.</span></div><a class="cbtn" href="./scorecards.html">Abrir</a></div>
+      <div class="card"><div class="ct"><p class="ci">Dashboard</p><b>Paneles</b><span>Tablero de decisiones registradas + KPIs en vivo del embudo, calificaciones y pulso.</span></div><a class="cbtn" href="./paneles.html">Abrir</a></div>
+      <div class="card"><div class="ct"><p class="ci">Ejecutar</p><b>Tarjetas de ejecución</b><span>Guía operativa del día de la tanda para los cuatro experimentos.</span></div><a class="cbtn" href="./ejecucion.html">Abrir</a></div>
+      <div class="card"><div class="ct"><p class="ci">Registrar</p><b>Registro H3</b><span>Observación en vivo + análisis de video, con veredicto automático.</span></div><a class="cbtn" href="./registro-h3.html">Abrir</a></div>
+      <div class="card"><div class="ct"><p class="ci">Ejecutar</p><b>Generador de ficha (H2)</b><span>Arma y previsualiza la ficha de llegada que se envía por WhatsApp.</span></div><a class="cbtn" href="./ficha-generador.html">Abrir</a></div>
+      <div class="card"><div class="ct"><p class="ci">Documentos</p><b>Guías y prompts</b><span>Hosting + Apps Script, prompt de análisis de video, iteración de clusterización, prompt Lovable.</span></div><a class="cbtn doc" href="./guia-hosting.md">Guía hosting</a></div>
     </div>
   </div>
 
-  <div class="section">
-    <h2>Mapa del sitio</h2>
-    <p class="sub">El público solo ve la raíz. Esta sección vive en <code>/researchers/</code>, sin enlaces desde las páginas públicas y fuera de buscadores (<code>robots.txt</code>).</p>
+  <div class="sect">
+    <p class="sect-label">Mapa del sitio</p>
+    <h2>Dónde vive cada cosa</h2>
+    <p class="sect-sub">El público solo ve la raíz. Esta sección vive en <code>/researchers/</code>, sin enlaces desde las páginas públicas y fuera de buscadores (<code>robots.txt</code>). No indexado no es privado: no compartas estos enlaces fuera del equipo.</p>
     <div class="tree">
 <span class="d">/</span> <span class="note">— sitio público, participantes</span><br>
-<span class="d">├─ </span><a href="../index.html">index.html</a> <span class="note">landing H1 · café-coworking</span><br>
-<span class="d">├─ </span><a href="../ficha.html">ficha.html</a> <span class="note">ficha de llegada H2</span><br>
-<span class="d">├─ </span><a href="../calificar.html">calificar.html</a> <span class="note">calificación gamificada H3</span><br>
-<span class="d">└─ </span><a href="../pulso.html">pulso.html</a> <span class="note">pulso privado H4</span><br>
+<span class="d">├─ </span><a href="../index.html">index.html</a> <span class="note">landing H1</span> &nbsp; <span class="d">├─ </span><a href="../ficha.html">ficha.html</a> <span class="note">H2</span> &nbsp; <span class="d">├─ </span><a href="../calificar.html">calificar.html</a> <span class="note">H3</span> &nbsp; <span class="d">└─ </span><a href="../pulso.html">pulso.html</a> <span class="note">H4</span><br>
 <br>
 <span class="d">/researchers/</span> <span class="note">— equipo, no indexado</span><br>
 <span class="d">├─ </span><a href="./index.html">index.html</a> <span class="note">este Home</span><br>
-<span class="d">├─ </span><a href="./scorecards.html">scorecards.html</a> <span class="note">Preparar · Decidir</span><br>
-<span class="d">├─ </span><a href="./ejecucion.html">ejecucion.html</a> <span class="note">Ejecutar</span><br>
-<span class="d">├─ </span><a href="./ficha-generador.html">ficha-generador.html</a> <span class="note">Ejecutar · genera la ficha pública</span><br>
-<span class="d">├─ </span><a href="./registro-h3.html">registro-h3.html</a> <span class="note">Registrar</span><br>
-<span class="d">├─ </span><a href="./guia-hosting.md">guia-hosting.md</a><br>
-<span class="d">├─ </span><a href="./prompt-analisis-video-h3.md">prompt-analisis-video-h3.md</a><br>
-<span class="d">├─ </span><a href="./iteracion-clusterizacion.md">iteracion-clusterizacion.md</a><br>
-<span class="d">└─ </span><a href="./prompt-lovable-h1.md">prompt-lovable-h1.md</a><br>
+<span class="d">├─ </span><a href="./h1.html">h1.html</a> · <a href="./h2.html">h2.html</a> · <a href="./h3.html">h3.html</a> · <a href="./h4.html">h4.html</a> <span class="note">hubs por experimento</span><br>
+<span class="d">├─ </span><a href="./paneles.html">paneles.html</a> <span class="note">dashboard</span><br>
+<span class="d">├─ </span><a href="./scorecards.html">scorecards.html</a> <span class="note">decisión → BD</span><br>
+<span class="d">├─ </span><a href="./ejecucion.html">ejecucion.html</a> · <a href="./registro-h3.html">registro-h3.html</a> · <a href="./ficha-generador.html">ficha-generador.html</a> <span class="note">instrumentos</span><br>
+<span class="d">└─ </span><a href="./guia-hosting.md">guia-hosting.md</a> · <a href="./prompt-analisis-video-h3.md">prompt-analisis-video-h3.md</a> · <a href="./iteracion-clusterizacion.md">iteracion-clusterizacion.md</a> · <a href="./prompt-lovable-h1.md">prompt-lovable-h1.md</a><br>
     </div>
   </div>
 
-  <p class="foot">
-    Prueba piloto de investigación · Proyecto <b>Sintonía</b> · Maestría en Gestión de la Innovación, Universidad Icesi.<br>
-    Las decisiones oficiales se registran en la Scorecard con el umbral fijado antes de ver los datos, no en los paneles públicos.
-  </p>
+  <p class="foot">Prueba piloto de investigación · Proyecto <b>Sintonía</b> · Maestría en Gestión de la Innovación, Universidad Icesi.<br>Las decisiones oficiales se registran en la Scorecard con el umbral fijado antes de ver los datos, y quedan en el tablero de Paneles.</p>
 </div>
+
+<script>
+(function(){
+  var p=location.pathname.split("/").pop()||"index.html";
+  document.querySelectorAll(".rnav-links a[data-page]").forEach(function(a){ if(a.getAttribute("data-page")===p) a.classList.add("active"); });
+  var t=document.getElementById("rnavToggle"), l=document.getElementById("rnavLinks");
+  if(t) t.addEventListener("click",function(){ var o=l.classList.toggle("open"); t.setAttribute("aria-expanded",o?"true":"false"); });
+})();
+</script>
 </body>
 </html>
