@@ -5,19 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tu ficha de llegada · Sintonía</title>
 
-<!-- Open Graph / WhatsApp Preview -->
-<meta property="og:title" content="Café-coworking en grupo · Ficha de llegada">
-<meta property="og:description" content="Tierradentro Café & Co · San Antonio. Ruta clara, horarios y qué llevar para la sesión.">
-<meta property="og:image" content="https://josebdiaz.github.io/sintonia-piloto/media/cover-wp.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<!-- ====== Vista previa en WhatsApp (Open Graph) ======
+     Reemplaza la URL por la de tu GitHub Pages para que la miniatura salga en el chat. -->
 <meta property="og:type" content="website">
-
-<!-- Twitter Card -->
+<meta property="og:title" content="Llega sabiendo qué esperar · Sintonía">
+<meta property="og:description" content="Ruta clara, ganas intactas: dónde es, cómo llegar y qué esperar. Hoy sin costo.">
+<meta property="og:image" content="https://josebdiaz.github.io/sintonia-piloto/sintonia_invitacion_radio.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Café-coworking en grupo · Ficha de llegada">
-<meta name="twitter:description" content="Llega sabiendo qué esperar. Ruta clara, ganas intactas.">
-<meta name="twitter:image" content="https://josebdiaz.github.io/sintonia-piloto/media/cover-wp.jpg">
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&display=swap">
 <style>
@@ -53,7 +47,13 @@
   .abtn.primary{background:var(--pine);color:#fff}
   .abtn.ghost{background:transparent;color:var(--pine-ink);border:1.5px solid var(--line-2)}
   .mapwrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:12px}
-  .mapwrap iframe{display:block;width:100%;height:230px;border:0}
+  .mapwrap iframe{display:block;width:100%;height:180px;border:0}
+  .mini{display:inline}
+  .mini summary{cursor:pointer;list-style:none;color:var(--pine-ink);font-weight:600;font-size:13px}
+  .mini summary::-webkit-details-marker{display:none}
+  .mini summary::after{content:" ▾"}
+  .mini[open] summary::after{content:" ▴"}
+  .mini .sec{display:block;margin-top:4px}
   .fold{border-top:1px solid var(--line)}
   .fold summary{cursor:pointer;list-style:none;padding:13px 0;display:flex;align-items:center;gap:12px;font-size:14.5px;font-weight:600}
   .fold summary::-webkit-details-marker{display:none}
@@ -94,20 +94,21 @@
 
     <div class="blk"><span class="ic">🧭</span><div>
       <p class="bt">Cómo llegar</p>
-      <p class="bv">Sobre la Cra. 12, en San Antonio.<br><span class="sec">Calles angostas y empinadas: si vas en carro, sal con tiempo.</span></p></div></div>
+      <p class="bv">Sobre la Cra. 12, en San Antonio.
+        <details class="mini"><summary>Ver más</summary><span class="sec">Calles angostas y empinadas: si vas en carro, sal con tiempo.</span></details></p></div></div>
 
     <div class="blk"><span class="ic">🕒</span><div>
       <p class="bt">Cuándo</p>
-      <p class="bv">Este jueves 17 de septiembre<br><span class="sec">Llega 10 min antes · duración de la sesión: aproximadamente 2 horas</span></p></div></div>
+      <p class="bv">Este jueves 17 de septiembre
+        <details class="mini"><summary>Ver más</summary><span class="sec">Llega 10 min antes · duración de la sesión: aproximadamente 2 horas.</span></details></p></div></div>
 
-    <div class="blk"><span class="ic">🎒</span><div>
-      <p class="bt">Qué llevar</p>
-      <p class="bv">Computador, cargador y audífonos, por si tienes alguna reu.</p></div></div>
-
-    <details class="fold"><summary><span class="ic">🅿️</span> Parqueadero</summary>
+    <details class="fold"><summary><span class="ic">🅿️</span> Parqueaderos cercanos</summary>
       <div class="fc">Zona de parqueo limitado. Opción cercana: Parqueadero San Antonio, Cra. 13 #2A-60; también City Parking San Antonio y el del Museo La Tertulia.<br>
       <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Parqueadero%20San%20Antonio%20Cra%2013%20%232A-60%20Cali">Ver parqueaderos en Maps</a><br>
       <span class="sec">Alternativa cómoda: taxi/app o MÍO.</span></div></details>
+
+    <details class="fold"><summary><span class="ic">🎒</span> Qué llevar</summary>
+      <div class="fc">Computador, cargador y audífonos, por si tienes alguna reu.</div></details>
 
     <details class="fold"><summary><span class="ic">💬</span> Contacta a tu anfitrión</summary>
       <div class="fc">Cualquier cosa antes o durante, escríbele a <b>Jose</b>:<br>
