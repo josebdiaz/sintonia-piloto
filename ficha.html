@@ -21,10 +21,6 @@
     --honey:#c67a1e; --honey-soft:#f7ebd8; --shadow:0 1px 2px rgba(33,31,26,.05),0 12px 30px -18px rgba(33,31,26,.28);
     --disp:"Bricolage Grotesque",Georgia,serif; --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   }
-  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-    --bg:#151310;--card:#1e1b17;--card-2:#191612;--ink:#efeae1;--muted:#a49d90;--line:#2c281f;--line-2:#3a3529;
-    --pine:#41b9a9;--pine-ink:#8fe0d4;--pine-soft:#12302b;--honey:#dd9c44;--honey-soft:#2f2513;
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 36px -20px rgba(0,0,0,.85);}}
   :root[data-theme="dark"]{
     --bg:#151310;--card:#1e1b17;--card-2:#191612;--ink:#efeae1;--muted:#a49d90;--line:#2c281f;--line-2:#3a3529;
     --pine:#41b9a9;--pine-ink:#8fe0d4;--pine-soft:#12302b;--honey:#dd9c44;--honey-soft:#2f2513;
@@ -52,6 +48,19 @@
   .abtn.ghost{background:transparent;color:var(--pine-ink);border:1.5px solid var(--line-2)}
   .mapwrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:12px}
   .mapwrap iframe{display:block;width:100%;height:230px;border:0}
+  .fold{border-top:1px solid var(--line)}
+  .fold summary{cursor:pointer;list-style:none;padding:13px 0;display:flex;align-items:center;gap:12px;font-size:14.5px;font-weight:600}
+  .fold summary::-webkit-details-marker{display:none}
+  .fold summary .ic{font-size:17px;width:22px;text-align:center;flex:none}
+  .fold summary::after{content:"›";margin-left:auto;color:var(--muted);font-size:18px;transition:transform .15s}
+  .fold[open] summary::after{transform:rotate(90deg)}
+  .fold .fc{padding:0 0 13px 34px;font-size:14px}
+  .fold .fc a{color:var(--pine-ink);font-weight:600;text-decoration:none;border-bottom:1px solid var(--line-2)}
+  .fold .fc .sec{color:var(--muted)}
+  .help-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;text-decoration:none;
+    font-family:var(--disp);font-weight:600;font-size:15px;border-radius:11px;padding:13px 18px;margin-top:6px;
+    background:var(--stop,#b23b2e);color:#fff}
+  .help-btn:hover{opacity:.92}
   .safe{background:var(--pine-soft);border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--pine-ink);margin-bottom:16px}
   .foot{font-size:11.5px;color:var(--muted);line-height:1.6;text-align:center}
   .foot b{color:var(--ink)}
@@ -68,39 +77,38 @@
 
     <div class="blk"><span class="ic">📍</span><div>
       <p class="bt">Dónde</p>
-      <p class="bv">Tierradentro Café &amp; Co · sede San Antonio<br>Cra. 12 #2-81, Barrio San Antonio, Cali<br>
-      <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Tierradentro%20Caf%C3%A9%20%26%20Co%20San%20Antonio%20Cali&amp;query_place_id=ChIJLbLwA32mMI4RqlfokXFnPcQ">Abrir en Google Maps</a> &nbsp;·&nbsp;
-      <a target="_blank" rel="noopener" href="https://waze.com/ul?q=Tierradentro%20Caf%C3%A9%20%26%20Co%20San%20Antonio%20Cali&amp;navigate=yes">Abrir en Waze</a></p></div></div>
+      <p class="bv">Tierradentro Café &amp; Co · San Antonio<br>Cra. 12 #2-81, Cali<br>
+      <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Tierradentro%20Caf%C3%A9%20%26%20Co%20San%20Antonio%20Cali&amp;query_place_id=ChIJLbLwA32mMI4RqlfokXFnPcQ">Google Maps</a> &nbsp;·&nbsp;
+      <a target="_blank" rel="noopener" href="https://waze.com/ul?q=Tierradentro%20Caf%C3%A9%20%26%20Co%20San%20Antonio%20Cali&amp;navigate=yes">Waze</a></p>
+      <div class="mapwrap" style="margin:12px 0 0">
+        <iframe loading="lazy" title="Mapa de Tierradentro Café & Co, San Antonio, Cali"
+          src="https://maps.google.com/maps?q=Tierradentro%20Caf%C3%A9%20%26%20Co%2C%20Carrera%2012%20%232-81%2C%20San%20Antonio%2C%20Cali%2C%20Colombia&z=17&output=embed"></iframe>
+      </div>
+    </div></div>
 
     <div class="blk"><span class="ic">🧭</span><div>
       <p class="bt">Cómo llegar</p>
-      <p class="bv">Sobre la Cra. 12, a pasos del parque y la Iglesia de San Antonio (referencia visible).<br><span class="sec">San Antonio tiene calles angostas y empinadas: si vas en carro, sal con tiempo.</span></p></div></div>
-
-    <div class="blk"><span class="ic">🅿️</span><div>
-      <p class="bt">Parqueadero</p>
-      <p class="bv">Zona de parqueo limitado. Opción cercana: Parqueadero San Antonio, Cra. 13 #2A-60 (tel. 602 383 5538); también City Parking San Antonio y el del Museo La Tertulia.<br>
-      <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Parqueadero%20San%20Antonio%20Cra%2013%20%232A-60%20Cali">Ver parqueaderos en Maps</a><br>
-      <span class="sec">Alternativa cómoda: taxi/app o MÍO.</span></p></div></div>
+      <p class="bv">Sobre la Cra. 12, en San Antonio.<br><span class="sec">Calles angostas y empinadas: si vas en carro, sal con tiempo.</span></p></div></div>
 
     <div class="blk"><span class="ic">🕒</span><div>
       <p class="bt">Cuándo</p>
-      <p class="bv">Este jueves 17 de septiembre · [hora por confirmar]<br><span class="sec">Llega 10 min antes · duración ~2 h puerta a puerta</span></p></div></div>
-
-    <div class="blk"><span class="ic">💬</span><div>
-      <p class="bt">Contacta a tu anfitrión</p>
-      <p class="bv">Cualquier cosa antes o durante, escríbele a <b>Jose</b>:<br>
-      <a target="_blank" rel="noopener" href="https://wa.me/573163248045">WhatsApp · @josebolanosd</a><br>
-      <span class="sec">Puedes salir o pedir ayuda cuando quieras.</span></p></div></div>
+      <p class="bv">Este jueves 17 de septiembre<br><span class="sec">Llega 10 min antes · duración de la sesión: aproximadamente 2 horas</span></p></div></div>
 
     <div class="blk"><span class="ic">🎒</span><div>
       <p class="bt">Qué llevar</p>
-      <p class="bv">Computador y audífonos, por si tienes alguna reu.</p></div></div>
-  </div>
+      <p class="bv">Computador, cargador y audífonos, por si tienes alguna reu.</p></div></div>
 
-  <!-- ====== MAPA · Tierradentro Café & Co, San Antonio ====== -->
-  <div class="mapwrap">
-    <iframe loading="lazy" title="Mapa de Tierradentro Café & Co, sede San Antonio, Cali"
-      src="https://maps.google.com/maps?q=Tierradentro%20Caf%C3%A9%20%26%20Co%2C%20Carrera%2012%20%232-81%2C%20San%20Antonio%2C%20Cali%2C%20Colombia&z=17&output=embed"></iframe>
+    <details class="fold"><summary><span class="ic">🅿️</span> Parqueadero</summary>
+      <div class="fc">Zona de parqueo limitado. Opción cercana: Parqueadero San Antonio, Cra. 13 #2A-60; también City Parking San Antonio y el del Museo La Tertulia.<br>
+      <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Parqueadero%20San%20Antonio%20Cra%2013%20%232A-60%20Cali">Ver parqueaderos en Maps</a><br>
+      <span class="sec">Alternativa cómoda: taxi/app o MÍO.</span></div></details>
+
+    <details class="fold"><summary><span class="ic">💬</span> Contacta a tu anfitrión</summary>
+      <div class="fc">Cualquier cosa antes o durante, escríbele a <b>Jose</b>:<br>
+      <a target="_blank" rel="noopener" href="https://wa.me/573163248045">WhatsApp · @josebolanosd</a><br>
+      <span class="sec">Puedes salir o pedir ayuda cuando quieras.</span></div></details>
+
+    <a class="help-btn" target="_blank" rel="noopener" href="https://wa.me/573163248045?text=Hola%2C%20voy%20a%20asistir%20a%20una%20sesi%C3%B3n%20de%20Sinton%C3%ADa%2C%20necesito%20ayuda">🆘 Necesito ayuda para llegar</a>
   </div>
 
   <div class="actions">

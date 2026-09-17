@@ -406,9 +406,11 @@ const EXPS = [
     ],
     fields:[
       {k:"participan", label:"Entran a la acción sin prompt personal", hint:"de 4", type:"number", min:0, max:4, req:true},
-      {k:"prompts", label:"Prompts críticos del host usados", type:"number", min:0, req:true},
       {k:"maxturnos", label:"Mayor % de turnos de una sola persona", hint:"distribución de voz", type:"number", min:0, max:100, req:true},
       {k:"seguridad", label:"Seguridad percibida", hint:"escala 1–5", type:"number", min:1, max:5, req:true},
+      {k:"prompts", label:"Prompts del host usados", hint:"informativo, NO es umbral", type:"number", min:0, req:false},
+      {k:"hostcal", label:"Calificación del host por usuarios", hint:"1–5 · cómo evaluó el grupo al anfitrión", type:"number", min:1, max:5, req:false},
+      {k:"hostnota", label:"Nota cualitativa del host", hint:"qué funcionó / qué no", type:"text"},
       {k:"stop_inc", label:"Presión, exclusión o incidente", hint:"stop rule — detener la dinámica", type:"stop"}
     ],
     watch:[["Interacción","detener toda dinámica que fuerce intimidad o exponga a alguien."],
@@ -477,17 +479,20 @@ const ENGINE = {
   },
   H3(v){
     if(v.stop_inc) return stop("Presión, exclusión o incidente → detener la dinámica (y descartar esta dinámica, no el principio “activity first”).");
-    if(!ready(v,["participan","prompts","maxturnos","seguridad"])) return espera();
-    const p=+v.participan, pr=+v.prompts, mt=+v.maxturnos, seg=+v.seguridad;
-    const m=[["Participan",p+"/4"],["Prompts",pr],["Turno máx",mt+"%"],["Seguridad",seg+"/5"]];
+    if(!ready(v,["participan","maxturnos","seguridad"])) return espera();
+    const p=+v.participan, mt=+v.maxturnos, seg=+v.seguridad;
+    const pr=(v.prompts!==""&&v.prompts!=null)?+v.prompts:null;
+    const hc=(v.hostcal!==""&&v.hostcal!=null)?+v.hostcal:null;
+    const m=[["Participan",p+"/4"],["Turno máx",mt+"%"],["Seguridad",seg+"/5"]];
+    if(pr!=null) m.push(["Prompts host",pr]);
+    if(hc!=null) m.push(["Host",hc+"/5"]);
     if(p<=1) return kill(`${p} de 4 participan (≤1) → descartar esta dinámica, no el principio “activity first”. <span class='rule'>Regla: ≤1 de 4 ⇒ descartar dinámica.</span>`,m);
-    if(p>=3 && pr<=2 && mt<=50 && seg>=4) return persev(`${p} de 4 participan, ${pr} prompts (≤2), turno máx ${mt}% (≤50%), seguridad ${seg}/5 (≥4) → conservar actividad y micro misión; reducir presencia del host si el grupo fluye. <span class='rule'>Regla: ≥3/4, ≤2 prompts, ≤50% turnos, seg ≥4 ⇒ perseverar.</span>`,m);
-    if(p===2) return iter("2 de 4 participan → ajustar arquitectura social o nivel de apoyo. <span class='rule'>Regla: 2 de 4 ⇒ iterar.</span>",m);
+    if(p>=3 && mt<=50 && seg>=4) return persev(`${p} de 4 participan sin prompt personal, turno máx ${mt}% (≤50%), seguridad ${seg}/5 (≥4) → conservar actividad y micro misión. <span class='rule'>Regla: ≥3/4, ≤50% turnos, seg ≥4 ⇒ perseverar. El host NO tiene umbral fijo de intervenciones: se evalúa con la calificación de los usuarios (cuanti + cuali), no como fórmula.</span>`,m);
+    if(p===2) return iter("2 de 4 participan → ajustar arquitectura social o nivel de apoyo del host. <span class='rule'>Regla: 2 de 4 ⇒ iterar.</span>",m);
     const f=[];
-    if(pr>2) f.push(`${pr} prompts (&gt;2)`);
     if(mt>50) f.push(`turno máx ${mt}% (&gt;50%)`);
     if(seg<4) f.push(`seguridad ${seg}/5 (&lt;4)`);
-    return iter(`${p} de 4 participan pero ${f.join(", ")} → iterar arquitectura social o nivel de apoyo. <span class='rule'>Distribución desigual con señales de mejora ⇒ iterar.</span>`,m);
+    return iter(`${p} de 4 participan pero ${f.join(", ")} → iterar arquitectura social o nivel de apoyo. <span class='rule'>Distribución desigual o baja seguridad ⇒ iterar. Los prompts del host quedan como dato, no como umbral.</span>`,m);
   },
   H4(v){
     if(v.stop_contacto) return stop("Contacto unilateral / no deseado → cancelar el emparejamiento y registrar incidente. Silencio nunca es consentimiento.");

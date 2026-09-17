@@ -103,7 +103,7 @@
     <div class="hero">
       <p class="kick">📻 Privado · 30 segundos</p>
       <h1>Si hubo sintonía, sigan</h1>
-      <p id="greet">Cierra el plan en privado. <b>Nadie ve tus respuestas</b>; solo si dos se eligen mutuamente proponemos algo.</p>
+      <p id="greet">Este es tu pulso privado. <b>Nadie ve tus respuestas</b>; si la sintonía es mutua, les proponemos un próximo plan.</p>
     </div>
 
     <div class="q" data-q="agrado">
@@ -122,18 +122,19 @@
     </div>
 
     <div class="q">
-      <p class="qt">¿Con quién te gustaría volver a coincidir?</p>
-      <p class="qs">Es privado y opcional. Solo si esa persona también te elige, les proponemos un próximo plan. Puedes no elegir a nadie.</p>
+      <p class="qt">¿Con quién quisieras volver a sintonizar?</p>
+      <p class="qs">Es privado y opcional. Si la sintonía es mutua, les proponemos un próximo plan. Puedes no elegir a nadie.</p>
       <div class="chips" id="quienes"></div>
     </div>
 
     <div class="q">
-      <p class="qt">¿Te avisamos del próximo plan?</p>
+      <p class="qt">¿Quieres que te avisemos de próximos planes?</p>
       <div class="opts" id="optin">
-        <button data-v="si">Sí, avísenme</button><button data-v="no">Por ahora no</button>
+        <button data-v="si">Sí, súmenme a Sintonía</button><button data-v="no">Por ahora no</button>
       </div>
       <div class="contact" id="contactWrap" hidden>
         <input type="text" id="contacto" placeholder="Tu WhatsApp o correo" autocomplete="off">
+        <p style="font-size:12px;color:var(--muted);margin:8px 0 0">Te sumamos a la comunidad de Sintonía para avisarte de próximos planes. Puedes salir cuando quieras.</p>
       </div>
     </div>
 
@@ -144,8 +145,8 @@
   <div id="thanks" hidden>
     <div class="done">
       <div class="em">🤝✨</div>
-      <h2>¡Gracias!</h2>
-      <p>Tu pulso quedó guardado en privado. Si hay coincidencia mutua, te escribimos para proponer el próximo plan.</p>
+      <h2>¡Gracias por sintonizar!</h2>
+      <p>Tu pulso quedó guardado en privado. Si la sintonía es mutua, te escribimos para proponer el próximo plan.</p>
     </div>
   </div>
 
@@ -156,6 +157,9 @@
     <div class="pcard">
       <h3>🔗 Enlaces del grupo · esta ronda</h3>
       <p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">Agrega a los asistentes confirmados. Cada quien recibe su enlace personalizado (con el grupo incluido). Se guardan en este navegador para la ronda.</p>
+      <div class="gwrap">
+        <input id="gCluster" type="text" placeholder="ID del microgrupo (opcional, p. ej. jueves-1)" autocomplete="off">
+      </div>
       <div class="gwrap">
         <input id="gName" type="text" placeholder="Nombre del asistente" autocomplete="off">
         <button class="gadd" id="gAdd">Agregar</button>
@@ -182,6 +186,7 @@ const PANEL=params.get("panel")==="1"||params.get("view")==="panel";
 /* Roster del microencuentro. Edítalo por sesión, o pásalo por ?grupo=Ana,Luis,Sofia,Marco */
 let PARTICIPANTES=(params.get("grupo")||"Ana,Luis,Sofía,Marco").split(",").map(s=>s.trim()).filter(Boolean);
 let ME=(params.get("me")||"").trim();
+const CLUSTER=(params.get("cluster")||"").trim();   // soporta varios microgrupos en paralelo
 
 const ans={agrado:null,intencion:null,eligio:[],optin:null};
 
@@ -189,7 +194,7 @@ const ans={agrado:null,intencion:null,eligio:[],optin:null};
 function startForm(){
   document.getElementById("pick").hidden=true;
   document.getElementById("form").hidden=false;
-  document.getElementById("greet").innerHTML="Hola <b>"+ME+"</b> — cierra el plan en privado. Nadie ve tus respuestas; solo si dos se eligen mutuamente proponemos algo.";
+  document.getElementById("greet").innerHTML="Hola <b>"+ME+"</b> — este es tu pulso privado. Nadie ve tus respuestas; si la sintonía es mutua, les proponemos un próximo plan.";
   const cont=document.getElementById("quienes");
   cont.innerHTML="";
   PARTICIPANTES.filter(p=>p!==ME).forEach(p=>{
@@ -226,7 +231,7 @@ pickGroup("optin","optin");
 function sync(){ document.getElementById("send").disabled = !(ans.agrado && ans.intencion && ans.optin); }
 
 document.getElementById("send").addEventListener("click",()=>{
-  const row={kind:"pulso", me:ME, agrado:ans.agrado, intencion:ans.intencion,
+  const row={kind:"pulso", me:ME, cluster:CLUSTER, agrado:ans.agrado, intencion:ans.intencion,
     eligio:ans.eligio.join("|"), optin_next:(ans.optin==="si"),
     contacto:(ans.optin==="si"?(document.getElementById("contacto").value||"").trim():""), ts:Date.now()};
   if(CONFIGURED){ try{ fetch(ENDPOINT,{method:"POST",mode:"no-cors",keepalive:true,
@@ -239,15 +244,16 @@ document.getElementById("send").addEventListener("click",()=>{
 /* ---------- panel ---------- */
 function renderPulso(rows){
   rows=(rows||[]).filter(r=>r&&r.me);
+  if(CLUSTER) rows=rows.filter(r=>String(r.cluster||"")===CLUSTER);   // panel por microgrupo
   const n=rows.length;
-  document.getElementById("pcount").textContent = n? (n+" pulso"+(n===1?"":"s")+" recibido"+(n===1?"":"s")) : "Aún no hay pulsos.";
+  document.getElementById("pcount").textContent = (n? (n+" pulso"+(n===1?"":"s")+" recibido"+(n===1?"":"s")) : "Aún no hay pulsos.")+(CLUSTER?(" · grupo "+CLUSTER):"");
   // eligio como set por persona (última respuesta de cada uno)
   const last={}; rows.forEach(r=>{ last[r.me]=r; });
   const people=Object.keys(last);
   const chose={}; people.forEach(m=>{ chose[m]=new Set(String(last[m].eligio||"").split("|").filter(Boolean)); });
-  // matches mutuos
+  // matches mutuos (solo dentro del mismo microgrupo/cluster)
   const matches=[]; const inMatch=new Set();
-  people.forEach(a=>people.forEach(b=>{ if(a<b && chose[a].has(b) && chose[b].has(a)){ matches.push([a,b]); inMatch.add(a); inMatch.add(b); } }));
+  people.forEach(a=>people.forEach(b=>{ if(a<b && chose[a].has(b) && chose[b].has(a) && String(last[a].cluster||"")===String(last[b].cluster||"")){ matches.push([a,b]); inMatch.add(a); inMatch.add(b); } }));
   const optins=people.filter(m=>last[m].optin_next===true||String(last[m].optin_next).toUpperCase()==="TRUE");
   const agr=people.map(m=>+last[m].agrado).filter(v=>v>=1&&v<=5);
   const agrProm=agr.length?(agr.reduce((x,y)=>x+y,0)/agr.length).toFixed(1):"—";
@@ -276,10 +282,14 @@ function fetchPulso(){
 
 /* ---------- generador de enlaces del grupo (panel) ---------- */
 const ROSTER_KEY="sintonia_pulso_roster";
+const CLUSTER_KEY="sintonia_pulso_cluster";
 function roster(){ try{ return JSON.parse(localStorage.getItem(ROSTER_KEY))||[]; }catch(e){ return []; } }
 function rosterSave(a){ try{ localStorage.setItem(ROSTER_KEY,JSON.stringify(a)); }catch(e){} }
+function clusterVal(){ try{ return localStorage.getItem(CLUSTER_KEY)||""; }catch(e){ return ""; } }
+function clusterSave(v){ try{ localStorage.setItem(CLUSTER_KEY,v); }catch(e){} }
 function baseUrl(){ return location.origin+location.pathname; }
-function linkFor(name,list){ return baseUrl()+"?grupo="+encodeURIComponent(list.join(","))+"&me="+encodeURIComponent(name); }
+function clSuffix(){ const c=clusterVal().trim(); return c?("&cluster="+encodeURIComponent(c)):""; }
+function linkFor(name,list){ return baseUrl()+"?grupo="+encodeURIComponent(list.join(","))+"&me="+encodeURIComponent(name)+clSuffix(); }
 function copyText(t,btn){
   var ok=function(){ if(btn){ var o=btn.textContent; btn.textContent="¡Copiado!"; setTimeout(function(){btn.textContent=o;},1400); } };
   var fb=function(){ var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); ok(); };
@@ -295,7 +305,7 @@ function renderRoster(){
       +`<button class="grm" data-rm="${i}" aria-label="Quitar">×</button></span></div>`;
   });
   html+=`<div class="grow" style="border-top:1px solid var(--line);margin-top:4px"><span class="gname">Panel del equipo</span>`
-    +`<span class="gact"><button class="cp" data-link="${(baseUrl()+"?panel=1").replace(/"/g,"&quot;")}">Copiar enlace del panel</button></span></div>`;
+    +`<span class="gact"><button class="cp" data-link="${(baseUrl()+"?panel=1"+clSuffix()).replace(/"/g,"&quot;")}">Copiar enlace del panel</button></span></div>`;
   el.innerHTML=html;
   el.querySelectorAll(".cp").forEach(b=>b.addEventListener("click",()=>copyText(b.getAttribute("data-link"),b)));
   el.querySelectorAll(".grm").forEach(b=>b.addEventListener("click",()=>{ const a=roster(); a.splice(+b.getAttribute("data-rm"),1); rosterSave(a); renderRoster(); }));
@@ -306,6 +316,8 @@ function initGenerator(){
     if(!a.some(x=>x.toLowerCase()===v.toLowerCase())){ a.push(v); rosterSave(a); } inp.value=""; inp.focus(); renderRoster(); }
   add.addEventListener("click",doAdd);
   inp.addEventListener("keydown",e=>{ if(e.key==="Enter") doAdd(); });
+  const cl=document.getElementById("gCluster");
+  if(cl){ cl.value=clusterVal(); cl.addEventListener("input",()=>{ clusterSave(cl.value.trim()); renderRoster(); }); }
   renderRoster();
 }
 

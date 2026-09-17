@@ -98,13 +98,13 @@
     <div class="hero">
       <p class="kick">📻 30 segundos · anónimo</p>
       <h1>Sintoniza tu experiencia</h1>
-      <p>Sube la señal según qué tanto. No hay respuestas buenas ni malas.</p>
+      <p>Cuéntanos cómo te fue. No hay respuestas buenas ni malas.</p>
     </div>
 
     <div class="meter">
-      <span class="lbl">Tu señal</span>
-      <div class="bars" id="progress"><span></span><span></span><span></span></div>
-      <span class="cnt" id="cnt">0/3</span>
+      <span class="lbl">Tu avance</span>
+      <div class="bars" id="progress"><span></span><span></span><span></span><span></span></div>
+      <span class="cnt" id="cnt">0/4</span>
     </div>
 
     <div class="q" data-q="agrado">
@@ -112,7 +112,7 @@
       <div class="sig">
         <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
       </div>
-      <div class="scale"><span>nada</span><span>muchísimo</span></div>
+      <div class="scale"><span>nada</span><span>mucho</span></div>
     </div>
 
     <div class="q" data-q="comodidad">
@@ -121,6 +121,14 @@
         <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
       </div>
       <div class="scale"><span>incómod@</span><span>muy a gusto</span></div>
+    </div>
+
+    <div class="q" data-q="seguridad">
+      <p class="qt">¿Qué tan segur@ te sentiste?</p>
+      <div class="sig">
+        <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
+      </div>
+      <div class="scale"><span>nada</span><span>mucho</span></div>
     </div>
 
     <div class="q" data-q="facilidad">
@@ -132,11 +140,16 @@
     </div>
 
     <div class="q word">
-      <p class="qt">Una palabra para el plan <span style="font-weight:400;color:var(--muted);font-size:13px">(opcional)</span></p>
+      <p class="qt">¿Cómo te sentiste con las personas, el anfitrión y la experiencia? <span style="font-weight:400;color:var(--muted);font-size:13px">(opcional)</span></p>
+      <textarea id="comentario" rows="3" placeholder="Cuéntanos en tus palabras…" style="width:100%;font-family:var(--body);font-size:15px;padding:11px 13px;border:1px solid var(--line-2);border-radius:10px;background:var(--card);color:var(--ink);resize:vertical"></textarea>
+    </div>
+
+    <div class="q word">
+      <p class="qt">¿Cómo describirías tu experiencia en una palabra? <span style="font-weight:400;color:var(--muted);font-size:13px">(opcional)</span></p>
       <input type="text" id="palabra" maxlength="40" placeholder="p. ej. tranqui, chévere, raro…" autocomplete="off">
     </div>
 
-    <button class="btn" id="send" disabled>Enviar mi señal</button>
+    <button class="btn" id="send" disabled>Enviar</button>
     <p class="hint">Tu respuesta es voluntaria y anónima. Nos ayuda a mejorar el plan, no a evaluarte a ti.</p>
   </div>
 
@@ -158,6 +171,7 @@
     <div class="kpis" id="kpis"></div>
     <div id="dims"></div>
     <div class="dim"><div class="dt">Palabras para el plan</div><div class="chips" id="chips"></div></div>
+    <div class="dim"><div class="dt">Comentarios</div><div id="coment"></div></div>
     <button class="btn" id="prefresh" style="background:transparent;color:var(--pine-ink);border:1.5px solid var(--line-2)">↻ actualizar</button>
     <p class="foot" id="pnote"></p>
   </div>
@@ -192,13 +206,14 @@ document.querySelectorAll(".q[data-q]").forEach(q=>{
   });
 });
 function sync(){
-  const n=["agrado","comodidad","facilidad"].filter(k=>ans[k]).length;
-  document.getElementById("cnt").textContent=n+"/3";
+  const n=["agrado","comodidad","seguridad","facilidad"].filter(k=>ans[k]).length;
+  document.getElementById("cnt").textContent=n+"/4";
   document.querySelectorAll("#progress span").forEach((s,i)=>s.classList.toggle("on", i<n));
-  document.getElementById("send").disabled = n<3;
+  document.getElementById("send").disabled = n<4;
 }
 document.getElementById("send").addEventListener("click",()=>{
-  const row={kind:"rating",uid:UID,src:SRC,agrado:ans.agrado,comodidad:ans.comodidad,facilidad:ans.facilidad,
+  const row={kind:"rating",uid:UID,src:SRC,agrado:ans.agrado,comodidad:ans.comodidad,seguridad:ans.seguridad,facilidad:ans.facilidad,
+    comentario:(document.getElementById("comentario").value||"").trim(),
     palabra:(document.getElementById("palabra").value||"").trim(),ts:Date.now()};
   if(CONFIGURED){ try{ fetch(ENDPOINT,{method:"POST",mode:"no-cors",keepalive:true,
     headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(row)}); }catch(e){} }
@@ -214,10 +229,10 @@ document.getElementById("themeBtn").addEventListener("click",()=>{
 });
 
 /* ---------- PANEL ---------- */
-const DIMS=[["agrado","¿Qué tal el plan?"],["comodidad","Comodidad"],["facilidad","Fue fácil participar"]];
+const DIMS=[["agrado","¿Qué tal el plan?"],["comodidad","Comodidad"],["seguridad","Seguridad"],["facilidad","Fue fácil participar"]];
 function avg(a){ return a.length? a.reduce((x,y)=>x+y,0)/a.length : null; }
 function renderRatings(rows){
-  rows=(rows||[]).filter(r=>r&&(r.agrado||r.comodidad||r.facilidad));
+  rows=(rows||[]).filter(r=>r&&(r.agrado||r.comodidad||r.seguridad||r.facilidad));
   const n=rows.length;
   document.getElementById("pcount").textContent = n? (n+" respuesta"+(n===1?"":"s")) : "Aún no hay respuestas.";
   // KPIs
@@ -225,7 +240,7 @@ function renderRatings(rows){
   DIMS.forEach(([k])=>{ means[k]=avg(rows.map(r=>+r[k]).filter(v=>v>=1&&v<=5)); });
   document.getElementById("kpis").innerHTML=[
     ["Respuestas", n],
-    ["Agrado", means.agrado],["Comodidad", means.comodidad],["Facilidad", means.facilidad]
+    ["Agrado", means.agrado],["Comodidad", means.comodidad],["Seguridad", means.seguridad],["Facilidad", means.facilidad]
   ].map((k,i)=>`<div class="kpi"><div class="kl">${k[0]}</div><div class="kv">${i===0?k[1]:(k[1]==null?"—":k[1].toFixed(1)+' <small>/5</small>')}</div></div>`).join("");
   // dims
   document.getElementById("dims").innerHTML=DIMS.map(([k,label])=>{
@@ -239,6 +254,10 @@ function renderRatings(rows){
   // palabras
   const words=rows.map(r=>(r.palabra||"").trim()).filter(Boolean);
   document.getElementById("chips").innerHTML = words.length? words.map(w=>`<span class="chip">${w.replace(/</g,"&lt;")}</span>`).join("") : '<span class="empty">Sin palabras todavía.</span>';
+  const coms=rows.map(r=>(r.comentario||"").trim()).filter(Boolean);
+  document.getElementById("coment").innerHTML = coms.length
+    ? coms.map(c=>`<p style="font-size:13.5px;color:var(--ink);margin:0 0 8px;padding:9px 12px;background:var(--card-2);border:1px solid var(--line);border-radius:9px">“${c.replace(/</g,"&lt;")}”</p>`).join("")
+    : '<span class="empty" style="color:var(--muted);font-size:12.5px">Sin comentarios todavía.</span>';
   document.getElementById("pnote").innerHTML=`Calificaciones anónimas y voluntarias · n pequeño (piloto): son señal <b>Emergente</b>, no concluyente · complementan la observación del microencuentro, no la reemplazan. Última lectura: ${new Date().toLocaleTimeString("es-CO")}.`;
 }
 function fetchRatings(){

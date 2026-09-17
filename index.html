@@ -166,6 +166,10 @@
   .genhist td:first-child{font-family:ui-monospace,Menlo,monospace}
   .genhist .cp{border:1px solid var(--line-2);background:var(--card);color:var(--pine-ink);border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;font-family:var(--body)}
   .genhist .cp:hover{border-color:var(--pine)}
+  .genmsg{margin-top:16px;border-top:1px dashed var(--line-2);padding-top:14px}
+  .genmsg textarea{width:100%;font-family:var(--body);font-size:13.5px;line-height:1.5;padding:11px 13px;
+    border:1px solid var(--line-2);border-radius:9px;background:var(--card);color:var(--ink);resize:vertical}
+  .genmsg textarea:focus{outline:2px solid var(--pine);border-color:var(--pine)}
   @media (max-width:520px){.funnel{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:1fr}.hero h1{font-size:27px}}
   /* wizard: migas de pan + pasos */
   .wizard{padding-top:16px}
@@ -182,7 +186,7 @@
   .csep{color:var(--line-2);font-size:15px}
   .step h2{scroll-margin-top:14px;outline:none}
   .stephint{font-size:12px;color:var(--muted);margin:0;flex-basis:100%;text-align:center}
-  .linkbtn{background:none;border:none;color:var(--honey);font-family:var(--body);font-size:12.5px;font-weight:600;
+  .linkbtn{background:none;border:none;color:var(--pine);font-family:var(--body);font-size:12.5px;font-weight:700;
     text-decoration:underline;cursor:pointer;padding:0;margin-left:8px}
   .notes{display:flex;flex-direction:column;gap:15px;margin-top:8px}
   .note h4{font-size:13.5px;font-weight:600;margin:0 0 3px;color:var(--ink)}
@@ -220,7 +224,7 @@
   <header class="hero">
     <p class="kicker">Café-coworking · grupo pequeño</p>
     <h1>Trabaja acompañado, no en solitario.</h1>
-    <p class="lead">Una sesión de coworking en un café, en grupo pequeño, pensada para quienes trabajan en remoto y quieren romper la rutina de hacerlo siempre solos. Llegas, te ubicas, trabajas tu propia lista — pero con gente cerca.</p>
+    <p class="lead">Una sesión de coworking en un café, en grupo pequeño, para quienes trabajan en remoto y quieren romper la rutina de hacerlo siempre solos. Llegas, te ubicas y trabajas <b>en sintonía con gente cerca</b>. Cerca, corto y posible.</p>
     <div class="facts">
       <span class="fact">🗓️ <b>90 min</b> de sesión</span>
       <span class="fact">👥 grupo de <b>4 a 8</b></span>
@@ -239,7 +243,7 @@
     <ul class="steps">
       <li><span class="n">1</span><span class="st"><b>Llegas al café</b><span>Te recibimos, te ubicas y pides lo que quieras consumir (a tu cuenta).</span></span></li>
       <li><span class="n">2</span><span class="st"><b>Trabajas lo tuyo, 90 minutos</b><span>Tu propia lista de pendientes. Un breve arranque para saber en qué anda cada quien, y a trabajar.</span></span></li>
-      <li><span class="n">3</span><span class="st"><b>Cierre corto</b><span>Un momento opcional al final para conocer a quien te dio curiosidad. Sin obligación.</span></span></li>
+      <li><span class="n">3</span><span class="st"><b>Cierre corto</b><span>Un momento opcional al final para empezar a sintonizar con el grupo. Sin obligación.</span></span></li>
     </ul>
   </section>
 
@@ -426,6 +430,12 @@
         <button class="copy" id="genCopy">Copiar y registrar</button>
       </div>
       <div class="genhist" id="genHist"></div>
+
+      <div class="genmsg">
+        <label>Mensaje para enviar <span style="text-transform:none;font-weight:400;color:var(--muted)">· se arma con el nombre y el enlace de arriba</span></label>
+        <textarea id="genMsg" rows="5"></textarea>
+        <button class="copy" id="genMsgCopy" style="margin-top:8px">Copiar mensaje</button>
+      </div>
     </div>
 
     <div class="funnel" id="funnel"></div>
@@ -626,6 +636,12 @@ function nextSeq(channel){
   var n=max+1; return channel+(n<10?("0"+n):(""+n));
 }
 function baseUrl(){ return location.origin+location.pathname; }
+function msgTemplate(nombre,link){
+  var saludo=nombre?("Hola "+nombre):"Hola";
+  return saludo+" 👋 Te comparto un plan de Sintonía: una sesión de coworking en un café, "
+    +"en grupo pequeño, para trabajar en sintonía con gente cerca. Cerca, corto y posible.\n\n"
+    +"Si te suena, reserva tu cupo acá (hoy sin costo): "+link;
+}
 function genPreview(){
   var nombre=document.getElementById("genNombre").value.trim();
   var canal=document.getElementById("genCanal").value;
@@ -633,6 +649,8 @@ function genPreview(){
   var link=baseUrl()+"?utm_source="+encodeURIComponent(canal)+"&u="+encodeURIComponent(uid);
   document.getElementById("genUid").textContent=uid||"—";
   document.getElementById("genLink").value=link;
+  var msg=document.getElementById("genMsg");
+  if(msg && document.activeElement!==msg) msg.value=msgTemplate(nombre,link);
   return {canal:canal,uid:uid,link:link};
 }
 function copyText(t,btn){
@@ -663,9 +681,10 @@ function initGenerator(){
       list.push({uid:g.uid,canal:g.canal,link:g.link,ts:Date.now()}); genHistSave(list);
     }
     copyText(g.link,document.getElementById("genCopy"));
-    document.getElementById("genNombre").value="";
     renderHist(); genPreview();
   });
+  var mc=document.getElementById("genMsgCopy");
+  if(mc) mc.addEventListener("click",function(){ copyText(document.getElementById("genMsg").value,mc); });
   renderHist(); genPreview();
 }
 function panelMsg(cls,txt){
