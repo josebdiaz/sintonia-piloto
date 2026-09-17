@@ -721,13 +721,21 @@ function refresh(id){
 /* ------------------------------------------------------------------ *
  * Events                                                             *
  * ------------------------------------------------------------------ */
-tabsEl.addEventListener("click",e=>{
-  const b=e.target.closest("[data-tab]"); if(!b) return;
-  active=b.getAttribute("data-tab");
+function showExp(id,scroll){
+  if(!EXPS.some(e=>e.id===id)) id="H1";
+  active=id;
   panelsEl.querySelectorAll(".exp").forEach(s=>s.hidden = s.getAttribute("data-exp")!==active);
   renderTabs();
-  window.scrollTo({top:0,behavior:"smooth"});
+  if(scroll) window.scrollTo({top:0,behavior:"smooth"});
+}
+/* navegación por anclas: cada experimento es direccionable como scorecards.html#H3 */
+tabsEl.addEventListener("click",e=>{
+  const b=e.target.closest("[data-tab]"); if(!b) return;
+  const id=b.getAttribute("data-tab");
+  if(location.hash.slice(1)===id){ showExp(id,true); }   // mismo hash: refresca igual
+  else location.hash=id;                                  // dispara hashchange -> showExp
 });
+window.addEventListener("hashchange",()=>showExp(location.hash.slice(1),true));
 
 panelsEl.addEventListener("input",handle);
 panelsEl.addEventListener("change",handle);
@@ -806,6 +814,7 @@ document.getElementById("themeBtn").addEventListener("click",()=>{
 renderTabs();
 renderPanels();
 EXPS.forEach(e=>refresh(e.id));
+showExp(location.hash.slice(1),false);   // respeta la ancla #H2/#H3/#H4 al cargar
 
 </script>
 </body>
