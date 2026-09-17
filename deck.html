@@ -19,15 +19,6 @@
     --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
   }
-  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-    --bg:#100e0b; --stage:#1c1915; --ink:#efeae1; --muted:#b3aa9b; --faint:#837b6e;
-    --line:#2c281f; --line-2:#3a3529;
-    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
-    --honey:#dd9c44; --honey-ink:#eab866; --honey-soft:#2f2513;
-    --ok:#44b878; --ok-soft:#12281d; --warn:#dd9c44; --warn-soft:#2f2513;
-    --stop:#e07567; --stop-soft:#331714;
-    --shadow:0 1px 2px rgba(0,0,0,.5), 0 24px 56px -30px rgba(0,0,0,.9);
-  }}
   :root[data-theme="dark"]{
     --bg:#100e0b; --stage:#1c1915; --ink:#efeae1; --muted:#b3aa9b; --faint:#837b6e;
     --line:#2c281f; --line-2:#3a3529;
@@ -177,10 +168,14 @@
   .counter{font-family:var(--mono);font-size:13px;color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
 
   @media (max-width:760px){
-    .slide{padding:32px 26px;min-height:0}
+    /* en móvil, la página entera scrollea nativamente (no un área fija de 100vh) */
+    html,body{height:auto}
+    body{height:auto;overflow:visible}
+    .deck{flex:none;overflow:visible;display:block;padding:16px}
+    .slide{padding:28px 22px;min-height:0}
     .band.cols3,.two,.grid-cards,.cycle,.seq{grid-template-columns:1fr}
     .dialbar{display:none}
-    .nav{justify-content:space-between}
+    .nav{position:sticky;bottom:0;justify-content:space-between}
   }
 </style>
 </head>
@@ -295,7 +290,7 @@
     <p class="jtbd">Con una actividad diseñada (cata de café a ciegas) y mínima intervención del anfitrión, ¿el grupo participa y conecta por sí mismo, sintiéndose seguro?</p>
     <div class="band cols3">
       <div class="metric"><div class="ml">Participación</div><div class="mv">≥ 3 de 4</div><div class="mt">sin prompt del host</div></div>
-      <div class="metric"><div class="ml">Equilibrio</div><div class="mv">≤ 2 · &lt;50%</div><div class="mt">prompts · turnos por persona</div></div>
+      <div class="metric"><div class="ml">Equilibrio</div><div class="mv">nadie &gt;50%</div><div class="mt">de los turnos · host sin umbral fijo</div></div>
       <div class="metric"><div class="ml">Seguridad</div><div class="mv">≥ 4 / 5</div><div class="mt">percibida</div></div>
     </div>
     <p class="seqlabel">Secuencia de aplicación</p>
