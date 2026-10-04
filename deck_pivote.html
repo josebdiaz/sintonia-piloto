@@ -1,0 +1,295 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sintonía · Resumen ejecutivo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#eae4d8; --stage:#fffdf9; --ink:#211f1a; --muted:#5f5a51; --faint:#8a8478;
+    --line:#e6e0d5; --line-2:#d6cec1;
+    --pine:#0f6e63; --pine-ink:#0a4f47; --pine-soft:#e0efec;
+    --honey:#c67a1e; --honey-ink:#9a5c12; --honey-soft:#f7ebd8;
+    --blue:#2b6cb0; --blue-soft:#e6eef7; --ok:#1f8a52; --ok-soft:#e4f2ea; --stop:#b23b2e; --stop-soft:#f7e4e1;
+    --shadow:0 1px 2px rgba(33,31,26,.05), 0 22px 50px -28px rgba(33,31,26,.42);
+    --disp:"Bricolage Grotesque",Georgia,serif;
+    --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  :root[data-theme="dark"]{
+    --bg:#100e0b; --stage:#1c1915; --ink:#efeae1; --muted:#b3aa9b; --faint:#837b6e;
+    --line:#2c281f; --line-2:#3a3529;
+    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
+    --honey:#dd9c44; --honey-ink:#eab866; --honey-soft:#2f2513;
+    --blue:#5b9bd8; --blue-soft:#13202e; --ok:#44b878; --ok-soft:#12281d; --stop:#e07567; --stop-soft:#331714;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 24px 56px -30px rgba(0,0,0,.9);}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+  a{color:var(--pine-ink)}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 24px;border-bottom:1px solid var(--line);background:var(--bg);flex:none}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:-.01em}
+  .brand .dial{width:26px;height:26px;border-radius:50%;flex:none;background:radial-gradient(circle at 50% 50%,transparent 4px,var(--pine) 4.5px 6.5px,transparent 7px 10px,var(--honey) 10.5px 12px,transparent 12.5px);border:1.5px solid var(--line-2)}
+  .brand small{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--faint)}
+  .tbtn{border:1px solid var(--line-2);background:var(--stage);color:var(--muted);font-family:var(--mono);font-size:12px;border-radius:20px;padding:7px 14px;cursor:pointer}
+  .tbtn:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  .deck{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;justify-content:center;padding:28px 24px}
+  .slide{display:none;width:100%;max-width:1020px;margin:auto;background:var(--stage);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:46px 56px;min-height:min(580px,74vh)}
+  .slide.active{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.slide.active{animation:none}}
+  .eyebrow{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--pine);margin:0 0 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .eyebrow .n{color:var(--honey-ink)}
+  .eyebrow .rule{flex:1;height:1px;background:var(--line);min-width:20px}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(32px,4.8vw,50px);line-height:1.05;letter-spacing:-.03em;margin:0 0 18px;text-wrap:balance}
+  h2{font-family:var(--disp);font-weight:700;font-size:clamp(26px,3.6vw,38px);line-height:1.08;letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance}
+  p.lead{font-size:clamp(16px,1.8vw,20px);color:var(--muted);margin:0;max-width:66ch;line-height:1.5}
+  .tk{font-size:18px;color:var(--ink);border-left:4px solid var(--pine);padding:6px 0 6px 18px;margin:18px 0 0;max-width:72ch;line-height:1.45}
+  .tk b{font-weight:700}
+  .grid{display:grid;gap:14px;margin-top:22px}
+  .cols2{grid-template-columns:1fr 1fr} .cols3{grid-template-columns:repeat(3,1fr)} .cols4{grid-template-columns:repeat(4,1fr)}
+  .card{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--bg)}
+  .card h3{font-family:var(--disp);font-weight:700;font-size:17px;margin:0 0 6px}
+  .card p{font-size:14.5px;color:var(--muted);margin:0;line-height:1.5}
+  .card p b{color:var(--ink)}
+  .tag{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;border-radius:5px;padding:2px 7px;margin-bottom:8px;display:inline-block}
+  .tag.take{background:var(--ok-soft);color:var(--ok)} .tag.evi{background:var(--blue-soft);color:var(--blue)} .tag.avoid{background:var(--stop-soft);color:var(--stop)} .tag.hon{background:var(--honey-soft);color:var(--honey-ink)}
+  .stat{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--bg)}
+  .stat .v{font-family:var(--disp);font-weight:800;font-size:30px;line-height:1;color:var(--pine-ink)}
+  .stat .l{font-size:13.5px;color:var(--muted);margin-top:8px;line-height:1.4}
+  .stat .s{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:6px}
+  .shift{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch;margin-top:22px}
+  .shift .arrow{align-self:center;font-family:var(--disp);font-size:30px;color:var(--honey)}
+  .shift .from{opacity:.75}
+  ul.b{margin:16px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:9px}
+  ul.b li{font-size:16px;line-height:1.45} ul.b li b{font-weight:700}
+  .note{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:18px;line-height:1.6}
+  .tl{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+  .tl .step{border-top:4px solid var(--pine);background:var(--bg);border-radius:0 0 12px 12px;padding:12px 14px}
+  .tl .step .d{font-family:var(--mono);font-size:11px;color:var(--honey-ink);font-weight:600}
+  .tl .step h3{font-family:var(--disp);font-size:16px;margin:4px 0 4px}
+  .tl .step p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.45}
+  .ask{counter-reset:a;list-style:none;padding:0;margin:20px 0 0;display:flex;flex-direction:column;gap:12px}
+  .ask li{counter-increment:a;display:flex;gap:14px;align-items:flex-start;font-size:16.5px;line-height:1.45}
+  .ask li::before{content:counter(a);flex:none;width:30px;height:30px;border-radius:50%;background:var(--pine);color:#fff;font-family:var(--disp);font-weight:700;display:grid;place-items:center;font-size:15px}
+  :root[data-theme="dark"] .ask li::before{color:#0b1a18}
+  .srcs{font-size:13px;color:var(--muted);line-height:1.85;margin-top:10px}
+  .srcs a{text-decoration:none}
+  .cover-foot{margin-top:30px;display:flex;gap:26px;flex-wrap:wrap;align-items:center}
+  .cover-foot .who{font-size:15.5px;color:var(--muted);line-height:1.5}
+  .cover-foot .who b{color:var(--ink)}
+  .signal{display:flex;align-items:flex-end;gap:6px;height:38px}
+  .signal span{width:9px;border-radius:3px 3px 0 0;background:var(--pine)}
+  .signal span:nth-child(1){height:38%;opacity:.5}.signal span:nth-child(2){height:62%;opacity:.68}.signal span:nth-child(3){height:100%}.signal span:nth-child(4){height:78%;background:var(--honey);opacity:.85}
+  .nav{flex:none;border-top:1px solid var(--line);background:var(--bg);padding:12px 24px;display:flex;align-items:center;gap:18px}
+  .arw-btn{border:1px solid var(--line-2);background:var(--stage);color:var(--ink);border-radius:10px;width:42px;height:38px;font-size:18px;cursor:pointer;flex:none;line-height:1}
+  .arw-btn:hover{border-color:var(--pine);color:var(--pine-ink)} .arw-btn:disabled{opacity:.35;cursor:not-allowed}
+  .arw-btn:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+  .dialbar{flex:1;display:flex;align-items:center;height:38px;overflow-x:auto}
+  .tick{flex:1;min-width:30px;background:none;border:none;cursor:pointer;padding:0;height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .tick .bar{width:2px;height:13px;background:var(--line-2);border-radius:2px;transition:height .15s,background .15s}
+  .tick .lb{font-family:var(--mono);font-size:10px;color:var(--faint);white-space:nowrap;opacity:0;transition:opacity .15s}
+  .tick:hover .bar{background:var(--pine)} .tick:hover .lb{opacity:1}
+  .tick.on .bar{height:24px;background:var(--pine)} .tick.on .lb{opacity:1;color:var(--pine-ink)}
+  .tick:focus-visible{outline:2px solid var(--pine);outline-offset:1px;border-radius:4px}
+  .counter{font-family:var(--mono);font-size:13px;color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
+  @media (max-width:760px){
+    html,body{height:auto} body{height:auto;overflow:visible}
+    .deck{flex:none;overflow:visible;display:block;padding:16px}
+    .slide{padding:26px 20px;min-height:0}
+    .cols2,.cols3,.cols4,.tl{grid-template-columns:1fr}
+    .shift{grid-template-columns:1fr} .shift .arrow{transform:rotate(90deg);justify-self:center}
+    .dialbar{display:none} .nav{position:sticky;bottom:0;justify-content:space-between}
+  }
+</style>
+
+<div class="topbar">
+  <div class="brand"><span class="dial"></span> Sintonía <small>· Resumen ejecutivo · P6</small></div>
+  <button class="tbtn" id="themeBtn" type="button">◐ tema</button>
+</div>
+
+<div class="deck" id="deck">
+
+  <section class="slide active" data-label="Portada">
+    <p class="eyebrow"><span class="n">Resumen ejecutivo</span> · para Néstor <span class="rule"></span> 3 oct 2026</p>
+    <h1>Sintonía: un sistema de orquestación multiagente para reducir la fricción de coordinar planes en grupos de amigos y familia en Cali</h1>
+    <p class="lead">Dónde estamos después del pivote: qué cambió, por qué, cómo lo vamos a validar y qué necesitamos de tu parte.</p>
+    <div class="cover-foot">
+      <div class="signal"><span></span><span></span><span></span><span></span></div>
+      <div class="who"><b>Jose Bolaños · Katherine Castro</b><br>Maestría en Gestión de la Innovación · Universidad Icesi</div>
+    </div>
+  </section>
+
+  <section class="slide" data-label="Pivote">
+    <p class="eyebrow"><span class="n">01</span> · el pivote <span class="rule"></span></p>
+    <h2>De conectar desconocidos a hacer que el plan del grupo ocurra</h2>
+    <div class="shift">
+      <div class="card from"><span class="tag avoid">Antes · v1</span><h3>Capa de curaduría consultable</h3><p>Un catálogo de planes para personas que buscaban conocer gente nueva. El canal de distribución eran los asistentes de IA centrales.</p></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="card"><span class="tag take">Ahora · v2.2</span><h3>El quinto amigo del parche</h3><p>Un orquestador que vive en WhatsApp, arma el grupo del plan y lleva a <b>grupos que ya existen</b> (amigos, pareja, familia) del "deberíamos vernos" a verse.</p></div>
+    </div>
+    <p class="tk"><b>Por qué cambiamos:</b> el problema no es que falte gente, sino que no logramos concretar los planes con la gente que ya tenemos. Coordinar <b>desgasta a quien organiza</b> (<i>kin work</i>; di Leonardo, 1987), y entre "me apunto" y llegar se pierde gente: "se apuntan 10 y van 2".</p>
+    <p class="note">No es una app de citas ni conecta desconocidos. Además es más seguro: los datos se quedan dentro del círculo de confianza.</p>
+  </section>
+
+  <section class="slide" data-label="Problema">
+    <p class="eyebrow"><span class="n">02</span> · problema y concepto <span class="rule"></span></p>
+    <h2>Problema</h2>
+    <p class="tk">En Cali, adultos que quieren verse con sus grupos de amigos o familia no concretan los planes: coordinar desgasta al organizador, la ciudad suma fricción y, entre "me apunto" y llegar, se pierde gente.</p>
+    <h2 style="margin-top:28px">Concepto</h2>
+    <p class="tk" style="border-color:var(--honey)">Sintonía es el quinto amigo del parche: <b>arma el grupo del plan en WhatsApp, lee al grupo y a la ciudad</b>, y convierte el "deberíamos vernos" en un plan que sí pasa.</p>
+    <div class="grid cols3">
+      <div class="card"><span class="tag take">Necesita</span><p>Romper la fricción de activación, vivir en WhatsApp, hablar en lenguaje natural y limitarse a coordinar planes.</p></div>
+      <div class="card"><span class="tag evi">Debería</span><p>Proponer de 1 a 3 opciones, tener en cuenta tráfico y clima, y <b>movilizar</b> a la gente del "me apunto" a llegar.</p></div>
+      <div class="card"><span class="tag avoid">No debe</span><p>Conectar desconocidos, ser un buscador plano, cobrar a los lugares, intermediar pagos ni importar redes sociales.</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-label="3 capas">
+    <p class="eyebrow"><span class="n">03</span> · cómo funciona <span class="rule"></span></p>
+    <h2>Tres capas y una capa transversal, cada una con respaldo académico</h2>
+    <div class="grid cols4">
+      <div class="card"><span class="tag evi">Capa 1</span><h3>Dinámica de grupo</h3><p>Preferencias, presupuesto y consenso. Recomendación para grupos con <i>least misery</i>: que nadie quede incómodo (Masthoff, 2015; Felfernig et al., 2024).</p></div>
+      <div class="card"><span class="tag evi">Capa 2</span><h3>Cinética de la ciudad</h3><p>Tráfico, clima y horarios. Recomendación sensible al contexto (Adomavicius & Tuzhilin, 2011) y computación urbana (Zheng et al., 2014).</p></div>
+      <div class="card"><span class="tag evi">Capa 3</span><h3>Narrativa de la salida</h3><p>Café → actividad → cena. Preferimos las secuencias que mejoran y el final pesa (Loewenstein & Prelec, 1993; Kahneman et al., 1993).</p></div>
+      <div class="card"><span class="tag hon">Transversal</span><h3>Confianza</h3><p>Consentimiento de cada persona, mínimos datos y "¿ya llegaste?". Ley 1581 de 2012.</p></div>
+    </div>
+    <p class="tk"><b>Constructo propio:</b> la "inteligencia de navegación social" no existe con ese nombre en la literatura. La anclamos en <i>social navigation</i> (Dourish & Chalmers, 1994) y la medimos con un indicador por capa.</p>
+  </section>
+
+  <section class="slide" data-label="Colombia">
+    <p class="eyebrow"><span class="n">04</span> · contexto Colombia <span class="rule"></span></p>
+    <h2>La IA tiene que ser invisible</h2>
+    <div class="grid cols4">
+      <div class="stat"><div class="v">25,9%</div><div class="l">de las personas de 15 a 64 años usa IA generativa (2.º lugar en Latinoamérica)</div><div class="s">Microsoft AI Diffusion, Q2 2026</div></div>
+      <div class="stat"><div class="v">92–94%</div><div class="l">de los usuarios de internet usa WhatsApp cada mes</div><div class="s">DataReportal 2025</div></div>
+      <div class="stat"><div class="v">51 / 98</div><div class="l">en el AI-Human Skills Synergy Index (nivel "Emerging")</div><div class="s">Coursera GSR 2026</div></div>
+      <div class="stat"><div class="v">138 h</div><div class="l">perdidas al año en trancones en Cali</div><div class="s">TomTom 2025</div></div>
+    </div>
+    <p class="tk">Usa IA cerca de <b>1 de cada 4</b> adultos; usa WhatsApp casi <b>9 de cada 10</b> usuarios de internet. El mercado está en quienes <b>no</b> usan IA. Por eso Sintonía la esconde detrás de una conversación normal: sin prompts, sin tokens a la vista y sin app que descargar (Weiser, 1991). Esto respalda abrir el público a <b>todos los adultos</b>.</p>
+    <p class="note">Los denominadores no son iguales, así que la comparación es orientativa. El índice de Coursera mide habilidades y preparación del país, no uso.</p>
+  </section>
+
+  <section class="slide" data-label="Alcance">
+    <p class="eyebrow"><span class="n">05</span> · alcance acotado (H1) <span class="rule"></span></p>
+    <h2>Qué entra y qué no</h2>
+    <div class="grid cols2">
+      <div class="card"><span class="tag take">Entra</span><p><b>Cali</b> · <b>todos los adultos</b> que usan WhatsApp · grupo del plan de hasta 8 personas + uso individual · de 1 a 3 opciones · hora de salida según tráfico y clima · planes de 1 o 2 paradas · "¿ya llegaste?" sin pedir ubicación · movilización proactiva · retro conversacional · precio fundador con Van Westendorp, <b>sin cobro real</b>.</p></div>
+      <div class="card"><span class="tag avoid">Fuera de H1</span><p>Bogotá · redes sociales (no hay API oficial para cuentas personales) · pauta de los lugares · compra de tiquetes (solo se manda el enlace) · ubicación en tiempo real · pagos y "vaca del plan" · menores.</p></div>
+    </div>
+    <div class="grid cols3">
+      <div class="card"><span class="tag hon">Modelo</span><p><b>Solo paga el organizador.</b> Ingresos: suscripción + Pro + activaciones de marca. Costos: licencias y tokens.</p></div>
+      <div class="card"><span class="tag hon">Entregable</span><p><b>La validación del modelo y del método</b>, no una app terminada.</p></div>
+      <div class="card"><span class="tag hon">Horizontes</span><p>H1 piloto (0–3 meses) · H2 coordinación con la API de grupos (3–9) · H3 Pro: viajes y plan familiar (9+).</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-label="Piloto">
+    <p class="eyebrow"><span class="n">06</span> · validación <span class="rule"></span></p>
+    <h2>Piloto Mago de Oz: 2 semanas intensivas en Cali</h2>
+    <div class="grid cols2">
+      <div class="card"><span class="tag evi">E1 · WhatsApp</span><p>Un número "Sintonía" con una persona del equipo detrás crea el grupo del plan desde una landing.</p></div>
+      <div class="card"><span class="tag evi">E2 · Web app</span><p>Un motor de IA en una web donde el grupo vota por enlace. Prueba si salir del ecosistema de WhatsApp suma o resta.</p></div>
+    </div>
+    <div class="tl">
+      <div class="step"><div class="d">5–9 oct</div><h3>Preparar</h3><p>Consentimiento, guion, landing. De 4 a 6 grupos (amigos + uno de mamás). Línea base.</p></div>
+      <div class="step"><div class="d">10–11 oct</div><h3>Plan 1</h3><p>E1 con la mitad de los grupos, E2 con la otra mitad.</p></div>
+      <div class="step"><div class="d">17–18 oct</div><h3>Plan 2</h3><p>Repetición, para ver si el grupo vuelve a usarlo.</p></div>
+      <div class="step"><div class="d">19–21 oct</div><h3>Cerrar</h3><p>Retro, escalas, disposición a pagar y análisis de sentimiento. Informe.</p></div>
+    </div>
+    <p class="tk"><b>Métricas:</b> planes concretados · tiempo hasta cerrar el plan · asistentes sobre miembros · repetición · fatiga previa (1–5) · carga del organizador · disposición a pagar · navegación social por capa (cierres sin vetos, llegadas a tiempo, valoración del final).</p>
+    <p class="note">Aval ético aprobado. Con n pequeño y 2 ciclos, los hallazgos se reportan como Emergentes.</p>
+  </section>
+
+  <section class="slide" data-label="Riesgos">
+    <p class="eyebrow"><span class="n">07</span> · riesgos críticos <span class="rule"></span></p>
+    <h2>Lo que puede salir mal y cómo lo mitigamos</h2>
+    <div class="grid cols3">
+      <div class="card"><span class="tag avoid">Cuenta oficial (OBA)</span><p>La API de grupos exige una OBA, que pide ser una marca reconocida, y hoy no es viable. <b>Mitigación:</b> Mago de Oz en H1; en H2 un proveedor oficial (BSP) o el respaldo C′ (chat 1:1 + web).</p></div>
+      <div class="card"><span class="tag avoid">Política de Meta</span><p>Desde enero de 2026 están prohibidos los chatbots de IA de propósito general. <b>Mitigación:</b> un bot limitado a coordinar planes.</p></div>
+      <div class="card"><span class="tag avoid">Muse (Meta)</span><p>El agente de Meta ya vive en WhatsApp, por ahora en EE. UU. <b>Mitigación:</b> diferenciarnos con la memoria del grupo, el contexto de Cali y la narrativa de la salida; E2 sirve de canal alterno.</p></div>
+      <div class="card"><span class="tag avoid">Tokens</span><p>Que cada grupo cueste más que lo que paga. <b>Mitigación:</b> mandar resúmenes al modelo, no el chat completo; vista de costo por plan; modelos pequeños para tareas simples.</p></div>
+      <div class="card"><span class="tag avoid">Aceptación</span><p>Que los amigos no completen el consentimiento. <b>Mitigación:</b> formulario de 1 minuto, mensaje en el tono del grupo, y medir el embudo.</p></div>
+      <div class="card"><span class="tag avoid">Vigilancia</span><p>Que el grupo sienta que el bot lo vigila. <b>Mitigación:</b> el bot solo habla en momentos acordados, sin ubicación, y se mide el confort.</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-label="Proceso">
+    <p class="eyebrow"><span class="n">08</span> · rigor metodológico <span class="rule"></span></p>
+    <h2>Cómo llegamos aquí</h2>
+    <ul class="b">
+      <li><b>La travesía del innovador (Icesi, 2021):</b> niveles de abstracción, conceptualización de oportunidades, mapa del ecosistema, convergencia con RNI, Mago de Oz, formatos de validación, hoja de ruta, validación de mercado, mapa de servicio, análisis del entorno y priorización.</li>
+      <li><b>Marcos complementarios:</b> 10 Tipos de Innovación (Doblin), pre-mortem (Klein, 2007) y mapa de supuestos (Bland & Osterwalder, 2019).</li>
+      <li><b>21 supuestos con estado</b> (respaldado, parcial, contradicho, constructo propio o pendiente) y su fuente. Hay 4 contradichos que obligaron a ajustar el diseño (grupos de WhatsApp, IA de propósito general, Muse, datos de redes).</li>
+      <li><b>Cumplimiento por diseño:</b> guía de datos con la Ley 1581, el Decreto 1377 y la Circular 005 de 2017 de la SIC; consentimiento individual por formulario web.</li>
+      <li><b>Evidencia propia de entrada:</b> encuesta de calibración (n=143) y entrevistas.</li>
+    </ul>
+    <p class="note">Todo el trabajo está documentado en los tableros de FigJam (v1 como historial, v2.1–v2.2 vigentes) y en los documentos del pivote, la guía de datos y el contexto P6.</p>
+  </section>
+
+  <section class="slide" data-label="Pedimos">
+    <p class="eyebrow"><span class="n">09</span> · qué necesitamos de ti <span class="rule"></span></p>
+    <h2>Lo que queremos validar contigo</h2>
+    <ol class="ask">
+      <li><span><b>El pivote y el concepto:</b> el quinto amigo para grupos que ya existen, con la opción C (WhatsApp + orquestador) y el respaldo C′.</span></li>
+      <li><span><b>El alcance:</b> solo Cali, todos los adultos y, como entregable, la validación del modelo y no un producto.</span></li>
+      <li><span><b>El diseño del piloto:</b> 2 semanas, E1 frente a E2 y las métricas propuestas. ¿Alcanza para el rigor que espera el comité?</span></li>
+      <li><span><b>El constructo propio</b> de "navegación social" y cómo lo operacionalizamos.</span></li>
+      <li><span><b>Los objetivos SMART</b> (en redacción): planes concretados, repetición, fatiga previa y tipo de grupo prioritario.</span></li>
+    </ol>
+  </section>
+
+  <section class="slide" data-label="Fuentes">
+    <p class="eyebrow"><span class="n">Fuentes</span> <span class="rule"></span></p>
+    <h2>Fuentes principales</h2>
+    <div class="srcs">
+      Adopción — <a target="_blank" rel="noopener" href="https://www.microsoft.com/en-us/research/wp-content/uploads/2026/09/Microsoft-AI-Diffusion-Report-2026-Q2.pdf">Microsoft AI Diffusion Q2 2026</a> · Coursera, <i>Global Skills Report 2026</i> · <a target="_blank" rel="noopener" href="https://www.itsitio.com/co/informes/informe-datareportal-colombia-2025-como-y-cuanto-usan-los-colombianos-internet-y-redes-sociales/">DataReportal 2025</a><br>
+      Capas — Masthoff (2015) · Felfernig et al. (2024) · <a target="_blank" rel="noopener" href="https://link.springer.com/chapter/10.1007/978-0-387-85820-3_7">Adomavicius & Tuzhilin (2011)</a> · <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/2629592">Zheng et al. (2014)</a> · Loewenstein & Prelec (1993) · Kahneman et al. (1993)<br>
+      Marco — <a target="_blank" rel="noopener" href="https://www.scientificamerican.com/article/the-computer-for-the-21st-century/">Weiser (1991)</a> · Dourish & Chalmers (1994) · di Leonardo (1987) · Dunbar (1998) · Hall (2019) · Guo et al. (2024)<br>
+      Plataforma — <a target="_blank" rel="noopener" href="https://developers.facebook.com/documentation/business-messaging/whatsapp/groups">Meta Groups API</a> · <a target="_blank" rel="noopener" href="https://respond.io/blog/whatsapp-general-purpose-chatbots-ban">Política de IA de WhatsApp 2026</a> · <a target="_blank" rel="noopener" href="https://www.cnbc.com/2026/09/24/meta-mark-zuckerberg-muse-charm-openai-agent.html">Muse (CNBC)</a><br>
+      Ciudad — <a target="_blank" rel="noopener" href="https://www.infobae.com/colombia/2026/02/21/colombianos-perdieron-148-horas-en-trancones-durante-2025-cuatro-ciudades-estan-entre-las-20-mas-congestionadas-del-mundo/">TomTom Traffic Index 2025 (Infobae)</a><br>
+      Normativa — Ley 1581 de 2012 · Decreto 1377 de 2013 · Circular SIC 005 de 2017 · Resolución 8430 de 1993
+    </div>
+    <p class="note">Las cifras de terceros vienen de reportes y prensa especializada; se contrastan con la fuente primaria antes de la tesis.</p>
+  </section>
+
+</div>
+
+<nav class="nav" aria-label="Navegación del deck">
+  <button class="arw-btn" id="prev" type="button" aria-label="Anterior">‹</button>
+  <div class="dialbar" id="dialbar" role="tablist"></div>
+  <span class="counter" id="counter">01 / 11</span>
+  <button class="arw-btn" id="next" type="button" aria-label="Siguiente">›</button>
+</nav>
+
+<script>
+"use strict";
+(function(){
+  var slides=Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var total=slides.length, cur=0;
+  var dial=document.getElementById("dialbar"), counter=document.getElementById("counter");
+  var prev=document.getElementById("prev"), next=document.getElementById("next"), deck=document.getElementById("deck");
+  slides.forEach(function(s,i){
+    var b=document.createElement("button"); b.className="tick"; b.type="button"; b.setAttribute("role","tab");
+    b.title=s.getAttribute("data-label")||("Slide "+(i+1));
+    b.innerHTML='<span class="lb">'+(s.getAttribute("data-label")||"")+'</span><span class="bar"></span>';
+    b.addEventListener("click",function(){ go(i); }); dial.appendChild(b);
+  });
+  var ticks=Array.prototype.slice.call(dial.querySelectorAll(".tick"));
+  function pad(n){return (n<10?"0":"")+n;}
+  function go(i){ if(i<0)i=0; if(i>total-1)i=total-1;
+    slides[cur].classList.remove("active"); ticks[cur].classList.remove("on"); ticks[cur].setAttribute("aria-selected","false");
+    cur=i; slides[cur].classList.add("active"); ticks[cur].classList.add("on"); ticks[cur].setAttribute("aria-selected","true");
+    counter.textContent=pad(cur+1)+" / "+pad(total); prev.disabled=cur===0; next.disabled=cur===total-1; deck.scrollTop=0; window.scrollTo(0,0); }
+  prev.addEventListener("click",function(){go(cur-1);}); next.addEventListener("click",function(){go(cur+1);});
+  document.addEventListener("keydown",function(e){
+    if(e.target&&/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))return;
+    if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "){e.preventDefault();go(cur+1);}
+    else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();go(cur-1);}
+    else if(e.key==="Home"){e.preventDefault();go(0);} else if(e.key==="End"){e.preventDefault();go(total-1);}
+  });
+  var root=document.documentElement;
+  document.getElementById("themeBtn").addEventListener("click",function(){
+    root.setAttribute("data-theme", root.getAttribute("data-theme")==="dark"?"light":"dark");
+  });
+  go(0);
+})();
+</script>
