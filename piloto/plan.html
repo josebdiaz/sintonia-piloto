@@ -30,7 +30,7 @@
   function stopsHtml(o) {
     return '<ul class="stops">' + (o.paradas || []).map(function (p, i) {
       return '<li><b>' + (i + 1) + '. ' + S.esc(p.nombre) + '</b><div class="meta"><span>' + S.esc(p.zona || '') + '</span>' +
-        (p.horario ? '<span>Horario: ' + S.esc(p.horario) + '</span>' : '') + (p.costo_aprox !== '' && p.costo_aprox !== undefined ? '<span>Costo: ' + S.esc(p.costo_aprox) + '</span>' : '') + '</div></li>';
+        (p.horario ? '<span>Horario: ' + S.esc(p.horario) + '</span>' : '') + (p.costo_aprox !== '' && p.costo_aprox !== undefined ? '<span>Costo: ' + (/^\$?\s*0$/.test(String(p.costo_aprox).trim()) ? 'gratis' : S.esc(p.costo_aprox)) + '</span>' : '') + '</div></li>';
     }).join('') + '</ul>';
   }
   function optionHtml(o, i, extra) {

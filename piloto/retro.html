@@ -112,7 +112,7 @@
       });
     }).then(function (r) {
       if (!r || !r.ok) return S.toast(S.errMsg(r), true);
-      S.show('#vistaForm', false); S.show('#vistaOk', true); window.scrollTo(0, 0);
+      S.show('#vistaForm', false); S.show('#vistaOk', true); S.show('#toast', false); window.scrollTo(0, 0);
     });
   });
 })();

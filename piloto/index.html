@@ -168,7 +168,7 @@
       S.$('#okWa').href = S.waShare('¡Parche! Estoy probando Sintonía para que el plan sí se dé. Únete aquí (toma 2 minutos): ' + inv);
       S.$('#okPlan').href = S.link('plan.html', { pid: r.pid });
       S.show('#okE2', r.experimento === 'E2'); S.show('#okE1', r.experimento !== 'E2');
-      S.show('#vistaForm', false); S.show('#vistaOk', true); window.scrollTo(0, 0);
+      S.show('#vistaForm', false); S.show('#vistaOk', true); S.show('#toast', false); window.scrollTo(0, 0);
     });
   });
 })();
