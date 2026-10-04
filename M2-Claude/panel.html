@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Sintonía · Panel del piloto</title>
+<link rel="stylesheet" href="assets/sintonia.css">
+</head>
+<body>
+<main class="wrap wide">
+  <header class="top">
+    <a class="brand" href="panel.html"><span class="brand-mark" aria-hidden="true"></span>Panel del piloto</a>
+    <div class="actions" style="margin:0">
+      <button class="btn btn-ghost btn-sm" id="recargar" type="button">↻ Actualizar</button>
+      <button class="btn btn-ghost btn-sm" id="cfg" type="button">⚙ Backend</button>
+      <button class="btn btn-ghost btn-sm" id="salir" type="button">Salir</button>
+    </div>
+  </header>
+
+  <section id="gate" class="hidden">
+    <form class="card" id="gateForm" style="max-width:420px">
+      <h2>Entrar al panel</h2>
+      <p class="small muted">Solo el equipo. La clave se borra al cerrar la pestaña.</p>
+      <div class="field"><label for="key">ADMIN_KEY</label><input id="key" type="password" autocomplete="current-password" required></div>
+      <button class="btn btn-primary btn-block" type="submit" id="entrar" data-busy="Verificando…">Entrar</button>
+    </form>
+  </section>
+
+  <section id="vista" class="hidden">
+    <div class="card warn small" id="nota"></div>
+    <div class="grid two" id="cols"></div>
+    <div class="grid two">
+      <div class="card" id="base"></div>
+      <div class="card" id="excluidos"></div>
+    </div>
+    <div class="card" id="wtp"></div>
+    <div class="card" id="cambios"></div>
+    <p class="tiny muted center" id="hora"></p>
+  </section>
+</main>
+<script src="assets/sintonia.js"></script>
+<script>
+(function () {
+  var key = '', e = S.esc;
+  function gate(on) { S.show('#gate', on); S.show('#vista', !on); }
+  S.$('#gateForm').addEventListener('submit', function (ev) { ev.preventDefault(); S.SS.set('sintonia_admin_key', S.$('#key').value.trim()); S.busy(S.$('#entrar'), load); });
+  S.$('#salir').onclick = function () { S.forgetKey(); location.reload(); };
+  S.$('#cfg').onclick = S.configBackend;
+  S.$('#recargar').onclick = function () { S.busy(this, load); };
+
+  function load() {
+    key = S.adminKey(false);
+    if (!key) { gate(true); return Promise.resolve(); }
+    return S.get({ view: 'panel', key: key }).then(function (r) {
+      if (!r || !r.ok) { if (r && r.error === 'no_autorizado') { S.forgetKey(); gate(true); } return S.toast(S.errMsg(r), true); }
+      gate(false); render(r);
+    });
+  }
+
+  function kpi(v, l, cls) { return '<div class="kpi ' + (cls || '') + '"><div class="v">' + v + '</div><div class="l">' + l + '</div></div>'; }
+  function funnel(f) {
+    var max = Math.max(1, f.invitados || 0);
+    return '<div class="funnel">' + [['Invitados', f.invitados], ['Consintieron', f.consentidos], ['Se apuntaron', f.apuntados], ['Llegaron', f.llegaron]].map(function (x) {
+      return '<div class="f"><span>' + x[0] + '</span><span class="b"><i style="width:' + Math.round((x[1] || 0) / max * 100) + '%"></i></span><b>' + (x[1] || 0) + '</b></div>';
+    }).join('') + '</div>';
+  }
+  function obj(o) { var k = Object.keys(o || {}); return k.length ? k.map(function (x) { return e(x) + ': <b>' + e(typeof o[x] === 'number' ? S.num(o[x], 0) : o[x]) + '</b>'; }).join(' · ') : '—'; }
+
+  function col(nombre, x) {
+    if (!x) return '';
+    var c = x.costo || {}, o = x.organizador || {}, t = x.todos || {};
+    return '<div class="card"><div class="actions" style="margin:0 0 8px;justify-content:space-between"><h2 style="margin:0">' + nombre + '</h2><span class="small muted">' + x.grupos + ' grupo(s) · ' + x.planes + ' plan(es)</span></div>' +
+      '<p class="tiny muted" style="margin:0 0 8px">Tipos: ' + obj(x.tipos_grupo) + ' · versiones: ' + obj(x.versiones) + '</p>' +
+      '<div class="kpis">' + kpi(S.pct(x.metrica_principal_llegaron_sobre_invitados), 'Métrica principal · llegaron / invitados (n = ' + ((x.embudo || {}).invitados || 0) + ')', 'main') + '</div>' +
+      '<h3 style="margin-top:14px">Embudo</h3>' + funnel(x.embudo || {}) +
+      '<h3 style="margin-top:14px">Coordinación</h3><div class="kpis">' +
+        kpi(S.pct(x.llegaron_sobre_apuntados), 'Llegaron / se apuntaron') +
+        kpi(S.pct(x.cierres_sin_veto), 'Cierres sin veto (n = ' + x.planes_cerrados + ')') +
+        kpi(S.num(x.horas_a_cierre_prom), 'Horas de publicación a cierre') +
+        kpi(x.repeticion_grupos_2_planes, 'Grupos con ≥ 2 planes cerrados') +
+        kpi(x.planes_caidos, 'Planes caídos · ' + obj(x.caidas_por_causa)) +
+        kpi(x.planes_cerrados, 'Planes cerrados') + '</div>' +
+      '<h3 style="margin-top:14px">Navegación social</h3><div class="kpis">' +
+        kpi(S.num(x.capa1_least_misery_prom), 'Capa 1 · satisfacción mínima del grupo, 1–5 (n = ' + x.capa1_planes_con_retro + ' planes)') +
+        kpi(S.pct(x.capa2_llegadas_a_tiempo), 'Capa 2 · llegadas a tiempo (n = ' + x.capa2_llegadas_medidas + ')') +
+        kpi(S.num(t.valor_final_prom), 'Capa 3 · cómo terminó la salida, 1–5 (n = ' + (t.n || 0) + ')') + '</div>' +
+      '<h3 style="margin-top:14px">Retro</h3><div class="kpis">' +
+        kpi(S.num(o.carga_prom), 'Carga del organizador, 1–5 (n = ' + (o.n || 0) + ')') +
+        kpi(S.num(o.fatiga_post_prom), 'Fatiga post del organizador, 1–5') +
+        kpi(S.num(t.confort_bot_prom), 'Confort con Sintonía, 1–5') +
+        kpi((t.repetiria_si || 0) + ' / ' + (t.n || 0), 'Repetirían (sí)') + '</div>' +
+      '<h3 style="margin-top:14px">Costo y operación</h3><div class="kpis">' +
+        kpi(S.usd(c.tokens_usd), 'Tokens Gemini · total') +
+        kpi(S.usd(c.usd_tokens_por_plan_cerrado), 'Tokens por plan cerrado') +
+        kpi(S.num(c.minutos_humanos, 0) + ' min', 'Minutos humanos · total') +
+        kpi(S.num(c.minutos_por_plan_cerrado, 0) + ' min', 'Minutos por plan cerrado') +
+        kpi(S.cop(c.costo_humano_cop), 'Costo humano (COP)') + '</div>' +
+      '<p class="tiny muted" style="margin-top:8px">Minutos por causa: ' + obj(c.minutos_por_causa) + '</p></div>';
+  }
+
+  function render(r) {
+    var pe = r.por_experimento || {};
+    S.$('#nota').innerHTML = '<b>Lectura con cuidado.</b> ' + e(r.nota) + ' Excluye grupos en modo prueba (' + r.grupos_prueba + ') y desestimados (' + (r.grupos_excluidos || []).length + '). También excluye los planes con cambio de canal (' + (r.planes_con_cambio_de_canal || []).length + '), que se reportan aparte. Cada tasa muestra su n.';
+    S.$('#cols').innerHTML = col('E1 · WhatsApp Business', pe.E1) + col('E2 · Web app', pe.E2);
+    var lb = r.linea_base_grupos || {};
+    S.$('#base').innerHTML = '<h3>Línea base (por grupo)</h3><div class="kpis">' + kpi(lb.n || 0, 'Grupos con línea base') + kpi(S.num(lb.planes_realizados_mes_prom), 'Planes hechos el mes anterior') +
+      kpi(S.num(lb.planes_fallidos_mes_prom), 'Planes caídos el mes anterior') + kpi(S.num(lb.fatiga_previa_org_prom), 'Fatiga previa del organizador, 1–5') + kpi(r.participantes_activos, 'Participantes activos') + '</div>';
+    var ex = r.grupos_excluidos || [];
+    S.$('#excluidos').innerHTML = '<h3>Grupos desestimados (I9)</h3>' + (ex.length ? '<table><thead><tr><th>Grupo</th><th>Cond.</th><th>Motivo</th></tr></thead><tbody>' + ex.map(function (g) { return '<tr><td>' + e(g.grupo_id.slice(-6)) + '</td><td>' + e(g.experimento) + '</td><td>' + e(g.motivo) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="small muted">Ninguno.</p>');
+    var w = r.wtp_organizadores || [];
+    S.$('#wtp').innerHTML = '<h3>Disposición a pagar · Van Westendorp (solo organizadores, n = ' + w.length + ')</h3><p class="small muted">Con un n tan pequeño se reportan los valores, no curvas ni precio óptimo.</p>' +
+      (w.length ? '<div class="table-scroll"><table><thead><tr><th>Muy barato</th><th>Barato</th><th>Caro</th><th>Muy caro</th><th>Preventa</th></tr></thead><tbody>' + w.map(function (x) { return '<tr><td>' + S.cop(x.muy_barato) + '</td><td>' + S.cop(x.barato) + '</td><td>' + S.cop(x.caro) + '</td><td>' + S.cop(x.muy_caro) + '</td><td>' + (x.preventa ? 'Sí' : 'No') + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="small muted">Sin respuestas todavía.</p>');
+    var cs = r.cambios || [];
+    S.$('#cambios').innerHTML = '<h3>Cambios registrados entre W1 y W2 (I4)</h3>' + (cs.length ? '<ul class="small">' + cs.map(function (c) { return '<li><b>' + e(c.experimento) + ' ' + e(c.version) + '</b> · ' + e(c.descripcion) + '</li>'; }).join('') + '</ul>' : '<p class="small muted">Ninguno.</p>');
+    S.$('#hora').textContent = 'Actualizado: ' + new Date().toLocaleString('es-CO');
+  }
+  load();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sintonía · Únete al plan de tu parche</title>
+<link rel="stylesheet" href="assets/sintonia.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <a class="brand" href="./"><span class="brand-mark" aria-hidden="true"></span>Sintonía</a>
+    <span class="tag">Piloto · Cali</span>
+  </header>
+
+  <section id="sinInv" class="hidden">
+    <div class="card warn empty">
+      <h2>Te falta el enlace de invitación</h2>
+      <p class="small">Para unirte necesitas el enlace que te mandó quien organiza tu parche. Pídeselo y ábrelo desde tu celular.</p>
+    </div>
+  </section>
+
+  <section id="vistaForm" class="hidden">
+    <div class="hero">
+      <h1>Únete al plan de tu parche.</h1>
+      <p>Cerca, corto y posible. Te toma 2 minutos y cada quien acepta por sí mismo.</p>
+    </div>
+    <form id="form" class="card" novalidate>
+      <div class="field"><label for="nombre">Tu nombre de pila</label><input id="nombre" type="text" maxlength="40" autocomplete="given-name" required></div>
+      <div class="field"><label for="wa">Tu WhatsApp</label><div class="prefix"><span>+57</span><input id="wa" type="tel" inputmode="tel" maxlength="16" autocomplete="tel-national" placeholder="300 123 4567" required></div><span class="hint">Lo usamos solo para coordinar los planes de tu grupo.</span></div>
+      <div class="field">
+        <label for="prefs">¿Qué te gusta y qué no te sirve? <span class="counter" id="prefsN"></span></label>
+        <textarea id="prefs" maxlength="400" placeholder="Ej.: prefiero planes de día, no más de $30.000, me queda fácil el sur."></textarea>
+        <span class="hint">Opcional. No incluyas teléfonos ni datos de salud, religión o política.</span>
+      </div>
+      <div class="field"><span class="label" id="fatigaLbl">Hoy, ¿qué tan desgastante es cuadrar un plan con este grupo?</span><div id="fatiga" aria-labelledby="fatigaLbl"></div></div>
+      <div id="consent"></div>
+      <div class="actions"><button class="btn btn-primary btn-block" type="submit" id="enviar" data-busy="Registrando…">Unirme</button></div>
+    </form>
+  </section>
+
+  <section id="vistaOk" class="hidden">
+    <div class="card soft">
+      <h2 id="okTitulo">¡Listo! Ya estás en sintonía.</h2>
+      <p class="small">Tu confirmación quedó registrada. En cuanto el grupo esté completo, recibirás las opciones para votar.</p>
+    </div>
+    <div class="card" id="okE2">
+      <h3>Tu acceso personal al plan</h3>
+      <p class="small muted">Guárdalo: desde aquí votas, confirmas y nos cuentas cómo les fue. Es solo tuyo, no lo reenvíes.</p>
+      <div class="linkbox" id="okLink"></div>
+      <div class="actions split"><button class="btn btn-ghost" id="okCopiar" type="button">Copiar</button><a class="btn btn-primary" id="okPlan" href="#">Abrir mi plan</a></div>
+    </div>
+    <div class="card hidden" id="okE1">
+      <h3>¿Y ahora?</h3>
+      <p class="small muted">Las opciones te llegan por WhatsApp, desde el número de Sintonía, en un grupo con tu parche.</p>
+    </div>
+  </section>
+
+  <footer class="foot">Piloto académico · Universidad Icesi · <a href="aviso.html">Aviso de privacidad</a></footer>
+</main>
+<script src="assets/sintonia.js"></script>
+<script>
+(function () {
+  var inv = (S.param('inv') || '').trim().toUpperCase();
+  if (!/^[A-Z0-9]{6,20}$/.test(inv)) { S.show('#sinInv', true); return; }
+  S.show('#vistaForm', true);
+
+  var fatiga = S.scale(S.$('#fatiga'), ['Nada', 'Muchísimo']);
+  var cons = S.consent(S.$('#consent'));
+  S.counter(S.$('#prefs'), S.$('#prefsN'));
+
+  S.$('#form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var nombre = S.$('#nombre').value.trim(), wa = S.$('#wa').value.replace(/\D/g, '');
+    if (!nombre) return S.toast('Escribe tu nombre de pila.', true);
+    if (wa.length !== 10 || wa.charAt(0) !== '3') return S.toast('Escribe tu celular de 10 dígitos (empieza por 3).', true);
+    if (!fatiga.value()) return S.toast('Marca qué tan desgastante es cuadrar un plan (1 a 5).', true);
+    if (!cons.valid()) return S.toast('Para participar necesitamos las 4 autorizaciones.', true);
+    var payload = Object.assign({
+      action: 'registrar', codigo_invitacion: inv, nombre_pila: nombre, whatsapp: '+57' + wa,
+      preferencias: S.$('#prefs').value.trim(), fatiga_previa: fatiga.value(), consent_metodo: cons.metodo(), aviso_version: S.CONFIG.AVISO_VERSION
+    }, cons.values());
+    S.busy(S.$('#enviar'), function () { return S.post(payload); }).then(function (r) {
+      if (!r || !r.ok) return S.toast(S.errMsg(r), true);
+      S.saveMe({ pid: r.pid, grupo_id: r.grupo_id, rol: 'miembro', exp: r.experimento, nombre: nombre });
+      var mio = S.link('plan.html', { pid: r.pid });
+      S.$('#okTitulo').textContent = '¡Listo, ' + nombre + '! Ya estás en sintonía.';
+      S.$('#okLink').textContent = mio;
+      S.$('#okCopiar').onclick = function () { S.copy(mio); };
+      S.$('#okPlan').href = mio;
+      S.show('#okE2', r.experimento === 'E2'); S.show('#okE1', r.experimento !== 'E2');
+      S.show('#vistaForm', false); S.show('#vistaOk', true); S.show('#toast', false); window.scrollTo(0, 0);
+    });
+  });
+})();
+</script>
+</body>
+</html>
