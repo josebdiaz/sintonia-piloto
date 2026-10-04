@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintonía · Votación y Plan</title>
+  <style>
+    :root {
+      --primary: #2d6a4f;
+      --primary-hover: #1b4332;
+      --primary-light: #e8f5e9;
+      --accent: #52b788;
+      --text: #212529;
+      --muted: #6c757d;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --border: #dee2e6;
+      --danger: #d90429;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px 14px; line-height: 1.5; }
+    .container { max-width: 580px; margin: 0 auto; background: var(--card); border-radius: 16px; padding: 24px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid var(--border); }
+    .brand-header { text-align: center; margin-bottom: 20px; }
+    .logo { font-size: 26px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+    .tagline { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+    .status-preparando { background: #fef3c7; color: #92400e; }
+    .status-votando { background: var(--primary-light); color: var(--primary); }
+    .status-cerrado { background: #d1fae5; color: #065f46; }
+    .status-caido { background: #fee2e2; color: #991b1b; }
+    
+    .option-card { background: #fff; border: 2px solid var(--border); border-radius: 14px; padding: 18px 16px; margin-bottom: 16px; transition: border-color 0.2s, box-shadow 0.2s; position: relative; }
+    .option-card.selected { border-color: var(--primary); box-shadow: 0 4px 12px rgba(45,106,79,0.15); background: #fdfdfd; }
+    .opt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .opt-title { font-size: 16px; font-weight: 700; color: #1b4332; }
+    .opt-badge { font-size: 12px; font-weight: 600; background: #e9ecef; color: #495057; padding: 3px 8px; border-radius: 6px; }
+    
+    .opt-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; color: var(--muted); margin: 8px 0 10px; background: #f8f9fa; padding: 8px 10px; border-radius: 8px; }
+    .opt-desc { font-size: 13px; color: #495057; margin-bottom: 12px; }
+    
+    .btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.15s; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline { background: #fff; border: 1.5px solid var(--border); color: #495057; }
+    .btn-outline:hover { background: #f8f9fa; }
+    .btn-danger { background: #fff; border: 1.5px solid var(--danger); color: var(--danger); }
+    .btn-danger:hover { background: #fee2e2; }
+    
+    .vote-tally { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--primary); margin-top: 8px; }
+    
+    /* Winning Card */
+    .winner-card { background: var(--primary-light); border: 2px solid var(--accent); border-radius: 14px; padding: 20px 18px; margin: 16px 0; text-align: left; }
+    .winner-title { font-size: 18px; font-weight: 800; color: var(--primary-hover); margin-bottom: 8px; }
+    
+    .error-box { background: #fee2e2; color: var(--danger); padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="brand-header">
+      <div class="logo">Sintonía</div>
+      <div class="tagline">El plan está listo, ustedes deciden · Cerca, corto y posible</div>
+    </div>
+
+    <div class="error-box" id="errorBox"></div>
+
+    <div id="loadingState" style="text-align:center; padding:30px 0;">
+      <p style="color:var(--muted); font-size:14px;">Cargando estado del plan...</p>
+    </div>
+
+    <!-- Estado Preparando -->
+    <div id="statePreparando" style="display:none; text-align:center; padding:30px 10px;">
+      <span class="status-badge status-preparando">⏳ Preparando opciones</span>
+      <h3 style="font-size:18px; color:#92400e; margin:12px 0 8px;">Sintonía está armando las opciones</h3>
+      <p style="font-size:14px; color:#495057;">Estamos cruzando los gustos de tu parche con los lugares verificados de Cali. Vuelve en unos minutos para votar.</p>
+    </div>
+
+    <!-- Estado Votando -->
+    <div id="stateVotando" style="display:none;">
+      <div style="text-align:center; margin-bottom:16px;">
+        <span class="status-badge status-votando">🗳️ Votación abierta</span>
+        <p style="font-size:13px; color:var(--muted);">Elige tu opción favorita o marca veto si tienes una restricción insalvable.</p>
+      </div>
+
+      <div id="optionsContainer"></div>
+
+      <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:16px;">
+        <button type="button" class="btn btn-danger" id="btnVeto">🚫 Ninguna opción me sirve (Veto)</button>
+      </div>
+    </div>
+
+    <!-- Estado Cerrado / Confirmado -->
+    <div id="stateCerrado" style="display:none; text-align:center;">
+      <span class="status-badge status-cerrado">🎉 Plan confirmado</span>
+      <p style="font-size:13px; color:var(--muted);">Ruta clara, ganas intactas:</p>
+
+      <div class="winner-card" id="winnerDetails"></div>
+
+      <div style="display:flex; flex-direction:column; gap:10px; margin-top:16px;">
+        <button type="button" class="btn btn-primary" id="btnMeApunto">👍 ¡Me apunto!</button>
+        <button type="button" class="btn btn-outline" id="btnLlegue">📍 ¡Ya llegué al lugar!</button>
+        <a href="#" class="btn btn-outline" id="lnkRetro" style="text-decoration:none; margin-top:8px;">✨ ¿Cómo te fue? Déjanos tu retroalimentación</a>
+      </div>
+    </div>
+
+    <!-- Estado Caído -->
+    <div id="stateCaido" style="display:none; text-align:center; padding:30px 10px;">
+      <span class="status-badge status-caido">⚠️ Plan no concretado</span>
+      <p style="font-size:14px; color:#495057; margin-top:12px;">Este plan no se pudo cerrar para este fin de semana. Sintonía les propondrá una nueva salida pronto.</p>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      BACKEND_URL: localStorage.getItem('SINTONIA_BACKEND_URL') || 'https://script.google.com/macros/s/AKfycbxAcvVsAzOioVrGuAhuNx9sOI4p09CZr6oMhvCsB6ww4ywFTnbzDzCZQp1o1qYRXLC8/exec'
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const PLAN_ID = urlParams.get('plan_id');
+    const PID = urlParams.get('pid') || localStorage.getItem('SINTONIA_PID');
+
+    const errorBox = document.getElementById('errorBox');
+    const loadingState = document.getElementById('loadingState');
+
+    if (!PLAN_ID || !PID) {
+      loadingState.style.display = 'none';
+      errorBox.textContent = 'Enlace incompleto: faltan identificadores de plan o participante.';
+      errorBox.style.display = 'block';
+    } else {
+      cargarPlan();
+    }
+
+    async function cargarPlan() {
+      try {
+        const res = await fetch(`${CONFIG.BACKEND_URL}?view=plan&plan_id=${encodeURIComponent(PLAN_ID)}&pid=${encodeURIComponent(PID)}`);
+        const data = await res.json();
+        loadingState.style.display = 'none';
+
+        if (!data.ok) {
+          errorBox.textContent = `Error: ${data.error || 'No se pudo cargar el plan.'}`;
+          errorBox.style.display = 'block';
+          return;
+        }
+
+        renderEstado(data);
+      } catch (err) {
+        loadingState.style.display = 'none';
+        errorBox.textContent = 'Error al conectar con el servidor. Revisa tu conexión a internet.';
+        errorBox.style.display = 'block';
+      }
+    }
+
+    function renderEstado(data) {
+      // Ocultar todos
+      ['statePreparando', 'stateVotando', 'stateCerrado', 'stateCaido'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+
+      if (data.estado === 'preparando' || data.estado === 'borrador' || data.estado === 'en_revision') {
+        document.getElementById('statePreparando').style.display = 'block';
+      } else if (data.estado === 'votando') {
+        document.getElementById('stateVotando').style.display = 'block';
+        renderOpciones(data.opciones || [], data.conteo || {}, data.mi_voto);
+      } else if (data.estado === 'cerrado') {
+        document.getElementById('stateCerrado').style.display = 'block';
+        renderGanador(data);
+      } else if (data.estado === 'caido') {
+        document.getElementById('stateCaido').style.display = 'block';
+      }
+    }
+
+    function renderOpciones(opciones, conteo, miVoto) {
+      const cont = document.getElementById('optionsContainer');
+      cont.innerHTML = opciones.map((op, idx) => {
+        const numOp = idx + 1;
+        const votos = conteo[numOp] || 0;
+        const esMio = String(miVoto) === String(numOp);
+
+        return `
+          <div class="option-card ${esMio ? 'selected' : ''}">
+            <div class="opt-header">
+              <div class="opt-title">${numOp}. ${op.titulo}</div>
+              <span class="opt-badge">${op.presupuesto_aprox || ''}</span>
+            </div>
+            <div class="opt-meta">
+              <div>⏰ Salida: ${op.hora_salida || 'Por definir'}</div>
+              <div>📍 ${(op.paradas && op.paradas[0]) ? op.paradas[0].zona : 'Cali'}</div>
+            </div>
+            <p class="opt-desc">${op.por_que || ''}</p>
+            <button type="button" class="btn ${esMio ? 'btn-primary' : 'btn-outline'}" onclick="votar(${numOp})">
+              ${esMio ? '✅ Votaste por esta opción' : `Votar por la Opción ${numOp}`}
+            </button>
+            <div class="vote-tally">👥 Votos actuales del grupo: ${votos}</div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('btnVeto').onclick = () => votar(0, true);
+    }
+
+    function renderGanador(data) {
+      const elElegida = Number(data.elegida) || 1;
+      const op = (data.opciones && data.opciones[elElegida - 1]) || {};
+      const winBox = document.getElementById('winnerDetails');
+
+      winBox.innerHTML = `
+        <div class="winner-title">📍 ${op.titulo || 'Plan Elegido'}</div>
+        <p style="font-size:13px; color:#1b4332; margin-bottom:8px;"><strong>Presupuesto est.:</strong> ${op.presupuesto_aprox || 'N/A'}</p>
+        <p style="font-size:13px; color:#1b4332; margin-bottom:8px;"><strong>Hora de salida sugerida:</strong> ${op.hora_salida || 'Por definir'}</p>
+        <p style="font-size:13px; color:#2d6a4f;">${op.por_que || ''}</p>
+      `;
+
+      // Enlace a retro
+      document.getElementById('lnkRetro').href = `retro.html?plan_id=${encodeURIComponent(PLAN_ID)}&pid=${encodeURIComponent(PID)}`;
+    }
+
+    window.votar = async (numOp, esVeto = false) => {
+      try {
+        const payload = {
+          action: 'votar',
+          plan_id: PLAN_ID,
+          pid: PID,
+          opcion: esVeto ? 0 : numOp,
+          veto: esVeto
+        };
+        const res = await fetch(CONFIG.BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.ok) {
+          cargarPlan();
+        } else {
+          alert('Error al votar: ' + (data.error || ''));
+        }
+      } catch (e) {
+        alert('Error de conexión al votar');
+      }
+    };
+
+    // Eventos de Checkpoint
+    document.getElementById('btnMeApunto').addEventListener('click', async () => {
+      registrarEvento('me_apunto', '¡Confirmaste tu asistencia!');
+    });
+
+    document.getElementById('btnLlegue').addEventListener('click', async () => {
+      registrarEvento('checkpoint_llegada', '¡Registraste tu llegada al punto de encuentro!');
+    });
+
+    async function registrarEvento(tipo, msgExito) {
+      try {
+        const payload = { action: 'evento', plan_id: PLAN_ID, pid: PID, tipo: tipo };
+        const res = await fetch(CONFIG.BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.ok) alert(msgExito);
+      } catch (e) {
+        alert('Error al registrar evento');
+      }
+    }
+  </script>
+</body>
+</html>
