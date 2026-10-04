@@ -15,7 +15,7 @@
   var LS = store('localStorage'), SS = store('sessionStorage');
 
   /* ---------- Configuración centralizada ---------- */
-  var DEFAULT_BACKEND = 'https://script.google.com/macros/s/AKfycbxAcvVsAzOioVrGuAhuNx9sOI4p09CZr6oMhvCsB6ww4ywFTnbzDzCZQp1o1qYRXLC8/exec';
+  var DEFAULT_BACKEND = 'https://script.google.com/macros/s/AKfycbw0_t17mTNpMB6CxEZywkMfY-CAxUgpdY5VpVXM12SOKAjGgxIaSnCcpwt43CLY-7cf/exec';
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/M2-Claude/',
