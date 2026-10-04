@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintonía · Consola del Mago de Oz (E1 / Admin)</title>
+  <style>
+    :root {
+      --primary: #2d6a4f;
+      --primary-hover: #1b4332;
+      --primary-light: #e8f5e9;
+      --accent: #52b788;
+      --warning: #e09f3e;
+      --danger: #d90429;
+      --text: #212529;
+      --muted: #6c757d;
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --border: #dee2e6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 16px; font-size: 14px; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 14px 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px; }
+    .brand { font-size: 20px; font-weight: 800; color: var(--primary); }
+    .admin-pill { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+    
+    .auth-box { max-width: 400px; margin: 60px auto; background: #fff; padding: 28px; border-radius: 14px; border: 1px solid var(--border); text-align: center; }
+    .auth-box input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; margin: 12px 0 16px; font-size: 14px; }
+    
+    .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+    .card-title { font-size: 15px; font-weight: 700; color: var(--primary-hover); margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f3f5; padding-bottom: 8px; }
+    
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: 0.15s; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #e9ecef; color: #495057; }
+    .btn-secondary:hover { background: #dee2e6; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-warning { background: var(--warning); color: #fff; }
+    .btn-sm { padding: 4px 8px; font-size: 11px; border-radius: 6px; }
+    
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; }
+    .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+    th, td { padding: 8px 10px; border-bottom: 1px solid #f1f3f5; text-align: left; }
+    th { background: #f8f9fa; color: var(--muted); font-weight: 600; }
+    
+    .template-item { background: #f8f9fa; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+    .template-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .template-name { font-weight: 700; font-size: 12px; color: var(--primary); }
+    .template-text { font-size: 12px; color: #495057; white-space: pre-wrap; max-height: 80px; overflow-y: auto; background: #fff; padding: 6px 8px; border-radius: 6px; border: 1px solid #e9ecef; }
+    
+    input, select, textarea { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; margin-bottom: 10px; outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+    
+    .option-card { background: #f8f9fa; border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- Auth Screen -->
+  <div id="authScreen" class="auth-box">
+    <h2 style="font-size:18px; color:var(--primary); margin-bottom:6px;">Consola del Mago de Oz</h2>
+    <p style="font-size:13px; color:var(--muted);">Ingresa tu ADMIN_KEY para gestionar los grupos y planes del piloto.</p>
+    <input type="password" id="txtAdminKey" placeholder="ADMIN_KEY del equipo...">
+    <button type="button" class="btn btn-primary" style="width:100%;" id="btnAuth">Ingresar a la consola</button>
+  </div>
+
+  <!-- Main App -->
+  <div id="appScreen" style="display:none;">
+    <div class="header-bar">
+      <div class="brand">Sintonía · Consola del Mago</div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="admin-pill">ADMINISTRADOR</span>
+        <button type="button" class="btn btn-secondary btn-sm" id="btnRefresh">🔄 Actualizar datos</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="btnLogout">Salir</button>
+      </div>
+    </div>
+
+    <div class="grid-layout">
+      <!-- Columna Izquierda: Grupos y Curaduría -->
+      <div>
+        <!-- Card 1: Grupos y Reclutamiento -->
+        <div class="card">
+          <div class="card-title">
+            <span>👥 Grupos y Quórum (Regla I9)</span>
+          </div>
+
+          <div id="gruposList">Cargando grupos...</div>
+        </div>
+
+        <!-- Card 2: Curaduría de Planes con Gemini -->
+        <div class="card">
+          <div class="card-title">
+            <span>✨ Curaduría con IA (Human-in-the-Loop)</span>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size:12px; font-weight:600;">Seleccionar Grupo Activo</label>
+            <select id="selGrupoPlan"></select>
+          </div>
+
+          <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <button type="button" class="btn btn-secondary" id="btnCrearPlan" style="flex:1;">1. Crear Borrador</button>
+            <button type="button" class="btn btn-primary" id="btnProponerIA" style="flex:1;">2. Pedir a Gemini</button>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size:12px; font-weight:600;">Restricciones adicionales para Gemini</label>
+            <input type="text" id="txtRestricciones" placeholder="Ej: No caminar bajo el sol, cerca al Peñón, máx $35.000 COP">
+          </div>
+
+          <!-- Editor de Opciones -->
+          <div id="curaduriaEditor" style="display:none; margin-top:14px; border-top:1px solid var(--border); padding-top:12px;">
+            <div style="font-weight:700; font-size:13px; color:var(--primary); margin-bottom:8px;">Revisar y editar 3 opciones antes de publicar:</div>
+            <div id="opcionesForm"></div>
+            <button type="button" class="btn btn-primary" style="width:100%; margin-top:8px;" id="btnPublicarPlan">📢 Publicar Plan al Grupo</button>
+          </div>
+        </div>
+
+        <!-- Card 3: Cerrar Plan -->
+        <div class="card">
+          <div class="card-title">
+            <span>🏁 Cierre de Plan</span>
+          </div>
+          <div style="display:grid; grid-template-columns: 2fr 1fr; gap:8px;">
+            <select id="selPlanCerrar"></select>
+            <select id="selOpcionElegida">
+              <option value="1">Opción 1</option>
+              <option value="2">Opción 2</option>
+              <option value="3">Opción 3</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:6px;">
+            <button type="button" class="btn btn-primary" style="flex:1;" id="btnCerrarExito">Confirmar Ganador</button>
+            <button type="button" class="btn btn-danger" style="flex:1;" id="btnCerrarCaido">Marcar Caído</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Copiado de Mensajes y Operación Humana -->
+      <div>
+        <!-- Card 4: Quick Replies con Voz de Marca -->
+        <div class="card">
+          <div class="card-title">
+            <span>💬 Respuestas Rápidas (Voz de Marca)</span>
+          </div>
+          <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Haz clic en copiar y pega directamente en WhatsApp Web:</p>
+
+          <div class="template-item">
+            <div class="template-header">
+              <span class="template-name">/ingreso (Bienvenida y Aviso)</span>
+              <button type="button" class="btn btn-secondary btn-sm copy-btn" data-target="t1">Copiar</button>
+            </div>
+            <div class="template-text" id="t1">¡Hola a todos! 👋 Les damos la bienvenida a Sintonía. Estamos aquí para que las ganas de salir se vuelvan plan y que la logística no le gane al encuentro: menos vueltas, opciones reales y cero enredos para ponerse de acuerdo.
+⚙️ Este espacio utiliza asistencia de curaduría automatizada para armarles propuestas a su medida en Cali. Todas las personas de este grupo confirmaron previamente su consentimiento.
+👤 Si en algún momento necesitan soporte directo o quieren hablar con una persona del equipo de la universidad, solo escriban 'Humano' o 'Ayuda'.
+🔒 Pueden consultar nuestro aviso de privacidad cuando lo deseen: [Enlace al aviso]</div>
+          </div>
+
+          <div class="template-item">
+            <div class="template-header">
+              <span class="template-name">/opciones (Presentar 3 Alternativas)</span>
+              <button type="button" class="btn btn-secondary btn-sm copy-btn" data-target="t2">Copiar</button>
+            </div>
+            <div class="template-text" id="t2">Revisamos las preferencias del grupo y armamos estas 3 alternativas para su momento. Cerca, corto y posible:
+
+1. [Opción A] — [Zona] · Aprox. $[X] COP · [Qué esperar].
+2. [Opción B] — [Zona] · Aprox. $[X] COP · [Qué esperar].
+3. [Opción C] — [Zona] · Aprox. $[X] COP · [Qué esperar].
+
+El plan está en sus manos. Elijan respondiendo con el número de su opción preferida (1, 2 o 3) antes de las [Hora límite]. Si alguien tiene un veto o restricción insalvable, avísenos con tranquilidad.</div>
+          </div>
+
+          <div class="template-item">
+            <div class="template-header">
+              <span class="template-name">/recordatorio (Sin Presión)</span>
+              <button type="button" class="btn btn-secondary btn-sm copy-btn" data-target="t3">Copiar</button>
+            </div>
+            <div class="template-text" id="t3">⏳ Para que el plan tome forma y podamos cerrar los detalles con tiempo, nos falta el voto de [Nombre/s]. ¿Cuál les provoca más para hoy: 1, 2 o 3?</div>
+          </div>
+
+          <div class="template-item">
+            <div class="template-header">
+              <span class="template-name">/confirmado (Logística Ganadora)</span>
+              <button type="button" class="btn btn-secondary btn-sm copy-btn" data-target="t4">Copiar</button>
+            </div>
+            <div class="template-text" id="t4">Listo el plan para el fin de semana. Ruta clara, ganas intactas:
+
+📍 [Lugar]
+🗓️ Cuándo: [Día, HH:MM] — Sugerimos salir [XX] min antes para evitar la hora pico en [Zona].
+📌 Dirección: [Ubicación]
+💰 Consumo estimado: $[X] COP por persona
+
+Por favor confirmen su asistencia con un 'Me apunto' o un pulgar arriba (👍) para cerrar la lista definitiva.</div>
+          </div>
+
+          <div class="template-item">
+            <div class="template-header">
+              <span class="template-name">/checkpoint (Día del Encuentro)</span>
+              <button type="button" class="btn btn-secondary btn-sm copy-btn" data-target="t5">Copiar</button>
+            </div>
+            <div class="template-text" id="t5">¡Es hoy! 📍 Cuando vayan llegando al punto de encuentro, confirmen por aquí con un 'Llegué'. ¡Que disfruten la salida!</div>
+          </div>
+
+          <div class="template-item">
+            <div class="template-header">
+              <span class="template-name">/retro (Cierre y Evaluación)</span>
+              <button type="button" class="btn btn-secondary btn-sm copy-btn" data-target="t6">Copiar</button>
+            </div>
+            <div class="template-text" id="t6">Esperamos que la salida haya valido la pena. ✨ Si hubo sintonía y quieren que el encuentro tenga un siguiente paso, cuéntennos cómo les fue en este pulso breve de 2 minutos: [Enlace a retro.html?pid=XXX]. Sus respuestas son privadas y nos ayudan a mejorar el piloto académico.</div>
+          </div>
+
+          <div class="template-item">
+            <div class="template-header">
+              <span class="template-name">/guardrail (Fuera de Dominio)</span>
+              <button type="button" class="btn btn-secondary btn-sm copy-btn" data-target="t7">Copiar</button>
+            </div>
+            <div class="template-text" id="t7">En Sintonía nuestra única tarea es ayudarles a armar y coordinar planes en Cali para que salir sea más fácil. ¿Nos concentramos en las opciones para este fin de semana?</div>
+          </div>
+
+          <div class="template-item">
+            <div class="template-header">
+              <span class="template-name">/humano (Human Handoff)</span>
+              <button type="button" class="btn btn-secondary btn-sm copy-btn" data-target="t8">Copiar</button>
+            </div>
+            <div class="template-text" id="t8">Hola, aquí estoy. Soy Jose, del equipo de investigación de Sintonía. Tomo la conversación para ayudarte con lo que necesites resolver.</div>
+          </div>
+        </div>
+
+        <!-- Card 5: Registro de Eventos y Minutos Humanos (I3) -->
+        <div class="card">
+          <div class="card-title">
+            <span>⏱️ Eventos y Trabajo Humano (I3)</span>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size:12px; font-weight:600;">Registrar Evento de Chat (1 clic)</label>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <button type="button" class="btn btn-secondary btn-sm ev-btn" data-ev="me_apunto">👍 Me apunto</button>
+              <button type="button" class="btn btn-secondary btn-sm ev-btn" data-ev="no_puedo">❌ No puedo</button>
+              <button type="button" class="btn btn-secondary btn-sm ev-btn" data-ev="checkpoint_llegada">📍 Llegué</button>
+              <button type="button" class="btn btn-secondary btn-sm ev-btn" data-ev="llego_casa">🏠 En casa</button>
+              <button type="button" class="btn btn-secondary btn-sm ev-btn" data-ev="mensaje_mago">💬 Mensaje Mago</button>
+            </div>
+          </div>
+
+          <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:12px;">
+            <label style="font-size:12px; font-weight:600;">Registrar Minutos del Mago (Costo Operativo)</label>
+            <div style="display:grid; grid-template-columns: 1fr 2fr; gap:8px;">
+              <input type="number" id="numMinutosOp" min="1" max="120" value="5" placeholder="Minutos">
+              <select id="selCausaOp">
+                <option value="coordinacion">Coordinación</option>
+                <option value="redactar_mensaje">Redactar Mensaje</option>
+                <option value="resolver_duda">Resolver Duda / Logística</option>
+                <option value="cambio_plan">Cambio de Plan</option>
+                <option value="recordatorio">Recordatorio</option>
+                <option value="falla_tecnica">Falla Técnica</option>
+              </select>
+            </div>
+            <button type="button" class="btn btn-primary" style="width:100%;" id="btnGuardarOp">Guardar Minutos de Operación</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      BACKEND_URL: localStorage.getItem('SINTONIA_BACKEND_URL') || 'https://script.google.com/macros/s/AKfycbx.../exec'
+    };
+
+    let ADMIN_KEY = sessionStorage.getItem('SINTONIA_ADMIN_KEY') || '';
+    let MOCK_DATA = null;
+    let PLAN_ID_ACTUAL = '';
+
+    const authScreen = document.getElementById('authScreen');
+    const appScreen = document.getElementById('appScreen');
+    const txtAdminKey = document.getElementById('txtAdminKey');
+    const btnAuth = document.getElementById('btnAuth');
+    const btnRefresh = document.getElementById('btnRefresh');
+    const btnLogout = document.getElementById('btnLogout');
+
+    if (ADMIN_KEY) {
+      iniciarConsola();
+    }
+
+    btnAuth.addEventListener('click', () => {
+      const val = txtAdminKey.value.trim();
+      if (!val) return;
+      ADMIN_KEY = val;
+      sessionStorage.setItem('SINTONIA_ADMIN_KEY', val);
+      iniciarConsola();
+    });
+
+    btnLogout.addEventListener('click', () => {
+      sessionStorage.removeItem('SINTONIA_ADMIN_KEY');
+      location.reload();
+    });
+
+    btnRefresh.addEventListener('click', () => cargarDatos());
+
+    function iniciarConsola() {
+      authScreen.style.display = 'none';
+      appScreen.style.display = 'block';
+      cargarDatos();
+    }
+
+    async function cargarDatos() {
+      try {
+        btnRefresh.textContent = '⏳ Cargando...';
+        const res = await fetch(`${CONFIG.BACKEND_URL}?view=mago&key=${encodeURIComponent(ADMIN_KEY)}`);
+        const data = await res.json();
+        btnRefresh.textContent = '🔄 Actualizar datos';
+
+        if (!data.ok) {
+          alert('Error de autenticación o clave inválida: ' + (data.error || ''));
+          sessionStorage.removeItem('SINTONIA_ADMIN_KEY');
+          location.reload();
+          return;
+        }
+
+        MOCK_DATA = data;
+        renderGrupos(data.grupos || []);
+        renderSelectGrupos(data.grupos || []);
+        renderSelectPlanes(data.planes || []);
+      } catch (err) {
+        btnRefresh.textContent = '🔄 Actualizar datos';
+        alert('Error al conectar con Apps Script. Revisa que el script esté desplegado como Web App pública.');
+      }
+    }
+
+    function renderGrupos(grupos) {
+      const cont = document.getElementById('gruposList');
+      if (!grupos.length) {
+        cont.innerHTML = '<p style="color:var(--muted); font-size:12px;">No hay grupos registrados aún.</p>';
+        return;
+      }
+
+      let html = '<table><thead><tr><th>ID</th><th>Exp/Modo</th><th>Quórum</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>';
+      grupos.forEach(g => {
+        const nMiembros = (g.miembros || []).length;
+        const nInvitados = Number(g.n_invitados) || 0;
+        const quorumOk = nMiembros >= nInvitados && nInvitados > 0;
+
+        let badge = `<span class="badge badge-warning">${g.estado}</span>`;
+        if (g.estado === 'activo') badge = `<span class="badge badge-success">Activo</span>`;
+        if (g.estado === 'excluido') badge = `<span class="badge badge-danger">Excluido</span>`;
+
+        html += `<tr>
+          <td><strong>${g.grupo_id}</strong><br><span style="color:var(--muted)">${g.tipo_grupo}</span></td>
+          <td>${g.experimento} <span style="font-size:10px; color:var(--muted)">(${g.modo})</span></td>
+          <td><strong>${nMiembros}/${nInvitados}</strong></td>
+          <td>${badge}</td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="cerrarQuorum('${g.grupo_id}')">Cerrar Quórum</button>
+            <button class="btn btn-danger btn-sm" onclick="revocarGrupo('${g.grupo_id}')" title="Excluir grupo">×</button>
+          </td>
+        </tr>`;
+
+        // Mostrar teléfonos si es E1
+        if (g.miembros && g.miembros.length) {
+          html += `<tr><td colspan="5" style="background:#fafafa; padding:4px 10px;">
+            <span style="font-weight:600; font-size:11px;">Contactos: </span>
+            ${g.miembros.map(m => `<a href="https://wa.me/${m.whatsapp.replace(/[^0-9]/g,'')}" target="_blank" style="color:var(--primary); font-size:11px; margin-right:8px;">${m.nombre} (${m.whatsapp})</a>`).join('')}
+          </td></tr>`;
+        }
+      });
+      html += '</tbody></table>';
+      cont.innerHTML = html;
+    }
+
+    function renderSelectGrupos(grupos) {
+      const sel = document.getElementById('selGrupoPlan');
+      sel.innerHTML = grupos.map(g => `<option value="${g.grupo_id}">${g.grupo_id} (${g.tipo_grupo}, ${g.experimento}) - ${g.estado}</option>`).join('');
+    }
+
+    function renderSelectPlanes(planes) {
+      const sel = document.getElementById('selPlanCerrar');
+      sel.innerHTML = planes.map(p => `<option value="${p.plan_id}">${p.plan_id} (G: ${p.grupo_id}, Estado: ${p.estado})</option>`).join('');
+    }
+
+    window.cerrarQuorum = async (gid) => {
+      if (!confirm(`¿Cerrar reclutamiento para el grupo ${gid}? Si faltan personas quedará excluido (Regla I9).`)) return;
+      const res = await apiCall({ action: 'cerrar_reclutamiento', key: ADMIN_KEY, grupo_id: gid });
+      if (res.ok) {
+        alert(`Estado del grupo actualizado a: ${res.estado} (${res.consentidos}/${res.invitados})`);
+        cargarDatos();
+      }
+    };
+
+    // Crear plan y Proponer IA
+    document.getElementById('btnCrearPlan').addEventListener('click', async () => {
+      const gid = document.getElementById('selGrupoPlan').value;
+      if (!gid) return;
+      const res = await apiCall({ action: 'crear_plan', key: ADMIN_KEY, grupo_id: gid });
+      if (res.ok) {
+        PLAN_ID_ACTUAL = res.plan_id;
+        alert(`Borrador creado con ID: ${res.plan_id}`);
+        cargarDatos();
+      }
+    });
+
+    document.getElementById('btnProponerIA').addEventListener('click', async () => {
+      const btn = document.getElementById('btnProponerIA');
+      if (!PLAN_ID_ACTUAL) {
+        alert('Crea primero un borrador de plan con el botón "1. Crear Borrador"');
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Consultando Gemini...';
+      const restr = document.getElementById('txtRestricciones').value;
+
+      const res = await apiCall({
+        action: 'proponer_ia',
+        key: ADMIN_KEY,
+        plan_id: PLAN_ID_ACTUAL,
+        restricciones: restr
+      });
+      btn.disabled = false;
+      btn.textContent = '2. Pedir a Gemini';
+
+      if (res.ok && res.opciones) {
+        renderCuraduria(res.opciones);
+      } else {
+        alert('Error al proponer: ' + (res.error || ''));
+      }
+    });
+
+    function renderCuraduria(opciones) {
+      const cont = document.getElementById('opcionesForm');
+      document.getElementById('curaduriaEditor').style.display = 'block';
+
+      cont.innerHTML = opciones.map((op, idx) => `
+        <div class="option-card" data-idx="${idx}">
+          <label style="font-weight:700; font-size:12px;">Opción ${idx + 1}</label>
+          <input type="text" class="op-titulo" value="${op.titulo || ''}" placeholder="Título">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+            <input type="text" class="op-salida" value="${op.hora_salida || ''}" placeholder="Hora salida">
+            <input type="text" class="op-presupuesto" value="${op.presupuesto_aprox || ''}" placeholder="Presupuesto">
+          </div>
+          <input type="text" class="op-porque" value="${op.por_que || ''}" placeholder="Por qué encaja">
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('btnPublicarPlan').addEventListener('click', async () => {
+      const cards = document.querySelectorAll('.option-card');
+      const ops = [];
+      cards.forEach(c => {
+        ops.push({
+          titulo: c.querySelector('.op-titulo').value,
+          hora_salida: c.querySelector('.op-salida').value,
+          presupuesto_aprox: c.querySelector('.op-presupuesto').value,
+          por_que: c.querySelector('.op-porque').value
+        });
+      });
+
+      const res = await apiCall({
+        action: 'publicar_plan',
+        key: ADMIN_KEY,
+        plan_id: PLAN_ID_ACTUAL,
+        opciones: ops
+      });
+      if (res.ok) {
+        alert('¡Plan publicado exitosamente! Ya está disponible para votación.');
+        document.getElementById('curaduriaEditor').style.display = 'none';
+        cargarDatos();
+      }
+    });
+
+    // Cerrar plan
+    document.getElementById('btnCerrarExito').addEventListener('click', async () => {
+      const pid = document.getElementById('selPlanCerrar').value;
+      const op = document.getElementById('selOpcionElegida').value;
+      const res = await apiCall({ action: 'cerrar_plan', key: ADMIN_KEY, plan_id: pid, elegida: op, caido: false });
+      if (res.ok) { alert('Plan cerrado con éxito'); cargarDatos(); }
+    });
+
+    document.getElementById('btnCerrarCaido').addEventListener('click', async () => {
+      const pid = document.getElementById('selPlanCerrar').value;
+      const res = await apiCall({ action: 'cerrar_plan', key: ADMIN_KEY, plan_id: pid, caido: true });
+      if (res.ok) { alert('Plan marcado como caído'); cargarDatos(); }
+    });
+
+    // Copiado rápido de plantillas
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tid = btn.getAttribute('data-target');
+        const text = document.getElementById(tid).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = '✅ Copiado';
+          setTimeout(() => btn.textContent = 'Copiar', 2000);
+        });
+      });
+    });
+
+    // Eventos y Operación humana
+    document.querySelectorAll('.ev-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const ev = btn.getAttribute('data-ev');
+        const gid = document.getElementById('selGrupoPlan').value;
+        const res = await apiCall({ action: 'evento', key: ADMIN_KEY, plan_id: PLAN_ID_ACTUAL, grupo_id: gid, tipo: ev });
+        if (res.ok) alert(`Evento '${ev}' registrado`);
+      });
+    });
+
+    document.getElementById('btnGuardarOp').addEventListener('click', async () => {
+      const min = document.getElementById('numMinutosOp').value;
+      const causa = document.getElementById('selCausaOp').value;
+      const gid = document.getElementById('selGrupoPlan').value;
+      const res = await apiCall({ action: 'operacion', key: ADMIN_KEY, plan_id: PLAN_ID_ACTUAL, grupo_id: gid, minutos: min, causa: causa, actor: 'mago' });
+      if (res.ok) alert('Minutos registrados en la hoja operación');
+    });
+
+    async function apiCall(payload) {
+      try {
+        const res = await fetch(CONFIG.BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        return await res.json();
+      } catch (e) {
+        alert('Error en llamada a API: ' + e);
+        return { ok: false };
+      }
+    }
+  </script>
+</body>
+</html>

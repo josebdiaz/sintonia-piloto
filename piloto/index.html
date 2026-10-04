@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintonía · Arma tu plan en Cali</title>
+  <style>
+    :root {
+      --primary: #2d6a4f;
+      --primary-hover: #1b4332;
+      --primary-light: #e8f5e9;
+      --accent: #52b788;
+      --text: #212529;
+      --text-muted: #6c757d;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --border: #dee2e6;
+      --error: #dc3545;
+      --success: #2d6a4f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px 14px; line-height: 1.5; }
+    .container { max-width: 600px; margin: 0 auto; background: var(--card); border-radius: 16px; padding: 28px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid var(--border); }
+    .brand-header { text-align: center; margin-bottom: 24px; }
+    .logo { font-size: 28px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+    .tagline { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+    .lead-banner { background: var(--primary-light); color: var(--primary-hover); padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; margin-bottom: 20px; border-left: 4px solid var(--primary); }
+    
+    .section-title { font-size: 16px; font-weight: 700; color: var(--primary-hover); margin: 22px 0 12px; display: flex; align-items: center; gap: 8px; }
+    .step-num { display: inline-flex; width: 24px; height: 24px; background: var(--primary); color: #fff; border-radius: 50%; font-size: 12px; align-items: center; justify-content: center; font-weight: 700; }
+    
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #343a40; }
+    .label-hint { font-size: 12px; font-weight: 400; color: var(--text-muted); }
+    input[type="text"], input[type="tel"], input[type="number"], select, textarea {
+      width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.2s; background: #fff;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 80px; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    
+    /* Fatiga scale */
+    .scale-container { display: flex; gap: 8px; justify-content: space-between; }
+    .scale-btn { flex: 1; padding: 10px 4px; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; text-align: center; cursor: pointer; font-size: 14px; font-weight: 600; color: #495057; }
+    .scale-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    
+    /* Checkbox Card */
+    .consent-card { background: #fafafa; border: 1.5px solid var(--border); border-radius: 12px; padding: 16px; margin: 20px 0; }
+    .select-all-btn { background: #fff; border: 1.5px solid var(--accent); color: var(--primary); font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 8px; cursor: pointer; width: 100%; margin-bottom: 14px; text-align: center; }
+    .select-all-btn:hover { background: var(--primary-light); }
+    .checkbox-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 13px; color: #343a40; }
+    .checkbox-item:last-child { margin-bottom: 0; }
+    .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); margin-top: 2px; flex-shrink: 0; cursor: pointer; }
+    .checkbox-item a { color: var(--primary); text-decoration: underline; }
+    
+    .submit-btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 14px; font-size: 16px; font-weight: 700; border-radius: 12px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(45,106,79,0.25); }
+    .submit-btn:hover { background: var(--primary-hover); }
+    .submit-btn:disabled { background: #adb5bd; cursor: not-allowed; box-shadow: none; }
+    
+    .error-msg { background: #ffebee; color: var(--error); padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
+    
+    /* Success Card */
+    #successCard { display: none; text-align: center; }
+    .success-icon { width: 56px; height: 56px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 14px; }
+    .invite-box { background: #f1f3f5; border: 1px dashed var(--border); border-radius: 10px; padding: 14px; font-size: 14px; word-break: break-all; margin: 16px 0; font-family: monospace; color: #343a40; }
+    .action-btn { display: block; width: 100%; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 10px; cursor: pointer; border: none; }
+    .btn-wa { background: #25d366; color: #fff; }
+    .btn-copy { background: #fff; border: 1.5px solid var(--border); color: #343a40; }
+    .btn-copy:hover { background: #e9ecef; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="brand-header">
+      <div class="logo">Sintonía</div>
+      <div class="tagline">Que las ganas se vuelvan plan · Cerca, corto y posible</div>
+    </div>
+
+    <!-- Pantalla de Formulario -->
+    <div id="formSection">
+      <div class="lead-banner">
+        👋 ¡Hola, organizador! Dinos qué le gusta a tu parche en Cali y Sintonía les arma propuestas reales para este fin de semana sin enredos de logística.
+      </div>
+
+      <div class="error-msg" id="errorBox"></div>
+
+      <form id="organizerForm">
+        <!-- Paso 1 -->
+        <div class="section-title"><span class="step-num">1</span> Tu parche y cómo organizan</div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Tipo de parche</label>
+            <select id="tipoGrupo" required>
+              <option value="amigos">Amigos</option>
+              <option value="familia">Familia</option>
+              <option value="pareja">Pareja</option>
+              <option value="trabajo">Trabajo</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>¿Cuántos van a invitar? <span class="label-hint">(2 a 8)</span></label>
+            <input type="number" id="nInvitados" min="2" max="8" value="4" required>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Tamaño habitual del parche</label>
+            <input type="number" id="tamanoGrupo" min="2" max="30" value="5" required>
+          </div>
+          <div class="form-group">
+            <label>¿Quién suele organizar?</label>
+            <input type="text" id="quienOrganiza" placeholder="Ej: Yo, o nos turnamos" required>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Planes hechos el último mes</label>
+            <input type="number" id="planesRealizados" min="0" max="30" value="2" required>
+          </div>
+          <div class="form-group">
+            <label>Planes caídos / cancelados</label>
+            <input type="number" id="planesFallidos" min="0" max="30" value="2" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>¿Qué tan agotador te resulta ponerlos a todos de acuerdo?</label>
+          <div class="scale-container">
+            <div class="scale-btn" data-val="1">1<br><span style="font-size:10px">Cero</span></div>
+            <div class="scale-btn" data-val="2">2</div>
+            <div class="scale-btn active" data-val="3">3<br><span style="font-size:10px">Medio</span></div>
+            <div class="scale-btn" data-val="4">4</div>
+            <div class="scale-btn" data-val="5">5<br><span style="font-size:10px">Mucho</span></div>
+          </div>
+          <input type="hidden" id="fatigaPrevia" value="3">
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="section-title"><span class="step-num">2</span> Preferencias para este fin de semana</div>
+
+        <div class="form-group">
+          <label>¿Qué les provoca hacer? <span class="label-hint">(Presupuesto, zona, comida, ambiente)</span></label>
+          <textarea id="preferencias" placeholder="Ej: Queremos un café tranquilo en San Antonio o Granada para charlar, presupuesto medio (~$25.000 COP c/u), sábado en la tarde."></textarea>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="section-title"><span class="step-num">3</span> Tus datos y consentimiento</div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Tu nombre de pila</label>
+            <input type="text" id="nombrePila" placeholder="Ej: Carlos" maxlength="40" required>
+          </div>
+          <div class="form-group">
+            <label>Tu WhatsApp</label>
+            <input type="tel" id="whatsapp" placeholder="Ej: 3151234567" required>
+          </div>
+        </div>
+
+        <!-- Consent Card -->
+        <div class="consent-card">
+          <button type="button" class="select-all-btn" id="btnSelectAll">✓ Marcar "Sí a todo"</button>
+          
+          <div class="checkbox-item">
+            <input type="checkbox" id="chkDatos" required>
+            <label for="chkDatos">Autorizo el tratamiento de mis datos personales según la Ley 1581 de 2012 y el <a href="aviso.html" target="_blank">Aviso de Privacidad</a>.</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="chkOptin" required>
+            <label for="chkOptin">Acepto recibir mensajes y opciones de planes en WhatsApp / Web para este piloto.</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="chkMayor18" required>
+            <label for="chkMayor18">Declaro bajo juramento que soy mayor de edad (+18 años).</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="chkConsent" required>
+            <label for="chkConsent">Acepto participar voluntariamente en esta investigación académica (Universidad Icesi).</label>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="btnSubmit">Armar el plan con mi parche</button>
+      </form>
+    </div>
+
+    <!-- Pantalla de Éxito / Invitación -->
+    <div id="successCard">
+      <div class="success-icon">🎉</div>
+      <h2 style="font-size:20px; color:var(--primary); margin-bottom:8px;">¡Grupo creado con éxito!</h2>
+      <p style="font-size:14px; color:#495057; margin-bottom:16px;">
+        Tu confirmación quedó guardada. Ahora comparte este enlace único con tus <strong id="lblCuposRestantes">amigos</strong> para que cada uno dé su visto bueno:
+      </p>
+
+      <div class="invite-box" id="inviteUrlBox">Generando enlace...</div>
+
+      <button type="button" class="action-btn btn-copy" id="btnCopyInvite">📋 Copiar enlace de invitación</button>
+      <a href="#" class="action-btn btn-wa" id="btnShareWa" target="_blank">💬 Enviar invitación por WhatsApp</a>
+
+      <div style="font-size:12px; color:var(--text-muted); margin-top:16px; background:#f8f9fa; padding:10px; border-radius:8px;">
+        ⚠️ <strong>Regla del piloto:</strong> El plan se activará en cuanto tus invitados completen su confirmación. Si falta alguien, el grupo no podrá ser coordinado.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuración del Backend Apps Script
+    const CONFIG = {
+      BACKEND_URL: localStorage.getItem('SINTONIA_BACKEND_URL') || 'https://script.google.com/macros/s/AKfycbx.../exec'
+    };
+
+    // Leer parámetros de URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const EXP_PARAM = urlParams.get('exp') === 'E2' ? 'E2' : 'E1';
+    const MODO_PARAM = urlParams.get('modo') === 'prueba' ? 'prueba' : 'piloto';
+
+    // Manejo de la escala de fatiga
+    const scaleBtns = document.querySelectorAll('.scale-btn');
+    const fatigaInput = document.getElementById('fatigaPrevia');
+    scaleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        scaleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        fatigaInput.value = btn.getAttribute('data-val');
+      });
+    });
+
+    // Botón "Sí a todo"
+    const btnSelectAll = document.getElementById('btnSelectAll');
+    const checkboxes = [
+      document.getElementById('chkDatos'),
+      document.getElementById('chkOptin'),
+      document.getElementById('chkMayor18'),
+      document.getElementById('chkConsent')
+    ];
+
+    btnSelectAll.addEventListener('click', () => {
+      const allChecked = checkboxes.every(c => c.checked);
+      checkboxes.forEach(c => c.checked = !allChecked);
+      btnSelectAll.textContent = !allChecked ? '✓ Todas marcadas' : '✓ Marcar "Sí a todo"';
+    });
+
+    checkboxes.forEach(c => {
+      c.addEventListener('change', () => {
+        const allChecked = checkboxes.every(cb => cb.checked);
+        btnSelectAll.textContent = allChecked ? '✓ Todas marcadas' : '✓ Marcar "Sí a todo"';
+      });
+    });
+
+    // Envío del formulario
+    const form = document.getElementById('organizerForm');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const errorBox = document.getElementById('errorBox');
+    const formSection = document.getElementById('formSection');
+    const successCard = document.getElementById('successCard');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox.style.display = 'none';
+
+      // Verificar 4 casillas obligatorias
+      if (!checkboxes.every(c => c.checked)) {
+        errorBox.textContent = 'Debes aceptar las 4 autorizaciones obligatorias para continuar con la investigación.';
+        errorBox.style.display = 'block';
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = 'Registrando parche...';
+
+      const payload = {
+        action: 'registrar',
+        experimento: EXP_PARAM,
+        modo: MODO_PARAM,
+        tipo_grupo: document.getElementById('tipoGrupo').value,
+        tamano_grupo: document.getElementById('tamanoGrupo').value,
+        n_invitados: document.getElementById('nInvitados').value,
+        planes_realizados_mes: document.getElementById('planesRealizados').value,
+        planes_fallidos_mes: document.getElementById('planesFallidos').value,
+        quien_organiza: document.getElementById('quienOrganiza').value,
+        fatiga_previa: fatigaInput.value,
+        preferencias: document.getElementById('preferencias').value,
+        nombre_pila: document.getElementById('nombrePila').value.trim(),
+        whatsapp: document.getElementById('whatsapp').value.trim(),
+        autoriza_datos: true,
+        optin_whatsapp: true,
+        mayor_18: true,
+        consent_investigacion: true
+      };
+
+      try {
+        const res = await fetch(CONFIG.BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          // Guardar en sesión local
+          localStorage.setItem('SINTONIA_PID', data.pid);
+          localStorage.setItem('SINTONIA_GRUPO_ID', data.grupo_id);
+          localStorage.setItem('SINTONIA_ROL', data.rol);
+          localStorage.setItem('SINTONIA_EXP', data.experimento);
+
+          // Construir URL de invitación
+          const baseUrl = window.location.href.split('index.html')[0];
+          const inviteUrl = `${baseUrl}unirse.html?inv=${data.codigo_invitacion}`;
+
+          document.getElementById('inviteUrlBox').textContent = inviteUrl;
+          document.getElementById('lblCuposRestantes').textContent = `${Number(payload.n_invitados) - 1} amigos`;
+
+          // Configurar botones de compartir
+          document.getElementById('btnCopyInvite').addEventListener('click', () => {
+            navigator.clipboard.writeText(inviteUrl).then(() => {
+              document.getElementById('btnCopyInvite').textContent = '✅ ¡Enlace copiado!';
+              setTimeout(() => document.getElementById('btnCopyInvite').textContent = '📋 Copiar enlace de invitación', 2500);
+            });
+          });
+
+          const waMsg = encodeURI(`¡Hola parche! 👋 Armemos el plan para este fin de semana con Sintonía. Para coordinar y votar sin enredos, confirmen su cupo aquí: ${inviteUrl}`);
+          document.getElementById('btnShareWa').href = `https://wa.me/?text=${waMsg}`;
+
+          formSection.style.display = 'none';
+          successCard.style.display = 'block';
+        } else {
+          errorBox.textContent = `Error del servidor: ${data.error || 'No se pudo registrar el grupo.'}`;
+          errorBox.style.display = 'block';
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = 'Armar el plan con mi parche';
+        }
+      } catch (err) {
+        errorBox.textContent = 'Error de conexión con el backend de Google Apps Script. Revisa que el script esté desplegado.';
+        errorBox.style.display = 'block';
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Armar el plan con mi parche';
+      }
+    });
+  </script>
+</body>
+</html>

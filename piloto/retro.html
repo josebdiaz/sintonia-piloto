@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintonía · Pulso de Retroalimentación</title>
+  <style>
+    :root {
+      --primary: #2d6a4f;
+      --primary-hover: #1b4332;
+      --primary-light: #e8f5e9;
+      --accent: #52b788;
+      --text: #212529;
+      --muted: #6c757d;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --border: #dee2e6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px 14px; line-height: 1.5; }
+    .container { max-width: 540px; margin: 0 auto; background: var(--card); border-radius: 16px; padding: 26px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid var(--border); }
+    .brand-header { text-align: center; margin-bottom: 20px; }
+    .logo { font-size: 26px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+    .tagline { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    
+    .lead-box { background: var(--primary-light); color: var(--primary-hover); padding: 12px 14px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; border-left: 4px solid var(--primary); }
+    
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #343a40; }
+    .label-hint { font-size: 11px; font-weight: 400; color: var(--muted); }
+    
+    .scale-container { display: flex; gap: 6px; justify-content: space-between; }
+    .scale-btn { flex: 1; padding: 10px 2px; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: #495057; }
+    .scale-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip-btn { padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 20px; background: #fff; font-size: 13px; font-weight: 600; color: #495057; cursor: pointer; }
+    .chip-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    
+    input[type="number"], textarea {
+      width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; background: #fff;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    
+    .wtp-card { background: #fafafa; border: 1.5px solid var(--border); border-radius: 12px; padding: 16px; margin: 20px 0; }
+    .wtp-title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    
+    .btn-submit { width: 100%; background: var(--primary); color: #fff; border: none; padding: 14px; font-size: 15px; font-weight: 700; border-radius: 12px; cursor: pointer; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    
+    #successCard { display: none; text-align: center; padding: 30px 10px; }
+    .success-icon { width: 56px; height: 56px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="brand-header">
+      <div class="logo">Sintonía</div>
+      <div class="tagline">Si hubo sintonía, sigan · Pulso de cierre</div>
+    </div>
+
+    <div id="retroSection">
+      <div class="lead-box">
+        ✨ Esperamos que la salida haya valido la pena. Cuéntanos cómo te fue en este pulso privado de 2 minutos. No hay respuestas buenas ni malas; todo ayuda a mejorar el piloto académico.
+      </div>
+
+      <form id="retroForm">
+        <!-- 1. Fatiga post -->
+        <div class="form-group">
+          <label>1. ¿Qué tan agotad@ te sientes tras la salida y coordinación?</label>
+          <div class="scale-container" data-field="fatigaPost">
+            <div class="scale-btn" data-val="1">1<br><span style="font-size:9px">Cero</span></div>
+            <div class="scale-btn" data-val="2">2</div>
+            <div class="scale-btn active" data-val="3">3<br><span style="font-size:9px">Medio</span></div>
+            <div class="scale-btn" data-val="4">4</div>
+            <div class="scale-btn" data-val="5">5<br><span style="font-size:9px">Mucho</span></div>
+          </div>
+          <input type="hidden" id="fatigaPost" value="3">
+        </div>
+
+        <!-- 2. Carga organizador (solo organizador) -->
+        <div class="form-group" id="grpCargaOrg" style="display:none;">
+          <label>2. Como organizador, ¿qué tan pesada sentiste la gestión del parche?</label>
+          <div class="scale-container" data-field="cargaOrg">
+            <div class="scale-btn" data-val="1">1<br><span style="font-size:9px">Muy fácil</span></div>
+            <div class="scale-btn" data-val="2">2</div>
+            <div class="scale-btn active" data-val="3">3<br><span style="font-size:9px">Normal</span></div>
+            <div class="scale-btn" data-val="4">4</div>
+            <div class="scale-btn" data-val="5">5<br><span style="font-size:9px">Muy pesada</span></div>
+          </div>
+          <input type="hidden" id="cargaOrg" value="3">
+        </div>
+
+        <!-- 3. Valor final -->
+        <div class="form-group">
+          <label>3. ¿Qué tanto valió la pena el resultado final del plan?</label>
+          <div class="scale-container" data-field="valorFinal">
+            <div class="scale-btn" data-val="1">1<br><span style="font-size:9px">Poco</span></div>
+            <div class="scale-btn" data-val="2">2</div>
+            <div class="scale-btn" data-val="3">3</div>
+            <div class="scale-btn" data-val="4">4</div>
+            <div class="scale-btn active" data-val="5">5<br><span style="font-size:9px">Total</span></div>
+          </div>
+          <input type="hidden" id="valorFinal" value="5">
+        </div>
+
+        <!-- 4. Repetiría -->
+        <div class="form-group">
+          <label>4. ¿Repetirías una salida coordinada de esta forma?</label>
+          <div class="chip-group" data-field="repetiria">
+            <div class="chip-btn active" data-val="si">Sí, totalmente</div>
+            <div class="chip-btn" data-val="talvez">Tal vez</div>
+            <div class="chip-btn" data-val="no">No por ahora</div>
+          </div>
+          <input type="hidden" id="repetiria" value="si">
+        </div>
+
+        <!-- 5. Confort con el asistente -->
+        <div class="form-group">
+          <label>5. ¿Qué tan cómodo y natural sentiste el soporte del asistente?</label>
+          <div class="scale-container" data-field="confortBot">
+            <div class="scale-btn" data-val="1">1<br><span style="font-size:9px">Robótico</span></div>
+            <div class="scale-btn" data-val="2">2</div>
+            <div class="scale-btn" data-val="3">3</div>
+            <div class="scale-btn active" data-val="4">4</div>
+            <div class="scale-btn" data-val="5">5<br><span style="font-size:9px">Muy natural</span></div>
+          </div>
+          <input type="hidden" id="confortBot" value="4">
+        </div>
+
+        <!-- 6. Sentimiento -->
+        <div class="form-group">
+          <label>6. ¿Qué emoción describe mejor tu momento tras el plan?</label>
+          <div class="chip-group" data-field="sentimiento">
+            <div class="chip-btn active" data-val="tranqui">😌 Tranqui</div>
+            <div class="chip-btn" data-val="motivado">🔥 Motivad@</div>
+            <div class="chip-btn" data-val="contento">😃 Content@</div>
+            <div class="chip-btn" data-val="agotado">🥱 Agotad@</div>
+            <div class="chip-btn" data-val="indiferente">😐 Neutro</div>
+          </div>
+          <input type="hidden" id="sentimiento" value="tranqui">
+        </div>
+
+        <!-- 7. Comentario abierto -->
+        <div class="form-group">
+          <label>7. ¿Algún comentario o algo que podamos mejorar? <span class="label-hint">(Opcional)</span></label>
+          <textarea id="comentario" placeholder="Cuéntanos con confianza qué te gustó y qué no..."></textarea>
+        </div>
+
+        <!-- Módulo Van Westendorp (Solo Organizador) -->
+        <div class="wtp-card" id="secWtp" style="display:none;">
+          <div class="wtp-title">💡 Calibración de valor (Solo para el organizador)</div>
+          <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">Para un servicio completo que coordine reservas y logística en Cali, ¿qué precio por plan te parecería:</p>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Tan barato que dudarías de la calidad</label>
+              <input type="number" id="wtpMuyBarato" placeholder="Ej: 10000" min="0" step="5000">
+            </div>
+            <div class="form-group">
+              <label>Una ganga / muy buen precio</label>
+              <input type="number" id="wtpBarato" placeholder="Ej: 25000" min="0" step="5000">
+            </div>
+            <div class="form-group">
+              <label>Costoso pero aún lo pagarías</label>
+              <input type="number" id="wtpCaro" placeholder="Ej: 50000" min="0" step="5000">
+            </div>
+            <div class="form-group">
+              <label>Tan caro que ni lo considerarías</label>
+              <input type="number" id="wtpMuyCaro" placeholder="Ej: 80000" min="0" step="5000">
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:flex-start; gap:8px; margin-top:8px;">
+            <input type="checkbox" id="chkPreventa" style="margin-top:2px;">
+            <label for="chkPreventa" style="font-size:12px; font-weight:normal; color:#495057;">Quisiera reservar cupo fundador para el próximo mes sin cobro hoy.</label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="btnSubmit">Enviar mi evaluación</button>
+      </form>
+    </div>
+
+    <!-- Pantalla de Éxito -->
+    <div id="successCard">
+      <div class="success-icon">✨</div>
+      <h2 style="font-size:20px; color:var(--primary); margin-bottom:6px;">¡Gracias por sintonizar!</h2>
+      <p style="font-size:14px; color:#495057;">Tus respuestas quedaron guardadas en privado. Tu experiencia nos ayuda a validar y mejorar la investigación de maestría en la Universidad Icesi.</p>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      BACKEND_URL: localStorage.getItem('SINTONIA_BACKEND_URL') || 'https://script.google.com/macros/s/AKfycbx.../exec'
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const PLAN_ID = urlParams.get('plan_id');
+    const PID = urlParams.get('pid') || localStorage.getItem('SINTONIA_PID');
+    const ES_ORGANIZADOR = localStorage.getItem('SINTONIA_ROL') === 'organizador';
+
+    // Mostrar sección organizador si aplica
+    if (ES_ORGANIZADOR) {
+      document.getElementById('grpCargaOrg').style.display = 'block';
+      document.getElementById('secWtp').style.display = 'block';
+    }
+
+    // Manejo de escalas
+    document.querySelectorAll('.scale-container').forEach(cont => {
+      const fieldId = cont.getAttribute('data-field');
+      const input = document.getElementById(fieldId);
+      const btns = cont.querySelectorAll('.scale-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          input.value = btn.getAttribute('data-val');
+        });
+      });
+    });
+
+    // Manejo de chips
+    document.querySelectorAll('.chip-group').forEach(cont => {
+      const fieldId = cont.getAttribute('data-field');
+      const input = document.getElementById(fieldId);
+      const btns = cont.querySelectorAll('.chip-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          input.value = btn.getAttribute('data-val');
+        });
+      });
+    });
+
+    // Envío del formulario
+    const form = document.getElementById('retroForm');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!PLAN_ID || !PID) {
+        alert('Faltan identificadores de plan o participante.');
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = 'Enviando...';
+
+      const payloadRetro = {
+        action: 'retro',
+        plan_id: PLAN_ID,
+        pid: PID,
+        fatiga_post: document.getElementById('fatigaPost').value,
+        carga_organizador: ES_ORGANIZADOR ? document.getElementById('cargaOrg').value : '',
+        valor_final: document.getElementById('valorFinal').value,
+        repetiria: document.getElementById('repetiria').value,
+        confort_bot: document.getElementById('confortBot').value,
+        sentimiento: document.getElementById('sentimiento').value,
+        comentario: document.getElementById('comentario').value.trim()
+      };
+
+      try {
+        await fetch(CONFIG.BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payloadRetro)
+        });
+
+        // Si es organizador, enviar WTP
+        if (ES_ORGANIZADOR) {
+          const payloadWtp = {
+            action: 'wtp',
+            pid: PID,
+            muy_barato: document.getElementById('wtpMuyBarato').value,
+            barato: document.getElementById('wtpBarato').value,
+            caro: document.getElementById('wtpCaro').value,
+            muy_caro: document.getElementById('wtpMuyCaro').value,
+            preventa: document.getElementById('chkPreventa').checked
+          };
+          await fetch(CONFIG.BACKEND_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payloadWtp)
+          });
+        }
+
+        document.getElementById('retroSection').style.display = 'none';
+        document.getElementById('successCard').style.display = 'block';
+      } catch (err) {
+        alert('Error al enviar respuestas. Intenta de nuevo.');
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Enviar mi evaluación';
+      }
+    });
+  </script>
+</body>
+</html>
