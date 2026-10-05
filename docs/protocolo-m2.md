@@ -8,7 +8,7 @@
 
 ## 0. Antes de todo: el sismo del 10/8/2026
 
-El terremoto de magnitud 7,4 afectó más de 12.000 edificaciones en Cali. Varios escenarios culturales cerraron para revisión estructural. **Por eso el inventario arranca con un solo lugar activo** (Ciclovida, con 13 estaciones habilitadas desde el 13/9). Los demás están en `por_confirmar` hasta que alguien llame y confirme.
+El terremoto de magnitud 7,4 afectó más de 12.000 edificaciones en Cali. Varios escenarios culturales cerraron para revisión estructural. Por eso el inventario arrancó con un solo lugar activo (Ciclovida). **Tras la ronda de llamadas del 4/10 hay 17 lugares activos** y 10 siguen en `por_confirmar` (INV-01, 04, 06, 09, 13, 14, 15, 18, 21 y 22). Antes de cada fin de semana se reconfirman horarios y cierres.
 
 - **Ronda de llamadas (antes del jueves 9/10):** consola → pestaña Inventario → "Ronda de llamadas". Por cada lugar hay que confirmar tres cosas: que abrió tras el sismo, el horario del fin de semana y el costo. Luego se cambia `estado` a `activo` y se pone la fecha en `verificado_el`. Meta: 12–15 lugares activos que cubran aire libre, café, cultura, comida y noche.
 - Los teléfonos marcados **"sin verificar · lista Gemini"** no coinciden con los que aparecen en fuentes públicas. Úsalos solo si no hay otro número.

@@ -17,6 +17,7 @@ Las fechas son de 2026 (hora de Colombia).
 ## Frontend del piloto (`piloto/`)
 
 ### [2.0.1] · 2026-10-04
+- Validado con una prueba de punta a punta en `modo=prueba` contra el backend real (4/10): inscripción, consentimiento, propuesta de Gemini, votación, cierre, llegada, retro, panel y revocación.
 - El frontend apunta a la implementación nueva del backend 2.2.2 (`…iiszymTNC/exec`). La implementación anterior (`…CLY-7cf/exec`) seguía con el código 2.2.1.
 
 ### [2.0.0] · 2026-10-04 · «M2»
@@ -51,6 +52,10 @@ Las fechas son de 2026 (hora de Colombia).
 - Ajustes I1–I9 del control de compromisos P6 (línea base por grupo, denominador n_invitados, minutos humanos, change log, WTP solo del organizador, IA solo desde el inventario, modo prueba excluido, sin flujo individual, grupo con consentimiento incompleto desestimado).
 
 ## Datos (`datos/Inventario_Planes_Cali.csv`)
+
+### v3 · 2026-10-04
+- Estados alineados con la hoja tras la ronda de llamadas post-sismo: 17 lugares activos (INV-02, 03, 05, 07, 08, 10, 11, 12, 16, 17, 19, 20, 23, 24, 25, 26, 27) y 10 por confirmar.
+- La hoja `inventario` del piloto es la fuente de verdad: los nombres y horarios que se corrigieron allí no se copiaron a este archivo, que queda como referencia.
 
 ### v2 · 2026-10-04
 - 27 lugares, columna `telefono_para_llamar`. Solo INV-11 (Ciclovida) está activo; el resto queda `por_confirmar` tras el sismo del 10/8.

@@ -58,7 +58,7 @@ Cada componente tiene su propia versión [SemVer](https://semver.org/lang/es/) y
 |---|---|---|---|
 | Frontend del piloto | 2.0.1 («M2») | `piloto/assets/sintonia.js` → `FRONTEND_VERSION` (se ve en el pie de página) | `piloto/v2.0.1` |
 | Backend (Apps Script) | 2.2.2 | Encabezado de `backend/Codigo_Piloto.gs` | `backend/v2.2.2` |
-| Inventario | 2 (4/10/2026) | `datos/Inventario_Planes_Cali.csv` | `datos/v2` |
+| Inventario | 3 (4/10/2026 · 17 activos) | `datos/Inventario_Planes_Cali.csv` (la hoja manda) | sin tag (v1 y v2 tienen tag) |
 
 - **MAYOR**: cambia el diseño del experimento o rompe compatibilidad (p. ej. M1 → M2).
 - **MENOR**: función nueva compatible (una columna nueva, una vista nueva).
