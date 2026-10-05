@@ -16,11 +16,11 @@
   var LS = store('localStorage'), SS = store('sessionStorage');
 
   /* ---------- Configuración centralizada ---------- */
-  var DEFAULT_BACKEND = 'https://script.google.com/macros/s/AKfycbzC3UOOzBYgeAhOZRm1Gl1l2QYPnlvsV5HbbU-3P2h7LcW0GHmLW9LTfR2iiszymTNC/exec';
+  var DEFAULT_BACKEND = 'https://script.google.com/macros/s/AKfycbwbh_qzXHXpeY5Z3LiTsoH855lDFE3Ezd45PFQqyKRjEFQaRkydhHFto_-OSae_U9Mf/exec';
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.0.2',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.0.3',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: '',            // ⚠️ POR DEFINIR: correo del equipo para consultas y reclamos (aviso.html lo muestra)
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000

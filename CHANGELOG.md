@@ -16,6 +16,9 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Frontend del piloto (`piloto/`)
 
+### [2.0.3] · 2026-10-05
+- El frontend apunta a la implementación del backend 2.2.3 (`…OSae_U9Mf/exec`). La 2.0.2 seguía llamando a la implementación anterior (`…iiszymTNC`, código 2.2.2), así que los bloqueos de duplicados y la invitación del organizador no estaban activos.
+
 ### [2.0.2] · 2026-10-05 · revisión de flujos de navegación
 - Una persona = un consentimiento: si el celular ya aceptó la invitación, se muestra «Ya aceptaste» con su enlace; el backend rechaza un número repetido en el grupo (requiere backend 2.2.3).
 - `unirse.html` consulta el estado de la invitación antes del formulario: grupo cerrado, completo o desestimado, y etiqueta «Modo prueba».
@@ -45,6 +48,7 @@ Las fechas son de 2026 (hora de Colombia).
 ## Backend (`backend/Codigo_Piloto.gs`)
 
 ### [2.2.3] · 2026-10-05
+- Desplegado el 5/10 como implementación nueva: `https://script.google.com/macros/s/AKfycbwbh_qzXHXpeY5Z3LiTsoH855lDFE3Ezd45PFQqyKRjEFQaRkydhHFto_-OSae_U9Mf/exec`. Las implementaciones `…iiszymTNC` (2.2.2) y `…CLY-7cf` (2.2.1) deben archivarse.
 - `registrar`: un WhatsApp ya activo en el grupo no puede aceptar otra vez (`ya_registrado`). Cubre al organizador que abre su propia invitación.
 - `?view=invitacion&inv=` (pública): estado, modo y si está completo; sin nombres, conteos ni condición E1/E2.
 - `?view=plan`: al organizador que recluta le devuelve su código de invitación y cuántos aceptaron; incluye `modo`; error `revocado` para quien se retiró.
