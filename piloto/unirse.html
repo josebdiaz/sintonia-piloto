@@ -10,8 +10,8 @@
 <body>
 <main class="wrap">
   <header class="top">
-    <a class="brand" href="./"><span class="brand-mark" aria-hidden="true"></span>Sintonía</a>
-    <span class="tag">Piloto · Cali</span>
+    <a class="brand" href="./" data-quedarse><span class="brand-mark" aria-hidden="true"></span>Sintonía</a>
+    <span class="tag" id="tagModo">Piloto · Cali</span>
   </header>
 
   <section id="sinInv" class="hidden">
@@ -20,6 +20,8 @@
       <p class="small">Para unirte necesitas el enlace que te mandó quien organiza tu parche. Pídeselo y ábrelo desde tu celular.</p>
     </div>
   </section>
+
+  <section id="estadoInv" class="hidden"><div class="card warn empty" id="estadoInvCard"></div></section>
 
   <section id="vistaForm" class="hidden">
     <div class="hero">
@@ -64,7 +66,20 @@
 (function () {
   var inv = (S.param('inv') || '').trim().toUpperCase();
   if (!/^[A-Z0-9]{6,20}$/.test(inv)) { S.show('#sinInv', true); return; }
-  S.show('#vistaForm', true);
+  function aviso(t, p, accion) { S.$('#estadoInvCard').innerHTML = '<h2>' + S.esc(t) + '</h2><p class="small">' + S.esc(p) + '</p>' + (accion || ''); S.show('#estadoInv', true); }
+  // 2.0.2: si este celular ya aceptó esta invitación, no se muestra el formulario otra vez (una persona = un consentimiento)
+  var yaPid = S.LS.get('sintonia_inv_' + inv);
+  if (yaPid) return aviso('Ya aceptaste esta invitación', 'Tu confirmación ya está registrada. Desde tu enlace personal sigues el plan.',
+    '<div class="actions"><a class="btn btn-primary btn-block" href="' + S.esc(S.link('plan.html', { pid: yaPid })) + '">Abrir mi plan</a></div>');
+  S.get({ view: 'invitacion', inv: inv }).then(function (r) {
+    if (r && r.ok) {
+      if (r.modo === 'prueba') S.$('#tagModo').textContent = 'Modo prueba';
+      if (r.estado === 'excluido') return aviso('Este grupo ya no participa', 'El grupo quedó por fuera de la prueba. Gracias por tu interés.');
+      if (r.estado !== 'reclutando') return aviso('Este grupo ya cerró las inscripciones', 'Si crees que es un error, escríbele a quien organiza tu parche.');
+      if (r.lleno) return aviso('Este grupo ya está completo', 'Ya aceptaron todas las personas invitadas.');
+    } else if (r && r.error === 'invitacion_invalida') return aviso('Este enlace no es válido', S.errMsg(r));
+    S.show('#vistaForm', true);   // si la consulta falla por red, se deja seguir: el backend valida al enviar
+  });
 
   var fatiga = S.scale(S.$('#fatiga'), ['Nada', 'Muchísimo']);
   var cons = S.consent(S.$('#consent'));
@@ -83,7 +98,8 @@
     }, cons.values());
     S.busy(S.$('#enviar'), function () { return S.post(payload); }).then(function (r) {
       if (!r || !r.ok) return S.toast(S.errMsg(r), true);
-      S.saveMe({ pid: r.pid, grupo_id: r.grupo_id, rol: 'miembro', exp: r.experimento, nombre: nombre });
+      S.adoptPid(r.pid); S.saveMe({ pid: r.pid, grupo_id: r.grupo_id, rol: 'miembro', exp: r.experimento, nombre: nombre });
+      S.LS.set('sintonia_inv_' + inv, r.pid);
       var mio = S.link('plan.html', { pid: r.pid });
       S.$('#okTitulo').textContent = '¡Listo, ' + nombre + '! Ya estás en sintonía.';
       S.$('#okLink').textContent = mio;

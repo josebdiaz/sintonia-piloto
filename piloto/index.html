@@ -11,7 +11,7 @@
 <body>
 <main class="wrap">
   <header class="top">
-    <a class="brand" href="./"><span class="brand-mark" aria-hidden="true"></span>Sintonía</a>
+    <a class="brand" href="./" data-quedarse><span class="brand-mark" aria-hidden="true"></span>Sintonía</a>
     <span class="tag" id="tagExp">Piloto · Cali</span>
   </header>
 
@@ -20,7 +20,15 @@
     <div class="card soft">
       <h2>Ya registraste un grupo desde este celular</h2>
       <p class="small">Si todavía falta gente por aceptar, vuelve a compartirles el enlace de invitación.</p>
-      <div class="actions"><a class="btn btn-primary" id="yaPlan" href="#">Ver el plan</a><button class="btn btn-ghost" id="yaNuevo" type="button">Registrar otro grupo</button></div>
+      <div class="actions"><a class="btn btn-primary" id="yaPlan" href="#">Ver el plan y la invitación</a><button class="btn btn-ghost" id="yaNuevo" type="button">Registrar otro grupo</button></div>
+    </div>
+  </section>
+
+  <!-- 2.0.2: sin condición en el enlace no se inscribe a nadie (evita grupos en la condición equivocada) -->
+  <section id="sinExp" class="hidden">
+    <div class="card warn empty">
+      <h2>Usa el enlace que te envió el equipo</h2>
+      <p class="small">Para inscribir a tu parche necesitas el enlace de invitación del piloto. Si ya participas, abre tu enlace personal del plan.</p>
     </div>
   </section>
 
@@ -102,7 +110,8 @@
 <script src="assets/sintonia.js"></script>
 <script>
 (function () {
-  var exp = (S.param('exp') || 'E1').toUpperCase() === 'E2' ? 'E2' : 'E1';
+  var expRaw = String(S.param('exp') || '').toUpperCase(), expValida = expRaw === 'E1' || expRaw === 'E2';
+  var exp = expRaw === 'E2' ? 'E2' : 'E1';
   var modo = S.param('modo') === 'prueba' ? 'prueba' : 'piloto';
   if (modo === 'prueba') S.$('#tagExp').textContent = 'Modo prueba · ' + exp;
 
@@ -111,6 +120,9 @@
     S.show('#vistaYa', true); S.show('#vistaForm', false);
     S.$('#yaPlan').href = S.link('plan.html', { pid: yo.pid });
     S.$('#yaNuevo').onclick = function () { ['pid', 'grupo', 'rol', 'exp', 'nombre'].forEach(function (k) { S.LS.del('sintonia_' + k); }); location.reload(); };
+    if (!expValida) S.show('#yaNuevo', false);   // sin condición en el enlace no se puede crear otro grupo
+  } else if (!expValida) {
+    S.show('#sinExp', true); S.show('#vistaForm', false);
   }
 
   var tipo = S.chips(S.$('#tipo'), 'tipo', [['amigos', 'Amigos'], ['familia', 'Familia'], ['pareja', 'Pareja'], ['trabajo', 'Trabajo'], ['otro', 'Otro']]);

@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.0.1',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.0.2',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: '',            // ⚠️ POR DEFINIR: correo del equipo para consultas y reclamos (aviso.html lo muestra)
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
@@ -60,13 +60,17 @@
     retro_ya_enviada: 'Ya habías enviado tu respuesta para este plan. ¡Gracias!',
     solo_organizador: 'Esta parte es solo para quien organiza.',
     no_autorizado: 'Clave del equipo incorrecta.',
-    accion_desconocida: 'El backend no reconoce esta acción. ¿Está publicada la versión v2.2.1?',
+    accion_desconocida: 'El backend no reconoce esta acción: revisa que esté publicada la última versión (ver CHANGELOG).',
     falta_hora_encuentro: 'Pon la hora de encuentro (día y hora).',
     falta_causa_caida: 'Elige por qué se cayó el plan.',
     inventario_vacio: 'El inventario no tiene lugares activos.',
     sin_opciones: 'Agrega al menos una opción antes de publicar.',
     grupo_no_elegible: 'Este grupo no está activo.',
-    no_existe: 'No encontramos a esa persona.'
+    no_existe: 'No encontramos a esa persona.',
+    ya_registrado: 'Ese número ya aceptó en este grupo. Abre tu enlace personal o pídele ayuda a quien organiza.',
+    revocado: 'Tu participación se cerró y tus datos se borraron, como pediste. Gracias por tu tiempo.',
+    retro_antes_del_plan: 'El pulso se abre después del encuentro. Vuelve cuando hayan salido.',
+    plan_no_cerrado: 'Este plan todavía no está cerrado.'
   };
   function errMsg(r) {
     var code = (r && r.error) || 'red', base = String(code).split(':')[0];
@@ -168,6 +172,14 @@
   /* ---------- Identidad del participante en este dispositivo ---------- */
   function me() { return { pid: LS.get('sintonia_pid') || '', grupo_id: LS.get('sintonia_grupo') || '', rol: LS.get('sintonia_rol') || '', exp: LS.get('sintonia_exp') || '', nombre: LS.get('sintonia_nombre') || '' }; }
   function saveMe(o) { ['pid', 'grupo_id', 'rol', 'exp', 'nombre'].forEach(function (k) { if (o[k]) LS.set('sintonia_' + (k === 'grupo_id' ? 'grupo' : k), o[k]); }); }
+  /** 2.0.2: si llega un ?pid= distinto al guardado (teléfono compartido), se olvida la identidad anterior completa. */
+  function adoptPid(p) {
+    if (!p) return LS.get('sintonia_pid') || '';
+    if (p !== LS.get('sintonia_pid')) ['grupo', 'rol', 'exp', 'nombre'].forEach(function (k) { LS.del('sintonia_' + k); });
+    LS.set('sintonia_pid', p); return p;
+  }
+  /** 2.0.2: el logo y "Inicio" llevan a tu plan si ya participas; si no, al portal (nunca a la inscripción sin condición). */
+  function inicio() { var m = me(); return m.pid ? link('plan.html', { pid: m.pid }) : link('../', {}); }
 
   /* ---------- Pantallas del equipo ---------- */
   function adminKey(ask) {
@@ -188,10 +200,15 @@
 
   window.S = { CONFIG: CONFIG, LS: LS, SS: SS, post: post, get: get, errMsg: errMsg, $: $, $$: $$, esc: esc, param: param, show: show, toast: toast, busy: busy,
     link: link, wa: wa, waShare: waShare, phone: phone, copy: copy, scale: scale, chips: chips, consent: consent, counter: counter,
-    pct: pct, num: num, cop: cop, usd: usd, fecha: fecha, me: me, saveMe: saveMe, adminKey: adminKey, forgetKey: forgetKey, configBackend: configBackend };
+    pct: pct, num: num, cop: cop, usd: usd, fecha: fecha, me: me, saveMe: saveMe, adoptPid: adoptPid, inicio: inicio, adminKey: adminKey, forgetKey: forgetKey, configBackend: configBackend };
   window.CONFIG = CONFIG;
 
   /* ---------- Versión visible en el pie (trazabilidad: qué versión vio cada quien) ---------- */
   function sello() { var f = document.querySelector('.foot'); if (f && !f.querySelector('.ver')) { var v = document.createElement('span'); v.className = 'ver'; v.textContent = ' · v' + CONFIG.FRONTEND_VERSION; f.appendChild(v); } }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sello); else sello();
+  function enlacesInicio() {
+    var m = me();
+    $$('a.brand[href="./"], a[data-inicio]').forEach(function (a) { a.href = (!m.pid && a.hasAttribute('data-quedarse')) ? location.href : inicio(); });
+  }
+  function alCargar() { sello(); enlacesInicio(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', alCargar); else alCargar();
 })();

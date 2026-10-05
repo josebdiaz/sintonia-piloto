@@ -16,6 +16,17 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Frontend del piloto (`piloto/`)
 
+### [2.0.2] · 2026-10-05 · revisión de flujos de navegación
+- Una persona = un consentimiento: si el celular ya aceptó la invitación, se muestra «Ya aceptaste» con su enlace; el backend rechaza un número repetido en el grupo (requiere backend 2.2.3).
+- `unirse.html` consulta el estado de la invitación antes del formulario: grupo cerrado, completo o desestimado, y etiqueta «Modo prueba».
+- El logo y «Inicio» llevan al plan de la persona (o al portal); ya no abren la inscripción sin condición. `index.html` sin `?exp=E1|E2` no inscribe a nadie.
+- El aviso de privacidad ofrece «Volver» a la página anterior, sin perder el formulario ni la condición.
+- El pulso se abre desde la hora de encuentro (antes se podía responder antes de salir).
+- Mientras el grupo recluta, el organizador ve su enlace de invitación (copiar / WhatsApp) y cuántos aceptaron, en E1 y E2.
+- Teléfono compartido: un `?pid=` distinto reemplaza toda la identidad guardada; el rol sale del backend.
+- «Volver a mi plan» después del pulso; mensaje propio para quien se retiró; enlaces Consola ↔ Panel.
+- Probado con el backend 2.2.3 simulado: 13 casos de navegación y regresión de inscripción E1.
+
 ### [2.0.1] · 2026-10-04
 - Validado con una prueba de punta a punta en `modo=prueba` contra el backend real (4/10): inscripción, consentimiento, propuesta de Gemini, votación, cierre, llegada, retro, panel y revocación.
 - El frontend apunta a la implementación nueva del backend 2.2.2 (`…iiszymTNC/exec`). La implementación anterior (`…CLY-7cf/exec`) seguía con el código 2.2.1.
@@ -32,6 +43,13 @@ Las fechas son de 2026 (hora de Colombia).
 - Archivado en `archivo/piloto-m1-claude/`. Tag `piloto/v1.0.0`.
 
 ## Backend (`backend/Codigo_Piloto.gs`)
+
+### [2.2.3] · 2026-10-05
+- `registrar`: un WhatsApp ya activo en el grupo no puede aceptar otra vez (`ya_registrado`). Cubre al organizador que abre su propia invitación.
+- `?view=invitacion&inv=` (pública): estado, modo y si está completo; sin nombres, conteos ni condición E1/E2.
+- `?view=plan`: al organizador que recluta le devuelve su código de invitación y cuántos aceptaron; incluye `modo`; error `revocado` para quien se retiró.
+- `retro`: solo para planes cerrados y desde la hora de encuentro (`plan_no_cerrado`, `retro_antes_del_plan`).
+- Probado en node con 17 casos (duplicados, invitación, vistas, pulso antes y después, revocación).
 
 ### [2.2.2] · 2026-10-04
 - Desplegado el 4/10 como implementación nueva: `https://script.google.com/macros/s/AKfycbzC3UOOzBYgeAhOZRm1Gl1l2QYPnlvsV5HbbU-3P2h7LcW0GHmLW9LTfR2iiszymTNC/exec`. Desde aquí, cada versión se publica como «Nueva versión» de esta misma implementación.

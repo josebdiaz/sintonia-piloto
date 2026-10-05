@@ -1,8 +1,13 @@
 /**
- * Sintonía · Piloto v2.2.2 (E1 WhatsApp + E2 web app) — backend en Google Apps Script
+ * Sintonía · Piloto v2.2.3 (E1 WhatsApp + E2 web app) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
- * Versión 2.2.2 (4/10, para el frontend M2-Claude):
+ * Versión 2.2.3 (5/10, para el frontend 2.0.2 · revisión de flujos de navegación):
+ *   - registrar: un número de WhatsApp que ya está activo en el grupo no puede aceptar otra vez (ya_registrado). Evita consentimientos duplicados (I9).
+ *   - ?view=invitacion&inv=CÓDIGO (pública): estado del grupo y modo, sin datos personales ni condición.
+ *   - ?view=plan: al organizador, mientras recluta, le devuelve su enlace de invitación y cuántos aceptaron; error 'revocado' para quien se retiró.
+ *   - retro: solo para planes cerrados y desde la hora de encuentro (retro_antes_del_plan).
+ * Versión 2.2.2 (4/10, para el frontend 2.0.0 «M2»):
  *   - inventario.telefono_para_llamar (columna 14) y la consola ve los lugares por confirmar, para la ronda de llamadas.
  *   - Cambio de canal (failover E1→E2 u otro): marcar_failover deja el plan marcado y el panel lo saca de la comparación E1/E2.
  * Versión 2.2.1 (4/10, para el frontend M1-Claude):
@@ -119,6 +124,12 @@ function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).se
 function isAdmin_(k) { var a = prop_('ADMIN_KEY', ''); return a !== '' && String(k || '') === a; }
 function findOne_(name, key, val) { var r = rows_(name); for (var i = 0; i < r.length; i++) if (String(r[i][key]) === String(val)) return r[i]; return null; }
 function activos_(gid) { return rows_('participantes').filter(function (p) { return p.grupo_id === gid && p.estado === 'activo'; }); }
+/** v2.2.3: ¿ese celular ya está activo en el grupo? Compara los últimos 10 dígitos (se guarda como +57…). */
+function telEnGrupo_(gid, tel) {
+  var act = {}; activos_(gid).forEach(function (p) { act[p.pid] = true; });
+  var t = String(tel).replace(/\D/g, '').slice(-10);
+  return rows_('contactos').some(function (c) { return act[c.pid] && String(c.whatsapp).replace(/\D/g, '').slice(-10) === t; });
+}
 function escala_(v) { var n = int_(v); return (n !== '' && n >= 1 && n <= 5) ? n : ''; }   // escalas 1–5; fuera de rango queda vacío
 /** Minimización: las preferencias no deben traer correos, teléfonos ni documentos. */
 function limpiar_(s) {
@@ -175,6 +186,8 @@ function registrar_(d) {
     if (g.estado !== 'reclutando') return { ok: false, error: 'reclutamiento_cerrado' };
     if (activos_(g.grupo_id).length >= Math.min(MAX_GRUPO, Number(g.n_invitados) || MAX_GRUPO)) return { ok: false, error: 'grupo_lleno' };
     grupo = { grupo_id: g.grupo_id, experimento: g.experimento, codigo_invitacion: g.codigo_invitacion };
+    var tel = str_(d.whatsapp, 20).replace(/\D/g, '');
+    if (tel && telEnGrupo_(g.grupo_id, tel)) return { ok: false, error: 'ya_registrado' };   // v2.2.3: una persona = un consentimiento (I9)
   }
   append_('participantes', { pid: pid, grupo_id: grupo.grupo_id, rol: rol, experimento: grupo.experimento,
     autoriza_datos: true, optin_whatsapp: true, mayor_18: true, consent_investigacion: true,
@@ -364,7 +377,10 @@ function retro_(d) {
   var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
   var m = findOne_('participantes', 'pid', d.pid);
   if (!m || m.grupo_id !== p.grupo_id || m.estado !== 'activo') return { ok: false, error: 'no_miembro' };
-  if (rows_('retro').some(function (r) { return r.plan_id === p.plan_id && r.pid === d.pid; })) return { ok: false, error: 'retro_ya_enviada' };   // una retro por persona y plan
+  if (rows_('retro').some(function (r) { return r.plan_id === p.plan_id && r.pid === d.pid; })) return { ok: false, error: 'retro_ya_enviada' };
+  if (p.estado !== 'cerrado') return { ok: false, error: 'plan_no_cerrado' };
+  var he = p.hora_encuentro ? new Date(p.hora_encuentro) : null;
+  if (he && !isNaN(he.getTime()) && new Date() < he) return { ok: false, error: 'retro_antes_del_plan' };   // v2.2.3: el pulso es sobre una salida que ya pasó   // una retro por persona y plan
   append_('retro', { plan_id: p.plan_id, pid: d.pid, rol: m.rol, fatiga_post: escala_(d.fatiga_post),
     carga_organizador: m.rol === 'organizador' ? escala_(d.carga_organizador) : '',
     satisfaccion_plan: escala_(d.satisfaccion_plan), valor_final: escala_(d.valor_final),
@@ -418,6 +434,7 @@ function doGet(e) {
   var q = (e && e.parameter) || {};
   try {
     if (q.view === 'plan') return json_(vistaPlan_(q));
+    if (q.view === 'invitacion') return json_(vistaInvitacion_(q));
     if (!isAdmin_(q.key)) return json_({ ok: false, error: 'no_autorizado' });
     if (q.view === 'mago') return json_(vistaMago_());
     if (q.view === 'panel') return json_(vistaPanel_());
@@ -425,16 +442,30 @@ function doGet(e) {
   } catch (err) { return json_({ ok: false, error: String(err) }); }
 }
 
+/** v2.2.3: vista pública de una invitación. Solo estado y modo: ni nombres, ni condición E1/E2, ni conteos. */
+function vistaInvitacion_(q) {
+  var g = findOne_('grupos', 'codigo_invitacion', str_(q.inv, 20).toUpperCase());
+  if (!g) return { ok: false, error: 'invitacion_invalida' };
+  var n = activos_(g.grupo_id).length, inv = Number(g.n_invitados) || MAX_GRUPO;
+  return { ok: true, estado: g.estado, modo: g.modo || 'piloto', lleno: n >= Math.min(MAX_GRUPO, inv) };
+}
+
 /** v2.2.1: sin plan_id, devuelve el plan más reciente del grupo de esa persona (un solo enlace por grupo). */
 function vistaPlan_(q) {
   var me0 = findOne_('participantes', 'pid', q.pid);
+  if (me0 && me0.estado === 'revocado') return { ok: false, error: 'revocado' };
   if (!me0 || me0.estado !== 'activo') return { ok: false, error: 'no_miembro' };
   var p = q.plan_id ? findOne_('planes', 'plan_id', q.plan_id) : null;
   if (!q.plan_id) { var ps = rows_('planes').filter(function (x) { return x.grupo_id === me0.grupo_id; }); p = ps.length ? ps[ps.length - 1] : null; }
   var g = findOne_('grupos', 'grupo_id', me0.grupo_id) || {};
-  if (!p) return { ok: true, estado: 'sin_plan', grupo_estado: g.estado, experimento: me0.experimento, rol: me0.rol };
+  if (!p) {
+    var res = { ok: true, estado: 'sin_plan', grupo_estado: g.estado, experimento: me0.experimento, rol: me0.rol, modo: g.modo || 'piloto',
+      n_invitados: Number(g.n_invitados) || '', n_consentidos: activos_(me0.grupo_id).length };
+    if (me0.rol === 'organizador' && g.estado === 'reclutando') res.codigo_invitacion = g.codigo_invitacion;   // v2.2.3: el organizador recupera su invitación
+    return res;
+  }
   if (!miembroValido_(q.pid, p.grupo_id)) return { ok: false, error: 'no_miembro' };
-  if (['votando', 'cerrado', 'caido'].indexOf(p.estado) < 0) return { ok: true, estado: 'preparando', plan_id: p.plan_id, rol: me0.rol, experimento: me0.experimento, failover: p.failover || '' };
+  if (['votando', 'cerrado', 'caido'].indexOf(p.estado) < 0) return { ok: true, estado: 'preparando', plan_id: p.plan_id, rol: me0.rol, experimento: me0.experimento, failover: p.failover || '', modo: g.modo || 'piloto' };
   var votos = rows_('votos').filter(function (v) { return v.plan_id === p.plan_id; }), conteo = {}, vetos = 0, mio = null;
   votos.forEach(function (v) { if (bool_(v.veto)) vetos++; else conteo[v.opcion] = (conteo[v.opcion] || 0) + 1; if (v.pid === q.pid) mio = bool_(v.veto) ? 'veto' : v.opcion; });
   var me = findOne_('participantes', 'pid', q.pid);
@@ -443,7 +474,7 @@ function vistaPlan_(q) {
   var apuntado = false, llego = false;
   ev.forEach(function (e) { if (e.tipo === 'me_apunto') apuntado = true; if (e.tipo === 'no_puedo') apuntado = false; if (e.tipo === 'checkpoint_llegada') { llego = true; apuntado = true; } });
   var ya_retro = rows_('retro').some(function (r) { return r.plan_id === p.plan_id && r.pid === q.pid; });
-  return { ok: true, plan_id: p.plan_id, experimento: p.experimento, failover: p.failover || '', estado: p.estado, ronda: p.ronda, opciones: JSON.parse(p.opciones_json || '[]'), conteo: conteo, vetos: vetos,
+  return { ok: true, plan_id: p.plan_id, experimento: p.experimento, failover: p.failover || '', estado: p.estado, modo: g.modo || 'piloto', ronda: p.ronda, opciones: JSON.parse(p.opciones_json || '[]'), conteo: conteo, vetos: vetos,
     mi_voto: mio, rol: me ? me.rol : '', elegida: p.elegida === '' ? null : p.elegida, hora_encuentro: p.hora_encuentro || '',
     n_invitados: p.n_invitados, n_apuntados: p.n_apuntados, n_votos: votos.length, yo: { apuntado: apuntado, llego: llego, retro: ya_retro } };
 }

@@ -71,7 +71,7 @@
     <p>Si cambia algo importante, actualizaremos la versión de este aviso y te lo informaremos antes de seguir tratando tus datos.</p>
   </div>
 
-  <footer class="foot">Sintonía · Piloto académico · Universidad Icesi · <a href="index.html">Inicio</a></footer>
+  <footer class="foot">Sintonía · Piloto académico · Universidad Icesi · <a href="./" data-inicio>Inicio</a></footer>
 </main>
 <script src="assets/sintonia.js"></script>
 <script>
@@ -80,6 +80,9 @@
     if (c) el.innerHTML = '<a href="mailto:' + S.esc(c) + '">' + S.esc(c) + '</a>';
     else { el.textContent = '[correo de contacto por definir]'; el.style.background = 'var(--warn-soft)'; }
     S.$('#ver').textContent = S.CONFIG.AVISO_VERSION;
+    // 2.0.2: si llegaste desde otra página del piloto, "Volver" te devuelve ahí (sin perder el formulario ni la condición)
+    var a = S.$('[data-inicio]');
+    if (a && document.referrer.indexOf(location.origin) === 0 && history.length > 1) { a.textContent = 'Volver'; a.addEventListener('click', function (e) { e.preventDefault(); history.back(); }); }
   })();
 </script>
 </body>

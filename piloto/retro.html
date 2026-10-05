@@ -55,6 +55,7 @@
     <div class="card soft empty">
       <h2>¡Gracias por sintonizar!</h2>
       <p class="small">Tu respuesta quedó guardada. Nos ayuda a que el próximo plan salga con menos vueltas.</p>
+      <div class="actions"><a class="btn btn-ghost btn-block" id="volverPlan" href="plan.html">Volver a mi plan</a></div>
     </div>
   </section>
 
@@ -63,8 +64,8 @@
 <script src="assets/sintonia.js"></script>
 <script>
 (function () {
-  var pid = S.param('pid') || S.me().pid, planId = S.param('plan_id') || '', rol = '';
-  if (S.param('pid')) S.LS.set('sintonia_pid', S.param('pid'));
+  var pid = S.adoptPid(S.param('pid')), planId = S.param('plan_id') || '', rol = '';
+  if (pid) S.$('#volverPlan').href = S.link('plan.html', { pid: pid });
   var estado = S.$('#estado');
   function msg(cls, t, p) { estado.className = 'card empty ' + cls; estado.innerHTML = '<h2>' + S.esc(t) + '</h2><p class="small">' + S.esc(p) + '</p>'; S.show(estado, true); }
 
@@ -80,10 +81,13 @@
   if (!pid) return msg('warn', 'Abre tu enlace personal', 'Este formulario se abre desde el enlace del plan o desde el mensaje de Sintonía.');
   var q = { view: 'plan', pid: pid }; if (planId) q.plan_id = planId;
   S.get(q).then(function (r) {
-    if (!r || !r.ok) return msg('danger', 'No pudimos abrir el formulario', S.errMsg(r));
+    if (!r || !r.ok) return msg(r && r.error === 'revocado' ? 'warn' : 'danger', r && r.error === 'revocado' ? 'Tu participación se cerró' : 'No pudimos abrir el formulario', S.errMsg(r));
+    S.saveMe({ rol: r.rol, exp: r.experimento });
     if (r.estado === 'caido') return msg('warn', 'Este plan no se dio', 'No hay salida para evaluar. Cuando haya un próximo plan, el pulso se abre aquí.');
     if (!r.plan_id || r.estado !== 'cerrado') return msg('warn', 'Todavía no hay una salida para evaluar', 'El pulso se abre cuando el plan ya quedó cerrado.');
     if (r.yo && r.yo.retro) return msg('soft', '¡Ya nos contaste!', 'Tu respuesta para este plan ya está guardada. Gracias.');
+    var he = r.hora_encuentro ? new Date(r.hora_encuentro) : null;   // 2.0.2: el pulso es sobre una salida que ya pasó
+    if (he && !isNaN(he) && Date.now() < he.getTime()) return msg('soft', 'El pulso se abre después del encuentro', 'Vuelve después de ' + S.fecha(he) + ' para contarnos cómo les fue.');
     planId = r.plan_id; rol = r.rol;
     S.$('#canal').textContent = r.experimento === 'E2' ? 'en la página' : 'en el chat';
     S.show('#bloqueCarga', rol === 'organizador'); S.show('#bloqueWtp', rol === 'organizador');
