@@ -16,6 +16,9 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Frontend del piloto (`piloto/`)
 
+### [2.0.1] · 2026-10-04
+- El frontend apunta a la implementación nueva del backend 2.2.2 (`…iiszymTNC/exec`). La implementación anterior (`…CLY-7cf/exec`) seguía con el código 2.2.1.
+
 ### [2.0.0] · 2026-10-04 · «M2»
 - Un solo frontend para E1 (WhatsApp + mago) y E2 (web app).
 - Consola del mago: ronda de llamadas del inventario post-sismo con teléfonos, contingencia de cambio de canal (E1 → E2), aviso a las 2 h si faltan votos, mensajes con `/humano` y el nombre de quien atiende.
@@ -30,6 +33,7 @@ Las fechas son de 2026 (hora de Colombia).
 ## Backend (`backend/Codigo_Piloto.gs`)
 
 ### [2.2.2] · 2026-10-04
+- Desplegado el 4/10 como implementación nueva: `https://script.google.com/macros/s/AKfycbzC3UOOzBYgeAhOZRm1Gl1l2QYPnlvsV5HbbU-3P2h7LcW0GHmLW9LTfR2iiszymTNC/exec`. Desde aquí, cada versión se publica como «Nueva versión» de esta misma implementación.
 - `inventario.telefono_para_llamar` (columna 14); la consola ve los lugares por confirmar.
 - `marcar_failover`: un plan que cambia de canal queda marcado y el panel lo saca de la comparación E1/E2. Evento `cambio_canal`.
 

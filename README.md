@@ -56,7 +56,7 @@ Cada componente tiene su propia versión [SemVer](https://semver.org/lang/es/) y
 
 | Componente | Versión actual | Dónde se declara | Tag |
 |---|---|---|---|
-| Frontend del piloto | 2.0.0 («M2») | `piloto/assets/sintonia.js` → `FRONTEND_VERSION` (se ve en el pie de página) | `piloto/v2.0.0` |
+| Frontend del piloto | 2.0.1 («M2») | `piloto/assets/sintonia.js` → `FRONTEND_VERSION` (se ve en el pie de página) | `piloto/v2.0.1` |
 | Backend (Apps Script) | 2.2.2 | Encabezado de `backend/Codigo_Piloto.gs` | `backend/v2.2.2` |
 | Inventario | 2 (4/10/2026) | `datos/Inventario_Planes_Cali.csv` | `datos/v2` |
 

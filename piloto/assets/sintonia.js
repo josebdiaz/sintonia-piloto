@@ -1,4 +1,4 @@
-/* Sintonía · piloto (frontend 2.0.0, «M2») · utilidades compartidas (JavaScript sin dependencias)
+/* Sintonía · piloto (frontend 2.0.x, «M2») · utilidades compartidas (JavaScript sin dependencias)
  * Backend: backend/Codigo_Piloto.gs v2.2.2 (Google Apps Script). Un solo frontend para E1 (WhatsApp + mago) y E2 (web).
  * Versiones: ver CHANGELOG.md en la raíz del repositorio. Al publicar un cambio, sube FRONTEND_VERSION.
  */
@@ -16,11 +16,11 @@
   var LS = store('localStorage'), SS = store('sessionStorage');
 
   /* ---------- Configuración centralizada ---------- */
-  var DEFAULT_BACKEND = 'https://script.google.com/macros/s/AKfycbw0_t17mTNpMB6CxEZywkMfY-CAxUgpdY5VpVXM12SOKAjGgxIaSnCcpwt43CLY-7cf/exec';
+  var DEFAULT_BACKEND = 'https://script.google.com/macros/s/AKfycbzC3UOOzBYgeAhOZRm1Gl1l2QYPnlvsV5HbbU-3P2h7LcW0GHmLW9LTfR2iiszymTNC/exec';
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.0.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.0.1',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: '',            // ⚠️ POR DEFINIR: correo del equipo para consultas y reclamos (aviso.html lo muestra)
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
