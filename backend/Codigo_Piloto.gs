@@ -1,7 +1,10 @@
 /**
- * Sintonía · Piloto v2.2.1 (E1 WhatsApp + E2 web app) — backend en Google Apps Script
+ * Sintonía · Piloto v2.2.2 (E1 WhatsApp + E2 web app) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.2.2 (4/10, para el frontend M2-Claude):
+ *   - inventario.telefono_para_llamar (columna 14) y la consola ve los lugares por confirmar, para la ronda de llamadas.
+ *   - Cambio de canal (failover E1→E2 u otro): marcar_failover deja el plan marcado y el panel lo saca de la comparación E1/E2.
  * Versión 2.2.1 (4/10, para el frontend M1-Claude):
  *   - participantes.consent_metodo: 'boton_todo' o 'individual' (el botón "Marcar todo" deja rastro).
  *   - ?view=plan sin plan_id: devuelve el plan más reciente del grupo de esa persona, y su propio estado (apuntado, llegó, retro).
@@ -50,8 +53,8 @@ var SHEETS = {
   linea_base_grupo: ['ts','grupo_id','tipo_grupo','tamano_grupo','planes_realizados_mes','planes_fallidos_mes','quien_organiza','fatiga_previa_org'],
   linea_base:       ['ts','pid','grupo_id','fatiga_previa'],
   preferencias:     ['ts','pid','grupo_id','resumen'],
-  inventario:       ['id','categoria','nombre','zona','direccion','costo_aprox','horario','duracion','acceso','apto_para','fuente','verificado_el','estado'],
-  planes:           ['ts','plan_id','grupo_id','experimento','ronda','version','estado','opciones_json','elegida','t_propuesto','t_publicado','t_cerrado','hora_encuentro','n_invitados','n_consentidos','n_apuntados','n_asistentes','causa_caida','nota'],
+  inventario:       ['id','categoria','nombre','zona','direccion','costo_aprox','horario','duracion','acceso','apto_para','fuente','verificado_el','estado','telefono_para_llamar'],
+  planes:           ['ts','plan_id','grupo_id','experimento','ronda','version','estado','opciones_json','elegida','t_propuesto','t_publicado','t_cerrado','hora_encuentro','n_invitados','n_consentidos','n_apuntados','n_asistentes','causa_caida','nota','failover'],
   votos:            ['ts','plan_id','pid','opcion','veto'],
   eventos:          ['ts','plan_id','grupo_id','pid','tipo','canal','nota'],
   operacion:        ['ts','plan_id','grupo_id','experimento','actor','minutos','causa','nota'],
@@ -62,7 +65,7 @@ var SHEETS = {
 };
 
 var TIPOS_GRUPO  = ['amigos','familia','pareja','trabajo','otro'];
-var TIPOS_EVENTO = ['activacion','recordatorio','me_apunto','no_puedo','salida_sugerida','checkpoint_llegada','llego_casa','cuenta','mensaje_mago','plan_caido','salir'];
+var TIPOS_EVENTO = ['activacion','recordatorio','me_apunto','no_puedo','salida_sugerida','checkpoint_llegada','llego_casa','cuenta','mensaje_mago','plan_caido','salir','cambio_canal'];
 var ACTORES      = ['mago','soporte','tecnico'];
 var CAUSAS       = ['coordinacion','redactar_mensaje','resolver_duda','cambio_plan','recordatorio','falla_tecnica','seguridad','otro'];
 var CAUSAS_CAIDA = ['trafico','lluvia','agenda','costo','desinteres','imprevisto','otro'];   // S9 y capa 2; sin causas de salud (dato sensible)
@@ -134,7 +137,7 @@ function doPost(e) {
     var d = JSON.parse(e.postData.contents || '{}');
     var H = {
       registrar: registrar_, cerrar_reclutamiento: cerrarReclutamiento_, crear_plan: crearPlan_,
-      proponer_ia: proponerIA_, publicar_plan: publicarPlan_, votar: votar_, cerrar_plan: cerrarPlan_, marcar_caido: marcarCaido_,
+      proponer_ia: proponerIA_, publicar_plan: publicarPlan_, votar: votar_, cerrar_plan: cerrarPlan_, marcar_caido: marcarCaido_, marcar_failover: marcarFailover_,
       evento: evento_, operacion: operacion_, registrar_cambio: registrarCambio_, redactar_ia: redactarIA_,
       retro: retro_, wtp: wtp_, revocar: revocar_
     };
@@ -205,6 +208,7 @@ function crearPlan_(d) {
   return { ok: true, plan_id: pl, ronda: ronda, version: g.version || 'v1' };
 }
 
+function inventarioPendiente_() { return rows_('inventario').filter(function (i) { return i.id !== '' && String(i.estado || 'activo') !== 'activo'; }); }
 function inventarioActivo_() { return rows_('inventario').filter(function (i) { return String(i.estado || 'activo') === 'activo' && i.id !== ''; }); }
 
 /** I6: Gemini SOLO elige y compone desde el inventario verificado; los ids que no existan se descartan. */
@@ -282,6 +286,17 @@ function marcarCaido_(d) {
   updateRow_('planes', p._row, { estado: 'caido', causa_caida: causa, nota: str_(d.nota || p.nota, 300) });
   append_('eventos', { plan_id: p.plan_id, grupo_id: p.grupo_id, tipo: 'plan_caido', canal: p.experimento, nota: causa });
   return { ok: true };
+}
+
+/** v2.2.2: si un plan tuvo que cambiar de canal (p. ej. WhatsApp bloqueado y el grupo siguió por la web), queda marcado
+ *  y el panel lo reporta aparte: no entra en la comparación E1/E2. */
+function marcarFailover_(d) {
+  if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
+  var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
+  var hacia = d.hacia === 'E1' ? 'E1' : 'E2';
+  updateRow_('planes', p._row, { failover: p.experimento + '>' + hacia });
+  append_('eventos', { plan_id: p.plan_id, grupo_id: p.grupo_id, tipo: 'cambio_canal', canal: hacia, nota: str_(d.motivo, 200) });
+  return { ok: true, failover: p.experimento + '>' + hacia };
 }
 
 function evento_(d) {
@@ -419,7 +434,7 @@ function vistaPlan_(q) {
   var g = findOne_('grupos', 'grupo_id', me0.grupo_id) || {};
   if (!p) return { ok: true, estado: 'sin_plan', grupo_estado: g.estado, experimento: me0.experimento, rol: me0.rol };
   if (!miembroValido_(q.pid, p.grupo_id)) return { ok: false, error: 'no_miembro' };
-  if (['votando', 'cerrado', 'caido'].indexOf(p.estado) < 0) return { ok: true, estado: 'preparando', plan_id: p.plan_id, rol: me0.rol, experimento: me0.experimento };
+  if (['votando', 'cerrado', 'caido'].indexOf(p.estado) < 0) return { ok: true, estado: 'preparando', plan_id: p.plan_id, rol: me0.rol, experimento: me0.experimento, failover: p.failover || '' };
   var votos = rows_('votos').filter(function (v) { return v.plan_id === p.plan_id; }), conteo = {}, vetos = 0, mio = null;
   votos.forEach(function (v) { if (bool_(v.veto)) vetos++; else conteo[v.opcion] = (conteo[v.opcion] || 0) + 1; if (v.pid === q.pid) mio = bool_(v.veto) ? 'veto' : v.opcion; });
   var me = findOne_('participantes', 'pid', q.pid);
@@ -428,7 +443,7 @@ function vistaPlan_(q) {
   var apuntado = false, llego = false;
   ev.forEach(function (e) { if (e.tipo === 'me_apunto') apuntado = true; if (e.tipo === 'no_puedo') apuntado = false; if (e.tipo === 'checkpoint_llegada') { llego = true; apuntado = true; } });
   var ya_retro = rows_('retro').some(function (r) { return r.plan_id === p.plan_id && r.pid === q.pid; });
-  return { ok: true, plan_id: p.plan_id, experimento: p.experimento, estado: p.estado, ronda: p.ronda, opciones: JSON.parse(p.opciones_json || '[]'), conteo: conteo, vetos: vetos,
+  return { ok: true, plan_id: p.plan_id, experimento: p.experimento, failover: p.failover || '', estado: p.estado, ronda: p.ronda, opciones: JSON.parse(p.opciones_json || '[]'), conteo: conteo, vetos: vetos,
     mi_voto: mio, rol: me ? me.rol : '', elegida: p.elegida === '' ? null : p.elegida, hora_encuentro: p.hora_encuentro || '',
     n_invitados: p.n_invitados, n_apuntados: p.n_apuntados, n_votos: votos.length, yo: { apuntado: apuntado, llego: llego, retro: ya_retro } };
 }
@@ -456,8 +471,9 @@ function vistaMago_() {
         if (e.tipo === 'checkpoint_llegada') { s.llego = true; s.apuntado = true; } if (e.tipo === 'llego_casa') s.casa = true; o.estado_por_pid[e.pid] = s; });
     return o;
   });
-  var inventario = inventarioActivo_().map(function (i) { var o = {}; SHEETS.inventario.forEach(function (c) { o[c] = i[c]; }); return o; });
-  return { ok: true, grupos: grupos, planes: planes, inventario: inventario, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }) };
+  var copia = function (i) { var o = {}; SHEETS.inventario.forEach(function (c) { o[c] = i[c]; }); return o; };
+  var inventario = inventarioActivo_().map(copia), pendiente = inventarioPendiente_().map(copia);
+  return { ok: true, grupos: grupos, planes: planes, inventario: inventario, inventario_pendiente: pendiente, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }) };
 }
 
 /** Panel: solo grupos 'piloto' y no excluidos (I7, I9). Métrica principal: personas que llegaron / personas invitadas (I2). */
@@ -473,7 +489,7 @@ function vistaPanel_() {
   var porExp = {};
   ['E1', 'E2'].forEach(function (x) {
     var gs = Object.keys(validos).filter(function (k) { return validos[k].experimento === x; });
-    var pl = planes.filter(function (p) { return p.experimento === x && validos[p.grupo_id]; });
+    var pl = planes.filter(function (p) { return p.experimento === x && validos[p.grupo_id] && !p.failover; });   // v2.2.2: sin planes con cambio de canal
     var ids = pl.map(function (p) { return p.plan_id; });
     var cerr = pl.filter(function (p) { return p.estado === 'cerrado'; });
     var sinVeto = cerr.filter(function (p) { return !votos.some(function (v) { return v.plan_id === p.plan_id && bool_(v.veto); }); });
@@ -528,6 +544,7 @@ function vistaPanel_() {
     nota: 'Solo grupos en modo piloto y no desestimados. Comparación E1/E2 descriptiva; n pequeño.',
     grupos_excluidos: grupos.filter(function (g) { return g.modo === 'piloto' && g.estado === 'excluido'; }).map(function (g) { return { grupo_id: g.grupo_id, experimento: g.experimento, motivo: g.motivo }; }),
     grupos_prueba: grupos.filter(function (g) { return g.modo === 'prueba'; }).length,
+    planes_con_cambio_de_canal: planes.filter(function (p) { return p.failover && validos[p.grupo_id]; }).map(function (p) { return { plan_id: p.plan_id, grupo_id: p.grupo_id, failover: p.failover, estado: p.estado }; }),
     participantes_activos: part.filter(function (p) { return p.estado === 'activo' && validos[p.grupo_id]; }).length,
     linea_base_grupos: { n: lb.length, planes_realizados_mes_prom: mean(lb.map(function (b) { return b.planes_realizados_mes; })),
       planes_fallidos_mes_prom: mean(lb.map(function (b) { return b.planes_fallidos_mes; })), fatiga_previa_org_prom: mean(lb.map(function (b) { return b.fatiga_previa_org; })) },
@@ -560,7 +577,7 @@ function probarMontaje() {
   });
   try { var ss = ss_(); r.push('✅ Hoja: ' + ss.getName()); } catch (x) { r.push('❌ No abre la hoja (revisa SHEET_ID): ' + x); Logger.log(r.join('\n')); return; }
   Object.keys(SHEETS).forEach(function (n) { sheet_(n); }); r.push('✅ ' + Object.keys(SHEETS).length + ' hojas listas');
-  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.2.1)');
+  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.2.2)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');
   r.push('Zona horaria del proyecto: ' + Session.getScriptTimeZone() + (Session.getScriptTimeZone() === 'America/Bogota' ? ' ✅' : ' ⚠️ cambiar a America/Bogota'));
   if (prop_('GEMINI_API_KEY', '')) {
