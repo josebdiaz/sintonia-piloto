@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Sintonía · Página movida</title>
+<script>
+  /* GitHub Pages sirve este archivo para cualquier ruta que no exista.
+   * Si la ruta es de la estructura anterior (antes del 4/10/2026), redirige a la nueva y conserva ?parámetros y #ancla. */
+  (function () {
+    var BASE = '/sintonia-piloto';
+    var p = location.pathname;
+    if (p.indexOf(BASE) !== 0) return;
+    var r = p.slice(BASE.length), rest = location.search + location.hash;
+    var reglas = [
+      [/^\/M2-Claude\/recursos\/Codigo_Piloto_v2\.gs$/, '/backend/Codigo_Piloto.gs'],
+      [/^\/M2-Claude\/recursos\/Inventario_Planes_Cali\.csv$/, '/datos/Inventario_Planes_Cali.csv'],
+      [/^\/M2-Claude\/storyboard\/(.*)$/, '/docs/storyboard-m2/$1'],
+      [/^\/M2-Claude\/protocolo-m2\.md$/, '/docs/protocolo-m2.md'],
+      [/^\/M2-Claude(\/.*)?$/, '/piloto$1'],
+      [/^\/M1-Claude(\/.*)?$/, '/archivo/piloto-m1-claude$1'],
+      [/^\/M1-gemini(\/.*)?$/, '/archivo/piloto-m1-gemini$1'],
+      [/^\/M2-gemini(\/.*)?$/, '/archivo/piloto-m2-gemini$1'],
+      [/^\/piloto\/recursos\/.*$/, '/backend/Codigo_Piloto.gs'],
+      [/^\/researchers(\/.*)?$/, '/archivo/p4-pre-pivote/researchers$1'],
+      [/^\/(ficha|calificar|pulso|deck)\.html$/, '/archivo/p4-pre-pivote/$1.html'],
+      [/^\/media\/(.*)$/, '/archivo/p4-pre-pivote/media/$1'],
+      [/^\/deck_pivote\.html$/, '/docs/deck-pivote.html'],
+      [/^\/Wording_verificado_v2\.md$/, '/docs/wording-verificado-v2.md']
+    ];
+    for (var i = 0; i < reglas.length; i++) {
+      if (reglas[i][0].test(r)) {
+        var nueva = r.replace(reglas[i][0], reglas[i][1]);
+        if (/\/$/.test(nueva) || nueva === '/piloto' || /\/[^\/.]+$/.test(nueva)) nueva = nueva.replace(/\/?$/, '/');
+        location.replace(BASE + nueva + rest);
+        return;
+      }
+    }
+  })();
+</script>
+<style>
+  body { margin:0; background:#F7F5EF; color:#1B2A24; font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width: 560px; margin: 0 auto; padding: 48px 16px; }
+  a { color:#1F5A47; font-weight:600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>No encontramos esta página</h1>
+  <p>Si te invitaron al piloto, abre de nuevo el enlace que te enviaron. Si sigue sin funcionar, escríbele a quien organiza tu parche.</p>
+  <p><a href="/sintonia-piloto/">Ir al inicio</a></p>
+</main>
+</body>
+</html>

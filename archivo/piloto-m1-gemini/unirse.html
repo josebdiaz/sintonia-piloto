@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintonía · Únete al plan</title>
+  <style>
+    :root {
+      --primary: #2d6a4f;
+      --primary-hover: #1b4332;
+      --primary-light: #e8f5e9;
+      --accent: #52b788;
+      --text: #212529;
+      --text-muted: #6c757d;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --border: #dee2e6;
+      --error: #dc3545;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px 14px; line-height: 1.5; }
+    .container { max-width: 520px; margin: 0 auto; background: var(--card); border-radius: 16px; padding: 28px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid var(--border); }
+    .brand-header { text-align: center; margin-bottom: 22px; }
+    .logo { font-size: 26px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+    .tagline { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    
+    .invite-banner { background: var(--primary-light); color: var(--primary-hover); padding: 12px 14px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; border-left: 4px solid var(--primary); }
+    
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #343a40; }
+    .label-hint { font-size: 12px; font-weight: 400; color: var(--text-muted); }
+    input[type="text"], input[type="tel"], textarea {
+      width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.2s; background: #fff;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 75px; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    
+    .scale-container { display: flex; gap: 6px; justify-content: space-between; }
+    .scale-btn { flex: 1; padding: 10px 2px; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: #495057; }
+    .scale-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    
+    .consent-card { background: #fafafa; border: 1.5px solid var(--border); border-radius: 12px; padding: 16px; margin: 20px 0; }
+    .select-all-btn { background: #fff; border: 1.5px solid var(--accent); color: var(--primary); font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 8px; cursor: pointer; width: 100%; margin-bottom: 14px; text-align: center; }
+    .select-all-btn:hover { background: var(--primary-light); }
+    .checkbox-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 13px; color: #343a40; }
+    .checkbox-item:last-child { margin-bottom: 0; }
+    .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); margin-top: 2px; flex-shrink: 0; cursor: pointer; }
+    .checkbox-item a { color: var(--primary); text-decoration: underline; }
+    
+    .submit-btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 14px; font-size: 16px; font-weight: 700; border-radius: 12px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(45,106,79,0.25); }
+    .submit-btn:hover { background: var(--primary-hover); }
+    .submit-btn:disabled { background: #adb5bd; cursor: not-allowed; box-shadow: none; }
+    
+    .error-msg { background: #ffebee; color: var(--error); padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
+    
+    #successCard { display: none; text-align: center; padding: 20px 0; }
+    .success-icon { width: 56px; height: 56px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 14px; }
+  </style>
+</head>
+<body><div style="background:#FFF6DD;color:#5B4A12;border-bottom:1px solid #F0E2B6;font:600 13px/1.4 system-ui,sans-serif;padding:8px 16px;text-align:center">Versión archivada · solo referencia · no envía datos · <a href="/sintonia-piloto/archivo/" style="color:inherit">ver archivo</a></div>
+  <div class="container">
+    <div class="brand-header">
+      <div class="logo">Sintonía</div>
+      <div class="tagline">Únete al plan de tu parche · Menos vueltas para salir</div>
+    </div>
+
+    <div id="joinSection">
+      <div class="invite-banner">
+        👋 Te invitaron a coordinar una salida con tu grupo en Cali. Confirma tus datos y lo que te gusta para armar un plan que le sirva a todos sin presiones.
+      </div>
+
+      <div class="error-msg" id="errorBox"></div>
+
+      <form id="joinForm">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Tu nombre de pila</label>
+            <input type="text" id="nombrePila" placeholder="Ej: Marcela" maxlength="40" required>
+          </div>
+          <div class="form-group">
+            <label>Tu WhatsApp</label>
+            <input type="tel" id="whatsapp" placeholder="Ej: 3167890123" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>¿Qué te provoca hacer (o qué restricciones tienes)?</label>
+          <textarea id="preferencias" placeholder="Ej: Prefiero no caminar mucho, café o comida, no como mariscos, presupuesto moderado."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>¿Qué tan agotador suele ser para ti ponerse de acuerdo en grupo?</label>
+          <div class="scale-container">
+            <div class="scale-btn" data-val="1">1<br><span style="font-size:10px">Cero</span></div>
+            <div class="scale-btn" data-val="2">2</div>
+            <div class="scale-btn active" data-val="3">3<br><span style="font-size:10px">Medio</span></div>
+            <div class="scale-btn" data-val="4">4</div>
+            <div class="scale-btn" data-val="5">5<br><span style="font-size:10px">Mucho</span></div>
+          </div>
+          <input type="hidden" id="fatigaPrevia" value="3">
+        </div>
+
+        <div class="consent-card">
+          <button type="button" class="select-all-btn" id="btnSelectAll">✓ Marcar "Sí a todo"</button>
+          
+          <div class="checkbox-item">
+            <input type="checkbox" id="chkDatos" required>
+            <label for="chkDatos">Autorizo el tratamiento de mis datos personales según la Ley 1581 de 2012 y el <a href="aviso.html" target="_blank">Aviso de Privacidad</a>.</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="chkOptin" required>
+            <label for="chkOptin">Acepto recibir mensajes y opciones de planes en WhatsApp / Web para este piloto.</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="chkMayor18" required>
+            <label for="chkMayor18">Declaro bajo juramento que soy mayor de edad (+18 años).</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="chkConsent" required>
+            <label for="chkConsent">Acepto participar voluntariamente en esta investigación académica (Universidad Icesi).</label>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="btnSubmit">Confirmar mi participación</button>
+      </form>
+    </div>
+
+    <div id="successCard">
+      <div class="success-icon">✨</div>
+      <h2 style="font-size:20px; color:var(--primary); margin-bottom:8px;">¡Listo, ya estás en sintonía!</h2>
+      <p style="font-size:14px; color:#495057; margin-bottom:16px;">
+        Tu confirmación y preferencias quedaron guardadas. En cuanto todo el grupo complete su registro, recibirán las opciones seleccionadas para votar y definir el plan.
+      </p>
+      <div style="font-size:12px; color:var(--text-muted); background:#f8f9fa; padding:12px; border-radius:10px;">
+        🔒 Recuerda que puedes consultar el aviso de privacidad o retirarte en cualquier momento escribiendo "Humano" o "Ayuda".
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      BACKEND_URL: 'https://archivado.invalid/exec'
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const INV_CODE = urlParams.get('inv');
+
+    const errorBox = document.getElementById('errorBox');
+    const joinSection = document.getElementById('joinSection');
+    const successCard = document.getElementById('successCard');
+
+    if (!INV_CODE) {
+      errorBox.textContent = 'Enlace de invitación incompleto o inválido. Solicítale a tu organizador el enlace completo.';
+      errorBox.style.display = 'block';
+      document.getElementById('btnSubmit').disabled = true;
+    }
+
+    // Escala de fatiga
+    const scaleBtns = document.querySelectorAll('.scale-btn');
+    const fatigaInput = document.getElementById('fatigaPrevia');
+    scaleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        scaleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        fatigaInput.value = btn.getAttribute('data-val');
+      });
+    });
+
+    // Botón "Sí a todo"
+    const btnSelectAll = document.getElementById('btnSelectAll');
+    const checkboxes = [
+      document.getElementById('chkDatos'),
+      document.getElementById('chkOptin'),
+      document.getElementById('chkMayor18'),
+      document.getElementById('chkConsent')
+    ];
+
+    btnSelectAll.addEventListener('click', () => {
+      const allChecked = checkboxes.every(c => c.checked);
+      checkboxes.forEach(c => c.checked = !allChecked);
+      btnSelectAll.textContent = !allChecked ? '✓ Todas marcadas' : '✓ Marcar "Sí a todo"';
+    });
+
+    checkboxes.forEach(c => {
+      c.addEventListener('change', () => {
+        const allChecked = checkboxes.every(cb => cb.checked);
+        btnSelectAll.textContent = allChecked ? '✓ Todas marcadas' : '✓ Marcar "Sí a todo"';
+      });
+    });
+
+    // Envío del formulario
+    const form = document.getElementById('joinForm');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox.style.display = 'none';
+
+      if (!INV_CODE) return;
+
+      if (!checkboxes.every(c => c.checked)) {
+        errorBox.textContent = 'Debes aceptar las 4 autorizaciones obligatorias para participar en el estudio.';
+        errorBox.style.display = 'block';
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = 'Confirmando...';
+
+      const payload = {
+        action: 'registrar',
+        codigo_invitacion: INV_CODE.trim().toUpperCase(),
+        nombre_pila: document.getElementById('nombrePila').value.trim(),
+        whatsapp: document.getElementById('whatsapp').value.trim(),
+        preferencias: document.getElementById('preferencias').value,
+        fatiga_previa: fatigaInput.value,
+        autoriza_datos: true,
+        optin_whatsapp: true,
+        mayor_18: true,
+        consent_investigacion: true
+      };
+
+      try {
+        const res = await fetch(CONFIG.BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          localStorage.setItem('SINTONIA_PID', data.pid);
+          localStorage.setItem('SINTONIA_GRUPO_ID', data.grupo_id);
+          localStorage.setItem('SINTONIA_ROL', data.rol);
+          localStorage.setItem('SINTONIA_EXP', data.experimento);
+
+          joinSection.style.display = 'none';
+          successCard.style.display = 'block';
+        } else {
+          errorBox.textContent = `No se pudo registrar: ${data.error || 'Revisa la invitación o intenta más tarde.'}`;
+          errorBox.style.display = 'block';
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = 'Confirmar mi participación';
+        }
+      } catch (err) {
+        errorBox.textContent = 'Error al conectar con el servidor. Revisa tu conexión o inténtalo de nuevo.';
+        errorBox.style.display = 'block';
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Confirmar mi participación';
+      }
+    });
+  </script>
+</body>
+</html>

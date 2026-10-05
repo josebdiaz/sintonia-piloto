@@ -1,2 +1,4 @@
+# Informativo: los buscadores solo leen el robots.txt de la raíz del dominio (josebdiaz.github.io).
+# La protección real es <meta name="robots" content="noindex"> en cada página.
 User-agent: *
-Disallow: /researchers/
+Disallow: /
