@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Sintonía · Consola del mago M2</title>
+<title>Sintonía · Consola del mago</title>
 <link rel="stylesheet" href="assets/sintonia.css">
 </head>
 <body>
 <main class="wrap wide">
   <header class="top">
-    <a class="brand" href="mago.html"><span class="brand-mark" aria-hidden="true"></span>Consola del mago <span class="tag">M2</span></a>
+    <a class="brand" href="mago.html"><span class="brand-mark" aria-hidden="true"></span>Consola del mago <span class="tag">E1 · E2</span></a>
     <div class="actions" style="margin:0">
       <a class="btn btn-ghost btn-sm" href="panel.html">Panel →</a>
       <button class="btn btn-ghost btn-sm" id="recargar" type="button">↻ Recargar</button>
@@ -30,12 +30,13 @@
 
   <section id="consola" class="hidden">
     <p class="small muted" id="resumen"></p>
+    <div id="expbar"></div>
     <nav class="tabs" role="tablist">
       <button role="tab" data-tab="grupos" aria-selected="true">1 · Grupos y quórum</button>
       <button role="tab" data-tab="planes">2 · Curaduría de planes</button>
       <button role="tab" data-tab="mensajes">3 · Mensajes</button>
       <button role="tab" data-tab="registro">4 · Eventos y minutos</button>
-      <button role="tab" data-tab="cambios">Cambios (I4)</button>
+      <button role="tab" data-tab="cambios">Cambios W1 → W2</button>
       <button role="tab" data-tab="inventario">Inventario</button>
     </nav>
     <div id="tab-grupos" class="tab"></div>
@@ -50,7 +51,8 @@
 <script>
 (function () {
   var D = null, key = '', sel = { grupo: '', plan: '' }, borrador = [], filtro = 'piloto';
-  var CAUSAS = ['coordinacion', 'redactar_mensaje', 'resolver_duda', 'cambio_plan', 'recordatorio', 'falla_tecnica', 'seguridad', 'otro'];
+  var CAUSAS = [['coordinacion', 'Coordinar el plan'], ['redactar_mensaje', 'Redactar mensajes'], ['resolver_duda', 'Resolver una duda'], ['cambio_plan', 'Cambio de plan'], ['recordatorio', 'Recordatorios y checkpoints'], ['falla_tecnica', 'Falla técnica'], ['seguridad', 'Seguridad'], ['otro', 'Otro']];
+  var ultimaCarga = null;
   var CAIDA = [['trafico', 'Tráfico'], ['lluvia', 'Lluvia'], ['agenda', 'Agenda / no cuadró'], ['costo', 'Costo'], ['desinteres', 'Desinterés'], ['imprevisto', 'Imprevisto'], ['otro', 'Otro']];
   var e = S.esc;
 
@@ -66,9 +68,15 @@
     if (!key) { gate(true); return Promise.resolve(); }
     return S.get({ view: 'mago', key: key }).then(function (r) {
       if (!r || !r.ok) { if (r && r.error === 'no_autorizado') { S.forgetKey(); gate(true); } S.toast(S.errMsg(r), true); return; }
-      D = r; gate(false); renderAll();
+      D = r; ultimaCarga = new Date(); gate(false); renderAll();
     });
   }
+  // 2.0.4 (QA 5/10): las inscripciones nuevas aparecen solas. Recarga cada 60 s solo en la pestaña 1, con la consola visible y sin un campo en edición.
+  setInterval(function () {
+    if (!D || document.hidden || S.$('#tab-grupos').classList.contains('hidden')) return;
+    var a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
+    load();
+  }, 60000);
   function act(btn, payload, okMsg) {
     return S.busy(btn, function () { return S.post(Object.assign({ key: key }, payload)); }).then(function (r) {
       if (!r || !r.ok) { S.toast(S.errMsg(r), true); return r; }
@@ -87,15 +95,72 @@
   function grupoLabel(g) { return g.tipo_grupo + ' · ' + g.experimento + ' · ' + g.grupo_id.slice(-6) + (g.modo === 'prueba' ? ' (prueba)' : ''); }
   function linkPlan(pid) { return S.link('plan.html', { pid: pid }); }
   function linkRetro(pid, planId) { return S.link('retro.html', { pid: pid, plan_id: planId }); }
+  function organizador(g) { return (g.miembros || []).filter(function (m) { return m.rol === 'organizador'; })[0]; }
+  /** 2.0.4 (QA 5/10): "Abrir chat" deja escrito el primer mensaje según el estado del grupo y el rol de la persona. */
+  function primerMensaje(g, m) {
+    var org = organizador(g), n = g.miembros.length, inv = Number(g.n_invitados) || n, esOrg = m.rol === 'organizador';
+    var hola = 'Hola ' + (m.nombre || '') + ' 👋 Soy Sintonía, el quinto amigo que ayuda a que el plan sí se dé.';
+    if (g.estado === 'reclutando') return esOrg
+      ? hola + ' Ya aceptaron ' + n + ' de ' + inv + ' personas de tu parche. Cuando estén todas, armo el grupo del plan por aquí. Si alguien no ha visto la invitación, este es el enlace: ' + S.link('unirse.html', { inv: g.codigo_invitacion })
+      : hola + ' Ya quedaste en el parche de ' + (org ? org.nombre : 'tu grupo') + '. Cuando acepten todos, te escribimos para armar el plan.';
+    if (g.experimento === 'E2') return '';   // E2: el mago no escribe a los miembros (protocolo §4); cada persona tiene su enlace desde unirse.html
+    return esOrg
+      ? hola + ' ¡Ya aceptaron las ' + n + ' personas de tu parche! En unos minutos creo el grupo del plan por aquí con todos. En este piloto una persona del equipo revisa lo que propongo.'
+      : hola + ' Ya aceptaron todos en el parche de ' + (org ? org.nombre : 'tu grupo') + '. En unos minutos te agrego al grupo del plan por aquí. Si prefieres no seguir, responde SALIR.';
+  }
   function localDT(v) { if (!v) return ''; var d = new Date(v); if (isNaN(d)) return ''; var p = function (n) { return String(n).padStart(2, '0'); }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes()); }
 
+  /* ---------- 2.0.5 · Experimento en operación ----------
+   * Desde el primer momento la consola trabaja sobre UNA condición: E1 (WhatsApp + mago) o E2 (web app).
+   * Todo lo que se ve (grupos, planes, mensajes, eventos) se filtra por esa condición y cada pantalla dice qué hace el mago en ella. */
+  var EXP = {
+    E1: { nombre: 'E1 · WhatsApp + mago', corto: 'WhatsApp + mago', clase: 'e1',
+      prueba: 'Si coordinar dentro de un grupo de WhatsApp, con una persona detrás del número Sintonía, mueve más gente del «me apunto» a llegar.',
+      grupo: 'Vota, confirma y avisa que llegó escribiendo en el grupo de WhatsApp del plan.',
+      mago: 'Crea el grupo de WhatsApp, envía cada mensaje y registra aquí votos, confirmaciones y llegadas.',
+      mide: 'Llegaron / invitadas, horas hasta cerrar, vetos y minutos del mago por plan.',
+      pasos: [['grupos', 'Cuando acepten todos: cerrar reclutamiento, abrir el chat y crear el grupo de WhatsApp'], ['mensajes', 'Enviar /ingreso'], ['planes', 'Crear el plan, pedir opciones a Gemini y publicar'], ['mensajes', 'Enviar /opciones'], ['planes', 'Registrar votos y cerrar con día y hora'], ['mensajes', 'Enviar /confirmado, la hora de salida y el checkpoint'], ['registro', 'Registrar quién se apuntó, quién llegó y quién está en casa'], ['planes', 'Enviar el pulso y, para W2, crear la ronda 2 en el mismo grupo']] },
+    E2: { nombre: 'E2 · Web app', corto: 'Web app', clase: 'e2',
+      prueba: 'Si salirse de WhatsApp a una página web, donde cada persona vota y confirma con su enlace, ayuda o estorba.',
+      grupo: 'Vota, confirma y marca «¡Llegué!» en su página personal (plan.html).',
+      mago: 'Solo cura las opciones y cierra el plan. No escribe a los miembros; si a las 2 h faltan votos, avisa solo al organizador.',
+      mide: 'Lo mismo que E1, con el registro automático de la página y los minutos del mago.',
+      pasos: [['grupos', 'Cuando acepten todos: cerrar reclutamiento (cada persona ya tiene su enlace)'], ['planes', 'Crear el plan, pedir opciones a Gemini y publicar'], ['planes', 'Esperar los votos; a las 2 h, si faltan, avisar al organizador'], ['planes', 'Cerrar con día y hora'], ['registro', 'Revisar quién se apuntó y quién llegó (lo registra la página)'], ['planes', 'El pulso aparece solo en la página de cada persona; para W2, crear la ronda 2']] }
+  };
+  var RONDA = { 1: 'W1 · 10–11/10', 2: 'W2 · 17–18/10' };
+  var vexp = S.LS.get('sintonia_mago_exp') === 'E2' ? 'E2' : 'E1';
+  function expChip(k) { return '<span class="xp ' + EXP[k].clase + '">' + e(EXP[k].nombre) + '</span>'; }
+  function rondaLabel(p) { return 'Ronda ' + p.ronda + (RONDA[p.ronda] ? ' · ' + RONDA[p.ronda] : ''); }
+  function gruposVista() { return (D.grupos || []).filter(function (g) { return g.experimento === vexp && (filtro === 'todos' || g.modo === filtro); }); }
+  function linkInscripcion() { return S.link('index.html', filtro === 'prueba' ? { exp: vexp, modo: 'prueba' } : { exp: vexp }); }
+  function irA(tab) { var b = S.$('[data-tab="' + tab + '"]'); if (b) b.click(); }
+  function renderExpbar() {
+    var x = EXP[vexp], el = S.$('#expbar'), gs = gruposVista();
+    var abierto = S.LS.get('sintonia_mago_guia_' + vexp) !== 'cerrada';
+    el.innerHTML = '<div class="expbar ' + x.clase + '"><div class="row" style="align-items:flex-end;flex-wrap:wrap">' +
+      '<div class="field" style="margin:0;flex:2 1 320px"><span class="label">¿Qué experimento estás operando?</span><div class="seg" role="radiogroup" aria-label="Experimento">' +
+      ['E1', 'E2'].map(function (k) { return '<button type="button" role="radio" aria-checked="' + (k === vexp) + '" class="' + EXP[k].clase + '" data-exp="' + k + '">' + e(EXP[k].nombre) + '</button>'; }).join('') + '</div></div>' +
+      '<div class="field" style="margin:0;flex:1 1 160px"><label for="filtro">Modo</label><select id="filtro">' + opts([['piloto', 'Piloto (cuenta)'], ['prueba', 'Prueba (no cuenta)'], ['todos', 'Todos']], filtro) + '</select></div></div>' +
+      '<details id="guia"' + (abierto ? ' open' : '') + '><summary><b>Cómo funciona ' + e(x.nombre) + '</b> · ' + gs.length + ' grupo(s) en esta vista</summary>' +
+      '<div class="grid two" style="margin-top:8px"><div class="small"><p style="margin:0 0 6px"><b>Qué se prueba.</b> ' + e(x.prueba) + '</p><p style="margin:0 0 6px"><b>El grupo.</b> ' + e(x.grupo) + '</p><p style="margin:0 0 6px"><b>El mago.</b> ' + e(x.mago) + '</p><p style="margin:0"><b>Se mide.</b> ' + e(x.mide) + '</p>' +
+      '<p class="tiny muted" style="margin:8px 0 0">Ronda 1 = W1 (10–11/10) · Ronda 2 = W2 (17–18/10) · cada grupo se queda en su experimento en las dos rondas.</p>' +
+      '<p class="small" style="margin:10px 0 4px"><b>Enlace para inscribir un grupo en ' + vexp + (filtro === 'prueba' ? ' (modo prueba)' : '') + ':</b></p><div class="linkbox">' + e(linkInscripcion()) + '</div><div class="actions" style="margin-top:6px"><button class="btn btn-ghost btn-sm" type="button" id="copiarInsc">Copiar enlace</button></div></div>' +
+      '<ol class="pasos small">' + x.pasos.map(function (p) { return '<li><a href="#" class="linklike" data-ir="' + p[0] + '">' + e(p[1]) + '</a> <span class="tiny muted">(' + ({ grupos: 'pestaña 1', planes: 'pestaña 2', mensajes: 'pestaña 3', registro: 'pestaña 4' })[p[0]] + ')</span></li>'; }).join('') + '</ol></div></details></div>';
+    S.$$('[data-exp]', el).forEach(function (b) { b.onclick = function () { vexp = b.dataset.exp; S.LS.set('sintonia_mago_exp', vexp); sel.grupo = ''; sel.plan = ''; borrador = []; dest = 'grupo'; renderAll(); }; });
+    S.$('#filtro', el).onchange = function () { filtro = this.value; sel.grupo = ''; sel.plan = ''; renderAll(); };
+    S.$('#guia', el).addEventListener('toggle', function () { S.LS.set('sintonia_mago_guia_' + vexp, this.open ? 'abierta' : 'cerrada'); });
+    S.$$('[data-ir]', el).forEach(function (b) { b.onclick = function (ev) { ev.preventDefault(); irA(b.dataset.ir); }; });
+    S.$('#copiarInsc', el).onclick = function () { S.copy(linkInscripcion()); };
+  }
+
   function renderAll() {
-    var gs = D.grupos || [];
-    S.$('#resumen').textContent = gs.filter(function (g) { return g.modo === 'piloto'; }).length + ' grupos piloto · ' + gs.filter(function (g) { return g.estado === 'activo'; }).length + ' activos · ' +
-      (D.planes || []).length + ' planes · ' + (D.inventario || []).length + ' lugares activos en el inventario';
-    if (!sel.grupo || !grupo(sel.grupo)) { var a = gs.filter(function (g) { return g.estado === 'activo'; })[0] || gs[0]; sel.grupo = a ? a.grupo_id : ''; }
+    var todos = D.grupos || [], gs = gruposVista();
+    S.$('#resumen').textContent = 'Total: ' + todos.filter(function (g) { return g.modo === 'piloto' && g.experimento === 'E1'; }).length + ' grupos piloto en E1 y ' + todos.filter(function (g) { return g.modo === 'piloto' && g.experimento === 'E2'; }).length + ' en E2 · ' +
+      (D.inventario || []).length + ' lugares activos en el inventario' +
+      (ultimaCarga ? ' · actualizado ' + String(ultimaCarga.getHours()).padStart(2, '0') + ':' + String(ultimaCarga.getMinutes()).padStart(2, '0') : '');
+    if (!sel.grupo || !gs.some(function (g) { return g.grupo_id === sel.grupo; })) { var a = gs.filter(function (g) { return g.estado === 'activo'; })[0] || gs[0]; sel.grupo = a ? a.grupo_id : ''; }
     var ps = planesDe(sel.grupo); if (!sel.plan || !plan(sel.plan) || plan(sel.plan).grupo_id !== sel.grupo) sel.plan = ps.length ? ps[ps.length - 1].plan_id : '';
-    renderGrupos(); renderPlanes(); renderMensajes(); renderRegistro(); renderCambios(); renderInventario();
+    renderExpbar(); renderGrupos(); renderPlanes(); renderMensajes(); renderRegistro(); renderCambios(); renderInventario();
   }
 
   /* ---------- Pestañas ---------- */
@@ -106,28 +171,28 @@
   /* ---------- 1 · Grupos y quórum (I9) ---------- */
   function renderGrupos() {
     var el = S.$('#tab-grupos');
-    var gs = (D.grupos || []).filter(function (g) { return filtro === 'todos' || g.modo === filtro; });
-    var h = '<div class="actions" style="margin-top:6px">Ver: <select id="filtro" style="width:auto;min-height:36px">' + opts([['piloto', 'Piloto'], ['prueba', 'Prueba'], ['todos', 'Todos']], filtro) + '</select></div>';
-    if (!gs.length) h += '<div class="card empty"><p class="muted">No hay grupos todavía. Comparte la landing: <b>index.html?exp=E1</b> o <b>?exp=E2</b>.</p></div>';
+    var gs = gruposVista(), h = '';
+    if (!gs.length) h += '<div class="card empty"><p class="muted">No hay grupos de ' + e(EXP[vexp].nombre) + ' en este modo. Para inscribir uno, comparte <b>index.html?exp=' + vexp + (filtro === 'prueba' ? '&amp;modo=prueba' : '') + '</b>.</p></div>';
     h += '<div class="grid two">' + gs.map(function (g) {
       var n = g.miembros.length, inv = Number(g.n_invitados) || 0, invLink = S.link('unirse.html', { inv: g.codigo_invitacion });
       var mm = g.miembros.map(function (m) {
         var personal = linkPlan(m.pid);
         return '<div class="member"><div class="who"><b>' + e(m.nombre || '—') + '</b> <span class="tiny muted">' + e(m.rol) + '</span><br><span class="tiny muted">+' + e(S.phone(m.whatsapp)) + '</span></div>' +
-          '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp)) + '">Abrir chat</a>' +
+          (function () { var pm = primerMensaje(g, m); return '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp, pm)) + '"' + (pm ? ' title="Abre WhatsApp con el primer mensaje escrito; revísalo antes de enviar">Abrir chat con mensaje' : '>Abrir chat') + '</a>'; })() +
           (personal ? '<button class="btn btn-ghost btn-sm" data-copy="' + e(personal) + '">' + (g.experimento === 'E2' ? 'Copiar su enlace' : 'Enlace web (contingencia)') + '</button>' : '') +
           '<button class="btn btn-danger btn-sm" data-revocar="' + e(m.pid) + '" data-nombre="' + e(m.nombre) + '" data-busy="Purgando…">Revocar y purgar</button></div>';
       }).join('');
-      return '<div class="card"><div class="actions" style="margin:0 0 8px;justify-content:space-between"><h3 style="margin:0">' + e(g.tipo_grupo) + ' · ' + e(g.experimento) + '</h3><span>' + badge(g.estado) + ' ' + (g.modo === 'prueba' ? badge('prueba') : '') + ' <span class="badge">' + e(g.version || 'v1') + '</span></span></div>' +
+      return '<div class="card"><div class="actions" style="margin:0 0 8px;justify-content:space-between"><h3 style="margin:0">' + e(g.tipo_grupo) + ' · ' + e(g.grupo_id.slice(-6)) + '</h3>' + expChip(g.experimento) + '<span>' + badge(g.estado) + ' ' + (g.modo === 'prueba' ? badge('prueba') : '') + ' <span class="badge">' + e(g.version || 'v1') + '</span></span></div>' +
         '<p class="small" style="margin:0">Quórum: <b>' + n + ' / ' + inv + '</b> consintieron' + (g.motivo ? ' · <span class="muted">' + e(g.motivo) + '</span>' : '') + '</p>' +
         '<div class="bar"><i style="width:' + (inv ? Math.min(100, Math.round(n / inv * 100)) : 0) + '%"></i></div>' +
         (g.estado === 'reclutando' ? '<div class="linkbox" style="margin-top:10px">' + e(invLink) + '</div><div class="actions"><button class="btn btn-ghost btn-sm" data-copy="' + e(invLink) + '">Copiar invitación</button>' +
           '<button class="btn btn-primary btn-sm" data-cerrar="' + e(g.grupo_id) + '" data-n="' + n + '" data-inv="' + inv + '" data-busy="Cerrando…">Cerrar reclutamiento</button></div>' : '') +
         (g.preferencias && g.preferencias.length ? '<details style="margin-top:10px"><summary class="small">Preferencias (' + g.preferencias.length + ')</summary><ul class="small">' + g.preferencias.map(function (p) { return '<li>' + e(p) + '</li>'; }).join('') + '</ul></details>' : '') +
-        '<div style="margin-top:8px">' + (mm || '<p class="small muted">Sin miembros activos.</p>') + '</div></div>';
+        '<div style="margin-top:8px">' + (mm || '<p class="small muted">Sin miembros activos.</p>') + '</div>' +
+        (g.experimento === 'E1' && g.estado === 'activo' && n ? '<div class="card soft small" style="margin:10px 0 0"><b>Crear el grupo del plan en WhatsApp.</b> Meta no deja crearlo automáticamente desde una cuenta sin verificar: créalo a mano desde el número Sintonía con estas ' + n + ' personas y envía <b>/ingreso</b> (pestaña 3).<div class="actions" style="margin-top:8px"><button class="btn btn-ghost btn-sm" data-copy="' + e(g.miembros.map(function (x) { return x.nombre + ' +' + S.phone(x.whatsapp); }).join('\n')) + '">Copiar nombres y números</button></div></div>' : '') +
+        '</div>';
     }).join('') + '</div>';
     el.innerHTML = h;
-    S.$('#filtro', el).onchange = function () { filtro = this.value; renderGrupos(); };
     bindCopy(el);
     S.$$('[data-cerrar]', el).forEach(function (b) {
       b.onclick = function () {
@@ -151,9 +216,10 @@
   function invById(id) { return (D.inventario || []).filter(function (i) { return i.id === id; })[0]; }
 
   function renderPlanes() {
-    var el = S.$('#tab-planes'), gs = D.grupos || [], g = grupo(sel.grupo), p = plan(sel.plan);
+    var el = S.$('#tab-planes'), gs = gruposVista(), g = grupo(sel.grupo), p = plan(sel.plan);
+    if (!gs.length) { el.innerHTML = '<div class="card empty"><p class="muted">No hay grupos de ' + e(EXP[vexp].nombre) + ' en este modo.</p></div>'; return; }
     var h = '<div class="card"><div class="row"><div class="field" style="margin:0"><label for="selG">Grupo</label><select id="selG">' + opts(gs.map(function (x) { return [x.grupo_id, grupoLabel(x) + ' · ' + x.estado]; }), sel.grupo) + '</select></div>' +
-      '<div class="field" style="margin:0"><label for="selP">Plan</label><select id="selP">' + (planesDe(sel.grupo).length ? opts(planesDe(sel.grupo).map(function (x) { return [x.plan_id, 'Ronda ' + x.ronda + ' · ' + x.estado]; }), sel.plan) : '<option value="">Sin planes</option>') + '</select></div></div>' +
+      '<div class="field" style="margin:0"><label for="selP">Plan</label><select id="selP">' + (planesDe(sel.grupo).length ? opts(planesDe(sel.grupo).map(function (x) { return [x.plan_id, rondaLabel(x) + ' · ' + x.estado]; }), sel.plan) : '<option value="">Sin planes</option>') + '</select></div></div>' +
       '<div class="actions">' + (g && g.estado === 'activo' ? '<button class="btn btn-primary btn-sm" id="crearPlan" data-busy="Creando…">+ Crear plan</button>' : '<span class="small muted">Solo se crean planes en grupos activos.</span>') + '</div></div>';
     if (p) h += planCard(g, p);
     el.innerHTML = h;
@@ -165,10 +231,13 @@
 
   function planCard(g, p) {
     var ops = []; try { ops = JSON.parse(p.opciones_json || '[]'); } catch (x) {}
-    var h = '<div class="card"><div class="actions" style="margin:0 0 6px;justify-content:space-between"><h3 style="margin:0">Ronda ' + e(p.ronda) + ' · ' + e(p.experimento) + '</h3><span>' + badge(p.estado) + ' <span class="badge">' + e(p.version) + '</span></span></div>';
+    var h = '<div class="card"><div class="actions" style="margin:0 0 6px;justify-content:space-between"><h3 style="margin:0">' + e(rondaLabel(p)) + '</h3><span>' + expChip(p.experimento) + ' ' + badge(p.estado) + ' <span class="badge">' + e(p.version) + '</span></span></div>';
     if (p.estado === 'borrador' || p.estado === 'en_revision') {
       if (!borrador.length && ops.length) borrador = ops.map(function (o) { return { titulo: o.titulo, hora_salida: o.hora_salida, presupuesto_aprox: o.presupuesto_aprox, por_que: o.por_que, ids: (o.paradas || []).map(function (s) { return s.id; }) }; });
-      h += '<div class="field"><label for="restr">Restricciones del plan para Gemini</label><textarea id="restr" maxlength="600" placeholder="Ej.: sábado 10/10 en la tarde, máx. $40.000, sur u oeste, alguien en muletas."></textarea></div>' +
+      var prefs = (g && g.preferencias) || [];
+      h += '<div class="card soft small" style="margin:8px 0"><b>Lo que contó el parche al inscribirse</b> <span class="muted">(Gemini ya lo recibe; no hace falta copiarlo)</span>' +
+        (prefs.length ? '<ul style="margin:6px 0 0;padding-left:18px">' + prefs.map(function (x) { return '<li>' + e(x) + '</li>'; }).join('') + '</ul>' : '<p class="muted" style="margin:6px 0 0">Nadie escribió gustos o restricciones.</p>') + '</div>';
+      h += '<div class="field"><label for="restr">Lo de este plan para Gemini (día, hora, zona, presupuesto)</label><textarea id="restr" maxlength="600" placeholder="Ej.: sábado 10/10 en la tarde, máx. $40.000, sur u oeste."></textarea><span class="hint">Escribe solo lo que no esté arriba o lo que cambió para este plan.</span></div>' +
         '<div class="actions"><button class="btn btn-honey btn-sm" id="pedirIA" data-busy="Gemini pensando…">✨ Pedir opciones a Gemini</button><button class="btn btn-ghost btn-sm" id="addOp">+ Opción manual</button></div>' +
         '<p class="tiny muted">Gemini solo puede usar lugares activos del inventario (I6). Puedes editar títulos, hora de salida, presupuesto y el porqué. Si un horario o costo del inventario está mal, corrígelo en la hoja "inventario" y vuelve a cargar.</p>';
       h += borrador.map(function (o, i) {
@@ -183,11 +252,11 @@
       h += ops.map(function (o, i) {
         var n = (p.conteo && p.conteo[i]) || 0, win = p.estado === 'cerrado' && String(p.elegida) === String(i);
         return '<div class="option' + (win ? ' win' : '') + '"><b>' + (i + 1) + '. ' + e(o.titulo) + '</b> <span class="small muted">· ' + n + ' voto' + (n === 1 ? '' : 's') + '</span><div class="small muted">' + (o.paradas || []).map(function (s) { return e(s.nombre); }).join(' → ') + ' · salida ' + e(o.hora_salida) + ' · ' + e(o.presupuesto_aprox) + '</div></div>';
-      }).join('') + '<p class="small">Vetos ("ninguna me sirve"): <b>' + (p.vetos || 0) + '</b></p>';
+      }).join('') + '<p class="small">Sí a todo: <b>' + ((p.conteo && p.conteo[-1]) || 0) + '</b> · Vetos ("ninguna me sirve"): <b>' + (p.vetos || 0) + '</b></p>';
     }
     if (p.estado === 'votando') {
       var g2 = grupo(p.grupo_id), max = -1, best = 0;
-      Object.keys(p.conteo || {}).forEach(function (k) { if (p.conteo[k] > max) { max = p.conteo[k]; best = Number(k); } });
+      Object.keys(p.conteo || {}).forEach(function (k) { if (Number(k) >= 0 && p.conteo[k] > max) { max = p.conteo[k]; best = Number(k); } });   // «sí a todo» (-1) no elige opción
       var faltan = (g2 ? g2.miembros : []).filter(function (m) { return (p.votos_por_pid || {})[m.pid] === undefined; });
       var horasPub = p.t_publicado ? (Date.now() - new Date(p.t_publicado).getTime()) / 36e5 : 0;
       var org = (g2 ? g2.miembros : []).filter(function (m) { return m.rol === 'organizador'; })[0];
@@ -197,8 +266,8 @@
       h += '<h3 style="margin-top:14px">Votos por persona</h3><p class="tiny muted">' + (p.experimento === 'E1' ? 'En el E1, registra aquí lo que cada persona votó en el chat.' : 'En el E2 cada persona vota en la página; aquí solo se ve.') + '</p>';
       h += (g2 ? g2.miembros : []).map(function (m) {
         var v = (p.votos_por_pid || {})[m.pid];
-        return '<div class="member"><div class="who">' + e(m.nombre) + ' <span class="tiny muted">' + (v === undefined ? 'sin voto' : v === 'veto' ? 'ninguna le sirve' : 'opción ' + (Number(v) + 1)) + '</span></div>' +
-          (p.experimento === 'E1' ? '<select data-votopid="' + e(m.pid) + '" style="width:auto;min-height:36px"><option value="">Registrar voto…</option>' + ops.map(function (o, i) { return '<option value="' + i + '">Opción ' + (i + 1) + '</option>'; }).join('') + '<option value="veto">Ninguna le sirve</option></select>' : '') + '</div>';
+        return '<div class="member"><div class="who">' + e(m.nombre) + ' <span class="tiny muted">' + (v === undefined ? 'sin voto' : v === 'veto' ? 'ninguna le sirve' : String(v) === '-1' ? 'sí a todo' : 'opción ' + (Number(v) + 1)) + '</span></div>' +
+          (p.experimento === 'E1' ? '<select data-votopid="' + e(m.pid) + '" style="width:auto;min-height:36px"><option value="">Registrar voto…</option>' + '<option value="-1">Sí a todo (TODAS)</option>' + ops.map(function (o, i) { return '<option value="' + i + '">Opción ' + (i + 1) + '</option>'; }).join('') + '<option value="veto">Ninguna le sirve</option></select>' : '') + '</div>';
       }).join('');
       h += '<div class="card soft" style="margin-top:14px"><h3>Cerrar votación</h3><div class="row"><div class="field"><label for="elegida">Opción ganadora</label><select id="elegida">' + opts(ops.map(function (o, i) { return [i, (i + 1) + '. ' + o.titulo]; }), best) + '</select></div>' +
         '<div class="field"><label for="hora">Encuentro (día y hora)</label><input id="hora" type="datetime-local"></div></div>' +
@@ -209,11 +278,15 @@
     if (p.estado === 'cerrado') {
       var g3 = grupo(p.grupo_id);
       h += '<p class="small">Encuentro: <b>' + e(S.fecha(p.hora_encuentro) || 'sin hora') + '</b> · apuntados ' + e(p.n_apuntados || 0) + ' · llegaron ' + e(p.n_asistentes || 0) + ' de ' + e(p.n_invitados) + '</p>';
-      h += '<h3>Enlaces personales a la retro</h3>' + (g3 ? g3.miembros : []).map(function (m) {
+      h += '<h3>Enlaces personales al pulso</h3>' + (p.experimento === 'E2' ? '<p class="tiny muted">En E2 el pulso aparece solo en la página de cada persona desde la hora de encuentro; no hace falta enviarlo.</p>' : '') + (g3 ? g3.miembros : []).map(function (m) {
         var st = (p.estado_por_pid || {})[m.pid] || {}, l = linkRetro(m.pid, p.plan_id);
         return '<div class="member"><div class="who">' + e(m.nombre) + ' <span class="tiny muted">' + [st.apuntado ? 'apuntado' : '', st.llego ? 'llegó' : '', st.casa ? 'en casa' : ''].filter(Boolean).join(' · ') + '</span></div>' +
-          '<button class="btn btn-ghost btn-sm" data-copy="' + e(l) + '">Copiar</button><a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp, '¿Cómo les fue? Si hubo sintonía, sigan 🙌 Cuéntanos en 2 minutos: ' + l)) + '">Enviar por WhatsApp</a></div>';
+          '<button class="btn btn-ghost btn-sm" data-copy="' + e(l) + '">Copiar</button>' + (p.experimento === 'E2' && !p.failover ? '' : '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp, '¿Cómo les fue? Si hubo sintonía, sigan 🙌 Cuéntanos en 2 minutos: ' + l)) + '">Enviar por WhatsApp</a>') + '</div>';
       }).join('');
+      var ultima = planesDe(p.grupo_id).slice(-1)[0];
+      h += '<div class="card soft small" style="margin-top:12px"><b>¿El plan ya pasó?</b> Registra llegadas y «en casa» en la pestaña 4 y envía el pulso con los enlaces de arriba. ' +
+        'Para el siguiente plan (W2) crea una ronda nueva en <b>el mismo grupo de WhatsApp</b>: no hace falta otro chat.' +
+        (ultima && ultima.plan_id === p.plan_id && g3 && g3.estado === 'activo' ? '<div class="actions" style="margin-top:8px"><button class="btn btn-primary btn-sm" id="siguienteRonda" data-busy="Creando…">+ Crear ronda ' + (Number(p.ronda) + 1) + ' para este grupo</button></div>' : '') + '</div>';
       h += '<div class="row" style="margin-top:12px;align-items:flex-end"><div class="field" style="margin:0"><label for="causa2">¿Se cayó después de cerrado?</label><select id="causa2">' + opts([['', 'Causa…']].concat(CAIDA)) + '</select></div><button class="btn btn-danger btn-sm" id="marcarCaido" data-busy="Guardando…" style="flex:0 0 auto">Marcar como caído</button></div>';
     }
     if (p.experimento === 'E1' && (p.estado === 'votando' || p.estado === 'cerrado')) {
@@ -269,94 +342,214 @@
     if (fo) fo.onclick = function () { if (confirm('¿Pasar este plan del E1 a la web? Queda fuera de la comparación E1/E2.')) act(fo, { action: 'marcar_failover', plan_id: p.plan_id, hacia: 'E2', motivo: S.$('#foMotivo', el).value }, 'Cambio de canal registrado. Envía a cada persona su enlace web.'); };
     var cd = S.$('#caido', el);
     if (cd) cd.onclick = function () { var c = S.$('#causa', el).value; if (!c) return S.toast('Elige la causa (S9).', true); if (confirm('¿Marcar el plan como caído por "' + c + '"?')) act(cd, { action: 'cerrar_plan', plan_id: p.plan_id, caido: true, causa_caida: c, nota: S.$('#nota', el).value }, 'Plan marcado como caído'); };
+    var sr = S.$('#siguienteRonda', el);
+    if (sr) sr.onclick = function () { act(sr, { action: 'crear_plan', grupo_id: p.grupo_id }, 'Ronda nueva creada').then(function (r) { if (r && r.ok) { sel.plan = r.plan_id; borrador = []; renderAll(); } }); };
     var mc = S.$('#marcarCaido', el);
     if (mc) mc.onclick = function () { var c = S.$('#causa2', el).value; if (!c) return S.toast('Elige la causa (S9).', true); if (confirm('¿Marcar el plan como caído por "' + c + '"?')) act(mc, { action: 'marcar_caido', plan_id: p.plan_id, causa_caida: c }, 'Plan marcado como caído'); };
   }
 
-  /* ---------- 3 · Mensajes rápidos (borrador de voz de marca) ---------- */
+  /* ---------- 3 · Mensajes (voz de marca) ----------
+   * 2.0.4 (QA 5/10): se elige a quién va el mensaje (todo el grupo o una persona), hay mensajes de checkpoint por persona
+   * y cada mensaje se puede ajustar con Gemini dentro de su propia tarjeta, con su objetivo y su texto base como contexto. */
+  var dest = 'grupo', ajustes = {};
   function tplData() {
     var p = plan(sel.plan), ops = []; if (p) { try { ops = JSON.parse(p.opciones_json || '[]'); } catch (x) {} }
     var w = p && p.estado === 'cerrado' ? ops[Number(p.elegida)] || {} : {};
-    var g = p ? grupo(p.grupo_id) : null;
+    var g = p ? grupo(p.grupo_id) : grupo(sel.grupo);
     var faltan = p && g ? g.miembros.filter(function (m) { return (p.votos_por_pid || {})[m.pid] === undefined; }).map(function (m) { return m.nombre; }) : [];
+    var est = (p && p.estado_por_pid) || {};
+    var noLlegan = g ? g.miembros.filter(function (m) { return !(est[m.pid] || {}).llego && (est[m.pid] || {}).apuntado !== false; }).map(function (m) { return m.nombre; }) : [];
     var dir = (w.paradas || []).map(function (s) { var i = invById(s.id); return i && i.direccion ? i.direccion : ''; }).filter(Boolean).join(' → ');
+    var persona = dest !== 'grupo' && g ? g.miembros.filter(function (m) { return m.pid === dest; })[0] : null;
     return {
-      faltan: faltan.length ? faltan.join(', ') : '[nombres]', salida: w.hora_salida || '[hora de salida]', dir: dir || '[dirección]', presupuesto: w.presupuesto_aprox || '[presupuesto]',
+      faltan: faltan.length ? faltan.join(', ') : '[nombres]', noLlegan: noLlegan, salida: w.hora_salida || '[hora de salida]', dir: dir || '[dirección]', presupuesto: w.presupuesto_aprox || '[presupuesto]',
       aviso: S.link('aviso.html', {}), humano: S.LS.get('sintonia_mago_nombre') || '[tu nombre]',
       lista: ops.length ? ops.map(function (o, i) { return (i + 1) + '️⃣ ' + o.titulo + ' — ' + (o.paradas || []).map(function (s) { return s.nombre; }).join(' → ') + (o.hora_salida ? ' · salida ' + o.hora_salida : '') + (o.presupuesto_aprox ? ' · ' + o.presupuesto_aprox : ''); }).join('\n') : '[opciones del plan]',
       n: ops.length || '[n]', plan: w.titulo || '[plan elegido]', lugar: (w.paradas || []).map(function (s) { return s.nombre + (s.zona ? ' (' + s.zona + ')' : ''); }).join(' → ') || '[lugar]',
-      hora: p && p.hora_encuentro ? S.fecha(p.hora_encuentro) : '[día y hora]', retro: S.link('retro.html', {})
+      hora: p && p.hora_encuentro ? S.fecha(p.hora_encuentro) : '[día y hora]', retro: persona && p ? linkRetro(persona.pid, p.plan_id) : S.link('retro.html', {}),
+      p: p, g: g, persona: persona, nom: persona ? persona.nombre : ''
     };
   }
+  // [comando, título, a quién (grupo | persona | ambos), objetivo para Gemini, texto]
   var TPL = [
-    ['/ingreso', 'Bienvenida y transparencia (primer mensaje del grupo)', function (d) { return '¡Hola, parche! 👋 Soy Sintonía, el quinto amigo que ayuda a que el plan sí se dé: menos vueltas y opciones reales en Cali.\nLes propongo opciones, ustedes votan y yo me encargo de cuadrar la logística.\nTodas las personas de este grupo dieron su autorización. En este piloto una persona del equipo revisa todo lo que propongo.\n👤 Si necesitan hablar con alguien del equipo, escriban HUMANO.\n🚪 Si alguien quiere salir, escribe SALIR o sale del grupo, sin problema.\n🔒 Aviso de privacidad: ' + d.aviso; }],
-    ['/opciones', 'Opciones para votar', function (d) { return 'Les traigo ' + d.n + ' opciones:\n' + d.lista + '\n\nVoten con el número. Si ninguna les sirve, escriban NINGUNA y busco otra cosa. Cerca, corto y posible.'; }],
-    ['/recordatorio', 'Recordatorio de votación', function (d) { return '⏳ Para cerrar los detalles con tiempo nos falta el voto de ' + d.faltan + '. ¿Cuál les late más: 1, 2 o 3? Si ninguna sirve, también vale decirlo.'; }],
-    ['/confirmado', 'Plan cerrado', function (d) { return '¡Quedó! Ruta clara, ganas intactas:\n📍 ' + d.plan + ' — ' + d.lugar + '\n📌 Dirección: ' + d.dir + '\n🕒 Encuentro: ' + d.hora + '\n🚗 Salida sugerida: ' + d.salida + '. En Cali la hora pico y la lluvia cambian los tiempos; mejor salir con margen.\n💰 Presupuesto aprox.: ' + d.presupuesto + ' por persona\nRespondan ME APUNTO si van o NO PUEDO si no alcanzan.'; }],
-    ['/checkpoint', 'Día del plan · llegada', function () { return '¿Ya llegaron? Cuando estén en el sitio respondan LLEGUÉ. No usamos su ubicación. Y al volver, un "ya en casa" nos deja tranquilos.'; }],
-    ['/retro', 'Cierre y pulso', function (d) { return '¿Cómo les fue? Si hubo sintonía, sigan 🙌\nCuéntennos en 2 minutos (ábranlo en el mismo celular con el que se registraron): ' + d.retro + '\nSus respuestas son privadas.'; }],
-    ['/guardrail', 'Fuera de alcance (política de IA de WhatsApp)', function () { return 'Mi tarea es ayudarles a armar y coordinar planes en Cali, así que en eso no les puedo ayudar. ¿Volvemos al plan?'; }],
-    ['/humano', 'Escalar a una persona', function (d) { return 'Hola, soy ' + d.humano + ', del equipo de investigación de Sintonía. Tomo la conversación para ayudarles con lo que necesiten. Si es una emergencia, llamen al 123.'; }]
+    ['/ingreso', 'Bienvenida y transparencia (primer mensaje del grupo)', 'grupo', 'dar la bienvenida al grupo del plan y explicar con transparencia que una persona del equipo revisa todo', function (d) { return '¡Hola, parche! 👋 Soy Sintonía, el quinto amigo que ayuda a que el plan sí se dé: menos vueltas y opciones reales en Cali.\nLes propongo opciones, ustedes votan y yo me encargo de cuadrar la logística.\nTodas las personas de este grupo dieron su autorización. En este piloto una persona del equipo revisa todo lo que propongo.\n👤 Si necesitan hablar con alguien del equipo, escriban HUMANO.\n🚪 Si alguien quiere salir, escribe SALIR o sale del grupo, sin problema.\n🔒 Aviso de privacidad: ' + d.aviso; }],
+    ['/opciones', 'Opciones para votar', 'grupo', 'presentar las opciones del plan para que voten con el número', function (d) { return 'Les traigo ' + d.n + ' opciones:\n' + d.lista + '\n\nVoten con el número. Si les sirve cualquiera, escriban TODAS. Si ninguna les sirve, escriban NINGUNA y busco otra cosa. Cerca, corto y posible.'; }],
+    ['/recordatorio', 'Recordatorio de votación', 'ambos', 'recordar que falta votar, sin presión', function (d) { return d.persona ? d.nom + ', ¿cuál te suena más del plan: 1, 2 o 3? Si te sirve cualquiera, escribe TODAS; si ninguna te sirve, también vale decirlo. Con tu voto cerramos los detalles.' : '⏳ Para cerrar los detalles con tiempo nos falta el voto de ' + d.faltan + '. ¿Cuál les suena más: 1, 2 o 3? Si les sirve cualquiera, escriban TODAS; si ninguna sirve, también vale decirlo.'; }],
+    ['/confirmado', 'Plan cerrado', 'grupo', 'confirmar el plan elegido con lugar, hora, salida sugerida y presupuesto, y pedir ME APUNTO o NO PUEDO', function (d) { return '¡Quedó! Ruta clara, ganas intactas:\n📍 ' + d.plan + ' — ' + d.lugar + '\n📌 Dirección: ' + d.dir + '\n🕒 Encuentro: ' + d.hora + '\n🚗 Salida sugerida: ' + d.salida + '. En Cali la hora pico y la lluvia cambian los tiempos; mejor salir con margen.\n💰 Presupuesto aprox.: ' + d.presupuesto + ' por persona\nRespondan ME APUNTO si van o NO PUEDO si no alcanzan.'; }],
+    ['/salida', 'Hora de salida (2 h antes)', 'ambos', 'avisar la hora de salida sugerida según el tráfico, dos horas antes del encuentro', function (d) { return (d.persona ? d.nom + ', ' : '') + '🚗 Para llegar a ' + d.lugar + ' a la hora (' + d.hora + '), salgan a las ' + d.salida + ' (si llueve o hay trancón, mejor un poco antes).'; }],
+    ['/checkpoint', 'Día del plan · llegada (a todo el grupo)', 'grupo', 'preguntar al grupo si ya llegaron al sitio, sin pedir ubicación', function () { return '¿Ya llegaron? Cuando estén en el sitio respondan LLEGUÉ. No usamos su ubicación. Y al volver, un "ya en casa" nos deja tranquilos.'; }],
+    ['/no_llega', 'Checkpoint · alguien no ha llegado', 'persona', 'preguntar con cuidado a una persona que todavía no llega cómo va y si está bien, sin culpa ni presión', function (d) { return d.nom + ', ¿cómo vas? El parche ya está en ' + d.lugar + '. ¿Todo bien? Si se te complicó llegar, cuéntanos y lo ajustamos. 🙌'; }],
+    ['/llegaron', 'Ya llegaron todos', 'grupo', 'celebrar breve que ya llegó todo el parche y desear buen plan', function () { return '¡Ya está todo el parche! 🙌 Disfruten. Al volver, un "ya en casa" nos deja tranquilos.'; }],
+    ['/en_casa', '¿Ya en casa?', 'ambos', 'preguntar si ya llegaron bien a la casa después del plan', function (d) { return (d.persona ? d.nom + ', ¿ya' : '¿Ya todos') + ' en casa? Cuando lleguen, un "ya en casa" basta. Gracias por sintonizar hoy.'; }],
+    ['/retro', 'Cierre y pulso', 'ambos', 'invitar a responder el pulso de 2 minutos después del plan', function (d) { return (d.persona ? d.nom + ', ¿c' : '¿C') + 'ómo les fue? Si hubo sintonía, sigan 🙌\nCuéntennos en 2 minutos (ábranlo en el mismo celular con el que se registraron): ' + d.retro + '\nSus respuestas son privadas.'; }],
+    ['/guardrail', 'Fuera de alcance (política de IA de WhatsApp)', 'ambos', 'decir con amabilidad que solo ayudamos a armar planes y volver al plan', function () { return 'Mi tarea es ayudarles a armar y coordinar planes en Cali, así que en eso no les puedo ayudar. ¿Volvemos al plan?'; }],
+    ['/humano', 'Escalar a una persona', 'ambos', 'presentarse como persona del equipo que toma la conversación', function (d) { return 'Hola' + (d.persona ? ' ' + d.nom : '') + ', soy ' + d.humano + ', del equipo de investigación de Sintonía. Tomo la conversación para ayudarles con lo que necesiten. Si es una emergencia, llamen al 123.'; }]
   ];
+  // Orden según el momento del plan: primero lo que toca enviar ahora.
+  var ORDEN = { votando: ['/opciones', '/recordatorio'], cerrado: ['/confirmado', '/salida', '/no_llega', '/checkpoint', '/llegaron', '/en_casa', '/retro'] };
+  function visibles() {
+    var p = plan(sel.plan), pri = (p && ORDEN[p.estado]) || [];
+    var rank = function (t) { var k = pri.indexOf(t[0]); return k < 0 ? 100 : k; };
+    return TPL.map(function (t, i) { return [t, i]; }).filter(function (x) { return dest === 'grupo' ? x[0][2] !== 'persona' : x[0][2] !== 'grupo'; })
+      .sort(function (a, b) { return rank(a[0]) - rank(b[0]) || a[1] - b[1]; });
+  }
   function renderMensajes() {
-    var el = S.$('#tab-mensajes'), d = tplData(), p = plan(sel.plan);
-    var h = '<div class="card warn small"><b>Borrador.</b> Textos escritos con el sistema verbal (Wording_verificado_v2.md) y el guion del Mago de Oz. Revísenlos antes del ensayo del 9/10. ' +
+    var el = S.$('#tab-mensajes'), d = tplData(), p = d.p, g = d.g;
+    if (vexp === 'E2') {
+      var org = g ? organizador(g) : null, faltanE2 = p && g ? g.miembros.filter(function (m) { return (p.votos_por_pid || {})[m.pid] === undefined; }) : [];
+      var txt2 = org ? 'Hola ' + org.nombre + ', ¿le recuerdas a tu parche que voten el plan en su enlace? Faltan ' + (faltanE2.length || '[n]') + '. ¡Gracias!' : '';
+      el.innerHTML = '<div class="card"><div class="actions" style="margin:0 0 6px;justify-content:space-between;flex-wrap:wrap"><h3 style="margin:0">En E2 el mago no escribe al grupo</h3>' + expChip('E2') + '</div>' +
+        '<p class="small" style="margin:0">Cada persona vota, confirma, marca «¡Llegué!» y responde el pulso en su página. Ese es justo el contraste con E1. El único mensaje permitido es al organizador, si a las 2 h de publicar faltan votos (también aparece en la pestaña 2).</p></div>' +
+        (org ? '<div class="tpl"><b>/recordatorio_org</b> <span class="small muted">Solo al organizador · contingencia de E2</span><textarea class="tpl-text" id="txtOrg">' + e(txt2) + '</textarea><div class="actions" style="margin-top:6px"><a class="btn btn-primary btn-sm" id="abrirOrg" target="_blank" rel="noopener" href="' + e(S.wa(org.whatsapp, txt2)) + '">Abrir chat con ' + e(org.nombre) + '</a><span class="tiny muted">Registra los minutos con la causa «Recordatorios».</span></div></div>' : '');
+      var to = S.$('#txtOrg', el); if (to) to.addEventListener('input', function () { S.$('#abrirOrg', el).href = S.wa(org.whatsapp, to.value); });
+      return;
+    }
+    if (dest !== 'grupo' && !d.persona) { dest = 'grupo'; d = tplData(); }
+    var h = '<div class="card warn small"><b>Borrador.</b> Textos del sistema verbal (Wording_verificado_v2.md) y el guion del Mago de Oz. ' +
       (p ? 'Se llenan con el plan seleccionado (ronda ' + e(p.ronda) + ' · ' + e(grupoLabel(grupo(p.grupo_id))) + ').' : 'Selecciona un plan en la pestaña 2 para llenar los datos.') + '</div>' +
-      '<div class="row" style="align-items:flex-end"><div class="field" style="margin:0"><label for="magoNombre">Nombre de quien atiende hoy (para /humano)</label><input id="magoNombre" type="text" maxlength="30" value="' + e(S.LS.get('sintonia_mago_nombre') || '') + '"></div></div><div class="grid two">';
-    h += TPL.map(function (t, i) { var txt = t[2](d); return '<div class="tpl"><div class="actions" style="margin:0;justify-content:space-between"><span><b>' + e(t[0]) + '</b> <span class="small muted">' + e(t[1]) + '</span></span><button class="btn btn-primary btn-sm" data-tpl="' + i + '">Copiar</button></div><pre>' + e(txt) + '</pre></div>'; }).join('');
-    h += '</div><div class="card"><h3>Redactar con Gemini (opcional)</h3><p class="small muted">Útil para ajustar el tono. Cuenta tokens en la hoja de costos.</p><div class="row"><div class="field"><label for="paso">Paso</label><select id="paso">' + opts(['activacion', 'opciones', 'recordatorio', 'confirmado', 'checkpoint', 'cierre']) + '</select></div><div class="field"><label for="tono">Tono</label><select id="tono">' + opts(['plan tranqui', 'parche animado', 'familiar y cálido']) + '</select></div></div>' +
-      '<div class="actions"><button class="btn btn-honey btn-sm" id="redactar" data-busy="Redactando…">✨ Redactar</button></div><pre id="redaccion" class="tpl hidden"></pre></div>';
+      (g && g.experimento === 'E2' ? '<div class="card danger small"><b>Grupo E2.</b> En esta condición el mago no escribe a los miembros: el grupo vota y confirma en su página. Solo se le escribe al organizador si a las 2 h faltan votos (pestaña 2).</div>' : '');
+    h += '<div class="card"><div class="row" style="align-items:flex-end;flex-wrap:wrap">' +
+      '<div class="field" style="margin:0"><label for="dest">Para</label><select id="dest">' + opts([['grupo', 'Todo el grupo (pegar en el grupo del plan)']].concat(g ? g.miembros.map(function (m) { return [m.pid, m.nombre + ' (chat individual)']; }) : []), dest) + '</select></div>' +
+      '<div class="field" style="margin:0"><label for="tono">Tono para Gemini</label><select id="tono">' + opts(['plan tranqui', 'parche animado', 'familiar y cálido'], S.LS.get('sintonia_mago_tono') || 'plan tranqui') + '</select></div>' +
+      '<div class="field" style="margin:0"><label for="magoNombre">Quién atiende hoy (para /humano)</label><input id="magoNombre" type="text" maxlength="30" value="' + e(S.LS.get('sintonia_mago_nombre') || '') + '"></div></div>' +
+      (p && p.estado === 'cerrado' && d.noLlegan.length ? '<p class="small" style="margin:10px 0 0">Todavía no registran llegada: <b>' + d.noLlegan.map(e).join(', ') + '</b>. Elige a la persona en «Para» y usa <b>/no_llega</b>.</p>' : '') + '</div>';
+    h += '<div class="grid two">' + visibles().map(function (x) {
+      var t = x[0], i = x[1], txt = ajustes[i + '|' + dest] || t[4](d);
+      return '<div class="tpl" data-ti="' + i + '"><div class="actions" style="margin:0;justify-content:space-between;flex-wrap:wrap"><span><b>' + e(t[0]) + '</b> <span class="small muted">' + e(t[1]) + '</span></span>' +
+        (ajustes[i + '|' + dest] ? '<span class="badge ok">ajustado con Gemini</span>' : '') + '</div>' +
+        '<textarea class="tpl-text" data-txt="' + i + '" aria-label="Texto del mensaje ' + e(t[0]) + '">' + e(txt) + '</textarea>' +
+        '<div class="actions" style="margin-top:6px">' +
+        (d.persona ? '<a class="btn btn-primary btn-sm" data-abrir="' + i + '" target="_blank" rel="noopener" href="' + e(S.wa(d.persona.whatsapp, txt)) + '">Abrir chat con ' + e(d.persona.nombre) + '</a>' : '<button class="btn btn-primary btn-sm" data-tpl="' + i + '">Copiar</button>') +
+        '<button class="btn btn-honey btn-sm" data-ia="' + i + '" data-busy="Redactando…">✨ Ajustar con Gemini</button>' +
+        (ajustes[i + '|' + dest] ? '<button class="btn btn-ghost btn-sm" data-orig="' + i + '">Volver al texto base</button>' : '') + '</div></div>';
+    }).join('') + '</div>';
     el.innerHTML = h;
-    S.$$('[data-tpl]', el).forEach(function (b) { b.onclick = function () { S.copy(TPL[Number(b.dataset.tpl)][2](tplData())); }; });
+    var grow = function (ta) { ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 4) + 'px'; };
+    S.$$('.tpl-text', el).forEach(function (ta) {
+      grow(ta);
+      ta.addEventListener('input', function () { grow(ta); var a = S.$('[data-abrir="' + ta.dataset.txt + '"]', el); if (a && d.persona) a.href = S.wa(d.persona.whatsapp, ta.value); });
+    });
+    S.$$('[data-tpl]', el).forEach(function (b) { b.onclick = function () { S.copy(S.$('[data-txt="' + b.dataset.tpl + '"]', el).value); }; });
+    S.$$('[data-orig]', el).forEach(function (b) { b.onclick = function () { delete ajustes[b.dataset.orig + '|' + dest]; renderMensajes(); }; });
+    S.$$('[data-ia]', el).forEach(function (b) {
+      b.onclick = function () {
+        var i = Number(b.dataset.ia), t = TPL[i], base = S.$('[data-txt="' + i + '"]', el).value;
+        var datos = ('Objetivo del mensaje: ' + t[3] + '. Destinatario: ' + (d.persona ? 'solo ' + d.persona.nombre + ', en chat individual' : 'todo el grupo') + '. ' +
+          (d.p ? 'Plan: ' + d.plan + ' en ' + d.lugar + ', encuentro ' + d.hora + ', salida ' + d.salida + '. ' : '') +
+          'Reescribe este mensaje base sin cambiar su intención ni sus datos (enlaces, horas, lugares): ' + base).slice(0, 900);
+        S.busy(b, function () { return S.post({ action: 'redactar_ia', key: key, plan_id: sel.plan, paso: (t[0] + ' ' + t[1]).slice(0, 40), tono: S.$('#tono', el).value, datos: datos }); }).then(function (r) {
+          if (!r || !r.ok) return S.toast(S.errMsg(r), true);
+          ajustes[i + '|' + dest] = String(r.texto || '').trim(); renderMensajes(); S.toast('Listo. Revisa el texto y edítalo si hace falta.');
+        });
+      };
+    });
+    S.$('#dest', el).onchange = function () { dest = this.value; renderMensajes(); };
+    S.$('#tono', el).onchange = function () { S.LS.set('sintonia_mago_tono', this.value); };
     S.$('#magoNombre', el).onchange = function () { S.LS.set('sintonia_mago_nombre', this.value.trim()); renderMensajes(); };
-    S.$('#redactar', el).onclick = function () {
-      var b = this; S.busy(b, function () { return S.post({ action: 'redactar_ia', key: key, plan_id: sel.plan, paso: S.$('#paso', el).value, tono: S.$('#tono', el).value }); }).then(function (r) {
-        if (!r || !r.ok) return S.toast(S.errMsg(r), true); var pre = S.$('#redaccion', el); pre.textContent = r.texto; S.show(pre, true); pre.onclick = function () { S.copy(r.texto); }; S.toast('Listo. Toca el texto para copiarlo.');
-      });
-    };
   }
 
-  /* ---------- 4 · Eventos del chat y minutos humanos (I3) ---------- */
+  /* ---------- 4 · Eventos del chat y minutos humanos (I3) ----------
+   * 2.0.5: el estado de cada persona se cambia con un menú (E1) o se lee de la página (E2); los mensajes del mago al grupo
+   * quedan marcados como hechos con la hora. Los botones registran lo que ya pasó en el chat; no envían nada. */
+  var ESTADOS = [['me_apunto', 'Se apuntó', 'apuntado'], ['no_puedo', 'No puede', 'nopuede'], ['checkpoint_llegada', 'Llegó', 'llego'], ['llego_casa', 'En casa', 'casa']];
+  var MSG_GRUPO = [['recordatorio', 'Recordatorio de votación'], ['salida_sugerida', 'Hora de salida'], ['mensaje_mago', 'Otro mensaje']];
+  function estadoPersona(st) {
+    if (st.casa) return ['casa', 'En casa'];
+    if (st.llego) return ['llego', 'Llegó'];
+    if (st.apuntado === true) return ['apuntado', 'Se apuntó'];
+    if (st.apuntado === false) return ['nopuede', 'No puede'];
+    return ['sin', 'Sin respuesta'];
+  }
+  // Los mensajes al grupo se guardan en la hoja de eventos sin persona; la consola recuerda en este navegador cuándo se marcaron.
+  function hechos(planId) { try { return JSON.parse(S.LS.get('sintonia_hechos_' + planId) || '{}'); } catch (x) { return {}; } }
+  function marcarHecho(planId, tipo) { var h = hechos(planId); (h[tipo] = h[tipo] || []).push(new Date().toISOString()); S.LS.set('sintonia_hechos_' + planId, JSON.stringify(h)); }
+  function hhmm(iso) { var d = new Date(iso); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+
   function renderRegistro() {
-    var el = S.$('#tab-registro'), p = plan(sel.plan), g = grupo(sel.grupo);
-    var h = '<div class="grid two"><div class="card"><h3>Eventos del chat</h3><p class="small muted">Plan seleccionado: ' + (p ? 'ronda ' + e(p.ronda) + ' · ' + e(p.estado) + ' · ' + e(grupoLabel(g)) : 'ninguno (elige uno en la pestaña 2)') + '</p>';
+    var el = S.$('#tab-registro'), p = plan(sel.plan), g = grupo(sel.grupo), e1 = vexp === 'E1';
+    var h = '<div class="card"><div class="actions" style="margin:0 0 6px;justify-content:space-between;flex-wrap:wrap"><h3 style="margin:0">Estado de cada persona</h3>' + expChip(vexp) + '</div>' +
+      '<p class="small muted" style="margin:0">' + (p ? e(rondaLabel(p)) + ' · ' + e(p.estado) + ' · ' + e(grupoLabel(g)) : 'Ningún plan seleccionado (elige uno en la pestaña 2).') + '</p>' +
+      '<p class="small" style="margin:6px 0 0">' + (e1 ? 'En E1 tú registras lo que cada persona dijo en el grupo de WhatsApp. El menú <b>registra</b>; no le envía nada a nadie.' : 'En E2 cada persona marca su estado en su página; aquí solo se ve. No hace falta registrar nada.') + '</p>';
     if (p && g) {
-      h += g.miembros.map(function (m) {
-        var st = (p.estado_por_pid || {})[m.pid] || {};
-        return '<div class="member"><div class="who"><b>' + e(m.nombre) + '</b> <span class="tiny muted">' + [st.apuntado ? 'apuntado' : '', st.llego ? 'llegó' : '', st.casa ? 'en casa' : ''].filter(Boolean).join(' · ') + '</span></div>' +
-          [['me_apunto', 'Me apunto'], ['no_puedo', 'No puedo'], ['checkpoint_llegada', 'Llegó'], ['llego_casa', 'En casa']].map(function (t) { return '<button class="btn btn-ghost btn-sm" data-ev="' + t[0] + '" data-pid="' + e(m.pid) + '" data-busy="…">' + t[1] + '</button>'; }).join('') + '</div>';
-      }).join('');
-      h += '<p class="small" style="margin-top:12px">Mensajes del mago al grupo:</p><div class="actions" style="margin-top:4px">' + [['recordatorio', 'Recordatorio enviado'], ['salida_sugerida', 'Hora de salida enviada'], ['mensaje_mago', 'Otro mensaje']].map(function (t) { return '<button class="btn btn-ghost btn-sm" data-ev="' + t[0] + '" data-pid="" data-busy="…">' + t[1] + '</button>'; }).join('') + '</div>';
+      var est = p.estado_por_pid || {};
+      h += '<div class="table-scroll" style="margin-top:10px"><table class="evtable"><thead><tr><th>Persona</th><th>Estado actual</th>' + (e1 ? '<th>Registrar</th>' : '') + '</tr></thead><tbody>' +
+        g.miembros.map(function (m) {
+          var es = estadoPersona(est[m.pid] || {});
+          return '<tr><td><b>' + e(m.nombre) + '</b> <span class="tiny muted">' + e(m.rol) + '</span></td><td><span class="st ' + es[0] + '">' + es[1] + '</span></td>' +
+            (e1 ? '<td><select class="estado-sel" data-estado="' + e(m.pid) + '" aria-label="Registrar estado de ' + e(m.nombre) + '"><option value="">Cambiar a…</option>' +
+              ESTADOS.map(function (t) { return '<option value="' + t[0] + '"' + (t[2] === es[0] ? ' disabled' : '') + '>' + t[1] + (t[2] === es[0] ? ' (actual)' : '') + '</option>'; }).join('') + '</select></td>' : '') + '</tr>';
+        }).join('') + '</tbody></table></div>';
+      h += '<p class="tiny muted" style="margin-top:6px">Orden normal: <span class="st sin">sin respuesta</span> → <span class="st apuntado">se apuntó</span> → <span class="st llego">llegó</span> → <span class="st casa">en casa</span>. <span class="st nopuede">no puede</span> si avisa que no va.</p>';
     }
-    h += '</div><div class="card"><h3>Minutos de trabajo humano</h3><p class="small muted">Registra cada bloque de trabajo del mago con su causa. Es el costo humano del piloto (I3).</p>' +
-      '<div class="row"><div class="field"><label for="minActor">Quién</label><select id="minActor">' + opts([['mago', 'Mago'], ['soporte', 'Soporte'], ['tecnico', 'Técnico']]) + '</select></div><div class="field"><label for="minN">Minutos</label><input id="minN" type="number" inputmode="numeric" min="1" max="600"></div></div>' +
-      '<div class="field"><label for="minCausa">Causa</label><select id="minCausa">' + opts(CAUSAS) + '</select></div><div class="field"><label for="minNota">Nota (opcional)</label><input id="minNota" type="text" maxlength="300"></div>' +
-      '<div class="actions"><button class="btn btn-primary btn-sm" id="minGuardar" data-busy="Guardando…">Guardar minutos' + (p ? ' en este plan' : '') + '</button></div></div></div>';
+    h += '</div>';
+    if (p && g && e1) {
+      var hx = hechos(p.plan_id);
+      h += '<div class="card"><h3>Mensajes del mago al grupo</h3><p class="small muted">Márcalo cuando ya lo enviaste. Queda en la hoja de eventos y aquí se ve la hora.</p><div class="msg-done">' +
+        MSG_GRUPO.map(function (t) {
+          var l = hx[t[0]] || [], ok = l.length > 0;
+          return '<div class="msg-row' + (ok ? ' done' : '') + '"><span class="msg-name">' + (ok ? '✓ ' : '') + e(t[1]) + '</span><span class="tiny muted">' + (ok ? 'Hecho a las ' + hhmm(l[l.length - 1]) + (l.length > 1 ? ' · ' + l.length + ' veces' : '') : 'Pendiente') + '</span>' +
+            '<button class="btn btn-sm ' + (ok ? 'btn-ghost' : 'btn-primary') + '" data-msg="' + t[0] + '" data-busy="Guardando…">' + (ok ? 'Marcar otra vez' : 'Marcar como enviado') + '</button></div>';
+        }).join('') + '</div></div>';
+    }
+    h += '<div class="card"><h3>Minutos de trabajo humano</h3><p class="small muted">Cada bloque de trabajo con su causa. Es el costo humano del piloto (I3) y la línea base para decidir qué automatizar. En E2 también cuenta: curar opciones, cerrar el plan, avisar al organizador.</p>' +
+      '<div class="row"><div class="field"><label for="minActor">Rol de quien trabajó</label><select id="minActor">' + opts([['mago', 'Mago (habla con el grupo)'], ['soporte', 'Soporte (planes e inventario)'], ['tecnico', 'Técnico (arreglar fallas)']]) + '</select></div><div class="field"><label for="minN">Minutos</label><input id="minN" type="number" inputmode="numeric" min="1" max="600"></div></div>' +
+      '<div class="field"><label for="minCausa">En qué se fue el tiempo</label><select id="minCausa">' + opts(CAUSAS) + '</select></div><div class="field"><label for="minNota">Nota (opcional)</label><input id="minNota" type="text" maxlength="300"></div>' +
+      '<div class="actions"><button class="btn btn-primary btn-sm" id="minGuardar" data-busy="Guardando…">Guardar minutos' + (p ? ' en este plan' : '') + '</button></div></div>';
     el.innerHTML = h;
-    S.$$('[data-ev]', el).forEach(function (b) {
-      b.onclick = function () { S.busy(b, function () { return S.post({ action: 'evento', key: key, plan_id: sel.plan, grupo_id: sel.grupo, pid: b.dataset.pid, tipo: b.dataset.ev, canal: 'E1' }); }).then(function (r) { if (!r || !r.ok) return S.toast(S.errMsg(r), true); S.toast('Evento registrado'); load(); }); };
+    S.$$('[data-estado]', el).forEach(function (s) {
+      s.onchange = function () {
+        var tipo = s.value; if (!tipo) return; s.disabled = true;
+        S.post({ action: 'evento', key: key, plan_id: sel.plan, grupo_id: sel.grupo, pid: s.dataset.estado, tipo: tipo, canal: 'E1' }).then(function (r) {
+          if (!r || !r.ok) { s.disabled = false; s.value = ''; return S.toast(S.errMsg(r), true); }
+          S.toast('Estado registrado'); load();
+        });
+      };
+    });
+    S.$$('[data-msg]', el).forEach(function (b) {
+      b.onclick = function () {
+        S.busy(b, function () { return S.post({ action: 'evento', key: key, plan_id: sel.plan, grupo_id: sel.grupo, pid: '', tipo: b.dataset.msg, canal: 'E1' }); }).then(function (r) {
+          if (!r || !r.ok) return S.toast(S.errMsg(r), true);
+          marcarHecho(sel.plan, b.dataset.msg); S.toast('Hecho: quedó registrado'); renderRegistro();
+        });
+      };
     });
     S.$('#minGuardar', el).onclick = function () {
       var n = parseInt(S.$('#minN', el).value, 10); if (!(n > 0)) return S.toast('Escribe los minutos.', true);
-      act(this, { action: 'operacion', plan_id: sel.plan, grupo_id: sel.grupo, experimento: (g || {}).experimento, actor: S.$('#minActor', el).value, minutos: n, causa: S.$('#minCausa', el).value, nota: S.$('#minNota', el).value }, n + ' min registrados');
+      act(this, { action: 'operacion', plan_id: sel.plan, grupo_id: sel.grupo, experimento: (g || {}).experimento || vexp, actor: S.$('#minActor', el).value, minutos: n, causa: S.$('#minCausa', el).value, nota: S.$('#minNota', el).value }, n + ' min registrados');
     };
   }
 
-  /* ---------- Cambios (I4) e inventario ---------- */
+  /* ---------- Cambios entre W1 y W2 (regla I4) ----------
+   * 2.0.5: una tarjeta por experimento, con su estado y un ejemplo, en lugar de un formulario con la condición en un menú. */
+  var EJEMPLO_CAMBIO = {
+    E1: 'Ej.: enviar la hora de salida según el tráfico 2 h antes del encuentro, porque en W1 dos personas llegaron tarde.',
+    E2: 'Ej.: que el organizador reciba un resumen del plan cerrado para pegarlo en su chat, porque en W1 la gente no volvió a abrir su enlace.'
+  };
   function renderCambios() {
     var el = S.$('#tab-cambios'), cs = D.cambios || [];
-    el.innerHTML = '<div class="grid two"><div class="card"><h3>Registrar el cambio entre W1 y W2</h3><p class="small muted">El protocolo permite <b>un solo cambio por condición</b>. Al registrarlo sube la versión de los grupos piloto de esa condición.</p>' +
-      '<div class="row"><div class="field"><label for="cExp">Condición</label><select id="cExp">' + opts(['E1', 'E2']) + '</select></div><div class="field"><label for="cVer">Nueva versión</label><input id="cVer" type="text" maxlength="10" placeholder="v2"></div></div>' +
-      '<div class="field"><label for="cDesc">Qué cambia y por qué</label><textarea id="cDesc" maxlength="600"></textarea></div><div class="field"><label for="cPor">Registrado por</label><input id="cPor" type="text" maxlength="40"></div>' +
-      '<div class="actions"><button class="btn btn-primary btn-sm" id="cGuardar" data-busy="Guardando…">Registrar cambio</button></div></div>' +
-      '<div class="card"><h3>Historial</h3>' + (cs.length ? '<table><thead><tr><th>Cond.</th><th>Versión</th><th>Descripción</th></tr></thead><tbody>' + cs.map(function (c) { return '<tr><td>' + e(c.experimento) + '</td><td>' + e(c.version) + '</td><td>' + e(c.descripcion) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="small muted">Sin cambios registrados.</p>') + '</div></div>';
-    S.$('#cGuardar', el).onclick = function () {
-      var exp = S.$('#cExp', el).value, ver = S.$('#cVer', el).value.trim(), d = S.$('#cDesc', el).value.trim();
-      if (!ver || !d) return S.toast('Completa versión y descripción.', true);
-      if (cs.some(function (c) { return c.experimento === exp; }) && !confirm('Ya hay un cambio registrado en ' + exp + '. El protocolo permite solo uno. ¿Registrar igual?')) return;
-      act(this, { action: 'registrar_cambio', experimento: exp, version: ver, descripcion: d, por: S.$('#cPor', el).value }, function (r) { return r.alerta || 'Cambio registrado'; });
-    };
+    var h = '<div class="card soft small"><b>Qué es esto.</b> Entre la ronda 1 (W1) y la ronda 2 (W2) se permite <b>un solo cambio por experimento</b>, decidido el domingo 11/10 después de revisar el panel. ' +
+      'Así, si W2 sale distinta a W1, sabemos qué la cambió. Al registrarlo, los grupos piloto de ese experimento pasan de v1 a v2 y el panel compara ambas versiones.</div><div class="grid two">';
+    h += ['E1', 'E2'].map(function (k) {
+      var c = cs.filter(function (x) { return x.experimento === k; }), ya = c.length > 0, u = c[c.length - 1];
+      return '<div class="card cambio ' + EXP[k].clase + (k === vexp ? ' actual' : '') + '"><div class="actions" style="margin:0 0 8px;justify-content:space-between;flex-wrap:wrap">' + expChip(k) +
+        '<span class="st ' + (ya ? 'llego' : 'sin') + '">' + (ya ? 'Cambio registrado' : 'Sin cambio todavía') + '</span></div>' +
+        (ya ? '<p class="small" style="margin:0 0 6px"><b>' + e(u.version) + '</b> · ' + e(String(u.ts || '').slice(0, 10)) + '</p><p class="small" style="margin:0">' + e(u.descripcion) + '</p>' +
+          (c.length > 1 ? '<p class="small" style="margin:8px 0 0;color:var(--danger)">Hay ' + c.length + ' cambios en este experimento: el protocolo permite uno. Explícalo en el informe.</p>' : '') :
+          '<div class="field"><label for="cDesc' + k + '">Qué cambia y por qué</label><textarea id="cDesc' + k + '" maxlength="600" placeholder="' + e(EJEMPLO_CAMBIO[k]) + '"></textarea></div>' +
+          '<div class="row"><div class="field"><label for="cVer' + k + '">Versión nueva</label><input id="cVer' + k + '" type="text" maxlength="10" value="v2"></div><div class="field"><label for="cPor' + k + '">Registrado por</label><input id="cPor' + k + '" type="text" maxlength="40"></div></div>' +
+          '<div class="actions"><button class="btn btn-primary btn-sm" data-cambio="' + k + '" data-busy="Guardando…">Registrar el cambio de ' + k + '</button></div>') + '</div>';
+    }).join('') + '</div>';
+    el.innerHTML = h;
+    S.$$('[data-cambio]', el).forEach(function (b) {
+      b.onclick = function () {
+        var k = b.dataset.cambio, ver = S.$('#cVer' + k, el).value.trim(), d = S.$('#cDesc' + k, el).value.trim();
+        if (!ver || !d) return S.toast('Escribe qué cambia y la versión.', true);
+        if (!confirm('¿Registrar el único cambio permitido para ' + EXP[k].nombre + '? Los grupos piloto de ' + k + ' pasan a ' + ver + '.')) return;
+        act(b, { action: 'registrar_cambio', experimento: k, version: ver, descripcion: d, por: S.$('#cPor' + k, el).value }, function (r) { return r.alerta || 'Cambio registrado'; });
+      };
+    });
   }
+
   function renderInventario() {
     var inv = D.inventario || [], pend = D.inventario_pendiente || [];
     S.$('#tab-inventario').innerHTML = '<div class="card"><h3>Inventario activo (' + inv.length + ')</h3><p class="small muted">Solo estos lugares pueden aparecer en un plan. Antes de cada fin de semana, confirma horarios y cierres.</p><div class="table-scroll"><table><thead><tr><th>Id</th><th>Lugar</th><th>Zona</th><th>Costo</th><th>Horario</th><th>Verificado</th></tr></thead><tbody>' +

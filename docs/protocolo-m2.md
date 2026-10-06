@@ -1,6 +1,8 @@
 # Sintonía · Protocolo de operación M2 (frontend 2.0.0)
 
-*Un solo frontend para los dos experimentos: E1 (WhatsApp + mago) y E2 (web app). Backend `backend/Codigo_Piloto.gs` v2.2.2. Versión del 4/10/2026.*
+*Un solo frontend para los dos experimentos: E1 (WhatsApp + mago) y E2 (web app). Frontend 2.0.5 y backend `backend/Codigo_Piloto.gs` 2.2.3. Versión del 6/10/2026.*
+
+> **Al abrir la consola, elige arriba el experimento que vas a operar (E1 o E2) y el modo (piloto o prueba).** Todo lo que se ve después corresponde solo a ese experimento, y la guía «Cómo funciona» lista los pasos en orden. Ronda 1 = W1 (10–11/10), Ronda 2 = W2 (17–18/10).
 
 `piloto/` es la única versión que se usa en el piloto (frontend 2.0.0, antes publicada como `M2-Claude/`). La versión anterior (1.0.0, «M1») y las de Gemini viven en `archivo/`, sin conexión al backend. Las versiones se registran en `CHANGELOG.md` y con tags de git (`piloto/v2.0.0`, `backend/v2.2.2`).
 
@@ -66,6 +68,10 @@ Cada grupo se queda en la misma condición en W1 y W2. La comparación es descri
 ## 4. Operación por condición
 
 - **E1:** todo pasa en el grupo de WhatsApp del número Sintonía. El mago usa los mensajes de la pestaña 3 y registra en la consola los votos, las confirmaciones y las llegadas. Cada bloque de trabajo se anota en minutos, con su causa (I3).
+  - **Primer contacto (2.0.4):** en la pestaña 1, «Abrir chat con mensaje» abre WhatsApp con el primer mensaje ya escrito. Revísalo antes de enviarlo.
+  - **Grupo del plan:** Meta no permite crearlo automáticamente desde una cuenta sin verificar. Con el grupo activo, copia nombres y números desde la tarjeta «Crear el grupo del plan», crea el grupo a mano desde el número Sintonía y envía `/ingreso`.
+  - **Día del plan:** en la pestaña 3 elige a la persona en «Para» y usa `/no_llega` si no ha registrado llegada; los mensajes al grupo se copian y pegan en el grupo.
+  - **W2:** el segundo plan va en **el mismo grupo de WhatsApp**. Al cerrar el plan de W1, usa «Crear ronda 2 para este grupo» en la pestaña 2.
 - **E2:** el grupo usa sus enlaces personales en `plan.html`. El mago solo cura las opciones y cierra el plan. No escribe a los miembros.
 
 ## 5. Contingencias

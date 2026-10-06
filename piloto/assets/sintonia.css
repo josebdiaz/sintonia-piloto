@@ -154,3 +154,50 @@ th { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color:
   .kpis { grid-template-columns: repeat(3, 1fr); }
 }
 @media print { .actions, .tabs, .top .btn { display: none; } }
+
+/* 2.0.4 (QA 5/10) · consola del mago: mensajes editables y eventos por persona con color */
+.tpl .tpl-text { min-height: 96px; margin-top: 8px; font-size: .92rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; resize: vertical; }
+.evtable { width: 100%; border-collapse: collapse; }
+.evtable th, .evtable td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; white-space: nowrap; }
+.evtable td:first-child { white-space: normal; min-width: 120px; }
+.st { display: inline-block; font-size: .76rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+.st.apuntado { background: var(--honey-soft); color: #8A5A07; }
+.st.nopuede { background: var(--danger-soft); color: var(--danger); }
+.st.llego { background: var(--pine-soft); color: var(--pine); }
+.st.casa { background: #DCEBF5; color: #1F4E6E; }
+.btn.ev.done { border: 1.5px solid transparent; }
+.btn.ev.done.apuntado { background: var(--honey-soft); color: #8A5A07; }
+.btn.ev.done.nopuede { background: var(--danger-soft); color: var(--danger); }
+.btn.ev.done.llego { background: var(--pine-soft); color: var(--pine); }
+.btn.ev.done.casa { background: #DCEBF5; color: #1F4E6E; }
+
+/* 2.0.5 · experimento en operación (E1 / E2) */
+.xp { display: inline-block; font-size: .76rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.xp.e1 { background: var(--pine); color: #fff; }
+.xp.e2 { background: var(--honey); color: var(--ink); }
+.expbar { border-radius: var(--radius); padding: 14px 16px; margin: 10px 0 6px; border: 2px solid var(--pine); background: var(--pine-soft); }
+.expbar.e2 { border-color: var(--honey); background: var(--honey-soft); }
+.expbar details { margin-top: 10px; }
+.expbar summary { cursor: pointer; font-size: .9rem; }
+.seg { display: flex; gap: 6px; flex-wrap: wrap; }
+.seg button { flex: 1 1 180px; min-height: 44px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); font: inherit; font-weight: 750; cursor: pointer; color: var(--ink); padding: 8px 14px; }
+.seg button.e1[aria-checked=true] { background: var(--pine); border-color: var(--pine); color: #fff; }
+.seg button.e2[aria-checked=true] { background: var(--honey); border-color: var(--honey); color: var(--ink); }
+.seg button:focus-visible { outline: 3px solid rgba(46,122,97,.35); outline-offset: 2px; }
+.pasos { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 4px; }
+.linklike { background: none; border: 0; padding: 0; font: inherit; color: var(--pine); text-align: left; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.estado-sel { width: auto; min-width: 170px; min-height: 40px; padding: 6px 10px; }
+.msg-done { display: flex; flex-direction: column; gap: 8px; }
+.msg-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.msg-row .msg-name { font-weight: 700; flex: 1 1 180px; }
+.msg-row .tiny { flex: 1 1 140px; }
+.msg-row.done { background: var(--pine-soft); border-color: transparent; }
+.msg-row.done .msg-name { color: var(--pine); }
+.card.cambio { border-top: 6px solid var(--line); }
+.card.cambio.e1 { border-top-color: var(--pine); }
+.card.cambio.e2 { border-top-color: var(--honey); }
+.card.cambio.actual { box-shadow: 0 0 0 2px var(--line), var(--shadow); }
+
+/* «Sí a todo» destacado al inicio de la votación */
+.card.si-todo { background: var(--honey-soft); border-color: transparent; box-shadow: none; }
+.card.si-todo.mine { box-shadow: 0 0 0 2px var(--honey); }

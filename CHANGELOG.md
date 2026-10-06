@@ -16,7 +16,30 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Frontend del piloto (`piloto/`)
 
+### [2.0.5] · 2026-10-06 · Experimentos identificados de punta a punta
+- Consola: arriba se elige **qué experimento se está operando** (E1 · WhatsApp + mago o E2 · Web app) y el modo (piloto o prueba). Grupos, planes, mensajes y eventos se filtran por esa elección, con color propio para cada experimento.
+- Consola: guía plegable «Cómo funciona E1/E2» con qué se prueba, qué hace el grupo, qué hace el mago, qué se mide, los pasos en orden (con enlace a cada pestaña) y el enlace de inscripción del experimento.
+- Consola: los planes se nombran por ronda y fin de semana (Ronda 1 · W1 · 10–11/10; Ronda 2 · W2 · 17–18/10).
+- Consola, eventos: el estado de cada persona se cambia con un menú (E1); en E2 solo se ve, porque lo marca la página. Los mensajes del mago al grupo quedan como «✓ Hecho a las hh:mm» al marcarlos (la hora se guarda en el navegador; el evento, en la hoja).
+- Consola, mensajes: en E2 se explica que el mago no escribe al grupo y solo queda el recordatorio al organizador. En E2 tampoco se ofrece enviar el pulso por WhatsApp.
+- Consola, cambios W1 → W2: una tarjeta por experimento con su estado, un ejemplo y la explicación de la regla I4.
+- Inscripción: la etiqueta dice el canal desde el primer momento («Piloto · Cali · por WhatsApp» o «· en la web»).
+- Votación: «¿Cuál les suena?» y un botón destacado «Sí a todo» al inicio (me sirve cualquiera). Se guarda como opción -1: cuenta como voto y no elige opción; funciona con el backend 2.2.3 sin cambios. En E1, la consola registra «TODAS» como «Sí a todo» y los mensajes lo explican.
+- Sin cambios de backend: sigue con la implementación 2.2.3.
+
+### [2.0.4] · 2026-10-06 · QA de la sesión P6 b (5/10)
+- Inscripción: las dos preguntas de personas se distinguen («¿Cuántas personas tiene tu parche?» y «¿Cuántas van a este plan, contándote?») y una frase confirma la diferencia antes de seguir.
+- Consola, grupos: «Abrir chat con mensaje» deja escrito el primer mensaje de Sintonía según el estado del grupo y el rol de la persona (solo E1; en E2 el mago no escribe a los miembros y la pestaña de mensajes lo recuerda). En E1, con el grupo activo, una tarjeta explica que el grupo de WhatsApp se crea a mano y copia nombres y números.
+- Consola: recarga automática cada 60 s en la pestaña de grupos (sin borrar lo que se esté escribiendo) y hora de la última actualización.
+- Consola, planes: se muestran las preferencias que el parche escribió al inscribirse (Gemini ya las recibe) y el campo de Gemini pide solo lo de este plan. Al cerrar un plan, botón para crear la ronda siguiente en el mismo grupo de WhatsApp.
+- Consola, mensajes: selector «Para» (todo el grupo o una persona) con «Abrir chat con …» para mensajes individuales; mensajes nuevos de checkpoint por persona (/no_llega), hora de salida, «ya llegaron todos» y «¿ya en casa?»; orden según el momento del plan.
+- Consola, mensajes: «Ajustar con Gemini» dentro de cada mensaje, enviando su objetivo y su texto base. Corrige que el checkpoint devolviera el texto de activación. El texto generado queda en una caja editable que crece con el contenido (antes se salía de la caja).
+- Consola, eventos: tabla por persona con el estado en color (sin respuesta, se apuntó, no puede, llegó, en casa); los mensajes del mago al grupo van en una tarjeta aparte; se aclara que los botones registran y no envían.
+- Consola, minutos: etiquetas claras para el rol de quien trabajó y la causa.
+- Sin cambios de backend: sigue con la implementación 2.2.3.
+
 ### [2.0.3] · 2026-10-05
+- Validado en vivo en modo prueba (5/10): invitación del organizador, número repetido rechazado, «Ya aceptaste», grupo completo, etiqueta «Modo prueba», pulso bloqueado antes del encuentro y abierto después, «Volver a mi plan» y mensaje de revocado.
 - El frontend apunta a la implementación del backend 2.2.3 (`…OSae_U9Mf/exec`). La 2.0.2 seguía llamando a la implementación anterior (`…iiszymTNC`, código 2.2.2), así que los bloqueos de duplicados y la invitación del organizador no estaban activos.
 
 ### [2.0.2] · 2026-10-05 · revisión de flujos de navegación

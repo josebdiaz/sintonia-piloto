@@ -95,8 +95,12 @@
 
   function votando(r) {
     var ops = r.opciones || [], total = Math.max(1, Number(r.n_invitados) || 1);
-    var h = '<div class="hero"><h1>¿Cuál les late?</h1><p>Vota por una opción. Si ninguna te sirve, dilo: así nadie queda incómodo.</p></div>';
+    var h = '<div class="hero"><h1>¿Cuál les suena?</h1><p>Vota por una opción. Si te sirve cualquiera, dilo; si ninguna te sirve, también: así nadie queda incómodo.</p></div>';
     h += '<p class="small muted">' + (r.n_votos || 0) + ' de ' + (r.n_invitados || '?') + ' ya votaron · el conteo es anónimo</p>';
+    // 2.0.5: «Sí a todo» (me sirve cualquiera) se guarda como opción -1: cuenta como voto y deja que el resto decida
+    var flex = (r.conteo && r.conteo[-1]) || 0, todoMio = String(r.mi_voto) === '-1';
+    h += '<div class="card si-todo' + (todoMio ? ' mine' : '') + '"><div class="actions" style="margin:0;align-items:center;justify-content:space-between;flex-wrap:wrap"><div><h3 style="margin:0">¿Te sirve cualquiera?</h3><p class="small muted" style="margin:2px 0 0">Si te da igual, vota «Sí a todo» y que el parche decida.' + (flex ? ' ' + flex + (flex === 1 ? ' persona ya lo dijo.' : ' personas ya lo dijeron.') : '') + '</p></div>' +
+      '<button class="btn ' + (todoMio ? 'btn-ghost' : 'btn-honey') + '" data-todo data-busy="Guardando…">' + (todoMio ? '✓ Dijiste sí a todo' : 'Sí a todo') + '</button></div></div>';
     ops.forEach(function (o, i) {
       var n = (r.conteo && r.conteo[i]) || 0, mine = String(r.mi_voto) === String(i);
       h += '<article class="option' + (mine ? ' mine' : '') + '">' + optionHtml(o, i,
@@ -107,10 +111,11 @@
     html(h);
     S.$$('[data-voto]', app).forEach(function (b) { b.onclick = function () { votar(b, Number(b.dataset.voto), false); }; });
     S.$('[data-veto]', app).onclick = function () { votar(this, '', true); };
+    S.$('[data-todo]', app).onclick = function () { votar(this, -1, false); };
   }
   function votar(btn, opcion, veto) {
     S.busy(btn, function () { return S.post({ action: 'votar', plan_id: planId, pid: pid, opcion: opcion, veto: veto }); })
-      .then(function (r) { if (!r || !r.ok) return S.toast(S.errMsg(r), true); S.toast(veto ? 'Anotado: ninguna te sirve.' : '¡Voto guardado!'); load(); });
+      .then(function (r) { if (!r || !r.ok) return S.toast(S.errMsg(r), true); S.toast(veto ? 'Anotado: ninguna te sirve.' : opcion === -1 ? 'Anotado: te sirve cualquiera.' : '¡Voto guardado!'); load(); });
   }
 
   function cerrado(r) {

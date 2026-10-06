@@ -48,9 +48,10 @@
         <p class="small muted">Con esto sabemos cómo arrancan. No hay respuestas buenas ni malas.</p>
         <div class="field"><span class="label">¿Qué tipo de grupo es?</span><div id="tipo"></div></div>
         <div class="row">
-          <div class="field"><label for="tamano">¿Cuántas personas son en total?</label><input id="tamano" type="number" inputmode="numeric" min="2" max="60" required><span class="hint">Todo el grupo, aunque no vengan todos.</span></div>
-          <div class="field"><label for="ninv">¿Cuántas invitas a esta prueba?</label><input id="ninv" type="number" inputmode="numeric" min="2" max="8" required><span class="hint">Entre 2 y 8, contándote.</span></div>
+          <div class="field"><label for="tamano">¿Cuántas personas tiene tu parche?</label><input id="tamano" type="number" inputmode="numeric" min="2" max="60" required><span class="hint">Todo el grupo, aunque casi nunca salgan todos.</span></div>
+          <div class="field"><label for="ninv">¿Cuántas van a este plan, contándote?</label><input id="ninv" type="number" inputmode="numeric" min="2" max="8" required><span class="hint">Entre 2 y 8. Pueden ser menos que el parche completo.</span></div>
         </div>
+        <p class="small muted" id="resumenN" aria-live="polite"></p>
         <div class="row">
           <div class="field"><label for="realizados">Planes que sí hicieron el último mes</label><input id="realizados" type="number" inputmode="numeric" min="0" max="31" required></div>
           <div class="field"><label for="fallidos">Planes que se cayeron el último mes</label><input id="fallidos" type="number" inputmode="numeric" min="0" max="31" required></div>
@@ -113,7 +114,8 @@
   var expRaw = String(S.param('exp') || '').toUpperCase(), expValida = expRaw === 'E1' || expRaw === 'E2';
   var exp = expRaw === 'E2' ? 'E2' : 'E1';
   var modo = S.param('modo') === 'prueba' ? 'prueba' : 'piloto';
-  if (modo === 'prueba') S.$('#tagExp').textContent = 'Modo prueba · ' + exp;
+  // 2.0.5: el canal del experimento queda visible desde la inscripción (E1 por WhatsApp, E2 en la web)
+  if (expValida) S.$('#tagExp').textContent = (modo === 'prueba' ? 'Modo prueba · ' : 'Piloto · Cali · ') + (exp === 'E2' ? 'en la web' : 'por WhatsApp');
 
   var yo = S.me();
   if (yo.pid && yo.rol === 'organizador' && modo !== 'prueba') {
@@ -137,12 +139,20 @@
     S.$('#stepLabel').textContent = labels[n]; window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   function int(id) { var v = S.$(id).value; return v === '' ? '' : parseInt(v, 10); }
+  // 2.0.4 (QA 5/10): una frase que confirma la diferencia entre el parche y las personas de este plan
+  function resumenN() {
+    var t = int('#tamano'), n = int('#ninv'), out = S.$('#resumenN');
+    if (t === '' || n === '' || n < 2) { out.textContent = ''; return; }
+    out.textContent = n > t ? 'Al plan no pueden ir más personas de las que tiene tu parche.'
+      : 'Tu parche tiene ' + t + ' personas y a este plan van ' + n + ': tú y ' + (n - 1) + ' más. Cada una acepta desde su propio enlace.';
+  }
+  ['#tamano', '#ninv'].forEach(function (id) { S.$(id).addEventListener('input', resumenN); });
   function valida1() {
     if (!tipo.value()) return 'Elige qué tipo de grupo es.';
     var t = int('#tamano'), n = int('#ninv');
-    if (t === '' || t < 2) return '¿Cuántas personas son en total? (mínimo 2)';
-    if (n === '' || n < 2 || n > 8) return 'Invita entre 2 y 8 personas, contándote.';
-    if (n > t) return 'No puedes invitar a más personas de las que tiene el grupo.';
+    if (t === '' || t < 2) return 'Cuéntanos cuántas personas tiene tu parche (mínimo 2).';
+    if (n === '' || n < 2 || n > 8) return 'Al plan van entre 2 y 8 personas, contándote.';
+    if (n > t) return 'Al plan no pueden ir más personas de las que tiene tu parche.';
     if (int('#realizados') === '' || int('#fallidos') === '') return 'Cuéntanos cuántos planes hicieron y cuántos se cayeron (puede ser 0).';
     if (!fatiga.value()) return 'Marca qué tan desgastante es cuadrar un plan (1 a 5).';
     return '';
