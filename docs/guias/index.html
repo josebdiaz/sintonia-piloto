@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Sintonía · Control de guías</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
+<style>
+  /* Visual de control: tres columnas por estado; no carga nada del piloto ni consulta el backend */
+  :root {
+    --bg: #f4f1ec; --paper: #fffdf8; --ink: #211f1a; --muted: #635d53; --line: #e3dccf;
+    --vig: #0f6e63; --vig-soft: #e0efec; --hec: #5a5f6b; --hec-soft: #ebeae6; --pen: #a8650f; --pen-soft: #f8ead3;
+    --focus: #0f6e63;
+    --disp: "Bricolage Grotesque", Georgia, serif; --body: "Hanken Grotesk", -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #151310; --paper: #1e1b17; --ink: #efeae1; --muted: #a8a194; --line: #302b23;
+    --vig: #5cc6b6; --vig-soft: #13302b; --hec: #b4b6bd; --hec-soft: #26252a; --pen: #e2a14c; --pen-soft: #33270f; --focus: #5cc6b6; color-scheme: dark; } }
+  :root[data-theme="dark"] {
+    --bg: #151310; --paper: #1e1b17; --ink: #efeae1; --muted: #a8a194; --line: #302b23;
+    --vig: #5cc6b6; --vig-soft: #13302b; --hec: #b4b6bd; --hec-soft: #26252a; --pen: #e2a14c; --pen-soft: #33270f; --focus: #5cc6b6; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 28px 20px 64px; }
+  header.top { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: flex-end; justify-content: space-between; margin-bottom: 18px; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+  h1 { font-family: var(--disp); font-weight: 700; font-size: clamp(28px, 4vw, 40px); line-height: 1.05; letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+  .lead { color: var(--muted); max-width: 68ch; margin: 10px 0 0; }
+  .meta-top { font-size: 13px; color: var(--muted); text-align: right; }
+  .resumen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 22px 0 16px; }
+  .cuenta { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; align-items: baseline; gap: 10px; }
+  .cuenta b { font-family: var(--disp); font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .cuenta span { font-size: 14px; color: var(--muted); }
+  .cuenta.vigente b { color: var(--vig); } .cuenta.hecha b { color: var(--hec); } .cuenta.pendiente b { color: var(--pen); }
+  .filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 22px; }
+  .filtros input { flex: 1 1 220px; min-width: 0; font: inherit; font-size: 15px; padding: 9px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); }
+  .chip { font: inherit; font-size: 13px; font-weight: 600; padding: 7px 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .tablero { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+  @media (max-width: 900px) { .tablero { grid-template-columns: 1fr; } .meta-top { text-align: left; } .cuenta { flex-direction: column; gap: 2px; padding: 10px 12px; } .cuenta b { font-size: 28px; } }
+  .col > h2 { display: flex; align-items: center; gap: 10px; font-family: var(--disp); font-size: 20px; margin: 0 0 4px; }
+  .col > p { margin: 0 0 12px; font-size: 13px; color: var(--muted); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .vigente .dot { background: var(--vig); } .hecha .dot { background: var(--hec); } .pendiente .dot { background: var(--pen); }
+  .lista { display: grid; gap: 12px; }
+  .guia { background: var(--paper); border: 1px solid var(--line); border-left: 5px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+  .vigente .guia { border-left-color: var(--vig); } .hecha .guia { border-left-color: var(--hec); } .pendiente .guia { border-left-color: var(--pen); border-left-style: dashed; }
+  .ambito { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; border-radius: 999px; padding: 2px 9px; }
+  .vigente .ambito { background: var(--vig-soft); color: var(--vig); } .hecha .ambito { background: var(--hec-soft); color: var(--hec); } .pendiente .ambito { background: var(--pen-soft); color: var(--pen); }
+  .guia h3 { font-size: 16px; line-height: 1.3; margin: 8px 0 6px; text-wrap: balance; }
+  .guia p { margin: 0 0 8px; font-size: 14px; }
+  .guia dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 0 0 10px; font-size: 13px; }
+  .guia dt { color: var(--muted); }
+  .guia dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .siguiente { font-size: 13px; border-radius: 8px; padding: 8px 10px; margin: 0 0 10px; }
+  .vigente .siguiente { background: var(--vig-soft); } .hecha .siguiente { background: var(--hec-soft); } .pendiente .siguiente { background: var(--pen-soft); }
+  .enlaces { display: flex; flex-wrap: wrap; gap: 6px; }
+  .enlaces a { font-size: 13px; font-weight: 600; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; }
+  .enlaces a:hover { border-color: var(--ink); }
+  .ruta { font-size: 12px; color: var(--muted); font-family: ui-monospace, Menlo, monospace; overflow-wrap: anywhere; margin-top: 8px; }
+  .vacio { font-size: 13px; color: var(--muted); padding: 8px 0; }
+  footer { margin-top: 36px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Sintonía · documentación</p>
+      <h1>Control de guías de implementación</h1>
+      <p class="lead">Todas las guías del proyecto en un solo lugar, según su estado: <b>vigente</b> (se usa hoy), <b>hecha</b> (se ejecutó o quedó superada) y <b>pendiente</b> (todavía no se aplica). Cada tarjeta dice para qué sirve, quién la usa y el siguiente paso.</p>
+    </div>
+    <div class="meta-top">Revisión del 6/10/2026<br>Piloto en frontend 2.0.7 · backend 2.2.5</div>
+  </header>
+
+  <section class="resumen" aria-label="Resumen por estado" id="resumen"></section>
+
+  <div class="filtros" role="search">
+    <input id="q" type="search" placeholder="Buscar una guía (p. ej. Firebase, retiro, inventario)" aria-label="Buscar una guía">
+    <div id="ambitos" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+  </div>
+
+  <div class="tablero" id="tablero"></div>
+
+  <footer>Visual de control. Esta página no se conecta al piloto, a la consola ni a los paneles, y no lee ni escribe datos: solo enlaza a los documentos del repositorio. Para cambiar el estado de una guía, edita la lista en <code>docs/guias/index.html</code> y en <code>docs/guias/README.md</code>.</footer>
+</main>
+<script>
+(function () {
+  var GUIAS = [
+ {
+  "id": "protocolo-m2",
+  "estado": "vigente",
+  "ambito": "Operación del piloto",
+  "titulo": "Protocolo de operación M2 (E1 y E2)",
+  "para": "Qué hace el mago en cada condición, el ensayo en modo prueba, cómo empezar el piloto real, la asignación W1/W2, las contingencias y el cambio único entre rondas (I4).",
+  "version": "Frontend 2.0.7 · backend 2.2.5 · 6/10/2026",
+  "quien": "José y Katherine",
+  "siguiente": "Jueves 9/10: ensayo en modo prueba. Después, «⟲ Empezar piloto real». W1: 10–11/10.",
+  "archivo": "docs/protocolo-m2.md",
+  "tipo": "md"
+ },
+ {
+  "id": "backend",
+  "estado": "vigente",
+  "ambito": "Backend y publicación",
+  "titulo": "Desplegar el backend en Apps Script",
+  "para": "Pegar el .gs, correr probarMontaje y publicar como Nueva versión sin cambiar la URL /exec. Propiedades del script que necesita.",
+  "version": "Backend 2.2.5 · 6/10/2026",
+  "quien": "José (dueño del script)",
+  "siguiente": "Por confirmar: que la implementación en vivo ya sea la 2.2.5 (corregir_plan, minutos, «✓ Hecho»).",
+  "archivo": "backend/README.md",
+  "tipo": "md"
+ },
+ {
+  "id": "versiones",
+  "estado": "vigente",
+  "ambito": "Backend y publicación",
+  "titulo": "Publicar versiones y llevar el historial",
+  "para": "GitHub flow, SemVer por componente, tags piloto/vX y backend/vX, publicar.sh y publicar_deck.sh, y la regla de un cambio entre W1 y W2.",
+  "version": "README del repositorio · 6/10/2026",
+  "quien": "José",
+  "siguiente": "Al día: 2.0.7 y 2.2.5 publicados el 6/10.",
+  "archivo": "README.md",
+  "ancla": "cómo-trabajar-github-flow",
+  "extra": [
+   [
+    "CHANGELOG",
+    "CHANGELOG.md"
+   ]
+  ],
+  "tipo": "md"
+ },
+ {
+  "id": "datos",
+  "estado": "vigente",
+  "ambito": "Datos y ética",
+  "titulo": "Cumplimiento legal de datos personales",
+  "para": "Ley 1581 de 2012: consentimiento, minimización, separación de contactos, retiro y borrado al cerrar el estudio. Qué cambia en producción.",
+  "version": "3/10/2026 · correo de contacto activo desde 2.0.6",
+  "quien": "Equipo",
+  "siguiente": "Piloto cubierto (aviso, retiro en dos pasos desde 2.0.7). Producción (H2): revisión legal y aval del comité.",
+  "archivo": "docs/guias/cumplimiento-datos.md",
+  "tipo": "md"
+ },
+ {
+  "id": "inventario",
+  "estado": "vigente",
+  "ambito": "Operación del piloto",
+  "titulo": "Inventario de lugares y ronda de llamadas",
+  "para": "Regla de estado (activo / por confirmar): solo lo activo entra en un plan (I6). Qué confirmar por teléfono antes de cada fin de semana.",
+  "version": "Regla de la v1 (3/10) · la hoja manda: v3, 17 activos",
+  "quien": "Katherine y José",
+  "siguiente": "Ronda de llamadas antes del 9/10 y antes de cada fin de semana.",
+  "archivo": "docs/guias/inventario-ronda-de-llamadas.md",
+  "tipo": "md"
+ },
+ {
+  "id": "github",
+  "estado": "vigente",
+  "ambito": "Colaboración",
+  "titulo": "Trabajar el repositorio con ChatGPT y Claude",
+  "para": "Katherine actualiza la documentación directamente y propone cambios al prototipo por pull request; José da los permisos y revisa.",
+  "version": "6/10/2026",
+  "quien": "Katherine (20 min) · José (10 min)",
+  "siguiente": "Por confirmar: que Katherine aceptó la invitación y conectó GitHub en ChatGPT.",
+  "archivo": "docs/guias/colaboracion-github.html",
+  "tipo": "html"
+ },
+ {
+  "id": "wording",
+  "estado": "vigente",
+  "ambito": "Diseño y textos",
+  "titulo": "Wording verificado",
+  "para": "Textos exactos y criterio verbal: nombrar el progreso real, sin promesas clínicas ni lenguaje de citas.",
+  "version": "v2 · 16/9/2026 (criterio vigente; los textos son de P4)",
+  "quien": "Equipo",
+  "siguiente": "Los textos del piloto M2 viven en el frontend; el criterio sigue valiendo.",
+  "archivo": "docs/wording-verificado-v2.md",
+  "tipo": "md"
+ },
+ {
+  "id": "plan-e1e2",
+  "estado": "hecha",
+  "ambito": "Operación del piloto",
+  "titulo": "Plan de implementación de E1 (WhatsApp) y E2 (web)",
+  "para": "Cómo se montó el piloto Mago de Oz de dos semanas: Gemini desde Apps Script, páginas en GitHub Pages, número de WhatsApp Business y asignación por mitades.",
+  "version": "4/10/2026",
+  "quien": "José",
+  "siguiente": "Reemplazada para operar por el protocolo M2.",
+  "archivo": "docs/guias/plan-implementacion-e1-e2.md",
+  "tipo": "md"
+ },
+ {
+  "id": "storyboard",
+  "estado": "hecha",
+  "ambito": "Diseño y textos",
+  "titulo": "Prompt del storyboard M2 (Gemini Spark)",
+  "para": "Generar las 8 viñetas del recorrido del parche con nano banana.",
+  "version": "4/10/2026",
+  "quien": "José",
+  "siguiente": "Hecho: las viñetas están en docs/storyboard-m2/ y en el deck.",
+  "archivo": "docs/guias/prompt-storyboard-m2.md",
+  "tipo": "md"
+ },
+ {
+  "id": "hosting-p4",
+  "estado": "hecha",
+  "ambito": "Archivo P4",
+  "titulo": "Publicar la landing en GitHub Pages y el backend en Apps Script (H1)",
+  "para": "Montaje inicial del Periodo 4: primero el backend para tener el endpoint, luego el hosting.",
+  "version": "12/9/2026",
+  "quien": "José",
+  "siguiente": "Superada por backend/README.md y la reestructura del repositorio (4/10).",
+  "archivo": "archivo/p4-pre-pivote/researchers/guia-hosting.md",
+  "tipo": "md"
+ },
+ {
+  "id": "paquete-p4",
+  "estado": "hecha",
+  "ambito": "Archivo P4",
+  "titulo": "Paquete de implementación del Periodo 4",
+  "para": "Los cuatro mecanismos H1–H4 (disposición a pagar, llegada, interacción, continuidad) listos para operar con Mateo.",
+  "version": "15/9/2026",
+  "quien": "Equipo",
+  "siguiente": "Cerrado con el pivote; las páginas quedan en archivo/p4-pre-pivote/.",
+  "archivo": "docs/guias/paquete-implementacion-p4.md",
+  "tipo": "md"
+ },
+ {
+  "id": "cambios-v2",
+  "estado": "hecha",
+  "ambito": "Archivo P4",
+  "titulo": "Cambios del prototipo v2 (café-coworking)",
+  "para": "Actividad única, estímulo de precio COP 39.900 y wording según Verbatum.",
+  "version": "16/9/2026",
+  "quien": "Equipo",
+  "siguiente": "Aplicados en P4.",
+  "archivo": "docs/guias/cambios-prototipo-v2-p4.md",
+  "tipo": "md"
+ },
+ {
+  "id": "video-h3",
+  "estado": "hecha",
+  "ambito": "Archivo P4",
+  "titulo": "Análisis de video del microencuentro H3",
+  "para": "Rúbrica para analizar la grabación cenital de la cata a ciegas y alimentar el registro de H3.",
+  "version": "13/9/2026",
+  "quien": "Investigadores",
+  "siguiente": "Cerrado con P4.",
+  "archivo": "archivo/p4-pre-pivote/researchers/prompt-analisis-video-h3.md",
+  "tipo": "md"
+ },
+ {
+  "id": "lovable",
+  "estado": "hecha",
+  "ambito": "Archivo P4",
+  "titulo": "Prompt para Lovable (landing y panel H1)",
+  "para": "Escalar H1 a más canales con backend propio. No hizo falta: bastó la landing autónoma.",
+  "version": "9/9/2026",
+  "quien": "—",
+  "siguiente": "Superada sin ejecutar: el pivote cambió el alcance.",
+  "archivo": "archivo/p4-pre-pivote/researchers/prompt-lovable-h1.md",
+  "tipo": "md"
+ },
+ {
+  "id": "e2-auto",
+  "estado": "pendiente",
+  "ambito": "E2 autónoma",
+  "titulo": "Protocolo de E2 autónoma con revisión humana periódica",
+  "para": "Qué hace sola la web app, las barandas G1–G6, el plan B, las ventanas de revisión humana, la regla de parada y los avisos web.",
+  "version": "Borrador · 6/10/2026",
+  "quien": "Decisión con Néstor",
+  "siguiente": "Decisión del 7/10 y aviso v2-autonoma aprobado por el comité. Reemplazaría a E2 en la W2.",
+  "archivo": "docs/guias/e2-autonoma-protocolo.html",
+  "tipo": "html"
+ },
+ {
+  "id": "e2-firebase",
+  "estado": "pendiente",
+  "ambito": "E2 autónoma",
+  "titulo": "Backend 2.3.0, frontend 2.1.0 y Firebase",
+  "para": "Qué trae el borrador, la configuración de Firebase Cloud Messaging y los pasos para desplegarlo cuando haya luz verde.",
+  "version": "Borrador · backend 2.3.0 (incluye 2.2.5) · frontend 2.1.0",
+  "quien": "José",
+  "siguiente": "Propiedades FCM en Apps Script; pasar a 2.1.0 los cambios de 2.0.6 y 2.0.7; desplegar solo con aprobación.",
+  "archivo": "docs/guias/e2-autonoma-backend-y-firebase.md",
+  "tipo": "md"
+ },
+ {
+  "id": "e3",
+  "estado": "pendiente",
+  "ambito": "Iteraciones futuras",
+  "titulo": "E3 «Charladita»: necesidades de backend",
+  "para": "13 necesidades priorizadas (4 bloqueantes) para implementar la charla guiada después del piloto.",
+  "version": "5/10/2026 · base backend 2.2.3",
+  "quien": "Equipo",
+  "siguiente": "Después del piloto en curso; no se toca E1/E2 por E3.",
+  "archivo": "docs/guias/e3-necesidades-backend.md",
+  "tipo": "md"
+ },
+ {
+  "id": "cluster",
+  "estado": "pendiente",
+  "ambito": "Iteraciones futuras",
+  "titulo": "Algoritmo de clusterización de microgrupos",
+  "para": "Pasar de agrupar a mano a proponer grupos con un algoritmo, usando las señales de los experimentos. Para probarse, no para prometerse.",
+  "version": "13/9/2026 (antes del pivote)",
+  "quien": "—",
+  "siguiente": "Idea abierta; revisar si aplica al modelo de grupos que ya existen.",
+  "archivo": "archivo/p4-pre-pivote/researchers/iteracion-clusterizacion.md",
+  "tipo": "md"
+ }
+];
+  var GH = 'https://github.com/josebdiaz/sintonia-piloto/blob/main/';
+  var COLS = [['vigente', 'Vigente', 'Se usa hoy en el piloto o en el trabajo del equipo.'], ['hecha', 'Hecha', 'Se ejecutó o quedó superada; se conserva como registro.'], ['pendiente', 'Pendiente', 'Lista para aplicar cuando se cumpla su condición.']];
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var ambitos = GUIAS.map(function (g) { return g.ambito; }).filter(function (a, i, arr) { return arr.indexOf(a) === i; });
+  var filtro = '', texto = '';
+  function enlaces(g) {
+    var out = [];
+    if (g.tipo === 'html') out.push(['Abrir', g.archivo.indexOf('docs/guias/') === 0 ? g.archivo.slice(11) : '../../' + g.archivo]);
+    out.push([g.tipo === 'html' ? 'Ver en GitHub' : 'Abrir en GitHub', GH + g.archivo + (g.ancla ? '#' + g.ancla : '')]);
+    (g.extra || []).forEach(function (x) { out.push([x[0], GH + x[1]]); });
+    return out.map(function (a) { var ext = /^https?:/.test(a[1]); return '<a href="' + esc(a[1]) + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + esc(a[0]) + (ext ? ' ↗' : ' →') + '</a>'; }).join('');
+  }
+  function pasa(g) { if (filtro && g.ambito !== filtro) return false; if (!texto) return true; return (g.titulo + ' ' + g.para + ' ' + g.ambito + ' ' + g.siguiente + ' ' + g.version).toLowerCase().indexOf(texto) >= 0; }
+  function render() {
+    document.getElementById('resumen').innerHTML = COLS.map(function (c) { var n = GUIAS.filter(function (g) { return g.estado === c[0]; }).length; return '<div class="cuenta ' + c[0] + '"><b>' + n + '</b><span>' + c[1].toLowerCase() + (n === 1 ? '' : 's') + '</span></div>'; }).join('');
+    document.getElementById('tablero').innerHTML = COLS.map(function (c) {
+      var gs = GUIAS.filter(function (g) { return g.estado === c[0] && pasa(g); });
+      return '<section class="col ' + c[0] + '" aria-labelledby="h-' + c[0] + '"><h2 id="h-' + c[0] + '"><span class="dot" aria-hidden="true"></span>' + c[1] + ' <span style="font-size:14px;color:var(--muted);font-family:var(--body)">(' + gs.length + ')</span></h2><p>' + c[2] + '</p><div class="lista">' +
+        (gs.length ? gs.map(function (g) {
+          return '<article class="guia" id="' + esc(g.id) + '"><span class="ambito">' + esc(g.ambito) + '</span><h3>' + esc(g.titulo) + '</h3><p>' + esc(g.para) + '</p>' +
+            '<dl><dt>Versión</dt><dd>' + esc(g.version) + '</dd><dt>Quién</dt><dd>' + esc(g.quien) + '</dd></dl>' +
+            '<div class="siguiente"><b>' + (c[0] === 'hecha' ? 'Estado' : 'Siguiente') + ':</b> ' + esc(g.siguiente) + '</div><div class="enlaces">' + enlaces(g) + '</div><div class="ruta">' + esc(g.archivo) + '</div></article>';
+        }).join('') : '<div class="vacio">Nada con este filtro.</div>') + '</div></section>';
+    }).join('');
+  }
+  var box = document.getElementById('ambitos');
+  box.innerHTML = ['Todas'].concat(ambitos).map(function (a, i) { return '<button type="button" class="chip" aria-pressed="' + (i === 0) + '" data-a="' + (i === 0 ? '' : esc(a)) + '">' + esc(a) + '</button>'; }).join('');
+  box.addEventListener('click', function (ev) { var b = ev.target.closest('.chip'); if (!b) return; filtro = b.dataset.a; box.querySelectorAll('.chip').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); render(); });
+  document.getElementById('q').addEventListener('input', function () { texto = this.value.trim().toLowerCase(); render(); });
+  render();
+})();
+</script>
+</body>
+</html>

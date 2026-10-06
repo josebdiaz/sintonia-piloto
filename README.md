@@ -27,6 +27,7 @@ Sitio publicado (GitHub Pages, rama `main`): https://josebdiaz.github.io/sintoni
 ├─ datos/                Datos de referencia sin información personal
 │  └─ Inventario_Planes_Cali.csv
 ├─ docs/                 Protocolo, textos, storyboard y deck del pivote
+│  └─ guias/           Control de guías de implementación (vigente · hecha · pendiente); no se conecta al piloto
 ├─ archivo/              Versiones que ya no se usan (solo lectura, sin conexión al backend del piloto)
 │  ├─ p4-pre-pivote/     Experimentos H1–H4 del Periodo 4 y panel de investigadores
 │  ├─ piloto-m1-claude/  Frontend 1.0.0 («M1»)
@@ -49,6 +50,7 @@ Sitio publicado (GitHub Pages, rama `main`): https://josebdiaz.github.io/sintoni
 | Empezar piloto real (equipo) | https://josebdiaz.github.io/sintonia-piloto/piloto/mago.html#reinicio |
 | Aviso de privacidad | https://josebdiaz.github.io/sintonia-piloto/piloto/aviso.html |
 | Protocolo de operación | [docs/protocolo-m2.md](docs/protocolo-m2.md) |
+| Control de guías (equipo) | https://josebdiaz.github.io/sintonia-piloto/docs/guias/ · [lista](docs/guias/README.md) |
 
 Los enlaces de condición (E1/E2) los asigna el equipo; no se publican en el portal para no contaminar la asignación.
 Los enlaces viejos (`/M2-Claude/…`) siguen funcionando: `404.html` los redirige a `/piloto/…` con sus parámetros.

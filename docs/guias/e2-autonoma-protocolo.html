@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Protocolo E2 autónoma</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* Layout: documento de protocolo de una columna; el flujo autónomo se lee como una línea de estados y la revisión humana como un reloj de ventanas */
+  :root{
+    --bg:#f3efe6; --paper:#fffdf8; --ink:#211f1a; --muted:#5f5a51; --line:#e2dbcf;
+    --pine:#0f6e63; --pine-ink:#0a4f47; --pine-soft:#e0efec;
+    --honey:#c67a1e; --honey-ink:#8f5410; --honey-soft:#f7ebd8;
+    --stop:#b23b2e; --stop-soft:#f7e4e1; --blue:#2b6cb0; --blue-soft:#e6eef7;
+    --disp:"Bricolage Grotesque",Georgia,serif;
+    --body:"Hanken Grotesk",-apple-system,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#12110e; --paper:#1c1a16; --ink:#efeae1; --muted:#b3aa9b; --line:#332e25;
+    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
+    --honey:#dd9c44; --honey-ink:#eab866; --honey-soft:#2f2513;
+    --stop:#e07567; --stop-soft:#331714; --blue:#5b9bd8; --blue-soft:#13202e; color-scheme:dark; } }
+  :root[data-theme="dark"]{
+    --bg:#12110e; --paper:#1c1a16; --ink:#efeae1; --muted:#b3aa9b; --line:#332e25;
+    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
+    --honey:#dd9c44; --honey-ink:#eab866; --honey-soft:#2f2513;
+    --stop:#e07567; --stop-soft:#331714; --blue:#5b9bd8; --blue-soft:#13202e; color-scheme:dark; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding-inline:20px;padding-block:40px 72px}
+  a{color:var(--pine-ink)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--pine);margin:0 0 10px}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(30px,5vw,44px);line-height:1.05;letter-spacing:-.025em;margin:0 0 14px;text-wrap:balance}
+  h2{font-family:var(--disp);font-weight:700;font-size:clamp(21px,3vw,26px);letter-spacing:-.015em;margin:0 0 8px;text-wrap:balance}
+  h3{font-family:var(--disp);font-weight:700;font-size:17px;margin:0 0 6px}
+  p{margin:0 0 10px;max-width:72ch}
+  .lead{color:var(--muted);font-size:18px;max-width:66ch}
+  section{margin-top:44px}
+  .sec-n{font-family:var(--mono);font-size:12px;color:var(--honey-ink);font-weight:600;letter-spacing:.06em}
+  .st{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:2px 6px;white-space:nowrap;vertical-align:middle}
+  .st.hy{background:var(--honey-soft);color:var(--honey-ink)} .st.pv{background:var(--blue-soft);color:var(--blue)} .st.ok{background:var(--pine-soft);color:var(--pine-ink)} .st.pe{background:var(--stop-soft);color:var(--stop)}
+  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+  .summary div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+  .summary b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--honey-ink);margin-bottom:4px}
+  .summary p{margin:0;font-size:15px;color:var(--muted)}
+  .tw{overflow-x:auto;margin-top:14px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;line-height:1.45}
+  th{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;background:var(--bg);border-bottom:1px solid var(--line)}
+  td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.k{font-weight:700;white-space:nowrap} td.mono{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+  .flow{list-style:none;counter-reset:f;margin:16px 0 0;padding:0;display:grid;gap:10px}
+  .flow li{counter-increment:f;display:grid;grid-template-columns:44px minmax(0,1fr) minmax(0,220px);gap:12px;align-items:start;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .flow li::before{content:counter(f);width:30px;height:30px;border-radius:50%;background:var(--pine);color:var(--paper);font-family:var(--disp);font-weight:700;display:grid;place-items:center}
+  .flow h3{margin:2px 0 2px} .flow p{margin:0;font-size:14.5px;color:var(--muted)}
+  .flow .who{font-family:var(--mono);font-size:11.5px;color:var(--muted);line-height:1.5}
+  .flow .who b{color:var(--ink);font-weight:600}
+  .clock{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+  .clock div{background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--pine);border-radius:0 0 12px 12px;padding:12px 14px;min-width:0}
+  .clock div.x{border-top-color:var(--stop)}
+  .clock .t{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--honey-ink)}
+  .clock p{margin:4px 0 0;font-size:14px;color:var(--muted)}
+  .rules{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .rules div{border-radius:12px;padding:14px 16px;min-width:0;font-size:15px}
+  .rules .a{background:var(--pine-soft)} .rules .b{background:var(--stop-soft)}
+  .rules ul{margin:6px 0 0;padding-left:18px} .rules li{margin:3px 0}
+  .tk{border-left:4px solid var(--pine);padding:4px 0 4px 16px;margin:16px 0 0;max-width:76ch}
+  .tk.h{border-color:var(--honey)}
+  code{font-family:var(--mono);font-size:.88em;background:var(--paper);border:1px solid var(--line);border-radius:5px;padding:0 5px}
+  .toc{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:20px;font-size:14px}
+  .small{font-size:14px;color:var(--muted)}
+  footer{margin-top:48px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+  @media (max-width:720px){ .summary,.clock,.rules{grid-template-columns:1fr} .flow li{grid-template-columns:36px minmax(0,1fr)} .flow .who{grid-column:2} }
+</style>
+</head>
+<body>
+<div style="font:600 13px/1.4 system-ui,sans-serif;background:#fff4d6;color:#5b4410;padding:8px 16px;text-align:center">Guía pendiente · borrador para la decisión del 7/10 · <a href="index.html" style="color:inherit">Control de guías</a></div>
+
+<div class="wrap">
+  <p class="eyebrow">Sintonía · diseño de experimento · borrador para Néstor</p>
+  <h1>E2 autónoma con revisión humana periódica</h1>
+  <p class="lead">En la ronda 2 (W2, 17–18/10), los grupos de E2 usan una web app que crea, publica, cierra y recuerda el plan sin un mago en vivo. Una persona del equipo revisa todo en ventanas fijas y atiende solo las excepciones. El objetivo es medir si la llegada se sostiene cuando el trabajo humano baja.</p>
+  <p class="small"><span class="st hy">Hipótesis</span> todo el documento es una propuesta de diseño. Las metas son preliminares y se ajustan con la línea base de W1.</p>
+
+  <div class="summary">
+    <div><b>Qué cambia</b><p>E2 pasa de supervisada (W1, v1) a autónoma (W2, v2). Es el único cambio permitido para E2 entre W1 y W2 (regla I4).</p></div>
+    <div><b>Qué no cambia</b><p>E1 sigue igual. Mismos grupos E2, mismo backend, mismo inventario verificado, misma métrica principal.</p></div>
+    <div><b>Qué se aprende</b><p>Cuánto trabajo humano queda cuando se automatiza, dónde falla la máquina y si la gente igual llega.</p></div>
+  </div>
+  <nav class="toc" aria-label="Contenido"><a href="#preguntas">1 · Pregunta</a><a href="#diseno">2 · Diseño</a><a href="#flujo">3 · Flujo</a><a href="#barandas">4 · Barandas</a><a href="#revision">5 · Revisión humana</a><a href="#avisos">6 · Avisos</a><a href="#metricas">7 · Métricas</a><a href="#etica">8 · Ética</a><a href="#spec">9 · Especificación</a><a href="#cronograma">10 · Cronograma</a><a href="#riesgos">11 · Riesgos</a></nav>
+
+  <section id="preguntas">
+    <p class="sec-n">1 · PREGUNTA E HIPÓTESIS</p>
+    <h2>¿La web app puede coordinar sola, con una persona que revisa unas veces al día?</h2>
+    <p><b>Hipótesis H-A.</b> Con barandas automáticas y revisión humana periódica, E2 autónoma mantiene la proporción de personas que llegan y reduce el trabajo humano por plan frente a E2 supervisada.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Indicador</th><th>Meta preliminar</th><th>Fuente</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Llegaron / invitadas</td><td>No más de 10 puntos por debajo de E2 en W1</td><td>«¡Llegué!» en la página</td></tr>
+        <tr><td class="k">Minutos humanos por plan</td><td>Al menos 60 % menos que E2 en W1</td><td>Hoja de operación (I3) + revisiones</td></tr>
+        <tr><td class="k">Intervenciones visibles por plan</td><td>Como máximo 1</td><td>Hoja de revisiones</td></tr>
+        <tr><td class="k">Lugares cerrados o inexistentes que llegan al grupo</td><td>0 (regla de parada)</td><td>Revisión + reportes del grupo</td></tr>
+        <tr><td class="k">Personas con avisos activados</td><td>Al menos 50 %</td><td>Hoja de suscripciones</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="diseno">
+    <p class="sec-n">2 · DISEÑO</p>
+    <h2>Antes y después dentro de E2, con E1 como referencia</h2>
+    <div class="tw"><table>
+      <thead><tr><th></th><th>W1 · 10–11/10</th><th>W2 · 17–18/10</th></tr></thead>
+      <tbody>
+        <tr><td class="k">E1 · WhatsApp + mago</td><td>v1 supervisada</td><td>v2 con su propio cambio I4</td></tr>
+        <tr><td class="k">E2 · Web app</td><td>v1 supervisada: el mago cura y cierra</td><td><b>v2 autónoma</b>: la app crea, publica, cierra y recuerda; revisión periódica</td></tr>
+      </tbody>
+    </table></div>
+    <p class="tk">La lectura es descriptiva. El cambio de W1 a W2 en E2 mezcla la autonomía con el efecto de una segunda ronda. Para separarlos en parte, se compara con lo que cambia E1 entre W1 y W2. Con 2 grupos por condición los resultados son <b>Emergentes</b>. La automatización entra como un solo paquete (el cambio I4 de E2) y se declara así en el change log.</p>
+  </section>
+
+  <section id="flujo">
+    <p class="sec-n">3 · FLUJO AUTÓNOMO</p>
+    <h2>Del grupo completo a la pregunta «¿ya en casa?»</h2>
+    <p>Una tarea programada en el backend revisa cada 15 minutos qué toca hacer. Nadie tiene que estar conectado para que el plan avance.</p>
+    <ol class="flow">
+      <li><div><h3>Grupo completo</h3><p>Cuando aceptan todas las personas invitadas, el grupo pasa a activo solo. Si a las 48 h falta alguien, queda desestimado (I9).</p></div><div class="who"><b>Automático</b><br>Antes: el mago cerraba el reclutamiento</div></li>
+      <li><div><h3>El organizador elige la franja</h3><p>En su página elige día, momento (mañana, tarde o noche), zona y presupuesto por persona. Es lo que hoy el mago le escribía a Gemini.</p></div><div class="who"><b>Organizador</b><br>Paso nuevo en plan.html</div></li>
+      <li><div><h3>Propuesta y publicación</h3><p>Se crea el plan, Gemini propone 1–3 opciones del inventario, las barandas las validan y se publican. Si nada pasa las barandas, se usa el plan B por reglas.</p></div><div class="who"><b>Automático</b><br>Antes: el mago revisaba antes de publicar</div></li>
+      <li><div><h3>Votación con plazo</h3><p>Cada persona vota en su página. Aviso al publicar y a las 12 h a quien no ha votado. Se cierra cuando votan todos o a las 24 h (antes, si el plan es pronto).</p></div><div class="who"><b>Automático</b><br>Antes: el mago avisaba al organizador a las 2 h</div></li>
+      <li><div><h3>Cierre con razón</h3><p>Gana la opción más votada. Si la mayoría dice «ninguna me sirve», se propone una vez más. Los empates se rompen a favor de la opción más barata o más cercana. Se guarda por qué ganó.</p></div><div class="who"><b>Automático</b><br>Antes: el mago elegía y ponía la hora</div></li>
+      <li><div><h3>Día del plan</h3><p>Avisos a 24 h («¿te apuntas?»), a 2 h (hora de salida), 20 min después de la hora («¿ya llegaste?») y 4 h después («¿ya en casa?» y pulso). Cualquiera puede marcar «se cayó el plan» o «necesito ayuda».</p></div><div class="who"><b>Automático + grupo</b><br>Antes: igual en la página, sin avisos</div></li>
+    </ol>
+  </section>
+
+  <section id="barandas">
+    <p class="sec-n">4 · BARANDAS AUTOMÁTICAS</p>
+    <h2>Lo que la app revisa antes de que el grupo vea una opción</h2>
+    <div class="tw"><table>
+      <thead><tr><th>#</th><th>Regla</th><th>Si falla</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">G1</td><td>El lugar existe en el inventario y está activo (ya existe, I6)</td><td>Se descarta la opción</td></tr>
+        <tr><td class="mono">G2</td><td>El lugar se verificó en los últimos 7 días</td><td>Se publica, pero queda marcada para la próxima revisión</td></tr>
+        <tr><td class="mono">G3</td><td>El costo aproximado cabe en el presupuesto del organizador</td><td>Se descarta la opción</td></tr>
+        <tr><td class="mono">G4</td><td>El horario del lugar cubre la franja elegida (cuando el horario se puede leer)</td><td>Se descarta; si el horario no se puede leer, se marca para revisión</td></tr>
+        <tr><td class="mono">G5</td><td>Los textos no traen teléfonos, correos ni datos personales</td><td>Se limpia el texto</td></tr>
+        <tr><td class="mono">G6</td><td>Quedan al menos 2 opciones válidas</td><td>Plan B: opciones del inventario elegidas por reglas (zona, costo, categoría). Si tampoco alcanza, el plan espera a una persona (excepción)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="tk h">Lo que la máquina no puede comprobar sola, como «sin caminar» o «para ir con la abuela», se deja a Gemini y se revisa en la ventana siguiente. Por eso la revisión es del 100 % de los planes publicados mientras el piloto sea pequeño.</p>
+  </section>
+
+  <section id="revision">
+    <p class="sec-n">5 · PROTOCOLO DE REVISIÓN HUMANA PERIÓDICA</p>
+    <h2>Tres ventanas al día, más las excepciones</h2>
+    <div class="clock">
+      <div><span class="t">09:00 · 20 min</span><h3>Ventana mañana</h3><p>Planes publicados durante la noche, votos y suscripciones.</p></div>
+      <div><span class="t">14:00 · 20 min</span><h3>Ventana tarde</h3><p>Cierres del día y planes del día siguiente.</p></div>
+      <div><span class="t">20:00 · 20 min</span><h3>Ventana noche</h3><p>Planes del día, llegadas, caídas y pulsos.</p></div>
+      <div class="x"><span class="t">Siempre · ≤ 2 h</span><h3>Excepciones</h3><p>Llegan al correo del equipo entre 8:00 y 22:00 y no esperan a la ventana.</p></div>
+    </div>
+    <p style="margin-top:12px">Las ventanas corren del miércoles 14/10 (cuando los organizadores eligen franja) al domingo 18/10. El día de cada plan se agrega una revisión 3 h antes del encuentro.</p>
+    <h3 style="margin-top:18px">Qué se revisa en cada ventana (pestaña nueva «Revisión» en la consola)</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Revisar</th><th>Cómo</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Cada plan publicado desde la ventana anterior</td><td>Lugar abierto ese día, costo, restricciones del grupo respetadas, hora coherente, tono</td></tr>
+        <tr><td class="k">Opciones marcadas por G2 o G4</td><td>Confirmar horario o verificación; si hace falta, llamar al lugar</td></tr>
+        <tr><td class="k">Embudo de cada grupo</td><td>Quién no ha votado, quién no se apunta; no se interviene, solo se anota</td></tr>
+        <tr><td class="k">Avisos</td><td>Avisos fallidos y personas sin avisos activados</td></tr>
+        <tr><td class="k">Costo</td><td>Tokens del día</td></tr>
+      </tbody>
+    </table></div>
+    <h3 style="margin-top:18px">Qué puede hacer quien revisa, y cómo se registra</h3>
+    <div class="tw"><table>
+      <thead><tr><th>Resultado</th><th>Qué pasa</th><th>¿Lo ve el grupo?</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Correcto</td><td>Se marca como revisado</td><td>No</td></tr>
+        <tr><td class="k">Corrección menor</td><td>Se ajusta un texto o un dato que no cambia el plan</td><td>No</td></tr>
+        <tr><td class="k">Corrección mayor</td><td>Cambia un lugar, una hora o una opción. El grupo recibe «Ajustamos la opción 2: el lugar cambió su horario»</td><td>Sí: cuenta como intervención visible</td></tr>
+        <tr><td class="k">Pasar a supervisado</td><td>El grupo vuelve al modo de W1 por el resto de la ronda y se reporta aparte</td><td>Sí</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small" style="margin-top:8px">Cada revisión queda en una hoja nueva con plan, ventana, revisor, resultado, motivo y minutos. Esos minutos suman al costo humano con la causa «revisión periódica».</p>
+    <div class="rules">
+      <div class="a"><b>Excepciones (avisan al equipo de inmediato)</b><ul>
+        <li>Ninguna opción pasó las barandas, ni con el plan B</li>
+        <li>Gemini caído o sin cuota</li>
+        <li>La mayoría dijo «ninguna me sirve» dos veces</li>
+        <li>Alguien tocó «necesito ayuda» o reportó «se cayó el plan»</li>
+        <li>Un retiro (los datos se borran solos; el equipo solo se entera)</li>
+      </ul></div>
+      <div class="b"><b>Reglas de parada (el grupo vuelve a supervisado)</b><ul>
+        <li>Un lugar cerrado o inexistente llegó al grupo sin corrección</li>
+        <li>Cualquier incidente de seguridad</li>
+        <li>Dos correcciones mayores seguidas en el mismo grupo</li>
+        <li>Más de la mitad de los avisos fallan en un día</li>
+      </ul></div>
+    </div>
+    <p class="small" style="margin-top:10px">Turnos: José y Katherine se reparten las ventanas en un cuadro publicado el 13/10. Quien tiene el turno atiende las excepciones de ese bloque.</p>
+  </section>
+
+  <section id="avisos">
+    <p class="sec-n">6 · AVISOS</p>
+    <h2>Notificaciones web, con el calendario como respaldo</h2>
+    <p><b>Notificaciones web (web push).</b> La página pide permiso con un botón («Avisarme del plan»), nunca al abrir. El backend envía los avisos con Firebase Cloud Messaging: Apps Script firma un token con una cuenta de servicio y llama a la API de envío. Hay que crear un proyecto de Firebase (plan gratuito) y publicar un <i>service worker</i> en <code>piloto/</code>.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Dispositivo</th><th>¿Funciona?</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Android (Chrome)</td><td>Sí, con el permiso del navegador</td></tr>
+        <tr><td class="k">iPhone (iOS 16.4 o más)</td><td>Solo si la persona agrega la página a su pantalla de inicio y la abre desde ahí. La página tiene que ser instalable (manifiesto)</td></tr>
+        <tr><td class="k">Computador</td><td>Sí, en Chrome, Edge, Firefox y Safari</td></tr>
+      </tbody>
+    </table></div>
+    <p class="tk h">En iPhone el paso de «agregar a inicio» va a dejar gente sin avisos. Por eso hay dos respaldos que no dependen del permiso. El primero, «Agregar a mi calendario» al cerrar el plan, con alarmas a las 2 h y a los 15 min, que cubre el día del plan. El segundo, un botón para que el organizador comparta el estado del plan en su chat de siempre. El porcentaje de personas con avisos activados es en sí un hallazgo para H2.</p>
+    <p class="small">Los avisos no muestran datos personales en la pantalla bloqueada: «Sintonía: ya pueden votar el plan del sábado».</p>
+  </section>
+
+  <section id="metricas">
+    <p class="sec-n">7 · MÉTRICAS</p>
+    <h2>Las de siempre, más las de la automatización</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Métrica</th><th>W1 (v1)</th><th>W2 (v2 autónoma)</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Llegaron / invitadas</td><td>Sí</td><td>Sí (principal)</td></tr>
+        <tr><td class="k">Horas hasta cerrar, vetos, satisfacción mínima, llegada a tiempo</td><td>Sí</td><td>Sí</td></tr>
+        <tr><td class="k">Minutos humanos por plan</td><td>Sí</td><td>Sí, incluidas las revisiones</td></tr>
+        <tr><td class="k">Intervenciones (menores, mayores, visibles)</td><td>—</td><td>Por plan y por ventana</td></tr>
+        <tr><td class="k">Opciones descartadas por cada baranda y uso del plan B</td><td>—</td><td>Por plan</td></tr>
+        <tr><td class="k">Avisos enviados, fallidos y abiertos; personas con avisos activados</td><td>—</td><td>Por persona y por aviso</td></tr>
+        <tr><td class="k">Razón de cierre (todos votaron, plazo, re-propuesta, empate)</td><td>—</td><td>Por plan</td></tr>
+        <tr><td class="k">Tokens y costo de IA por plan</td><td>Sí</td><td>Sí</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="etica">
+    <p class="sec-n">8 · ÉTICA Y CONSENTIMIENTO</p>
+    <h2>El aviso dice que una persona revisa cada propuesta: hay que cambiarlo</h2>
+    <p>Hoy el aviso de privacidad y el consentimiento dicen que «una persona del equipo revisa todo lo que propone el sistema antes de que llegue al grupo». En W2 eso deja de ser cierto para E2.</p>
+    <ul>
+      <li><b>Aviso nuevo (<code>v2-autonoma</code>):</b> «En esta ronda Sintonía arma, publica y cierra el plan sola. Una persona del equipo revisa todo varias veces al día y atiende cualquier problema. Puedes pedir ayuda o retirarte en cualquier momento.»</li>
+      <li><b>Nuevo consentimiento antes de W2:</b> cada persona de los grupos E2 acepta en su página, una por una. Si alguien no acepta, el grupo hace W2 en modo supervisado y se reporta aparte. No se desestima, porque ya había consentido la versión anterior.</li>
+      <li><b>Comité de ética:</b> nota de cambio enviada a más tardar el 13/10, junto con la del cambio de población y canal que ya está pendiente.</li>
+      <li><b>Datos nuevos:</b> el identificador de notificaciones del navegador es dato personal. Se guarda con el resto de los contactos, se borra al retirarse y se purga al cerrar el estudio.</li>
+      <li><b>Retiro sin intermediarios:</b> botón «Retirarme y borrar mis datos» en la página del plan (hoy solo existe en la consola).</li>
+    </ul>
+  </section>
+
+  <section id="spec">
+    <p class="sec-n">9 · ESPECIFICACIÓN TÉCNICA</p>
+    <h2>Backend 2.3.0 y frontend 2.1.0</h2>
+    <div class="tw"><table>
+      <thead><tr><th>#</th><th>Pieza</th><th>Qué hace</th><th>Dónde</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">A1</td><td class="k">Tarea programada</td><td><code>tick_()</code> cada 15 min: reclutamiento, planes, cierres, avisos y alertas. Solo actúa sobre grupos con <code>modo_operacion = autonomo</code></td><td>Backend</td></tr>
+        <tr><td class="mono">A2</td><td class="k">Reclutamiento automático</td><td>Activa el grupo al completarse; lo desestima a las 48 h (I9)</td><td>Backend</td></tr>
+        <tr><td class="mono">A3</td><td class="k">Franja del organizador</td><td>Acción <code>elegir_franja</code> (día, momento, zona, presupuesto) y pantalla en plan.html</td><td>Ambos</td></tr>
+        <tr><td class="mono">A4</td><td class="k">Propuesta con barandas</td><td>Crear, proponer, validar (G1–G6) y publicar sin intervención; plan B por reglas</td><td>Backend</td></tr>
+        <tr><td class="mono">A5</td><td class="k">Cierre automático</td><td>Plazo de votación, re-propuesta única, desempate y columna <code>razon_cierre</code></td><td>Backend</td></tr>
+        <tr><td class="mono">A6</td><td class="k">Avisos</td><td>Hoja <code>suscripciones</code>, acción <code>suscribir</code>, envío por Firebase Cloud Messaging, agenda de avisos por plan</td><td>Ambos</td></tr>
+        <tr><td class="mono">A7</td><td class="k">Calendario</td><td>«Agregar a mi calendario» (Google Calendar y archivo .ics) con alarmas</td><td>Frontend</td></tr>
+        <tr><td class="mono">A8</td><td class="k">Botones del grupo</td><td>«Se cayó el plan» (con causa), «Necesito ayuda», «Retirarme y borrar mis datos»</td><td>Ambos</td></tr>
+        <tr><td class="mono">A9</td><td class="k">Cola de revisión</td><td>Hoja <code>revisiones</code>, vista de revisión y acción <code>revisar</code>; pestaña «Revisión» en la consola</td><td>Ambos</td></tr>
+        <tr><td class="mono">A10</td><td class="k">Alertas al equipo</td><td>Correo al equipo por cada excepción (MailApp)</td><td>Backend</td></tr>
+        <tr><td class="mono">A11</td><td class="k">Regla de parada</td><td>Pasar un grupo a supervisado, desde la consola o automáticamente</td><td>Ambos</td></tr>
+        <tr><td class="mono">A12</td><td class="k">Panel</td><td>Métricas de la sección 7, comparando v1 y v2 de E2</td><td>Frontend</td></tr>
+        <tr><td class="mono">A13</td><td class="k">Reconsentimiento</td><td>Aviso <code>v2-autonoma</code> y aceptación individual en la página antes de W2</td><td>Ambos</td></tr>
+      </tbody>
+    </table></div>
+    <p class="tk"><b>Estado de construcción (6/10).</b> Backend 2.3.0 y frontend 2.1.0 listos como borradores, sin desplegar: A1–A11 y A13 en pantallas (franja, plazo, razón del cierre, calendario, avisos web con guía para iPhone, «¿Algo salió mal?», pestaña «Revisión E2»). 55 casos de prueba pasan y el flujo supervisado sigue intacto. Faltan la clave pública de avisos (VAPID), las credenciales de la cuenta de servicio en Apps Script, el panel comparativo (A12) y el texto del aviso v2 aprobado.</p>
+    <p class="small" style="margin-top:8px">Nada de esto cambia E1 ni los grupos de W1. Los límites diarios de Apps Script (tiempo de ejecución de las tareas programadas y correos) y la configuración de Firebase están <span class="st pv">Por verificar</span> antes de construir.</p>
+  </section>
+
+  <section id="cronograma">
+    <p class="sec-n">10 · CRONOGRAMA</p>
+    <h2>Diez días para tenerlo listo</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Fecha</th><th>Qué</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">Mié 7/10</td><td>Decisión con Néstor: ¿E2 autónoma en W2?</td></tr>
+        <tr><td class="mono">8–13/10</td><td>Construcción de backend 2.3.0 y frontend 2.1.0. Proyecto de Firebase. Pruebas con el backend simulado</td></tr>
+        <tr><td class="mono">Dom 11/10</td><td>Registro del cambio I4 de E2: «v2 autónoma con revisión periódica»</td></tr>
+        <tr><td class="mono">Mar 13/10</td><td>Nota al comité, aviso v2 listo y cuadro de turnos de revisión</td></tr>
+        <tr><td class="mono">Mié 14/10</td><td>Ensayo de punta a punta en modo prueba, con las tareas programadas en marcha. Reconsentimiento y activación de avisos en los grupos E2</td></tr>
+        <tr><td class="mono">14–16/10</td><td>Los organizadores eligen la franja; empiezan las ventanas de revisión</td></tr>
+        <tr><td class="mono">Sáb–dom 17–18/10</td><td>W2: E2 opera sola</td></tr>
+        <tr><td class="mono">19–21/10</td><td>Cierre, comparación v1/v2 y decisión de canal</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="riesgos">
+    <p class="sec-n">11 · RIESGOS</p>
+    <h2>Qué puede salir mal</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Riesgo</th><th>Mitigación</th></tr></thead>
+      <tbody>
+        <tr><td class="k">No alcanza el tiempo para construirlo</td><td>Si el 13/10 el ensayo no pasa, E2 hace W2 supervisada y E2 autónoma pasa a la reprueba focal de P8</td></tr>
+        <tr><td class="k">Pocas personas activan los avisos (iPhone)</td><td>Calendario + organizador que comparte; se mide como hallazgo</td></tr>
+        <tr><td class="k">Gemini propone algo que no respeta una restricción</td><td>Barandas + revisión del 100 % + corrección visible</td></tr>
+        <tr><td class="k">Un plan cambia de lugar o de hora y nadie se entera</td><td>Toda corrección mayor genera aviso y queda en la página</td></tr>
+        <tr><td class="k">Confusión entre automatización y efecto de la segunda ronda</td><td>E1 como referencia y lectura descriptiva</td></tr>
+        <tr><td class="k">Un grupo no reconsiente</td><td>W2 en modo supervisado, reportado aparte</td></tr>
+      </tbody>
+    </table></div>
+    <p class="tk">El motor autónomo es la misma base que necesita la propuesta conversacional M3 «Charladita». Lo que se construya aquí sirve para E3.</p>
+  </section>
+
+  <footer>Borrador del 6/10/2026 para revisar con Néstor el 7/10. Fuentes técnicas: documentación de Firebase Cloud Messaging (API HTTP v1) y guías de web push para iOS 16.4+ de MoEngage, OneSignal y Pushpad. Hay que confirmar con la documentación oficial de Apple y Google antes de construir.</footer>
+</div>
+
+</body>
+</html>

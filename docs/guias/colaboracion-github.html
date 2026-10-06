@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Sintonía en GitHub</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* Layout: guía de una columna, dos recorridos (Katherine y José) con pasos numerados porque el orden importa */
+  :root{
+    --bg:#f3efe6; --paper:#fffdf8; --ink:#211f1a; --muted:#5f5a51; --line:#e2dbcf;
+    --pine:#0f6e63; --pine-ink:#0a4f47; --pine-soft:#e0efec;
+    --honey:#c67a1e; --honey-ink:#8f5410; --honey-soft:#f7ebd8;
+    --code-bg:#1f2420; --code-ink:#e8efe9; --code-dim:#9fb0a6;
+    --disp:"Bricolage Grotesque",Georgia,serif;
+    --body:"Hanken Grotesk",-apple-system,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#12110e; --paper:#1c1a16; --ink:#efeae1; --muted:#b3aa9b; --line:#332e25;
+    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
+    --honey:#dd9c44; --honey-ink:#eab866; --honey-soft:#2f2513;
+    --code-bg:#0b0d0c; --code-ink:#e8efe9; --code-dim:#8a9a90; color-scheme:dark; } }
+  :root[data-theme="dark"]{
+    --bg:#12110e; --paper:#1c1a16; --ink:#efeae1; --muted:#b3aa9b; --line:#332e25;
+    --pine:#41b9a9; --pine-ink:#8fe0d4; --pine-soft:#12302b;
+    --honey:#dd9c44; --honey-ink:#eab866; --honey-soft:#2f2513;
+    --code-bg:#0b0d0c; --code-ink:#e8efe9; --code-dim:#8a9a90; color-scheme:dark; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto;padding-inline:20px;padding-block:40px 64px}
+  a{color:var(--pine-ink)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--pine);margin:0 0 10px}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(30px,5vw,44px);line-height:1.05;letter-spacing:-.025em;margin:0 0 14px;text-wrap:balance}
+  h2{font-family:var(--disp);font-weight:700;font-size:clamp(22px,3.4vw,28px);letter-spacing:-.015em;margin:0 0 6px;text-wrap:balance}
+  .lead{color:var(--muted);font-size:18px;max-width:62ch;margin:0}
+  .map{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 0 8px}
+  .map div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+  .map b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--honey-ink);margin-bottom:4px}
+  .map p{margin:0;font-size:15px;color:var(--muted)}
+  section{margin-top:44px}
+  .who{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border-radius:20px;padding:3px 10px;margin-bottom:10px}
+  .who.k{background:var(--pine-soft);color:var(--pine-ink)} .who.j{background:var(--honey-soft);color:var(--honey-ink)}
+  .sub{color:var(--muted);margin:0 0 18px;max-width:62ch}
+  ol.steps{list-style:none;counter-reset:s;padding:0;margin:0;display:flex;flex-direction:column;gap:14px}
+  ol.steps > li{counter-increment:s;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px 18px 64px;position:relative;min-width:0}
+  ol.steps > li::before{content:counter(s);position:absolute;left:18px;top:17px;width:30px;height:30px;border-radius:50%;background:var(--pine);color:var(--paper);font-family:var(--disp);font-weight:700;font-size:15px;display:grid;place-items:center}
+  .j-steps > li::before{background:var(--honey) !important}
+  ol.steps h3{font-family:var(--disp);font-size:18px;font-weight:700;margin:2px 0 6px;line-height:1.25}
+  ol.steps p{margin:0 0 8px} ol.steps p:last-child{margin-bottom:0}
+  ol.steps ul{margin:4px 0 8px;padding-left:20px} ol.steps ul li{margin:3px 0}
+  .path{font-family:var(--mono);font-size:14px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 6px;white-space:nowrap}
+  .tip{font-size:15px;color:var(--muted);border-left:3px solid var(--honey);padding:2px 0 2px 12px;margin-top:10px}
+  .code{position:relative;margin:10px 0 6px}
+  pre{margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 16px;font-family:var(--mono);font-size:13.5px;line-height:1.6;overflow-x:auto;white-space:pre}
+  pre .c{color:var(--code-dim)}
+  .copy{position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:12px;border:1px solid #3b453f;background:#2a312c;color:var(--code-ink);border-radius:6px;padding:4px 10px;cursor:pointer}
+  .copy:focus-visible,.copy:hover{outline:2px solid var(--pine);outline-offset:1px}
+  .rules{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+  .rules div{border-radius:12px;padding:14px 16px;min-width:0;font-size:15px}
+  .rules .ok{background:var(--pine-soft)} .rules .no{background:var(--honey-soft)}
+  .rules b{display:block;font-family:var(--disp);font-size:16px;margin-bottom:4px}
+  .rules ul{margin:0;padding-left:18px} .rules li{margin:3px 0}
+  table{width:100%;border-collapse:collapse;font-size:15px;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+  tr:last-child td{border-bottom:none}
+  .tw{overflow-x:auto;border-radius:12px}
+  footer{margin-top:44px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+  @media (max-width:620px){ .map,.rules{grid-template-columns:1fr} ol.steps > li{padding-left:56px} ol.steps > li::before{left:14px} }
+</style>
+</head>
+<body>
+<div style="font:600 13px/1.4 system-ui,sans-serif;background:#fff4d6;color:#5b4410;padding:8px 16px;text-align:center">Guía vigente · <a href="index.html" style="color:inherit">Control de guías</a></div>
+
+<div class="wrap">
+  <p class="eyebrow">Sintonía · trabajo remoto</p>
+  <h1>Trabajar el repositorio de Sintonía con ChatGPT y Claude</h1>
+  <p class="lead">Katherine y José trabajan desde ciudades distintas, con asistentes distintos. El repositorio <span class="path">josebdiaz/sintonia-piloto</span> en GitHub será el lugar donde ambos asistentes leen la misma versión del proyecto. Katherine actualiza la documentación directamente y propone los cambios al prototipo para que José los revise.</p>
+
+  <div class="map">
+    <div><b>Katherine · 20 minutos</b><p>Crear la cuenta, aceptar la invitación y conectar GitHub en ChatGPT. Todo desde el navegador, sin terminal.</p></div>
+    <div><b>José · 10 minutos, una vez</b><p>Invitar a Katherine con permiso de escritura y dar acceso a las apps de ChatGPT y Claude.</p></div>
+  </div>
+
+  <section>
+    <span class="who k">Katherine</span>
+    <h2>Pasos para Katherine</h2>
+    <p class="sub">Hazlos en este orden. Entre el paso 4 y el 5 puede haber una espera de unos 5 minutos mientras ChatGPT reconoce el repositorio.</p>
+    <ol class="steps">
+      <li>
+        <h3>Crea tu cuenta de GitHub (si no tienes una)</h3>
+        <p>Entra a <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a>, usa tu correo y elige un nombre de usuario. Es gratis.</p>
+        <p>Envíale a José tu <b>nombre de usuario</b> (no tu contraseña). Lo ves arriba a la derecha al hacer clic en tu foto.</p>
+      </li>
+      <li>
+        <h3>Acepta la invitación de José</h3>
+        <p>Te llegará un correo de GitHub. Abre el enlace y pulsa <b>Accept invitation</b>.</p>
+        <p class="tip">Si no ves el correo, entra directo a <a href="https://github.com/josebdiaz/sintonia-piloto/invitations" target="_blank" rel="noopener">github.com/josebdiaz/sintonia-piloto/invitations</a> con tu sesión abierta.</p>
+      </li>
+      <li>
+        <h3>Revisa que ves el proyecto</h3>
+        <p>Abre <a href="https://github.com/josebdiaz/sintonia-piloto" target="_blank" rel="noopener">github.com/josebdiaz/sintonia-piloto</a>. Deberías ver las carpetas <span class="path">piloto</span>, <span class="path">backend</span>, <span class="path">datos</span> y <span class="path">docs</span>.</p>
+      </li>
+      <li>
+        <h3>Conecta GitHub en ChatGPT</h3>
+        <ul>
+          <li>En ChatGPT abre <b>Settings</b> (Configuración) y luego <b>Apps</b>.</li>
+          <li>Busca <b>GitHub</b> y pulsa <b>Connect</b>.</li>
+          <li>GitHub te pedirá autorizar a ChatGPT. Acepta.</li>
+          <li>Cuando pregunte qué repositorios puede ver, elige <b>solo</b> <span class="path">josebdiaz/sintonia-piloto</span>.</li>
+        </ul>
+        <p class="tip">Si el repositorio de José no aparece en la lista, avísale: él tiene que dar acceso a la app de ChatGPT desde su cuenta (paso 3 de José).</p>
+      </li>
+      <li>
+        <h3>Prueba que funciona</h3>
+        <p>Espera unos 5 minutos y escribe en un chat nuevo:</p>
+        <div class="code"><pre>Usa GitHub. En el repositorio josebdiaz/sintonia-piloto, lee docs/protocolo-m2.md
+y resúmeme la regla I9 y las contingencias del piloto.</pre><button class="copy" type="button" aria-label="Copiar la prueba">Copiar</button></div>
+        <p>Si responde con el contenido del protocolo, ya quedó conectado.</p>
+        <p class="tip">En algunos planes de ChatGPT la app de GitHub no aparece en el chat normal, pero sí en <b>Deep Research</b> o en el <b>modo agente</b>. Si no te funciona en el chat, prueba ahí.</p>
+      </li>
+      <li>
+        <h3>Actualiza la documentación directamente</h3>
+        <p>Todo lo que está en <span class="path">docs</span> lo puedes cambiar tú, desde la web de GitHub:</p>
+        <ul>
+          <li><b>Subir un archivo nuevo:</b> entra a <span class="path">docs</span>, pulsa <b>Add file</b> y luego <b>Upload files</b>.</li>
+          <li><b>Editar un archivo:</b> ábrelo y pulsa el lápiz (<b>Edit</b>). Puedes pegar ahí el texto que te preparó ChatGPT.</li>
+          <li>Pulsa <b>Commit changes</b>, escribe qué cambiaste (por ejemplo <span class="path">docs: notas de la retro W1</span>) y deja marcado <b>Commit directly to the main branch</b>.</li>
+        </ul>
+        <p class="tip">Dos archivos de <span class="path">docs</span> se generan desde el computador de José y se sobrescriben cuando él publica: <span class="path">protocolo-m2.md</span> y <span class="path">deck-pivote.html</span>. Para cambiarlos, usa el camino del paso 7.</p>
+      </li>
+      <li>
+        <h3>Propón cambios al prototipo con un pull request</h3>
+        <p>Las carpetas <span class="path">piloto</span> y <span class="path">backend</span> son lo que están usando los grupos, así que ahí los cambios pasan primero por José:</p>
+        <ul>
+          <li>Abre el archivo que quieres cambiar (por ejemplo <span class="path">piloto/plan.html</span>) y pulsa el lápiz (<b>Edit</b>).</li>
+          <li>Haz el cambio, o pega el que te preparó ChatGPT.</li>
+          <li>Pulsa <b>Commit changes</b> y elige <b>Create a new branch for this commit and start a pull request</b>. Ponle un nombre corto, como <span class="path">katherine/texto-votacion</span>.</li>
+          <li>En la página siguiente explica qué cambia y por qué, y pulsa <b>Create pull request</b>.</li>
+        </ul>
+        <p>José lo revisa, comenta si hace falta y lo integra. No lo fusiones tú.</p>
+        <p class="tip">Si la idea todavía no es un cambio concreto (por ejemplo «el botón de veto confunde»), abre un <b>Issue</b> en el repositorio en lugar de un pull request.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Acuerdos para trabajar juntos</h2>
+    <div class="rules">
+      <div class="ok"><b>Directo a main</b><ul>
+        <li>Notas, actas, borradores y análisis en <span class="path">docs</span>.</li>
+        <li>Un mensaje claro en cada cambio.</li>
+        <li>Avisar en el chat del equipo cuando subas algo importante.</li>
+      </ul></div>
+      <div class="no"><b>Por pull request o Issue</b><ul>
+        <li>Todo lo de <span class="path">piloto</span>, <span class="path">backend</span> y <span class="path">datos</span>.</li>
+        <li><span class="path">docs/protocolo-m2.md</span> y <span class="path">docs/deck-pivote.html</span>.</li>
+        <li>Nunca: datos personales de participantes, claves ni contraseñas.</li>
+      </ul></div>
+    </div>
+    <div class="tw" style="margin-top:16px">
+      <table>
+        <thead><tr><th>Carpeta</th><th>Qué hay</th></tr></thead>
+        <tbody>
+          <tr><td><span class="path">docs</span></td><td>Protocolo M2, deck de la tutoría, wording verificado y storyboard</td></tr>
+          <tr><td><span class="path">piloto</span></td><td>Las páginas que usan los grupos (versión 2.0.3)</td></tr>
+          <tr><td><span class="path">backend</span></td><td>El código de Apps Script (versión 2.2.3)</td></tr>
+          <tr><td><span class="path">datos</span></td><td>Inventario de planes de Cali</td></tr>
+          <tr><td><span class="path">CHANGELOG.md</span></td><td>Qué cambió en cada versión</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <span class="who j">José</span>
+    <h2>Pasos para José (una sola vez)</h2>
+    <p class="sub">En el Mac, abre la app Terminal y pega cada bloque. El inicio de sesión se hace en el navegador: no hay que copiar contraseñas ni claves en la terminal.</p>
+    <ol class="steps j-steps">
+      <li>
+        <h3>Instala GitHub CLI e inicia sesión</h3>
+        <p>Si ya tienes Homebrew, salta la primera línea. <span class="path">brew -v</span> te dice si lo tienes.</p>
+        <div class="code"><pre><span class="c"># 1. Homebrew (solo si no lo tienes)</span>
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+<span class="c"># 2. GitHub CLI</span>
+brew install gh
+
+<span class="c"># 3. Inicia sesión: elige GitHub.com → HTTPS → Login with a web browser</span>
+gh auth login
+gh auth status</pre><button class="copy" type="button" aria-label="Copiar instalación">Copiar</button></div>
+      </li>
+      <li>
+        <h3>Invita a Katherine con permiso de escritura</h3>
+        <p>Cambia <span class="path">USUARIO_DE_KATHERINE</span> por el nombre de usuario que te envió.</p>
+        <div class="code"><pre><span class="c"># Invitación con escritura: puede subir a docs y abrir ramas y pull requests</span>
+gh api -X PUT repos/josebdiaz/sintonia-piloto/collaborators/USUARIO_DE_KATHERINE -f permission=push
+
+<span class="c"># Comprueba que la invitación quedó pendiente</span>
+gh api repos/josebdiaz/sintonia-piloto/invitations --jq '.[].invitee.login'</pre><button class="copy" type="button" aria-label="Copiar invitación">Copiar</button></div>
+        <p class="tip">Cuando ella acepte, la invitación desaparece de esa lista y su usuario aparece con <span class="path">gh api repos/josebdiaz/sintonia-piloto/collaborators --jq '.[] | .login + " " + .role_name'</span>, con el rol <span class="path">write</span>.</p>
+      </li>
+      <li>
+        <h3>Da acceso al repositorio a las apps de ChatGPT y Claude</h3>
+        <p>El repositorio es tuyo, así que las apps solo lo ven si tú les das acceso. Esto se hace en la web:</p>
+        <ul>
+          <li>Abre <a href="https://github.com/settings/installations" target="_blank" rel="noopener">github.com/settings/installations</a>.</li>
+          <li><b>App de ChatGPT:</b> si ya aparece, pulsa <b>Configure</b> y en <b>Repository access</b> agrega <span class="path">sintonia-piloto</span>. Si no aparece, la instalación se ofrece cuando Katherine conecta GitHub en ChatGPT; si el repositorio no le sale, busca en GitHub la app de ChatGPT (suele aparecer como «ChatGPT Codex Connector») e instálala solo en <span class="path">sintonia-piloto</span>.</li>
+          <li><b>App de Claude:</b> pulsa <b>Configure</b>, confirma que <span class="path">sintonia-piloto</span> está en <b>Repository access</b> y que el permiso de <b>Contents</b> es <b>Read and write</b>. Si GitHub muestra «permissions update requested», acéptalo. Esto quita el error 403 que hoy impide que Claude haga commits.</li>
+        </ul>
+      </li>
+      <li>
+        <h3>Cuando Katherine abra un pull request al prototipo</h3>
+        <p><span class="path">publicar.sh</span> copia <span class="path">piloto/</span>, <span class="path">backend/</span>, <span class="path">datos/</span> y <span class="path">docs/protocolo-m2.md</span> desde tu carpeta de trabajo y reemplaza lo que haya en main. Si fusionas su pull request en GitHub y luego corres el script, su cambio se pierde.</p>
+        <p>Para no perderlo, lleva su cambio a tu carpeta de trabajo primero (o pídele a Claude que lo haga) y publica con el script como siempre. Luego cierra el pull request con un comentario que diga en qué versión entró.</p>
+        <div class="code"><pre><span class="c"># Ver los pull requests abiertos y el cambio de uno</span>
+gh pr list --repo josebdiaz/sintonia-piloto
+gh pr diff NUMERO --repo josebdiaz/sintonia-piloto
+
+<span class="c"># Después de publicar con publicar.sh, ciérralo con una nota</span>
+gh pr close NUMERO --repo josebdiaz/sintonia-piloto --comment "Integrado en piloto vX.Y.Z"</pre><button class="copy" type="button" aria-label="Copiar comandos de pull requests">Copiar</button></div>
+        <p class="tip">Los cambios de Katherine en el resto de <span class="path">docs</span> no tienen este problema: el script hace un merge «fast-forward» con lo que haya en GitHub antes de copiar.</p>
+      </li>
+    </ol>
+  </section>
+
+  <footer>Preparado el 6 de octubre de 2026. Los menús de ChatGPT y GitHub pueden cambiar de nombre; según la ayuda de OpenAI, la conexión está en Settings → Apps → GitHub y el repositorio puede tardar unos 5 minutos en aparecer.</footer>
+</div>
+
+<script>
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var pre = btn.parentElement.querySelector('pre');
+      var text = pre.innerText;
+      var done = function(){ btn.textContent = 'Copiado'; setTimeout(function(){ btn.textContent = 'Copiar'; }, 1800); };
+      var fallback = function(){ var r = document.createRange(); r.selectNodeContents(pre); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Seleccionado: Cmd+C'; };
+      try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+    });
+  });
+</script>
+
+</body>
+</html>
