@@ -1,7 +1,17 @@
 /**
- * Sintonía · Piloto v2.2.3 (E1 WhatsApp + E2 web app) — backend en Google Apps Script
+ * Sintonía · Piloto v2.2.5 (E1 WhatsApp + E2 web app) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.2.5 (6/10, para el frontend 2.0.7 · recomendaciones de la prueba de punta a punta):
+ *   - cerrar_plan no re-cierra un plan cerrado o caído (plan_ya_cerrado): ya no pisa t_cerrado ni la opción elegida. Acepta hora_salida y la guarda en la opción ganadora.
+ *   - corregir_plan (equipo): corrige la hora del encuentro y la salida de un plan cerrado; deja la hora anterior en la nota.
+ *   - evento: los participantes solo registran me_apunto, no_puedo, checkpoint_llegada, llego_casa y salir.
+ *   - crear_plan: un plan a la vez por grupo (plan_en_curso).
+ *   - ?view=mago: cada plan trae minutos, bloques y los mensajes del mago marcados (compartidos entre el equipo).
+ * Versión 2.2.4 (6/10, para el frontend 2.0.6 · empezar el piloto real):
+ *   - limpiar_registros (solo equipo, frase «EMPEZAR PILOTO»): borra los registros de los ensayos y conserva tokens, inventario y bitacora.
+ *     Antes copia las pestañas con datos a una hoja de respaldo nueva (sin contactos). Cada reinicio queda en la pestaña bitacora.
+ *   - ?view=mago devuelve los conteos por pestaña y los últimos reinicios.
  * Versión 2.2.3 (5/10, para el frontend 2.0.2 · revisión de flujos de navegación):
  *   - registrar: un número de WhatsApp que ya está activo en el grupo no puede aceptar otra vez (ya_registrado). Evita consentimientos duplicados (I9).
  *   - ?view=invitacion&inv=CÓDIGO (pública): estado del grupo y modo, sin datos personales ni condición.
@@ -64,6 +74,7 @@ var SHEETS = {
   eventos:          ['ts','plan_id','grupo_id','pid','tipo','canal','nota'],
   operacion:        ['ts','plan_id','grupo_id','experimento','actor','minutos','causa','nota'],
   cambios:          ['ts','experimento','version','descripcion','registrado_por'],
+  bitacora:         ['ts','accion','detalle','respaldo_url','registrado_por'],   // v2.2.4: reinicios de la hoja
   tokens:           ['ts','plan_id','grupo_id','uso','modelo','prompt_version','tokens_in','tokens_out','costo_usd'],
   retro:            ['ts','plan_id','pid','rol','fatiga_post','carga_organizador','satisfaccion_plan','valor_final','repetiria','confort_bot','sentimiento_autodeclarado','que_agregaria','comentario'],
   wtp:              ['ts','pid','grupo_id','muy_barato','barato','caro','muy_caro','preventa']
@@ -71,6 +82,7 @@ var SHEETS = {
 
 var TIPOS_GRUPO  = ['amigos','familia','pareja','trabajo','otro'];
 var TIPOS_EVENTO = ['activacion','recordatorio','me_apunto','no_puedo','salida_sugerida','checkpoint_llegada','llego_casa','cuenta','mensaje_mago','plan_caido','salir','cambio_canal'];
+var EVENTOS_PARTICIPANTE = ['me_apunto', 'no_puedo', 'checkpoint_llegada', 'llego_casa', 'salir'];   // v2.2.5: lo único que un participante registra por sí mismo
 var ACTORES      = ['mago','soporte','tecnico'];
 var CAUSAS       = ['coordinacion','redactar_mensaje','resolver_duda','cambio_plan','recordatorio','falla_tecnica','seguridad','otro'];
 var CAUSAS_CAIDA = ['trafico','lluvia','agenda','costo','desinteres','imprevisto','otro'];   // S9 y capa 2; sin causas de salud (dato sensible)
@@ -148,9 +160,9 @@ function doPost(e) {
     var d = JSON.parse(e.postData.contents || '{}');
     var H = {
       registrar: registrar_, cerrar_reclutamiento: cerrarReclutamiento_, crear_plan: crearPlan_,
-      proponer_ia: proponerIA_, publicar_plan: publicarPlan_, votar: votar_, cerrar_plan: cerrarPlan_, marcar_caido: marcarCaido_, marcar_failover: marcarFailover_,
+      proponer_ia: proponerIA_, publicar_plan: publicarPlan_, votar: votar_, cerrar_plan: cerrarPlan_, marcar_caido: marcarCaido_, corregir_plan: corregirPlan_, marcar_failover: marcarFailover_,
       evento: evento_, operacion: operacion_, registrar_cambio: registrarCambio_, redactar_ia: redactarIA_,
-      retro: retro_, wtp: wtp_, revocar: revocar_
+      retro: retro_, wtp: wtp_, revocar: revocar_, limpiar_registros: limpiarRegistros_
     };
     var a = String(d.action || '');
     if (!H[a]) return json_({ ok: false, error: 'accion_desconocida' });
@@ -214,7 +226,10 @@ function crearPlan_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var g = findOne_('grupos', 'grupo_id', d.grupo_id); if (!g) return { ok: false, error: 'grupo_no_existe' };
   if (g.estado !== 'activo') return { ok: false, error: 'grupo_no_elegible:' + g.estado };
-  var ronda = rows_('planes').filter(function (p) { return p.grupo_id === g.grupo_id; }).length + 1;
+  var delGrupo = rows_('planes').filter(function (p) { return p.grupo_id === g.grupo_id; });
+  var enCurso = delGrupo.filter(function (p) { return ['borrador', 'en_revision', 'votando'].indexOf(p.estado) >= 0; })[0];
+  if (enCurso) return { ok: false, error: 'plan_en_curso', plan_id: enCurso.plan_id };   // v2.2.5: un plan a la vez por grupo
+  var ronda = delGrupo.length + 1;
   var pl = id_('pl');
   append_('planes', { plan_id: pl, grupo_id: g.grupo_id, experimento: g.experimento, ronda: ronda, version: g.version || 'v1',
     estado: 'borrador', n_invitados: Number(g.n_invitados), n_consentidos: activos_(g.grupo_id).length });
@@ -281,12 +296,34 @@ function votar_(d) {
 function cerrarPlan_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
+  if (p.estado === 'cerrado' || p.estado === 'caido') return { ok: false, error: 'plan_ya_cerrado' };   // v2.2.5: no pisa t_cerrado ni la opción elegida (usar corregir_plan)
   var caido = bool_(d.caido), hora = fecha_(d.hora_encuentro);
   var causa = CAUSAS_CAIDA.indexOf(String(d.causa_caida)) >= 0 ? String(d.causa_caida) : '';
   if (caido && !causa) return { ok: false, error: 'falta_causa_caida', opciones: CAUSAS_CAIDA };
   if (!caido && !hora) return { ok: false, error: 'falta_hora_encuentro', formato: 'YYYY-MM-DD HH:mm' };   // capa 2: sin hora no se mide la puntualidad
-  updateRow_('planes', p._row, { estado: caido ? 'caido' : 'cerrado', elegida: int_(d.elegida), t_cerrado: new Date(),
-    hora_encuentro: hora, causa_caida: caido ? causa : '', nota: str_(d.nota, 300) });
+  var patch = { estado: caido ? 'caido' : 'cerrado', elegida: int_(d.elegida), t_cerrado: new Date(),
+    hora_encuentro: hora, causa_caida: caido ? causa : '', nota: str_(d.nota, 300) };
+  if (!caido && d.hora_salida !== undefined) patch.opciones_json = conSalida_(p.opciones_json, int_(d.elegida), d.hora_salida);   // v2.2.5: la salida queda coherente con el encuentro
+  updateRow_('planes', p._row, patch);
+  return { ok: true };
+}
+
+function conSalida_(json, i, salida) {
+  var ops = []; try { ops = JSON.parse(json || '[]'); } catch (x) {}
+  if (ops[i]) ops[i].hora_salida = str_(salida, 40);
+  return JSON.stringify(ops);
+}
+
+/** v2.2.5: corrige la hora del encuentro (y la salida) de un plan ya cerrado sin tocar t_cerrado ni la opción elegida. */
+function corregirPlan_(d) {
+  if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
+  var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
+  if (p.estado !== 'cerrado') return { ok: false, error: 'plan_no_cerrado' };
+  var hora = fecha_(d.hora_encuentro); if (!hora) return { ok: false, error: 'falta_hora_encuentro', formato: 'YYYY-MM-DD HH:mm' };
+  var antes = p.hora_encuentro ? Utilities.formatDate(new Date(p.hora_encuentro), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm') : 'sin hora';
+  var patch = { hora_encuentro: hora, nota: str_((p.nota ? p.nota + ' · ' : '') + 'hora corregida (antes ' + antes + ')', 300) };
+  if (d.hora_salida !== undefined) patch.opciones_json = conSalida_(p.opciones_json, Number(p.elegida) || 0, d.hora_salida);
+  updateRow_('planes', p._row, patch);
   return { ok: true };
 }
 
@@ -318,6 +355,7 @@ function evento_(d) {
   var p = d.plan_id ? findOne_('planes', 'plan_id', d.plan_id) : null;
   var gid = p ? p.grupo_id : str_(d.grupo_id, 20);
   if (!isAdmin_(d.key) && !miembroValido_(d.pid, gid)) return { ok: false, error: 'no_miembro' };
+  if (!isAdmin_(d.key) && EVENTOS_PARTICIPANTE.indexOf(tipo) < 0) return { ok: false, error: 'no_autorizado' };   // v2.2.5
   append_('eventos', { plan_id: p ? p.plan_id : '', grupo_id: gid, pid: str_(d.pid, 20), tipo: tipo, canal: p ? p.experimento : str_(d.canal, 4), nota: str_(d.nota, 300) });
   if (p && (tipo === 'me_apunto' || tipo === 'no_puedo' || tipo === 'checkpoint_llegada')) recontar_(p);
   return { ok: true };
@@ -489,13 +527,18 @@ function vistaMago_() {
         return { pid: p.pid, rol: p.rol, nombre: (nombres[p.pid] || {}).nombre || '', whatsapp: (nombres[p.pid] || {}).whatsapp || '' }; }),
       preferencias: rows_('preferencias').filter(function (r) { return r.grupo_id === g.grupo_id; }).map(function (r) { return r.resumen; }) };
   });
-  var votos = rows_('votos'), evs = rows_('eventos');
+  var votos = rows_('votos'), evs = rows_('eventos'), oper = rows_('operacion');
   var planes = rows_('planes').map(function (p) {
     var o = {}; SHEETS.planes.forEach(function (c) { o[c] = p[c]; });
     // v2.2.1: la consola ve el conteo y el estado de cada persona (para registrar lo que pasa en el chat del E1)
     o.conteo = {}; o.vetos = 0; o.votos_por_pid = {};
     votos.filter(function (v) { return v.plan_id === p.plan_id; }).forEach(function (v) {
       if (bool_(v.veto)) { o.vetos++; o.votos_por_pid[v.pid] = 'veto'; } else { o.conteo[v.opcion] = (o.conteo[v.opcion] || 0) + 1; o.votos_por_pid[v.pid] = v.opcion; } });
+    // v2.2.5: minutos humanos registrados (I3) y mensajes del mago marcados, visibles para todo el equipo
+    var op = oper.filter(function (x) { return x.plan_id === p.plan_id; });
+    o.minutos = op.reduce(function (s, x) { return s + (Number(x.minutos) || 0); }, 0); o.bloques = op.length;
+    o.mensajes = {};
+    evs.filter(function (e) { return e.plan_id === p.plan_id && e.pid === ''; }).forEach(function (e) { (o.mensajes[e.tipo] = o.mensajes[e.tipo] || []).push(e.ts); });
     o.estado_por_pid = {};
     evs.filter(function (e) { return e.plan_id === p.plan_id && e.pid !== ''; }).sort(function (a, b) { return new Date(a.ts) - new Date(b.ts); })
       .forEach(function (e) { var s = o.estado_por_pid[e.pid] || {}; if (e.tipo === 'me_apunto') s.apuntado = true; if (e.tipo === 'no_puedo') s.apuntado = false;
@@ -504,7 +547,9 @@ function vistaMago_() {
   });
   var copia = function (i) { var o = {}; SHEETS.inventario.forEach(function (c) { o[c] = i[c]; }); return o; };
   var inventario = inventarioActivo_().map(copia), pendiente = inventarioPendiente_().map(copia);
-  return { ok: true, grupos: grupos, planes: planes, inventario: inventario, inventario_pendiente: pendiente, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }) };
+  return { ok: true, grupos: grupos, planes: planes, inventario: inventario, inventario_pendiente: pendiente, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }),
+    registros: conteoRegistros_(), conservar_al_limpiar: CONSERVAR_AL_LIMPIAR,
+    bitacora: rows_('bitacora').slice(-5).map(function (b) { return { ts: b.ts, accion: b.accion, detalle: b.detalle, respaldo_url: b.respaldo_url }; }) };
 }
 
 /** Panel: solo grupos 'piloto' y no excluidos (I7, I9). Métrica principal: personas que llegaron / personas invitadas (I2). */
@@ -585,6 +630,40 @@ function vistaPanel_() {
   };
 }
 
+/* ============================== v2.2.4 · Empezar el piloto real ============================== */
+/**
+ * Deja la hoja en blanco al terminar los ensayos. Solo el equipo (ADMIN_KEY) y con la frase de confirmación.
+ * Conserva: tokens (costo histórico de IA), inventario (datos de referencia) y bitacora (rastro de cada reinicio).
+ * Antes de borrar copia las pestañas con datos a una hoja de respaldo nueva en el Drive del dueño del script,
+ * sin la pestaña contactos (minimización: los nombres y números de los ensayos no se copian).
+ */
+var CONSERVAR_AL_LIMPIAR = ['tokens', 'inventario', 'bitacora'];
+var NO_RESPALDAR = ['contactos'];
+var FRASE_LIMPIAR = 'EMPEZAR PILOTO';
+function hojasALimpiar_(conservarCambios) {
+  return Object.keys(SHEETS).filter(function (n) { return CONSERVAR_AL_LIMPIAR.indexOf(n) < 0 && !(conservarCambios && n === 'cambios'); });
+}
+function conteoRegistros_() { var o = {}; Object.keys(SHEETS).forEach(function (n) { o[n] = Math.max(sheet_(n).getLastRow() - 1, 0); }); return o; }
+function limpiarRegistros_(d) {
+  if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
+  if (String(d.confirmar || '').trim().toUpperCase() !== FRASE_LIMPIAR) return { ok: false, error: 'falta_confirmacion' };
+  var hojas = hojasALimpiar_(bool_(d.conservar_cambios)), antes = {}, total = 0;
+  hojas.forEach(function (n) { antes[n] = Math.max(sheet_(n).getLastRow() - 1, 0); total += antes[n]; });
+  if (!total) return { ok: true, borradas: antes, total: 0, respaldo: '' };
+  var sello = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
+  var bk = SpreadsheetApp.create('Sintonía · respaldo antes de empezar el piloto · ' + sello), hoja0 = bk.getSheets()[0];
+  hojas.forEach(function (n) { if (NO_RESPALDAR.indexOf(n) < 0 && antes[n]) sheet_(n).copyTo(bk).setName(n); });
+  if (bk.getSheets().length > 1) bk.deleteSheet(hoja0); else hoja0.setName('sin_datos');
+  hojas.forEach(function (n) {
+    var sh = sheet_(n), last = sh.getLastRow();
+    if (last < 2) return;
+    sh.getRange(2, 1, last - 1, Math.max(sh.getLastColumn(), 1)).clearContent();   // Sheets no deja borrar TODAS las filas no congeladas
+    if (last > 2) sh.deleteRows(3, last - 2);
+  });
+  append_('bitacora', { accion: 'limpiar_registros', detalle: JSON.stringify(antes), respaldo_url: bk.getUrl(), registrado_por: str_(d.registrado_por, 40) });
+  return { ok: true, borradas: antes, total: total, respaldo: bk.getUrl() };
+}
+
 /* ============================== Menú ============================== */
 
 function onOpen() {
@@ -608,7 +687,7 @@ function probarMontaje() {
   });
   try { var ss = ss_(); r.push('✅ Hoja: ' + ss.getName()); } catch (x) { r.push('❌ No abre la hoja (revisa SHEET_ID): ' + x); Logger.log(r.join('\n')); return; }
   Object.keys(SHEETS).forEach(function (n) { sheet_(n); }); r.push('✅ ' + Object.keys(SHEETS).length + ' hojas listas');
-  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.2.2)');
+  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.2.5)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');
   r.push('Zona horaria del proyecto: ' + Session.getScriptTimeZone() + (Session.getScriptTimeZone() === 'America/Bogota' ? ' ✅' : ' ⚠️ cambiar a America/Bogota'));
   if (prop_('GEMINI_API_KEY', '')) {

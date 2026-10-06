@@ -20,6 +20,7 @@ Sitio publicado (GitHub Pages, rama `main`): https://josebdiaz.github.io/sintoni
 │  ├─ aviso.html         Aviso de privacidad
 │  ├─ mago.html          Consola del equipo (pide ADMIN_KEY)
 │  ├─ panel.html         Panel del piloto (pide ADMIN_KEY)
+│  ├─ investigadores.html Mapa del piloto: todas las vistas por fase (equipo; sin enlace desde el portal)
 │  └─ assets/            sintonia.css, sintonia.js (URL del backend y versión)
 ├─ backend/              Código de Google Apps Script (se pega a mano en el editor)
 │  └─ Codigo_Piloto.gs   Versión en el encabezado del archivo y en el tag backend/vX.Y.Z
@@ -44,6 +45,8 @@ Sitio publicado (GitHub Pages, rama `main`): https://josebdiaz.github.io/sintoni
 | Ensayo (no cuenta en el panel) | https://josebdiaz.github.io/sintonia-piloto/piloto/index.html?exp=E1&modo=prueba |
 | Consola del mago (equipo) | https://josebdiaz.github.io/sintonia-piloto/piloto/mago.html |
 | Panel (equipo) | https://josebdiaz.github.io/sintonia-piloto/piloto/panel.html |
+| Mapa del piloto (equipo) | https://josebdiaz.github.io/sintonia-piloto/piloto/investigadores.html |
+| Empezar piloto real (equipo) | https://josebdiaz.github.io/sintonia-piloto/piloto/mago.html#reinicio |
 | Aviso de privacidad | https://josebdiaz.github.io/sintonia-piloto/piloto/aviso.html |
 | Protocolo de operación | [docs/protocolo-m2.md](docs/protocolo-m2.md) |
 
@@ -56,8 +59,8 @@ Cada componente tiene su propia versión [SemVer](https://semver.org/lang/es/) y
 
 | Componente | Versión actual | Dónde se declara | Tag |
 |---|---|---|---|
-| Frontend del piloto | 2.0.3 («M2») | `piloto/assets/sintonia.js` → `FRONTEND_VERSION` (se ve en el pie de página) | `piloto/v2.0.3` |
-| Backend (Apps Script) | 2.2.3 | Encabezado de `backend/Codigo_Piloto.gs` | `backend/v2.2.3` |
+| Frontend del piloto | 2.0.7 («M2») | `piloto/assets/sintonia.js` → `FRONTEND_VERSION` (se ve en el pie de página) | `piloto/v2.0.7` |
+| Backend (Apps Script) | 2.2.5 | Encabezado de `backend/Codigo_Piloto.gs` | `backend/v2.2.5` |
 | Inventario | 3 (4/10/2026 · 17 activos) | `datos/Inventario_Planes_Cali.csv` (la hoja manda) | sin tag (v1 y v2 tienen tag) |
 
 - **MAYOR**: cambia el diseño del experimento o rompe compatibilidad (p. ej. M1 → M2).

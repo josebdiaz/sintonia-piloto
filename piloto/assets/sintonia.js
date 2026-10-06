@@ -1,5 +1,5 @@
 /* Sintonía · piloto (frontend 2.0.x, «M2») · utilidades compartidas (JavaScript sin dependencias)
- * Backend: backend/Codigo_Piloto.gs v2.2.2 (Google Apps Script). Un solo frontend para E1 (WhatsApp + mago) y E2 (web).
+ * Backend: backend/Codigo_Piloto.gs v2.2.5 (Google Apps Script). Un solo frontend para E1 (WhatsApp + mago) y E2 (web).
  * Versiones: ver CHANGELOG.md en la raíz del repositorio. Al publicar un cambio, sube FRONTEND_VERSION.
  */
 (function () {
@@ -20,8 +20,8 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.0.5',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
-    CONTACTO_EMAIL: '',            // ⚠️ POR DEFINIR: correo del equipo para consultas y reclamos (aviso.html lo muestra)
+    FRONTEND_VERSION: '2.0.7',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
   };
@@ -70,10 +70,22 @@
     ya_registrado: 'Ese número ya aceptó en este grupo. Abre tu enlace personal o pídele ayuda a quien organiza.',
     revocado: 'Tu participación se cerró y tus datos se borraron, como pediste. Gracias por tu tiempo.',
     retro_antes_del_plan: 'El pulso se abre después del encuentro. Vuelve cuando hayan salido.',
-    plan_no_cerrado: 'Este plan todavía no está cerrado.'
+    plan_no_cerrado: 'Este plan todavía no está cerrado.',
+    falta_confirmacion: 'Escribe la frase de confirmación exactamente como aparece.',
+    // 2.0.7 (R9): todos los códigos del backend tienen mensaje propio
+    faltan_datos: 'Faltan datos para guardar. Revisa los campos.',
+    grupo_no_existe: 'No encontramos ese grupo. Recarga la consola.',
+    minutos_invalidos: 'Los minutos van de 1 a 600.',
+    tipo_invalido: 'Ese tipo de registro no existe. Recarga la página.',
+    sin_gemini_key: 'Falta la clave de Gemini en Propiedades del script. Puedes armar las opciones a mano.',
+    respuesta_no_json: 'Gemini respondió en un formato raro. Inténtalo otra vez o arma las opciones a mano.',
+    vista_desconocida: 'El backend no reconoce esta vista: revisa que esté publicada la última versión.',
+    plan_ya_cerrado: 'Este plan ya está cerrado. Para cambiar la hora usa «Corregir hora».',
+    plan_en_curso: 'Este grupo ya tiene un plan en curso. Ciérralo o márcalo como caído antes de crear otro.'
   };
   function errMsg(r) {
     var code = (r && r.error) || 'red', base = String(code).split(':')[0];
+    if (/^gemini_/.test(base)) return 'Gemini no respondió (' + base.slice(7) + '). Inténtalo en un minuto o arma las opciones a mano.';
     return ERR[code] || ERR[base] || ('Algo falló (' + code + ').');
   }
 
@@ -143,7 +155,7 @@
   function consent(el) {
     var usedButton = false;
     el.classList.add('consent');
-    el.innerHTML = '<button type="button" class="btn btn-ghost btn-block" data-all>✓ Marcar "Sí a todo"</button>' +
+    el.innerHTML = '<button type="button" class="btn btn-ghost btn-block" data-all>✓ Acepto las 4 autorizaciones</button>' +
       '<p class="tiny muted center" style="margin:6px 0 2px">Lee cada una: puedes desmarcar la que no aceptes. Sin las 4 no podemos incluirte en la prueba.</p>' +
       CONSENT.map(function (c) { return '<label class="check"><input type="checkbox" name="' + c[0] + '"><span>' + c[1] + '</span></label>'; }).join('');
     function paint() { $$('.check', el).forEach(function (l) { l.classList.toggle('on', $('input', l).checked); }); }
@@ -181,6 +193,17 @@
   /** 2.0.2: el logo y "Inicio" llevan a tu plan si ya participas; si no, al portal (nunca a la inscripción sin condición). */
   function inicio() { var m = me(); return m.pid ? link('plan.html', { pid: m.pid }) : link('../', {}); }
 
+  /* ---------- 2.0.7 (R8) · Confirmación en dos toques ----------
+   * confirm() y prompt() se cierran solos en navegadores integrados (Claude, Instagram, WhatsApp). El primer toque arma el botón
+   * y muestra la pregunta debajo; el segundo, dentro de 8 s, ejecuta. */
+  function dosPasos(btn, pregunta, run) {
+    if (btn.dataset.armado === '1') { desarmar(btn); return run(); }
+    btn.dataset.orig = btn.innerHTML; btn.dataset.armado = '1'; btn.classList.add('armado'); btn.innerHTML = 'Toca otra vez para confirmar';
+    var q = document.createElement('p'); q.className = 'confirm-q tiny'; q.textContent = pregunta; btn.insertAdjacentElement('afterend', q); btn._q = q;
+    btn._t = setTimeout(function () { desarmar(btn); }, 8000);
+  }
+  function desarmar(btn) { clearTimeout(btn._t); if (btn._q) btn._q.remove(); btn._q = null; if (btn.dataset.armado === '1') { btn.innerHTML = btn.dataset.orig; } btn.dataset.armado = ''; btn.classList.remove('armado'); }
+
   /* ---------- Pantallas del equipo ---------- */
   function adminKey(ask) {
     var k = SS.get('sintonia_admin_key');
@@ -200,7 +223,7 @@
 
   window.S = { CONFIG: CONFIG, LS: LS, SS: SS, post: post, get: get, errMsg: errMsg, $: $, $$: $$, esc: esc, param: param, show: show, toast: toast, busy: busy,
     link: link, wa: wa, waShare: waShare, phone: phone, copy: copy, scale: scale, chips: chips, consent: consent, counter: counter,
-    pct: pct, num: num, cop: cop, usd: usd, fecha: fecha, me: me, saveMe: saveMe, adoptPid: adoptPid, inicio: inicio, adminKey: adminKey, forgetKey: forgetKey, configBackend: configBackend };
+    pct: pct, num: num, cop: cop, usd: usd, fecha: fecha, me: me, saveMe: saveMe, adoptPid: adoptPid, inicio: inicio, adminKey: adminKey, forgetKey: forgetKey, configBackend: configBackend, dosPasos: dosPasos };
   window.CONFIG = CONFIG;
 
   /* ---------- Versión visible en el pie (trazabilidad: qué versión vio cada quien) ---------- */

@@ -88,7 +88,7 @@
   <section id="vistaOk" class="hidden">
     <div class="card soft">
       <h2 id="okTitulo">¡Listo! Tu grupo quedó creado.</h2>
-      <p class="small">Ahora cada persona del parche acepta por sí misma desde este enlace. <b>Para empezar necesitamos que las <span id="okN"></span> personas acepten</b>; si alguien no lo hace, este grupo no podrá participar en la prueba.</p>
+      <p class="small">Ahora cada persona del parche acepta por sí misma desde este enlace. <b>Ya contamos contigo: faltan <span id="okN"></span></b>. Si alguien no acepta, este grupo no podrá participar en la prueba.</p>
       <div class="linkbox" id="okLink"></div>
       <div class="actions split">
         <button class="btn btn-ghost" type="button" id="okCopiar">Copiar enlace</button>
@@ -103,6 +103,7 @@
     <div class="card hidden" id="okE1">
       <h3>¿Y ahora?</h3>
       <p class="small muted">Cuando todos acepten, te escribimos desde el WhatsApp de Sintonía para armar el plan en un grupo con tu parche.</p>
+      <div class="actions"><a class="btn btn-ghost btn-block" id="okPlanE1" href="#">Ver quién ya aceptó</a></div>
     </div>
   </section>
 
@@ -184,11 +185,12 @@
       S.saveMe({ pid: r.pid, grupo_id: r.grupo_id, rol: 'organizador', exp: r.experimento, nombre: nombre });
       var inv = S.link('unirse.html', { inv: r.codigo_invitacion });
       S.$('#okTitulo').textContent = '¡Listo, ' + nombre + '! Tu grupo quedó creado.';
-      S.$('#okN').textContent = payload.n_invitados;
+      var faltan = payload.n_invitados - 1;   // 2.0.7 (R11): el organizador ya cuenta
+      S.$('#okN').textContent = faltan === 1 ? '1 persona más' : 'las otras ' + faltan + ' personas';
       S.$('#okLink').textContent = inv;
       S.$('#okCopiar').onclick = function () { S.copy(inv); };
       S.$('#okWa').href = S.waShare('¡Parche! Estoy probando Sintonía para que el plan sí se dé. Únete aquí (toma 2 minutos): ' + inv);
-      S.$('#okPlan').href = S.link('plan.html', { pid: r.pid });
+      S.$('#okPlan').href = S.link('plan.html', { pid: r.pid }); S.$('#okPlanE1').href = S.link('plan.html', { pid: r.pid });
       S.show('#okE2', r.experimento === 'E2'); S.show('#okE1', r.experimento !== 'E2');
       S.show('#vistaForm', false); S.show('#vistaOk', true); S.show('#toast', false); window.scrollTo(0, 0);
     });

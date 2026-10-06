@@ -128,7 +128,9 @@ footer.foot { margin-top: 28px; font-size: .8rem; color: var(--muted); text-alig
 footer.foot a { color: var(--muted); }
 
 /* Consola y panel (pantallas del equipo) */
-.tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin: 8px 0 4px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 4px; margin: 8px 0 4px; }
+.tabs .tabs-sep { flex-basis: 100%; height: 0; }   /* 2.0.7 (R12): operación (1–4) arriba, configuración abajo */
+.tabs button.cfg { border-style: dashed; font-weight: 600; min-height: 36px; padding: 6px 12px; }
 .tabs button { flex: 0 0 auto; min-height: 40px; padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font: inherit; font-weight: 650; cursor: pointer; }
 .tabs button[aria-selected=true] { background: var(--ink); border-color: var(--ink); color: #fff; }
 table { width: 100%; border-collapse: collapse; font-size: .9rem; }
@@ -201,3 +203,10 @@ th { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color:
 /* «Sí a todo» destacado al inicio de la votación */
 .card.si-todo { background: var(--honey-soft); border-color: transparent; box-shadow: none; }
 .card.si-todo.mine { box-shadow: 0 0 0 2px var(--honey); }
+
+/* 2.0.7 (R8) · confirmación en dos toques */
+.btn.armado { background: var(--danger); border-color: var(--danger); color: #fff; }
+.confirm-q { margin: 6px 0 0; color: var(--danger); font-weight: 600; flex-basis: 100%; }
+/* 2.0.7 · correcciones y minutos */
+.minlist { margin: 8px 0 0; padding: 0; list-style: none; }
+.minlist li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); font-size: .875rem; }

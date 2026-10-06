@@ -1,6 +1,6 @@
 # Sintonía · Protocolo de operación M2 (frontend 2.0.0)
 
-*Un solo frontend para los dos experimentos: E1 (WhatsApp + mago) y E2 (web app). Frontend 2.0.5 y backend `backend/Codigo_Piloto.gs` 2.2.3. Versión del 6/10/2026.*
+*Un solo frontend para los dos experimentos: E1 (WhatsApp + mago) y E2 (web app). Frontend 2.0.7 y backend `backend/Codigo_Piloto.gs` 2.2.5. Mapa de todas las vistas por fase: `piloto/investigadores.html`. Versión del 6/10/2026.*
 
 > **Al abrir la consola, elige arriba el experimento que vas a operar (E1 o E2) y el modo (piloto o prueba).** Todo lo que se ve después corresponde solo a ese experimento, y la guía «Cómo funciona» lista los pasos en orden. Ronda 1 = W1 (10–11/10), Ronda 2 = W2 (17–18/10).
 
@@ -38,7 +38,7 @@ El terremoto de magnitud 7,4 afectó más de 12.000 edificaciones en Cali. Vario
 En la consola, pestaña 1, el filtro "Ver" tiene que estar en **Prueba**.
 
 **E1** · `index.html?exp=E1&modo=prueba`
-1. Inscribe un organizador y 3 invitados. Uno de los invitados marca casilla por casilla y otro usa "Sí a todo".
+1. Inscribe un organizador y 3 invitados. Uno de los invitados marca casilla por casilla y otro usa «✓ Acepto las 4 autorizaciones».
 2. Cierra el reclutamiento (debe quedar 4/4 y activo). Crea el grupo de WhatsApp desde el número Sintonía y envía `/ingreso`.
 3. Crea el plan, pide las opciones a Gemini, edita una y publica. Envía `/opciones`.
 4. Registra en la consola los votos que lleguen por el chat. Cierra el plan con día y hora, y envía `/confirmado`.
@@ -52,6 +52,12 @@ En la consola, pestaña 1, el filtro "Ver" tiene que estar en **Prueba**.
 4. Llena la retro como organizador, con disposición a pagar y preventa, y como miembro.
 
 **Panel:** los grupos de prueba no deben sumar. Antes del 10/10, cambia a mano en la hoja `grupos` el `modo` de un grupo de prueba a `piloto`, verifica las métricas y devuélvelo a `prueba`.
+
+**Empezar el piloto real (después del ensayo, antes del 10/10).** En la consola, pestaña **«⟲ Empezar piloto real»** (`mago.html#reinicio`):
+1. Revisa los conteos: se borra todo lo de los ensayos (grupos, personas, contactos, votos, eventos, minutos, pulsos y, salvo que marques conservarlo, cambios). Se conservan `tokens`, `inventario` y `bitacora`.
+2. Escribe `EMPEZAR PILOTO` y confirma. El backend copia antes las pestañas a una hoja de respaldo nueva en el Drive del dueño del script, sin `contactos`, y deja el reinicio en `bitacora`.
+3. Comprueba en el panel que no quedan grupos. Los enlaces personales de los ensayos dejan de funcionar: es lo esperado.
+4. Requiere el backend 2.2.4 desplegado (si no, la pestaña lo avisa).
 
 ## 3. Asignación para W1 (10–11/10) y W2 (17–18/10)
 

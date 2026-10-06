@@ -16,6 +16,23 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Frontend del piloto (`piloto/`)
 
+### [2.0.7] · 2026-10-06 · Recomendaciones de la prueba de punta a punta (6/10)
+- Consola, curaduría: al cerrar se confirma la **salida sugerida** (prellenada desde la opción ganadora) para que no contradiga la hora del encuentro (R2). En un plan cerrado, **«Corregir hora del encuentro»** cambia la hora y la salida sin tocar el cierre ni la opción elegida (R1, pendiente desde el 5/10).
+- Consola, curaduría: «+ Crear plan» solo aparece si el grupo no tiene un plan en curso (R7).
+- Consola, eventos y minutos: muestra los minutos y bloques registrados en el plan (R5, pendiente desde el 4/10). Los mensajes marcados como «✓ Hecho» salen de la hoja, así que José y Katherine ven lo mismo en cualquier computador (R6).
+- Consola: las confirmaciones pasan a **dos toques dentro de la página** (cerrar reclutamiento, revocar, publicar, cambio de canal, caído, cambio W1 → W2). `confirm()` y `prompt()` se cerraban solos en navegadores integrados (R8, pendiente desde el 4/10). Revocar ya no pide escribir REVOCAR.
+- Consola: pestañas en dos filas, operación (1–4) arriba y configuración abajo (R12).
+- Plan: **«Retirarme del piloto»** en dos pasos al final de la página de cada persona (R3, Ley 1581 · I9). Con el plan cerrado, **«Agrégalo a tu calendario»** (Google y .ics, aviso 2 h antes) (R13).
+- Inscripción: «Ya contamos contigo: faltan las otras N personas» y, en E1, «Ver quién ya aceptó» (R11). El botón de consentimiento pasa a «✓ Acepto las 4 autorizaciones», para no confundirlo con el «Sí a todo» de la votación (R10).
+- Todos los códigos de error del backend tienen mensaje en lenguaje claro (R9).
+- Requiere el backend 2.2.5 para R1, R5, R6 y R7; con la 2.2.4 la consola funciona y lo avisa donde falte.
+
+### [2.0.6] · 2026-10-06 · Empezar el piloto real y mapa para investigadores
+- Consola: pestaña nueva **«⟲ Empezar piloto real»**. Muestra cuántos registros hay en cada pestaña de la hoja, qué se borra y qué se conserva (tokens, inventario y bitácora; opcionalmente cambios W1 → W2). Pide escribir «EMPEZAR PILOTO», hace un respaldo sin contactos, borra los ensayos y deja la consola en modo Piloto. Lista los reinicios anteriores con su respaldo. Requiere el backend 2.2.4.
+- Página nueva `piloto/investigadores.html` («Mapa del piloto»): todas las vistas front (participantes) y back (equipo, backend, hoja) en tarjetas, ordenadas por fase de ejecución (preparación → ensayo → empezar piloto → W1 con carriles E1/E2 → entre rondas → W2 → cierre). Filtros por tipo de vista y por experimento; marca la fase actual. Fuera de buscadores y sin enlace desde el portal.
+- Consola: `mago.html#reinicio`, `#planes`, `#cambios`, etc. abren directamente esa pestaña. Botón «Mapa» en la consola y en el panel.
+- Aviso de privacidad: queda el correo de consultas y reclamos (jbolanos.dmi@gmail.com).
+
 ### [2.0.5] · 2026-10-06 · Experimentos identificados de punta a punta
 - Consola: arriba se elige **qué experimento se está operando** (E1 · WhatsApp + mago o E2 · Web app) y el modo (piloto o prueba). Grupos, planes, mensajes y eventos se filtran por esa elección, con color propio para cada experimento.
 - Consola: guía plegable «Cómo funciona E1/E2» con qué se prueba, qué hace el grupo, qué hace el mago, qué se mide, los pasos en orden (con enlace a cada pestaña) y el enlace de inscripción del experimento.
@@ -69,6 +86,21 @@ Las fechas son de 2026 (hora de Colombia).
 - Archivado en `archivo/piloto-m1-claude/`. Tag `piloto/v1.0.0`.
 
 ## Backend (`backend/Codigo_Piloto.gs`)
+
+### [2.2.5] · 2026-10-06 · Recomendaciones de la prueba de punta a punta
+- `cerrar_plan` rechaza planes ya cerrados o caídos (`plan_ya_cerrado`): antes pisaba `t_cerrado` (horas a cierre) y la opción elegida. Acepta `hora_salida` y la guarda en la opción ganadora.
+- Acción nueva `corregir_plan` (equipo): hora del encuentro y salida de un plan cerrado; la hora anterior queda en `nota`.
+- `evento`: los participantes solo registran `me_apunto`, `no_puedo`, `checkpoint_llegada`, `llego_casa` y `salir`; el resto exige la clave del equipo.
+- `crear_plan`: un plan a la vez por grupo (`plan_en_curso`).
+- `?view=mago`: cada plan trae `minutos`, `bloques` y `mensajes` (eventos del mago marcados).
+- Probado con 28 casos de punta a punta (E1, E2, prueba, retiro y reinicio), los 24 del reinicio y los 58 del motor 2.3.0 (que ya incluye estos arreglos).
+
+### [2.2.4] · 2026-10-06 · Empezar el piloto real
+- Acción `limpiar_registros` (solo equipo, con la frase «EMPEZAR PILOTO»): borra los registros de los ensayos y conserva `tokens`, `inventario` y `bitacora` (opcional: `cambios`).
+- Antes de borrar copia las pestañas con datos a una hoja de respaldo nueva en el Drive del dueño del script, sin `contactos` (minimización).
+- Pestaña nueva `bitacora` (ts, accion, detalle, respaldo_url, registrado_por). Se crea sola.
+- `?view=mago` devuelve los conteos por pestaña y los últimos cinco reinicios.
+- Sin cambios en las demás acciones. Desplegar como Nueva versión (la URL /exec no cambia).
 
 ### [2.2.3] · 2026-10-05
 - Desplegado el 5/10 como implementación nueva: `https://script.google.com/macros/s/AKfycbwbh_qzXHXpeY5Z3LiTsoH855lDFE3Ezd45PFQqyKRjEFQaRkydhHFto_-OSae_U9Mf/exec`. Las implementaciones `…iiszymTNC` (2.2.2) y `…CLY-7cf` (2.2.1) deben archivarse.

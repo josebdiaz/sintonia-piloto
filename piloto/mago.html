@@ -12,6 +12,7 @@
   <header class="top">
     <a class="brand" href="mago.html"><span class="brand-mark" aria-hidden="true"></span>Consola del mago <span class="tag">E1 · E2</span></a>
     <div class="actions" style="margin:0">
+      <a class="btn btn-ghost btn-sm" href="investigadores.html" title="Todas las vistas, por fase">Mapa</a>
       <a class="btn btn-ghost btn-sm" href="panel.html">Panel →</a>
       <button class="btn btn-ghost btn-sm" id="recargar" type="button">↻ Recargar</button>
       <button class="btn btn-ghost btn-sm" id="cfg" type="button" title="URL del backend">⚙ Backend</button>
@@ -36,8 +37,10 @@
       <button role="tab" data-tab="planes">2 · Curaduría de planes</button>
       <button role="tab" data-tab="mensajes">3 · Mensajes</button>
       <button role="tab" data-tab="registro">4 · Eventos y minutos</button>
-      <button role="tab" data-tab="cambios">Cambios W1 → W2</button>
-      <button role="tab" data-tab="inventario">Inventario</button>
+      <span class="tabs-sep" aria-hidden="true"></span>
+      <button role="tab" data-tab="cambios" class="cfg">Cambios W1 → W2</button>
+      <button role="tab" data-tab="inventario" class="cfg">Inventario</button>
+      <button role="tab" data-tab="reinicio" class="cfg">⟲ Empezar piloto real</button>
     </nav>
     <div id="tab-grupos" class="tab"></div>
     <div id="tab-planes" class="tab hidden"></div>
@@ -45,6 +48,7 @@
     <div id="tab-registro" class="tab hidden"></div>
     <div id="tab-cambios" class="tab hidden"></div>
     <div id="tab-inventario" class="tab hidden"></div>
+    <div id="tab-reinicio" class="tab hidden"></div>
   </section>
 </main>
 <script src="assets/sintonia.js"></script>
@@ -52,7 +56,7 @@
 (function () {
   var D = null, key = '', sel = { grupo: '', plan: '' }, borrador = [], filtro = 'piloto';
   var CAUSAS = [['coordinacion', 'Coordinar el plan'], ['redactar_mensaje', 'Redactar mensajes'], ['resolver_duda', 'Resolver una duda'], ['cambio_plan', 'Cambio de plan'], ['recordatorio', 'Recordatorios y checkpoints'], ['falla_tecnica', 'Falla técnica'], ['seguridad', 'Seguridad'], ['otro', 'Otro']];
-  var ultimaCarga = null;
+  var ultimaCarga = null, hashUsado = false;   // 2.0.6: mago.html#reinicio (o #planes, #cambios…) abre esa pestaña
   var CAIDA = [['trafico', 'Tráfico'], ['lluvia', 'Lluvia'], ['agenda', 'Agenda / no cuadró'], ['costo', 'Costo'], ['desinteres', 'Desinterés'], ['imprevisto', 'Imprevisto'], ['otro', 'Otro']];
   var e = S.esc;
 
@@ -160,7 +164,8 @@
       (ultimaCarga ? ' · actualizado ' + String(ultimaCarga.getHours()).padStart(2, '0') + ':' + String(ultimaCarga.getMinutes()).padStart(2, '0') : '');
     if (!sel.grupo || !gs.some(function (g) { return g.grupo_id === sel.grupo; })) { var a = gs.filter(function (g) { return g.estado === 'activo'; })[0] || gs[0]; sel.grupo = a ? a.grupo_id : ''; }
     var ps = planesDe(sel.grupo); if (!sel.plan || !plan(sel.plan) || plan(sel.plan).grupo_id !== sel.grupo) sel.plan = ps.length ? ps[ps.length - 1].plan_id : '';
-    renderExpbar(); renderGrupos(); renderPlanes(); renderMensajes(); renderRegistro(); renderCambios(); renderInventario();
+    renderExpbar(); renderGrupos(); renderPlanes(); renderMensajes(); renderRegistro(); renderCambios(); renderInventario(); renderReinicio();
+    if (!hashUsado) { hashUsado = true; var hh = location.hash.replace('#', ''); if (hh && S.$('[data-tab="' + hh + '"]')) irA(hh); }
   }
 
   /* ---------- Pestañas ---------- */
@@ -198,14 +203,14 @@
       b.onclick = function () {
         var n = Number(b.dataset.n), inv = Number(b.dataset.inv);
         var txt = n < inv ? 'Solo ' + n + ' de ' + inv + ' consintieron. Por la regla I9 el grupo quedará EXCLUIDO de las pruebas. ¿Cerrar igual?' : 'Consintieron ' + n + ' de ' + inv + '. El grupo pasa a ACTIVO. ¿Cerrar reclutamiento?';
-        if (confirm(txt)) act(b, { action: 'cerrar_reclutamiento', grupo_id: b.dataset.cerrar }, function (r) { return 'Grupo ' + r.estado + ' (' + r.consentidos + '/' + r.invitados + ')'; });
+        S.dosPasos(b, txt, function () { act(b, { action: 'cerrar_reclutamiento', grupo_id: b.dataset.cerrar }, function (r) { return 'Grupo ' + r.estado + ' (' + r.consentidos + '/' + r.invitados + ')'; }); });
       };
     });
     S.$$('[data-revocar]', el).forEach(function (b) {
       b.onclick = function () {
-        if (!confirm('¿' + (b.dataset.nombre || 'Esta persona') + ' pidió retirarse? Se borran sus datos y el grupo queda EXCLUIDO (I9). No se puede deshacer.')) return;
-        if (prompt('Escribe REVOCAR para confirmar') !== 'REVOCAR') return S.toast('Cancelado.');
-        S.busy(b, function () { return S.post({ action: 'revocar', pid: b.dataset.revocar }); }).then(function (r) { if (!r || !r.ok) return S.toast(S.errMsg(r), true); S.toast('Datos suprimidos y grupo excluido.'); load(); });
+        S.dosPasos(b, '¿' + (b.dataset.nombre || 'Esta persona') + ' pidió retirarse? Se borran sus datos y el grupo queda EXCLUIDO (I9). No se puede deshacer.', function () {
+          S.busy(b, function () { return S.post({ action: 'revocar', pid: b.dataset.revocar }); }).then(function (r) { if (!r || !r.ok) return S.toast(S.errMsg(r), true); S.toast('Datos suprimidos y grupo excluido.'); load(); });
+        });
       };
     });
   }
@@ -220,7 +225,12 @@
     if (!gs.length) { el.innerHTML = '<div class="card empty"><p class="muted">No hay grupos de ' + e(EXP[vexp].nombre) + ' en este modo.</p></div>'; return; }
     var h = '<div class="card"><div class="row"><div class="field" style="margin:0"><label for="selG">Grupo</label><select id="selG">' + opts(gs.map(function (x) { return [x.grupo_id, grupoLabel(x) + ' · ' + x.estado]; }), sel.grupo) + '</select></div>' +
       '<div class="field" style="margin:0"><label for="selP">Plan</label><select id="selP">' + (planesDe(sel.grupo).length ? opts(planesDe(sel.grupo).map(function (x) { return [x.plan_id, rondaLabel(x) + ' · ' + x.estado]; }), sel.plan) : '<option value="">Sin planes</option>') + '</select></div></div>' +
-      '<div class="actions">' + (g && g.estado === 'activo' ? '<button class="btn btn-primary btn-sm" id="crearPlan" data-busy="Creando…">+ Crear plan</button>' : '<span class="small muted">Solo se crean planes en grupos activos.</span>') + '</div></div>';
+      '<div class="actions">' + (function () {
+        var enCurso = planesDe(sel.grupo).filter(function (x) { return ['borrador', 'en_revision', 'votando'].indexOf(x.estado) >= 0; })[0];   // 2.0.7 (R7): un plan a la vez
+        if (!g || g.estado !== 'activo') return '<span class="small muted">Solo se crean planes en grupos activos.</span>';
+        if (enCurso) return '<span class="small muted">Plan en curso: <b>' + e(rondaLabel(enCurso)) + ' · ' + e(enCurso.estado) + '</b>. Ciérralo o márcalo como caído para crear otro.</span>';
+        return '<button class="btn btn-primary btn-sm" id="crearPlan" data-busy="Creando…">+ Crear plan</button>';
+      })() + '</div></div>';
     if (p) h += planCard(g, p);
     el.innerHTML = h;
     S.$('#selG', el).onchange = function () { sel.grupo = this.value; sel.plan = ''; borrador = []; renderAll(); };
@@ -271,13 +281,17 @@
       }).join('');
       h += '<div class="card soft" style="margin-top:14px"><h3>Cerrar votación</h3><div class="row"><div class="field"><label for="elegida">Opción ganadora</label><select id="elegida">' + opts(ops.map(function (o, i) { return [i, (i + 1) + '. ' + o.titulo]; }), best) + '</select></div>' +
         '<div class="field"><label for="hora">Encuentro (día y hora)</label><input id="hora" type="datetime-local"></div></div>' +
+        '<div class="field"><label for="salida">Salida sugerida para el grupo</label><input id="salida" type="text" maxlength="40" value="' + e((ops[best] || {}).hora_salida || '') + '"><span class="hint">Viene de la opción ganadora. Ajústala a la hora del encuentro: es la que verá el grupo.</span></div>' +
         '<div class="field"><label for="nota">Nota (opcional)</label><input id="nota" type="text" maxlength="300"></div>' +
         '<div class="actions"><button class="btn btn-primary btn-sm" id="cerrarPlan" data-busy="Cerrando…">Cerrar plan</button></div>' +
         '<div class="row" style="margin-top:10px;align-items:flex-end"><div class="field" style="margin:0"><label for="causa">Si el plan no se dio</label><select id="causa">' + opts([['', 'Causa…']].concat(CAIDA)) + '</select></div><button class="btn btn-danger btn-sm" id="caido" data-busy="Guardando…" style="flex:0 0 auto">Marcar como caído</button></div></div>';
     }
     if (p.estado === 'cerrado') {
       var g3 = grupo(p.grupo_id);
-      h += '<p class="small">Encuentro: <b>' + e(S.fecha(p.hora_encuentro) || 'sin hora') + '</b> · apuntados ' + e(p.n_apuntados || 0) + ' · llegaron ' + e(p.n_asistentes || 0) + ' de ' + e(p.n_invitados) + '</p>';
+      h += '<p class="small">Encuentro: <b>' + e(S.fecha(p.hora_encuentro) || 'sin hora') + '</b> · salida ' + e(((ops[Number(p.elegida)] || {}).hora_salida) || '—') + ' · apuntados ' + e(p.n_apuntados || 0) + ' · llegaron ' + e(p.n_asistentes || 0) + ' de ' + e(p.n_invitados) + '</p>';
+      h += '<details class="small" style="margin:0 0 10px"><summary><b>Corregir hora del encuentro</b> · si el grupo la cambió después de cerrar</summary><div class="row" style="margin-top:8px;align-items:flex-end"><div class="field" style="margin:0"><label for="horaC">Nueva hora</label><input id="horaC" type="datetime-local" value="' + e(localDT(p.hora_encuentro)) + '"></div>' +
+        '<div class="field" style="margin:0"><label for="salidaC">Salida sugerida</label><input id="salidaC" type="text" maxlength="40" value="' + e(((ops[Number(p.elegida)] || {}).hora_salida) || '') + '"></div><button class="btn btn-ghost btn-sm" id="corregir" data-busy="Guardando…" style="flex:0 0 auto">Guardar corrección</button></div>' +
+        '<p class="tiny muted">No cambia la hora del cierre ni la opción elegida (las métricas quedan intactas). La hora anterior queda en la nota del plan.</p>' + (p.nota ? '<p class="tiny muted">Nota: ' + e(p.nota) + '</p>' : '') + '</details>';
       h += '<h3>Enlaces personales al pulso</h3>' + (p.experimento === 'E2' ? '<p class="tiny muted">En E2 el pulso aparece solo en la página de cada persona desde la hora de encuentro; no hace falta enviarlo.</p>' : '') + (g3 ? g3.miembros : []).map(function (m) {
         var st = (p.estado_por_pid || {})[m.pid] || {}, l = linkRetro(m.pid, p.plan_id);
         return '<div class="member"><div class="who">' + e(m.nombre) + ' <span class="tiny muted">' + [st.apuntado ? 'apuntado' : '', st.llego ? 'llegó' : '', st.casa ? 'en casa' : ''].filter(Boolean).join(' · ') + '</span></div>' +
@@ -327,25 +341,33 @@
           paradas: ids.map(function (id) { var i = invById(id); return i ? { id: i.id, nombre: i.nombre, zona: i.zona, costo_aprox: i.costo_aprox, horario: i.horario } : null; }).filter(Boolean) };
       });
       if (!ops.length || ops.some(function (o) { return !o.titulo || !o.paradas.length; })) return S.toast('Cada opción necesita título y al menos una parada del inventario.', true);
-      if (!confirm('¿Publicar ' + ops.length + ' opción(es)? El grupo las verá ' + (p.experimento === 'E2' ? 'en su página.' : 'cuando las envíes por WhatsApp (pestaña Mensajes).'))) return;
-      act(pub, { action: 'publicar_plan', plan_id: p.plan_id, opciones: ops }, 'Plan publicado').then(function () { borrador = []; });
+      S.dosPasos(pub, '¿Publicar ' + ops.length + ' opción(es)? El grupo las verá ' + (p.experimento === 'E2' ? 'en su página.' : 'cuando las envíes por WhatsApp (pestaña Mensajes).'), function () {
+        act(pub, { action: 'publicar_plan', plan_id: p.plan_id, opciones: ops }, 'Plan publicado').then(function () { borrador = []; });
+      });
     };
     S.$$('[data-votopid]', el).forEach(function (s) {
       s.onchange = function () { var v = s.value; if (v === '') return; S.post({ action: 'votar', plan_id: p.plan_id, pid: s.dataset.votopid, opcion: v === 'veto' ? '' : Number(v), veto: v === 'veto' }).then(function (r) { if (!r || !r.ok) return S.toast(S.errMsg(r), true); S.toast('Voto registrado'); load(); }); };
     });
+    var selE = S.$('#elegida', el), opsP = []; try { opsP = JSON.parse(p.opciones_json || '[]'); } catch (x) {}
+    if (selE && S.$('#salida', el)) selE.onchange = function () { S.$('#salida', el).value = (opsP[Number(selE.value)] || {}).hora_salida || ''; };
+    var corr = S.$('#corregir', el);   // 2.0.7 (R1): corregir la hora de un plan cerrado sin tocar el cierre
+    if (corr) corr.onclick = function () {
+      var hc = S.$('#horaC', el).value; if (!hc) return S.toast('Pon el día y la hora nuevos.', true);
+      act(corr, { action: 'corregir_plan', plan_id: p.plan_id, hora_encuentro: hc.replace('T', ' '), hora_salida: S.$('#salidaC', el).value.trim() }, 'Hora corregida. Avisa al grupo del cambio.');
+    };
     var cp = S.$('#cerrarPlan', el);
     if (cp) cp.onclick = function () {
       var hora = S.$('#hora', el).value; if (!hora) return S.toast('Pon el día y la hora del encuentro (capa 2).', true);
-      act(cp, { action: 'cerrar_plan', plan_id: p.plan_id, elegida: Number(S.$('#elegida', el).value), hora_encuentro: hora.replace('T', ' '), nota: S.$('#nota', el).value }, 'Plan cerrado');
+      act(cp, { action: 'cerrar_plan', plan_id: p.plan_id, elegida: Number(S.$('#elegida', el).value), hora_encuentro: hora.replace('T', ' '), hora_salida: S.$('#salida', el).value.trim(), nota: S.$('#nota', el).value }, 'Plan cerrado');
     };
     var fo = S.$('#failover', el);
-    if (fo) fo.onclick = function () { if (confirm('¿Pasar este plan del E1 a la web? Queda fuera de la comparación E1/E2.')) act(fo, { action: 'marcar_failover', plan_id: p.plan_id, hacia: 'E2', motivo: S.$('#foMotivo', el).value }, 'Cambio de canal registrado. Envía a cada persona su enlace web.'); };
+    if (fo) fo.onclick = function () { S.dosPasos(fo, '¿Pasar este plan del E1 a la web? Queda fuera de la comparación E1/E2.', function () { act(fo, { action: 'marcar_failover', plan_id: p.plan_id, hacia: 'E2', motivo: S.$('#foMotivo', el).value }, 'Cambio de canal registrado. Envía a cada persona su enlace web.'); }); };
     var cd = S.$('#caido', el);
-    if (cd) cd.onclick = function () { var c = S.$('#causa', el).value; if (!c) return S.toast('Elige la causa (S9).', true); if (confirm('¿Marcar el plan como caído por "' + c + '"?')) act(cd, { action: 'cerrar_plan', plan_id: p.plan_id, caido: true, causa_caida: c, nota: S.$('#nota', el).value }, 'Plan marcado como caído'); };
+    if (cd) cd.onclick = function () { var c = S.$('#causa', el).value; if (!c) return S.toast('Elige la causa (S9).', true); S.dosPasos(cd, '¿Marcar el plan como caído por "' + c + '"?', function () { act(cd, { action: 'cerrar_plan', plan_id: p.plan_id, caido: true, causa_caida: c, nota: S.$('#nota', el).value }, 'Plan marcado como caído'); }); };
     var sr = S.$('#siguienteRonda', el);
     if (sr) sr.onclick = function () { act(sr, { action: 'crear_plan', grupo_id: p.grupo_id }, 'Ronda nueva creada').then(function (r) { if (r && r.ok) { sel.plan = r.plan_id; borrador = []; renderAll(); } }); };
     var mc = S.$('#marcarCaido', el);
-    if (mc) mc.onclick = function () { var c = S.$('#causa2', el).value; if (!c) return S.toast('Elige la causa (S9).', true); if (confirm('¿Marcar el plan como caído por "' + c + '"?')) act(mc, { action: 'marcar_caido', plan_id: p.plan_id, causa_caida: c }, 'Plan marcado como caído'); };
+    if (mc) mc.onclick = function () { var c = S.$('#causa2', el).value; if (!c) return S.toast('Elige la causa (S9).', true); S.dosPasos(mc, '¿Marcar el plan como caído por "' + c + '"?', function () { act(mc, { action: 'marcar_caido', plan_id: p.plan_id, causa_caida: c }, 'Plan marcado como caído'); }); };
   }
 
   /* ---------- 3 · Mensajes (voz de marca) ----------
@@ -461,7 +483,12 @@
     return ['sin', 'Sin respuesta'];
   }
   // Los mensajes al grupo se guardan en la hoja de eventos sin persona; la consola recuerda en este navegador cuándo se marcaron.
-  function hechos(planId) { try { return JSON.parse(S.LS.get('sintonia_hechos_' + planId) || '{}'); } catch (x) { return {}; } }
+  function hechos(planId) {   // 2.0.7 (R6): lo marcado viene de la hoja (todo el equipo lo ve) y se completa con lo de este navegador
+    var h = {}; try { h = JSON.parse(S.LS.get('sintonia_hechos_' + planId) || '{}'); } catch (x) {}
+    var pl = plan(planId), srv = (pl && pl.mensajes) || {};
+    Object.keys(srv).forEach(function (k) { var l = (srv[k] || []).map(function (t) { return new Date(t).toISOString(); }); if (!h[k] || l.length >= h[k].length) h[k] = l; });
+    return h;
+  }
   function marcarHecho(planId, tipo) { var h = hechos(planId); (h[tipo] = h[tipo] || []).push(new Date().toISOString()); S.LS.set('sintonia_hechos_' + planId, JSON.stringify(h)); }
   function hhmm(iso) { var d = new Date(iso); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
 
@@ -484,7 +511,7 @@
     h += '</div>';
     if (p && g && e1) {
       var hx = hechos(p.plan_id);
-      h += '<div class="card"><h3>Mensajes del mago al grupo</h3><p class="small muted">Márcalo cuando ya lo enviaste. Queda en la hoja de eventos y aquí se ve la hora.</p><div class="msg-done">' +
+      h += '<div class="card"><h3>Mensajes del mago al grupo</h3><p class="small muted">Márcalo cuando ya lo enviaste. Queda en la hoja de eventos y lo ve todo el equipo, en cualquier computador.</p><div class="msg-done">' +
         MSG_GRUPO.map(function (t) {
           var l = hx[t[0]] || [], ok = l.length > 0;
           return '<div class="msg-row' + (ok ? ' done' : '') + '"><span class="msg-name">' + (ok ? '✓ ' : '') + e(t[1]) + '</span><span class="tiny muted">' + (ok ? 'Hecho a las ' + hhmm(l[l.length - 1]) + (l.length > 1 ? ' · ' + l.length + ' veces' : '') : 'Pendiente') + '</span>' +
@@ -494,7 +521,8 @@
     h += '<div class="card"><h3>Minutos de trabajo humano</h3><p class="small muted">Cada bloque de trabajo con su causa. Es el costo humano del piloto (I3) y la línea base para decidir qué automatizar. En E2 también cuenta: curar opciones, cerrar el plan, avisar al organizador.</p>' +
       '<div class="row"><div class="field"><label for="minActor">Rol de quien trabajó</label><select id="minActor">' + opts([['mago', 'Mago (habla con el grupo)'], ['soporte', 'Soporte (planes e inventario)'], ['tecnico', 'Técnico (arreglar fallas)']]) + '</select></div><div class="field"><label for="minN">Minutos</label><input id="minN" type="number" inputmode="numeric" min="1" max="600"></div></div>' +
       '<div class="field"><label for="minCausa">En qué se fue el tiempo</label><select id="minCausa">' + opts(CAUSAS) + '</select></div><div class="field"><label for="minNota">Nota (opcional)</label><input id="minNota" type="text" maxlength="300"></div>' +
-      '<div class="actions"><button class="btn btn-primary btn-sm" id="minGuardar" data-busy="Guardando…">Guardar minutos' + (p ? ' en este plan' : '') + '</button></div></div>';
+      '<div class="actions"><button class="btn btn-primary btn-sm" id="minGuardar" data-busy="Guardando…">Guardar minutos' + (p ? ' en este plan' : '') + '</button></div>' +
+      (p ? '<p class="small" style="margin:10px 0 0">Registrado en ' + e(rondaLabel(p)) + ': <b>' + S.num(p.minutos || 0, 0) + ' min</b> en ' + (p.bloques || 0) + ' bloque' + (p.bloques === 1 ? '' : 's') + '.' + (p.minutos === undefined ? ' <span class="tiny muted">(El backend en vivo aún no envía este total: despliega la 2.2.5.)</span>' : '') + '</p>' : '') + '</div>';
     el.innerHTML = h;
     S.$$('[data-estado]', el).forEach(function (s) {
       s.onchange = function () {
@@ -544,8 +572,9 @@
       b.onclick = function () {
         var k = b.dataset.cambio, ver = S.$('#cVer' + k, el).value.trim(), d = S.$('#cDesc' + k, el).value.trim();
         if (!ver || !d) return S.toast('Escribe qué cambia y la versión.', true);
-        if (!confirm('¿Registrar el único cambio permitido para ' + EXP[k].nombre + '? Los grupos piloto de ' + k + ' pasan a ' + ver + '.')) return;
-        act(b, { action: 'registrar_cambio', experimento: k, version: ver, descripcion: d, por: S.$('#cPor' + k, el).value }, function (r) { return r.alerta || 'Cambio registrado'; });
+        S.dosPasos(b, '¿Registrar el único cambio permitido para ' + EXP[k].nombre + '? Los grupos piloto de ' + k + ' pasan a ' + ver + '.', function () {
+          act(b, { action: 'registrar_cambio', experimento: k, version: ver, descripcion: d, por: S.$('#cPor' + k, el).value }, function (r) { return r.alerta || 'Cambio registrado'; });
+        });
       };
     });
   }
@@ -556,6 +585,54 @@
       inv.map(function (i) { return '<tr><td>' + e(i.id) + '</td><td>' + e(i.nombre) + '<br><span class="tiny muted">' + e(i.categoria) + '</span></td><td>' + e(i.zona) + '</td><td>' + e(i.costo_aprox) + '</td><td>' + e(i.horario) + '</td><td class="tiny">' + e(String(i.verificado_el).slice(0, 10)) + '</td></tr>'; }).join('') + '</tbody></table></div></div>' +
       '<div class="card"><h3>Ronda de llamadas · por confirmar (' + pend.length + ')</h3><p class="small muted">Antes de cada fin de semana: llama, confirma que abrió tras el sismo, horario y costo, y cambia <b>estado</b> a <b>activo</b> en la hoja "inventario" (con la fecha en verificado_el). Los teléfonos marcados "sin verificar" vienen de la lista de Gemini.</p><div class="table-scroll"><table><thead><tr><th>Id</th><th>Lugar</th><th>Teléfono</th><th>Qué confirmar</th></tr></thead><tbody>' +
       pend.map(function (i) { return '<tr><td>' + e(i.id) + '</td><td>' + e(i.nombre) + '<br><span class="tiny muted">' + e(i.zona) + '</span></td><td class="small">' + e(i.telefono_para_llamar || '—') + '</td><td class="tiny">Horario: ' + e(i.horario) + '<br>Costo: ' + e(i.costo_aprox) + '</td></tr>'; }).join('') + '</tbody></table></div></div>';
+  }
+
+  /* ---------- 2.0.6 · Empezar el piloto real (backend 2.2.4: limpiar_registros) ----------
+   * Borra los registros de los ensayos en la hoja. Conserva tokens, inventario y bitácora. Antes, el backend hace un respaldo sin contactos. */
+  var HOJAS = { participantes: 'Personas inscritas', contactos: 'Nombres y WhatsApp', grupos: 'Grupos', linea_base_grupo: 'Línea base por grupo', linea_base: 'Línea base por persona',
+    preferencias: 'Preferencias', planes: 'Planes', votos: 'Votos', eventos: 'Eventos', operacion: 'Minutos del mago', cambios: 'Cambios W1 → W2', retro: 'Pulsos (retro)', wtp: 'Disposición a pagar',
+    alertas: 'Alertas E2', revisiones: 'Revisiones E2', suscripciones: 'Suscripciones a avisos', avisos: 'Avisos programados',
+    tokens: 'Tokens de IA (costo)', inventario: 'Inventario de lugares', bitacora: 'Bitácora de reinicios' };
+  var FRASE = 'EMPEZAR PILOTO', ultimoReinicio = null;
+  function renderReinicio() {
+    var el = S.$('#tab-reinicio'), reg = D.registros, cons = D.conservar_al_limpiar || ['tokens', 'inventario', 'bitacora'];
+    if (!reg) { el.innerHTML = '<div class="card warn"><h3>Falta actualizar el backend</h3><p class="small">El backend en vivo todavía no tiene el reinicio. Pega <b>backend/Codigo_Piloto.gs</b> (2.2.4) en Apps Script → Implementar → Administrar implementaciones → editar → <b>Nueva versión</b>. La URL /exec no cambia.</p></div>'; return; }
+    var conservarCambios = !!(S.$('#rc-cambios') && S.$('#rc-cambios').checked);
+    var borrar = Object.keys(reg).filter(function (n) { return cons.indexOf(n) < 0 && !(conservarCambios && n === 'cambios'); });
+    var total = borrar.reduce(function (s, n) { return s + (reg[n] || 0); }, 0);
+    var pruebas = (D.grupos || []).filter(function (g) { return g.modo === 'prueba'; }).length, piloto = (D.grupos || []).filter(function (g) { return g.modo === 'piloto'; }).length;
+    var fila = function (n) { return '<tr><td>' + e(HOJAS[n] || n) + '<br><span class="tiny muted">' + e(n) + '</span></td><td style="text-align:right">' + S.num(reg[n] || 0) + '</td></tr>'; };
+    var h = '';
+    if (ultimoReinicio) h += '<div class="card soft"><h3>✓ Listo: la hoja quedó en blanco</h3><p class="small">Se borraron ' + S.num(ultimoReinicio.total) + ' registros. ' +
+      (ultimoReinicio.respaldo ? 'Respaldo (sin contactos) en tu Drive: <a href="' + e(ultimoReinicio.respaldo) + '" target="_blank" rel="noopener">abrir la hoja de respaldo ↗</a>.' : 'No había nada que respaldar.') +
+      ' La consola quedó en modo <b>Piloto (cuenta)</b>. Ya pueden compartir los enlaces de inscripción reales.</p></div>';
+    h += '<div class="card danger"><h3>Empezar el piloto real</h3>' +
+      '<p class="small">Borra todo lo que dejaron los ensayos para que la W1 arranque en cero: grupos, personas, votos, eventos, minutos y pulsos. <b>Se conservan los tokens</b> (el costo de IA acumulado), el inventario y la bitácora. Antes de borrar, el backend copia las pestañas a una hoja de respaldo nueva en el Drive del dueño del script, <b>sin la pestaña de contactos</b>.</p>' +
+      '<p class="small" style="margin:6px 0 0">Hoy hay <b>' + pruebas + '</b> grupo(s) en modo prueba y <b>' + piloto + '</b> en modo piloto. ' + (piloto ? '<b>Ojo:</b> los grupos en modo piloto también se borran.' : '') + '</p></div>' +
+      '<div class="grid two"><div class="card"><h3>Se borra (' + S.num(total) + ' registros)</h3><div class="table-scroll"><table><thead><tr><th>Pestaña</th><th style="text-align:right">Filas</th></tr></thead><tbody>' + borrar.map(fila).join('') + '</tbody></table></div></div>' +
+      '<div class="card soft"><h3>Se conserva</h3><div class="table-scroll"><table><thead><tr><th>Pestaña</th><th style="text-align:right">Filas</th></tr></thead><tbody>' + cons.concat(conservarCambios ? ['cambios'] : []).filter(function (n) { return n in reg; }).map(fila).join('') + '</tbody></table></div>' +
+      '<label class="small" style="display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="rc-cambios"' + (conservarCambios ? ' checked' : '') + '> <span>Conservar también <b>Cambios W1 → W2</b> (solo si ya registraron un cambio que vale para el piloto real).</span></label></div></div>' +
+      '<div class="card"><h3>Antes de borrar</h3><ol class="pasos small"><li>El ensayo terminó y nadie está votando ni respondiendo un pulso.</li><li>El equipo sabe que se reinicia (los enlaces personales de los ensayos dejan de funcionar).</li><li>Si alguien quiere revisar algo del ensayo, que lo haga ahora o en el respaldo.</li></ol>' +
+      '<div class="field" style="max-width:420px"><label for="rc-frase">Para confirmar, escribe <b>' + FRASE + '</b></label><input id="rc-frase" autocomplete="off" spellcheck="false" placeholder="' + FRASE + '"></div>' +
+      '<div class="actions"><button class="btn btn-danger" type="button" id="rc-go" disabled data-busy="Respaldando y borrando…">Borrar los ensayos y empezar el piloto</button></div>' +
+      '<p class="tiny muted">No se puede deshacer desde la consola; lo borrado queda solo en la hoja de respaldo.</p></div>';
+    var bit = D.bitacora || [];
+    if (bit.length) h += '<div class="card"><h3>Reinicios anteriores</h3><ul class="small">' + bit.slice().reverse().map(function (b) {
+      var n = 0; try { var o = JSON.parse(b.detalle || '{}'); Object.keys(o).forEach(function (k) { n += Number(o[k]) || 0; }); } catch (x) {}
+      return '<li>' + e(S.fecha(b.ts)) + ' · ' + S.num(n) + ' registros' + (b.respaldo_url ? ' · <a href="' + e(b.respaldo_url) + '" target="_blank" rel="noopener">respaldo ↗</a>' : '') + '</li>'; }).join('') + '</ul></div>';
+    el.innerHTML = h;
+    S.$('#rc-cambios', el).onchange = renderReinicio;
+    var inp = S.$('#rc-frase', el), go = S.$('#rc-go', el);
+    inp.oninput = function () { go.disabled = inp.value.trim().toUpperCase() !== FRASE || !total; };
+    go.onclick = function () {
+      S.busy(go, function () { return S.post({ action: 'limpiar_registros', key: key, confirmar: inp.value.trim(), conservar_cambios: conservarCambios, registrado_por: 'consola' }); }).then(function (r) {
+        if (!r || !r.ok) { S.toast(S.errMsg(r), true); return; }
+        try { Object.keys(window.localStorage).forEach(function (k) { if (/^sintonia_hechos_/.test(k)) S.LS.del(k); }); } catch (x) {}
+        ultimoReinicio = r; filtro = 'piloto'; sel.grupo = ''; sel.plan = ''; borrador = [];
+        S.toast('Hoja en blanco · ' + S.num(r.total) + ' registros borrados');
+        return load();
+      });
+    };
   }
 
   load();

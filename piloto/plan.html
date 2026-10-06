@@ -16,12 +16,13 @@
   <div id="app" aria-live="polite">
     <div class="card empty"><div class="pulse" aria-hidden="true"></div><p class="muted">Cargando tu plan…</p></div>
   </div>
+  <div id="extra"></div>
   <footer class="foot">Piloto académico · Universidad Icesi · <a href="aviso.html">Aviso de privacidad</a></footer>
 </main>
 <script src="assets/sintonia.js"></script>
 <script>
 (function () {
-  var app = S.$('#app'), pid = S.adoptPid(S.param('pid')), planId = S.param('plan_id') || '', timer = null, data = null;
+  var app = S.$('#app'), extra = S.$('#extra'), pid = S.adoptPid(S.param('pid')), planId = S.param('plan_id') || '', timer = null, data = null;
 
   function html(h) { app.innerHTML = h; }
   function poll(on) { clearTimeout(timer); if (on) timer = setTimeout(load, 20000); }
@@ -46,12 +47,13 @@
       data = r;
       if (!r || !r.ok) {
         poll(false);
+        extra.innerHTML = '';
         if (r && r.error === 'revocado') return html('<div class="card warn empty"><h2>Tu participación se cerró</h2><p class="small">' + S.esc(S.errMsg(r)) + '</p></div>');
         return html('<div class="card danger empty"><h2>No pudimos abrir tu plan</h2><p class="small">' + S.esc(S.errMsg(r)) + '</p></div>');
       }
       S.saveMe({ rol: r.rol, exp: r.experimento });   // 2.0.2: la identidad guardada sale del backend, no de otra persona que usó este celular
       if (r.plan_id) planId = r.plan_id;
-      render(r);
+      render(r); retiro();
     });
   }
 
@@ -133,6 +135,7 @@
         : '<p class="small muted">Cuando llegues al sitio, márcalo aquí. No usamos tu ubicación.</p><div class="actions"><button class="btn btn-honey btn-block" data-ev="checkpoint_llegada" data-busy="Guardando…"' + (ventana ? '' : ' disabled') + '>¡Llegué!</button></div>' + (ventana ? '' : '<p class="tiny muted center">Se activa unas horas antes del encuentro.</p>')) + '</div>';
     }
     var antes = hora && now < hora.getTime();   // 2.0.2: el pulso se abre desde la hora de encuentro
+    if (antes) h += calendario(o, hora);
     h += '<div class="card soft"><h3>Después de la salida</h3>' + (yo.retro ? '<p class="small">¡Gracias por contarnos cómo les fue!</p>' :
       antes ? '<p class="small muted">Después del encuentro te pediremos 2 minutos para contarnos cómo les fue.</p>' :
       '<p class="small">Si hubo sintonía, sigan. Cuéntanos cómo te fue en 2 minutos.</p><div class="actions"><a class="btn btn-primary btn-block" href="' + S.esc(S.link('retro.html', { plan_id: planId, pid: pid })) + '">Cuéntanos cómo te fue</a></div>') + '</div>';
@@ -144,6 +147,42 @@
           .then(function (x) { if (!x || !x.ok) return S.toast(S.errMsg(x), true); S.toast({ me_apunto: '¡Listo, te esperamos!', no_puedo: 'Anotado. Gracias por avisar.', checkpoint_llegada: '¡Bienvenid@! Quedó registrado.', llego_casa: 'Qué bueno. ¡Gracias!' }[b.dataset.ev]); load(); });
       };
     });
+  }
+
+  /* ---------- 2.0.7 (R3) · Retirarse desde la web, en dos pasos (Ley 1581 · I9) ---------- */
+  function retiro() {
+    if (extra.dataset.abierto === '1') return;   // no se redibuja mientras la persona decide
+    extra.innerHTML = '<details class="card" id="retiroBox"><summary class="small"><b>Retirarme del piloto</b></summary><p class="small muted" style="margin:8px 0">Puedes irte cuando quieras, sin dar explicaciones. Se borran tu nombre, tu número, tus votos y tus respuestas. Por rigor, tu grupo deja de contarse en la prueba.</p>' +
+      '<div id="retiroPaso"><button class="btn btn-danger btn-sm" id="retiro1" type="button">Retirarme y borrar mis datos</button></div></details>';
+    S.$('#retiroBox').addEventListener('toggle', function () { extra.dataset.abierto = this.open ? '1' : ''; });
+    S.$('#retiro1').onclick = function () {
+      S.$('#retiroPaso').innerHTML = '<div class="card danger small" style="margin:0"><b>¿Seguro?</b> No se puede deshacer.<div class="actions split" style="margin-top:8px"><button class="btn btn-ghost btn-sm" id="retiroNo" type="button">Cancelar</button><button class="btn btn-danger btn-sm" id="retiroSi" type="button" data-busy="Borrando…">Sí, retirarme</button></div></div>';
+      S.$('#retiroNo').onclick = function () { extra.dataset.abierto = ''; retiro(); };
+      S.$('#retiroSi').onclick = function () {
+        var b = this;
+        S.busy(b, function () { return S.post({ action: 'revocar', pid: pid }); }).then(function (x) {
+          if (!x || !x.ok) return S.toast(S.errMsg(x), true);
+          ['pid', 'grupo', 'rol', 'exp', 'nombre'].forEach(function (k) { S.LS.del('sintonia_' + k); });
+          poll(false); extra.innerHTML = ''; extra.dataset.abierto = '';
+          html('<div class="card warn empty"><h2>Listo, te retiraste</h2><p class="small">Borramos tus datos. Gracias por tu tiempo. Si tienes dudas, escríbenos a ' + S.esc(S.CONFIG.CONTACTO_EMAIL) + '.</p></div>');
+        });
+      };
+    };
+  }
+
+  /* ---------- 2.0.7 (R13) · Calendario: el celular avisa antes del encuentro ---------- */
+  function calendario(o, hora) {
+    var ini = new Date(hora), fin = new Date(ini.getTime() + 3 * 36e5);
+    var z = function (d) { return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); };
+    var titulo = 'Plan con el parche · ' + (o.titulo || 'Sintonía'), lugar = (o.paradas || []).map(function (p) { return p.nombre; }).join(' → ');
+    var detalle = 'Tu plan en Sintonía: ' + S.link('plan.html', { pid: pid });
+    var g = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(titulo) + '&dates=' + z(ini) + '/' + z(fin) + '&location=' + encodeURIComponent(lugar) + '&details=' + encodeURIComponent(detalle);
+    var ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Sintonia//Piloto//ES', 'BEGIN:VEVENT', 'UID:' + planId + '@sintonia', 'DTSTAMP:' + z(new Date()), 'DTSTART:' + z(ini), 'DTEND:' + z(fin),
+      'SUMMARY:' + titulo, 'LOCATION:' + lugar, 'DESCRIPTION:' + detalle,
+      'BEGIN:VALARM', 'TRIGGER:-PT2H', 'ACTION:DISPLAY', 'DESCRIPTION:En 2 horas es el plan', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    return '<div class="card"><h3>Agrégalo a tu calendario</h3><p class="small muted">Así tu celular te avisa 2 horas antes.</p><div class="actions split">' +
+      '<a class="btn btn-ghost" target="_blank" rel="noopener" href="' + S.esc(g) + '">Google Calendar</a>' +
+      '<a class="btn btn-ghost" download="plan-sintonia.ics" href="data:text/calendar;charset=utf-8,' + encodeURIComponent(ics) + '">iPhone u otro (.ics)</a></div></div>';
   }
 
   S.$('#refrescar').onclick = load;
