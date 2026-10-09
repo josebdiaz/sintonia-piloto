@@ -3,6 +3,16 @@
 Copia en texto de la página «Changelog» del archivo de Figma (fuente de verdad).
 Versionado semántico: **mayor** = cambia un nombre de token o componente (rompe código); **menor** = algo nuevo; **parche** = ajuste de valor sin cambiar nombres.
 
+## 3.4.0 · 9 de octubre de 2026 · Feedback del equipo
+
+- Nuevo **Chat · Enviar** (Estado=Enviar | OK): ícono por defecto; «OK» solo para confirmar una selección. Pantallas con OK: A4, A5, A6, B2, B3 y D1; en A6 y B3 se quita la respuesta «Continuar».
+- **Chat · Composer**: las respuestas rápidas se alinean a la derecha.
+- Nuevo **Chat · Confirmación** (Tipo=Asistencia | Reencuentro × Estado=Pendiente | Respondido): «¿Te apuntas?» en C5 y «¿Repetimos con este parche?» en D5.
+- **D5**: se retira «Compartir mi contacto con el grupo» y la pregunta duplicada de la Lista del plan. La métrica de Conexión Nivel 1 queda fuera de E3; **confirmar con Néstor**.
+- **C7**: «¡Es hoy, es hoy!».
+- Prototipo: «Volver» regresa a la pantalla anterior; T1 se confirma con «OK». User flow de FigJam actualizado.
+- Código: `components.css` (`.s-composer > .s-quick-replies`, `.s-send .s-ok`, `.s-confirm`); la app usa los valores del Dial de energía de Figma (Agotado, Bajo, Normal, Con pilas, A tope).
+
 ## App interna · 8 de octubre de 2026
 
 - `e3-app/` (carpeta aparte en la raíz del repo): versión funcional de E3 solo para el equipo (multijugador, guion + Claude, flujo A–F, panel del equipo). No cambia tokens ni componentes.

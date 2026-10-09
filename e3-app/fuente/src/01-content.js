@@ -11,7 +11,7 @@ const FRANJAS = [
   { id: 'noche', b: 'NOCHE', s: '6 – 10 p. m.', h: 19, m: 0 },
 ];
 
-const ENERGIA = ['Agotado', 'Bajo', 'Medio', 'Alto', 'A tope'];
+const ENERGIA = ['Agotado', 'Bajo', 'Normal', 'Con pilas', 'A tope']; // mismos valores que el Dial de energía en Figma
 const ANTOJOS = ['Café', 'Almuerzo', 'Caminata', 'Juegos de mesa', 'Algo cultural'];
 const RESTRICCIONES = ['Presupuesto bajo', 'Sin alcohol', 'Accesibilidad', 'Que quede cerca', 'Nada especial'];
 

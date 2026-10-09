@@ -309,3 +309,18 @@
 .s-nav a[aria-current="page"]::before { opacity: 1; }
 .s-kpi { display: grid; gap: var(--space-2); padding: var(--space-12) var(--space-16); border: var(--stroke-1) solid var(--color-border-default); border-radius: var(--radius-lg); background: var(--color-bg-surface); }
 .s-kpi b { font: 800 var(--font-size-24)/1.2 var(--font-family-mono); font-variant-numeric: tabular-nums; }
+
+/* ── 3.4 · Feedback del equipo ─────────────────────────────────────────── */
+/* Chat · Composer: respuestas rápidas a la derecha */
+.s-composer > .s-quick-replies { justify-content: flex-end; }
+/* Chat · Enviar · Estado=OK — solo con una selección por confirmar y el campo vacío (form[data-ok]); si se escribe, vuelve el ícono (form[data-texto]) */
+.s-send .s-ok { display: none; }
+form[data-ok]:not([data-texto]) .s-send { width: auto; min-width: var(--size-control-md); padding: 0 var(--space-16); border-radius: var(--radius-full); font: 700 var(--font-size-14)/1 var(--font-family-mono); letter-spacing: 0.08em; }
+form[data-ok]:not([data-texto]) .s-send .s-icon { display: none; }
+form[data-ok]:not([data-texto]) .s-send .s-ok { display: inline; }
+/* Chat · Confirmación · Tipo=Asistencia («¿Te apuntas?») | Reencuentro («¿Repetimos con este parche?») */
+.s-confirm { display: grid; gap: var(--space-8); padding: var(--space-16); border: var(--stroke-1) solid var(--color-border-brand); border-radius: var(--radius-lg); background: var(--color-bg-surface); }
+.s-confirm strong { font: 700 var(--font-size-16)/1.4 var(--font-family-display); }
+.s-confirm .s-actions { display: flex; flex-wrap: wrap; gap: var(--space-8); align-items: center; }
+.s-confirm .s-actions > .s-button:not([data-size]) { flex: 1; }
+.s-confirm .s-actions > p { flex: 1; font-weight: 600; color: var(--color-text-brand); }
