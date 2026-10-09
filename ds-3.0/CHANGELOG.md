@@ -3,6 +3,30 @@
 Copia en texto de la página «Changelog» del archivo de Figma (fuente de verdad).
 Versionado semántico: **mayor** = cambia un nombre de token o componente (rompe código); **menor** = algo nuevo; **parche** = ajuste de valor sin cambiar nombres.
 
+## App interna · 8 de octubre de 2026
+
+- `e3-app/` (carpeta aparte en la raíz del repo): versión funcional de E3 solo para el equipo (multijugador, guion + Claude, flujo A–F, panel del equipo). No cambia tokens ni componentes.
+- Feedback del equipo aplicado en la app: volver a la pantalla anterior, «¡Es hoy, es hoy!» en C7, «¿Te apuntas?» en el plan fijado, «¿Repetimos con este parche?» en vez de compartir contacto, dial de energía con riel, respuestas del compositor a la derecha y enviar = «OK» solo cuando hay algo que confirmar. Pendiente llevarlo a Figma.
+
+## 3.3.0 · 8 de octubre de 2026 · Prototipo de pruebas
+
+- Nueva página «Prototipo · Pruebas E3»: 16 pantallas en Claro y 16 en Oscuro (mitad de participantes en cada modo), con zonas táctiles de 44 px o más sobre los elementos reales y 8 puntos de inicio (T1, T2–T5, T6 y T7 en cada modo). Todas las rutas de éxito verificadas.
+- Votación con las 3 opciones: C1 y C2 tienen una versión por opción, para que el voto registrado diga la opción elegida.
+- Microinteracciones funcionales: Interruptor de palanca interactivo (cambia de variante con smart animate de 200 ms), elección de plan y voto con smart animate, válvulas que pasan solas a plan fijado (3 s). Tiempos y curvas sin pulir; se ajustan con los hallazgos de la Etapa 2.
+- «Fin de la tarea» es una pantalla solo para la prueba; no es parte del producto.
+- Protocolo de pruebas y consentimiento con aval de Néstor (8 oct 2026).
+
+## 3.2.0 · 8 de octubre de 2026 · Estructura, nombres y espaciado
+
+- Estructura: Firma · Escala de dial, Dial de energía e Interruptor de palanca pasan a auto-layout (marcas con reparto uniforme; la palanca con padding 4 · 8). Solo conservan posición libre las piezas que dependen de un valor (aguja, perilla, relleno) o que son ilustraciones en capas (Marco catedral, bulbo, cara de la aguja de quórum, asa).
+- Auto-layout en todo el archivo: 0 marcos sin auto-layout (antes 159). Real donde hay flujo: sets en cuadrícula con `space/24`, tramos de la Lista del plan, tablero Oscuro (`space/80` · `space/32`), muestras de Dimensión. Con capas fijadas (posición absoluta dentro del auto-layout) donde la posición depende de un valor o es ilustración: íconos, Avatar, Marco catedral, onda, aguja, bulbo, cifras, riel del Cuadrante y escala del Dial. Es la misma estructura que en código (contenedor flex + hijos `position: absolute`). Sin cambio visual.
+- Texto: los mensajes ya no tienen ancho fijo; crecen hasta 262 px (entrantes) o 256 px (propios) y luego bajan de línea. Los textos fijos de Hoja con asa e Interruptor pasan a Fill.
+- Composer: Enviar usa `Icon/arrow-right` en vez de `arrow-left` girado 180°.
+- Nombres: sin capas genéricas (Rectangle, Ellipse). Pantallas agrupadas en secciones A–F (Claro) y marcos de grupo (Oscuro); las etiquetas pasan a «Doc · Grupo X».
+- Espaciado: Luz piloto pasa de 5 px a `space/4` y queda ligada a variables (padding, separación y radio). Todo padding y separación de los componentes queda en la escala y con variable.
+- Código: `components.css` (`.s-bubble` 286 px, `.s-pilot`, `.s-lever-switch`) y `tokens/theme.native.ts` para React Native/Expo (px reales, Claro/Oscuro, fuentes de Expo), generado por `scripts/export_native.py`.
+- Difieren de «Convergencias visuales»: Firma, Interruptor, Luz piloto, Hoja con asa, Lista del plan, Fila de sintonía y Composer. Llevar estos cambios a la biblioteca antes de la próxima sincronización. El Cuadrante de opciones queda igual a la biblioteca.
+
 ## 3.1.2 · 8 de octubre de 2026 · Tarjeta de votación y válvulas
 
 - Válvulas calentando: en Oscuro conservan la luz interna. Variables nuevas `radio/valve-glass` (mostaza 100 / 500) y `radio/valve-core` (mostaza 100 en los dos modos).
@@ -40,4 +64,4 @@ Versionado semántico: **mayor** = cambia un nombre de token o componente (rompe
 
 ## Documentación sin versión de DS
 
-- `pruebas/plan-pruebas-calidad.html` · Plan escalonado de pruebas de calidad para E3 (prueba de 5 segundos → usabilidad no moderada → moderada). **No ejecutado.** Queda como documentación para el momento de testear E3; metas preliminares y protocolo sujetos al aval de Néstor.
+- `pruebas/plan-pruebas-calidad.html` · Plan escalonado de pruebas de calidad para E3 (prueba de 5 segundos → usabilidad no moderada → moderada). Protocolo con aval de Néstor (8 oct 2026); aún sin correr con personas. Las metas siguen siendo preliminares hasta la primera corrida.

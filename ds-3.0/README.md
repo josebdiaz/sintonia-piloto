@@ -2,7 +2,7 @@
 
 Sistema de diseño del Experimento 3 (chat con IA para armar planes en grupo), en modo Claro y Oscuro.
 
-**v3.1.2** (detalle en `CHANGELOG.md`). Desde **v3.1.0** los componentes son los de «Convergencias visuales» (archivo DS 2.x, página «Convergencias visuales»), traídos tal cual y ligados a las variables del DS 3.0. Las 32 pantallas siguen la composición de los «Cinco momentos».
+**v3.3.0** (detalle en `CHANGELOG.md`). Prototipo de pruebas en la página «Prototipo · Pruebas E3» de Figma. Para React Native usa `tokens/theme.native.ts`: `getTheme(useColorScheme())` devuelve colores, sombras, espaciado y tipografía con lineHeight y letterSpacing ya en px. No uses los valores en % de Figma tal cual. Desde **v3.1.0** los componentes son los de «Convergencias visuales» (archivo DS 2.x, página «Convergencias visuales»), traídos tal cual y ligados a las variables del DS 3.0. Las 32 pantallas siguen la composición de los «Cinco momentos».
 
 - **Fuente de verdad:** Figma «Sintonía DS 3.0 · E3», https://www.figma.com/design/bUYQpDmwzNgTPwCwchD2W3
 - **User flow:** FigJam, sección «E3 · User flow (DS 3.0)»: https://www.figma.com/board/GGBZUvGckGpphSR9X1qEw7
@@ -16,7 +16,8 @@ ds-3.0/
 ├─ tokens/
 │  ├─ figma-export.json   exportación de variables y estilos de Figma (entrada)
 │  ├─ tokens.json         DTCG (generado)
-│  └─ tokens.css          :root = Claro · [data-theme="dark"] = Oscuro (generado)
+│  ├─ tokens.css          :root = Claro · [data-theme="dark"] = Oscuro (generado)
+│  └─ theme.native.ts     tema React Native / Expo en px, Claro y Oscuro (generado)
 ├─ css/
 │  ├─ base.css            reset, foco visible, movimiento reducido
 │  └─ components.css      .s-button, .s-message, .s-dial-vote… (uno por componente de Figma)
@@ -35,12 +36,16 @@ ds-3.0/
 └─ README.md
 ```
 
+## App de prueba interna (solo equipo)
+
+La versión funcional de E3 para el equipo vive aparte, en [`../e3-app/`](../e3-app/README.md). Usa los tokens, componentes y avatares de este paquete.
+
 ## Pruebas de calidad (para cuando se teste E3)
 
 `pruebas/plan-pruebas-calidad.html` describe tres etapas en orden: prueba de 5 segundos, usabilidad no moderada y usabilidad moderada, con tareas ligadas a activación, interacción y continuidad, compuertas entre etapas, ética y una corrida simulada marcada como no evidencia.
 
-- **Estado:** documentación. No se ha corrido con personas.
-- **Antes de usarlo:** aval de Néstor al protocolo, las metas preliminares y el consentimiento; prototipo navegable enlazado en Figma; confirmar si la encuesta de calibración permite recontactar.
+- **Estado:** protocolo y consentimiento con aval de Néstor (8 oct 2026). Aún no se ha corrido con personas.
+- **Antes de usarlo:** confirmar si la encuesta de calibración permite recontactar. El prototipo está en la página «Prototipo · Pruebas E3» del archivo de Figma.
 - Las metas de aprobación son preliminares y se ajustan con la primera corrida.
 
 ## Uso en una página
@@ -106,7 +111,7 @@ Si un cambio rompe una de estas reglas, no se publica.
 
 ## Pendientes (no inventados)
 
-- Texto final de consentimiento (A6 y B3): en borrador hasta que Néstor lo apruebe.
+- ~~Aval de Néstor al protocolo de pruebas y al consentimiento~~: confirmado el 8 oct 2026.
 - Rangos en COP de disposición a pagar (D4): en borrador.
 - Nombre y foto de quien responde en «Habla con un humano» (E4), con su autorización. Mientras tanto se usan iniciales.
 - El plazo de 48 h para el quórum es un supuesto de diseño que falta validar.

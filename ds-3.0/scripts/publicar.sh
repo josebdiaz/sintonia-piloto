@@ -14,6 +14,7 @@ python3 scripts/iconos.py
 echo "2/4 · Tokens + auditoría de contraste (falla si un par no pasa)"
 python3 scripts/export_tokens.py > /tmp/sintonia-contraste.txt || { cat /tmp/sintonia-contraste.txt; echo "✗ Contraste: no se publica."; exit 1; }
 tail -n 1 /tmp/sintonia-contraste.txt
+python3 scripts/export_native.py   # tema React Native (px, Claro/Oscuro, fuentes Expo)
 
 echo "3/4 · Variables CSS usadas que no existen en tokens.css"
 # --fill, --p y --w son propiedades locales de componente (riel, avance), no tokens
