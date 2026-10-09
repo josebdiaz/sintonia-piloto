@@ -8,7 +8,7 @@ Versionado semántico: **mayor** = cambia un nombre de token o componente (rompe
 - Nuevo **Chat · Enviar** (Estado=Enviar | OK): ícono por defecto; «OK» solo para confirmar una selección. Pantallas con OK: A4, A5, A6, B2, B3 y D1; en A6 y B3 se quita la respuesta «Continuar».
 - **Chat · Composer**: las respuestas rápidas se alinean a la derecha.
 - Nuevo **Chat · Confirmación** (Tipo=Asistencia | Reencuentro × Estado=Pendiente | Respondido): «¿Te apuntas?» en C5 y «¿Repetimos con este parche?» en D5.
-- **D5**: se retira «Compartir mi contacto con el grupo» y la pregunta duplicada de la Lista del plan. La métrica de Conexión Nivel 1 queda fuera de E3; **confirmar con Néstor**.
+- **D5**: se retira «Compartir mi contacto con el grupo» y la pregunta duplicada de la Lista del plan. Conexión Nivel 1 no aplica en E3: cada persona entra con gente que ya conoce, así que la conexión se mide con Nivel 2 (intención de reencuentro).
 - **C7**: «¡Es hoy, es hoy!».
 - Prototipo: «Volver» regresa a la pantalla anterior; T1 se confirma con «OK». User flow de FigJam actualizado.
 - Código: `components.css` (`.s-composer > .s-quick-replies`, `.s-send .s-ok`, `.s-confirm`); la app usa los valores del Dial de energía de Figma (Agotado, Bajo, Normal, Con pilas, A tope).
