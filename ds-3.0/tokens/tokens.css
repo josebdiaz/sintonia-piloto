@@ -1,0 +1,354 @@
+/* Sintonía DS 3.0 · tokens — GENERADO por scripts/export_tokens.py. No editar a mano. */
+/* Figma «Sintonía DS 3.0 · E3» (bUYQpDmwzNgTPwCwchD2W3) · exportado 2026-10-08 · v3.1.2 */
+
+:root {
+  /* Paleta */
+  --palette-papel-0: #ffffff;
+  --palette-papel-50: #faf9f6;
+  --palette-papel-100: #efede7;
+  --palette-papel-150: #ece9e1;
+  --palette-papel-200: #e6e3dc;
+  --palette-papel-300: #dad6cc;
+  --palette-papel-500: #827d73;
+  --palette-papel-600: #8e8c86;
+  --palette-papel-700: #47494d;
+  --palette-papel-900: #1f2226;
+  --palette-noche-100: #e8ecf1;
+  --palette-noche-200: #c7ced7;
+  --palette-noche-300: #a9b2be;
+  --palette-noche-500: #6f7886;
+  --palette-noche-600: #3a4350;
+  --palette-noche-700: #2c3440;
+  --palette-noche-800: #212833;
+  --palette-noche-850: #1a2029;
+  --palette-noche-900: #141920;
+  --palette-noche-925: #0a0d11;
+  --palette-noche-950: #0e1116;
+  --palette-cobalto-100: #dce6f2;
+  --palette-cobalto-200: #b7cbe3;
+  --palette-cobalto-300: #8db1dd;
+  --palette-cobalto-500: #2f639b;
+  --palette-cobalto-700: #1f4b7a;
+  --palette-cobalto-800: #173a60;
+  --palette-cobalto-850: #1a3150;
+  --palette-cobalto-900: #0f2843;
+  --palette-mostaza-100: #fbefd2;
+  --palette-mostaza-200: #f3d791;
+  --palette-mostaza-300: #ebc46a;
+  --palette-mostaza-500: #b8800f;
+  --palette-mostaza-600: #9c6c0b;
+  --palette-mostaza-700: #654404;
+  --palette-mostaza-900: #3a2c0e;
+  --palette-rosa-100: #fbe6e9;
+  --palette-rosa-200: #f2b8c0;
+  --palette-rosa-300: #e8939e;
+  --palette-rosa-500: #bf4f5c;
+  --palette-rosa-700: #7a2d3a;
+  --palette-rosa-900: #3d1e25;
+  --palette-carmesi-100: #fbe4e2;
+  --palette-carmesi-200: #f6a8a1;
+  --palette-carmesi-300: #f28b82;
+  --palette-carmesi-600: #a11f1a;
+  --palette-carmesi-700: #8a1d17;
+  --palette-carmesi-900: #3f1a18;
+  --palette-base-blanco: #ffffff;
+  --palette-base-negro: #000000;
+  /* Dimensión */
+  --space-0: 0;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-14: 14px;
+  --space-16: 16px;
+  --space-18: 18px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-28: 28px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --radius-none: 0;
+  --radius-3xs: 2px;
+  --radius-2xs: 4px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 28px;
+  --radius-device: 36px;
+  --radius-full: 9999px;
+  --size-touch-min: 44px;
+  --size-control-md: 48px;
+  --size-control-sm: 36px;
+  --size-icon-sm: 16px;
+  --size-icon-md: 20px;
+  --size-icon-lg: 24px;
+  --stroke-1: 1px;
+  --stroke-1-5: 1.5px;
+  --stroke-2: 2px;
+  /* Tipografía */
+  --font-family-display: 'Archivo', 'Inter', system-ui, sans-serif;
+  --font-family-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-size-11: 11px;
+  --font-size-12: 12px;
+  --font-size-13: 13px;
+  --font-size-14: 14px;
+  --font-size-16: 16px;
+  --font-size-17: 17px;
+  --font-size-19: 19px;
+  --font-size-24: 24px;
+  --font-size-26: 26px;
+  --font-size-28: 28px;
+  --font-size-32: 32px;
+  --font-size-40: 40px;
+  --font-size-64: 64px;
+  /* Color · Claro */
+  --color-bg-canvas: var(--palette-papel-50);
+  --color-bg-surface: var(--palette-papel-0);
+  --color-bg-surface-muted: var(--palette-papel-100);
+  --color-bg-surface-hover: var(--palette-papel-150);
+  --color-bg-inverse: var(--palette-papel-900);
+  --color-bg-brand: var(--palette-cobalto-700);
+  --color-bg-brand-hover: var(--palette-cobalto-800);
+  --color-bg-brand-soft: var(--palette-cobalto-100);
+  --color-bg-brand-deep: var(--palette-cobalto-900);
+  --color-bg-accent: var(--palette-mostaza-500);
+  --color-bg-accent-hover: var(--palette-mostaza-600);
+  --color-bg-accent-soft: var(--palette-mostaza-100);
+  --color-bg-danger: var(--palette-rosa-500);
+  --color-bg-danger-soft: var(--palette-rosa-100);
+  --color-bg-critical: var(--palette-carmesi-600);
+  --color-bg-critical-soft: var(--palette-carmesi-100);
+  --color-text-primary: var(--palette-papel-900);
+  --color-text-secondary: var(--palette-papel-700);
+  --color-text-disabled: var(--palette-papel-600);
+  --color-text-brand: var(--palette-cobalto-700);
+  --color-text-accent-strong: var(--palette-mostaza-700);
+  --color-text-danger: var(--palette-rosa-700);
+  --color-text-critical: var(--palette-carmesi-700);
+  --color-text-on-brand: var(--palette-base-blanco);
+  --color-text-on-accent: var(--palette-papel-900);
+  --color-text-on-critical: var(--palette-base-blanco);
+  --color-text-on-deep: var(--palette-base-blanco);
+  --color-text-inverse: var(--palette-base-blanco);
+  --color-icon-primary: var(--palette-papel-900);
+  --color-icon-secondary: var(--palette-papel-700);
+  --color-icon-brand: var(--palette-cobalto-700);
+  --color-icon-on-brand: var(--palette-base-blanco);
+  --color-icon-danger: var(--palette-rosa-700);
+  --color-border-default: var(--palette-papel-200);
+  --color-border-strong: var(--palette-papel-500);
+  --color-border-brand: var(--palette-cobalto-700);
+  --color-border-accent: var(--palette-mostaza-600);
+  --color-border-danger: var(--palette-rosa-500);
+  --color-border-focus: var(--palette-cobalto-700);
+  --color-border-critical: var(--palette-carmesi-600);
+  --color-signal-searching: var(--palette-mostaza-500);
+  --color-signal-live: var(--palette-cobalto-500);
+  --color-signal-locked: var(--palette-cobalto-800);
+  --color-signal-off: var(--palette-carmesi-600);
+  --color-signal-glow: var(--palette-cobalto-200);
+  --color-chat-canvas: var(--palette-papel-50);
+  --color-chat-bubble-in: var(--palette-papel-100);
+  --color-chat-bubble-out: var(--palette-cobalto-100);
+  --color-chat-meta: var(--palette-papel-700);
+  --color-data-bar: var(--palette-cobalto-700);
+  --color-data-track: var(--palette-papel-150);
+  --color-radio-display: var(--palette-papel-100);
+  --color-radio-display-ink: var(--palette-mostaza-700);
+  --color-radio-display-live: var(--palette-cobalto-700);
+  --color-radio-chrome: var(--palette-papel-300);
+  --color-radio-grille: var(--palette-papel-300);
+  --color-bg-bakelite-soft: var(--palette-papel-100);
+  --color-text-bakelite: var(--palette-papel-700);
+  --color-border-warning: var(--palette-mostaza-300);
+  --color-radio-valve-glass: var(--palette-mostaza-100);
+  --color-radio-valve-core: var(--palette-mostaza-100);
+  --color-shadow-soft: #1f212614;
+  --color-shadow-strong: #1f21262e;
+  --color-shadow-inner: #1f21261f;
+  /* Efectos */
+  --shadow-card: 0 2px 8px 0 var(--color-shadow-soft);
+  --shadow-toast: 0 8px 24px 0 var(--color-shadow-strong);
+  --shadow-knob-pressed: inset 0 1px 3px 0 var(--color-shadow-inner);
+  --focus-ring: 0 0 0 2px var(--color-bg-surface), 0 0 0 4px var(--color-border-focus);
+  color-scheme: light;
+}
+
+/* Oscuro elegido por la persona */
+[data-theme="dark"] {
+  --color-bg-canvas: var(--palette-noche-950);
+  --color-bg-surface: var(--palette-noche-900);
+  --color-bg-surface-muted: var(--palette-noche-850);
+  --color-bg-surface-hover: var(--palette-noche-800);
+  --color-bg-inverse: var(--palette-noche-100);
+  --color-bg-brand: var(--palette-cobalto-300);
+  --color-bg-brand-hover: var(--palette-cobalto-200);
+  --color-bg-brand-soft: var(--palette-cobalto-850);
+  --color-bg-brand-deep: var(--palette-cobalto-700);
+  --color-bg-accent: var(--palette-mostaza-300);
+  --color-bg-accent-hover: var(--palette-mostaza-200);
+  --color-bg-accent-soft: var(--palette-mostaza-900);
+  --color-bg-danger: var(--palette-rosa-300);
+  --color-bg-danger-soft: var(--palette-rosa-900);
+  --color-bg-critical: var(--palette-carmesi-300);
+  --color-bg-critical-soft: var(--palette-carmesi-900);
+  --color-text-primary: var(--palette-noche-100);
+  --color-text-secondary: var(--palette-noche-200);
+  --color-text-disabled: var(--palette-noche-500);
+  --color-text-brand: var(--palette-cobalto-200);
+  --color-text-accent-strong: var(--palette-mostaza-200);
+  --color-text-danger: var(--palette-rosa-200);
+  --color-text-critical: var(--palette-carmesi-200);
+  --color-text-on-brand: var(--palette-noche-950);
+  --color-text-on-accent: var(--palette-noche-950);
+  --color-text-on-critical: var(--palette-noche-950);
+  --color-text-on-deep: var(--palette-base-blanco);
+  --color-text-inverse: var(--palette-noche-950);
+  --color-icon-primary: var(--palette-noche-100);
+  --color-icon-secondary: var(--palette-noche-300);
+  --color-icon-brand: var(--palette-cobalto-200);
+  --color-icon-on-brand: var(--palette-noche-950);
+  --color-icon-danger: var(--palette-rosa-200);
+  --color-border-default: var(--palette-noche-700);
+  --color-border-strong: var(--palette-noche-500);
+  --color-border-brand: var(--palette-cobalto-300);
+  --color-border-accent: var(--palette-mostaza-300);
+  --color-border-danger: var(--palette-rosa-300);
+  --color-border-focus: var(--palette-cobalto-200);
+  --color-border-critical: var(--palette-carmesi-300);
+  --color-signal-searching: var(--palette-mostaza-300);
+  --color-signal-live: var(--palette-cobalto-300);
+  --color-signal-locked: var(--palette-cobalto-200);
+  --color-signal-off: var(--palette-carmesi-300);
+  --color-signal-glow: var(--palette-cobalto-850);
+  --color-chat-canvas: var(--palette-noche-950);
+  --color-chat-bubble-in: var(--palette-noche-850);
+  --color-chat-bubble-out: var(--palette-cobalto-850);
+  --color-chat-meta: var(--palette-noche-200);
+  --color-data-bar: var(--palette-cobalto-300);
+  --color-data-track: var(--palette-noche-700);
+  --color-radio-display: var(--palette-noche-925);
+  --color-radio-display-ink: var(--palette-mostaza-200);
+  --color-radio-display-live: var(--palette-cobalto-200);
+  --color-radio-chrome: var(--palette-noche-600);
+  --color-radio-grille: var(--palette-noche-700);
+  --color-bg-bakelite-soft: var(--palette-noche-850);
+  --color-text-bakelite: var(--palette-noche-200);
+  --color-border-warning: var(--palette-mostaza-300);
+  --color-radio-valve-glass: var(--palette-mostaza-500);
+  --color-radio-valve-core: var(--palette-mostaza-100);
+  --color-shadow-soft: #00000073;
+  --color-shadow-strong: #00000099;
+  --color-shadow-inner: #00000080;
+  color-scheme: dark;
+}
+
+/* Oscuro del sistema, salvo que la persona haya elegido Claro */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg-canvas: var(--palette-noche-950);
+    --color-bg-surface: var(--palette-noche-900);
+    --color-bg-surface-muted: var(--palette-noche-850);
+    --color-bg-surface-hover: var(--palette-noche-800);
+    --color-bg-inverse: var(--palette-noche-100);
+    --color-bg-brand: var(--palette-cobalto-300);
+    --color-bg-brand-hover: var(--palette-cobalto-200);
+    --color-bg-brand-soft: var(--palette-cobalto-850);
+    --color-bg-brand-deep: var(--palette-cobalto-700);
+    --color-bg-accent: var(--palette-mostaza-300);
+    --color-bg-accent-hover: var(--palette-mostaza-200);
+    --color-bg-accent-soft: var(--palette-mostaza-900);
+    --color-bg-danger: var(--palette-rosa-300);
+    --color-bg-danger-soft: var(--palette-rosa-900);
+    --color-bg-critical: var(--palette-carmesi-300);
+    --color-bg-critical-soft: var(--palette-carmesi-900);
+    --color-text-primary: var(--palette-noche-100);
+    --color-text-secondary: var(--palette-noche-200);
+    --color-text-disabled: var(--palette-noche-500);
+    --color-text-brand: var(--palette-cobalto-200);
+    --color-text-accent-strong: var(--palette-mostaza-200);
+    --color-text-danger: var(--palette-rosa-200);
+    --color-text-critical: var(--palette-carmesi-200);
+    --color-text-on-brand: var(--palette-noche-950);
+    --color-text-on-accent: var(--palette-noche-950);
+    --color-text-on-critical: var(--palette-noche-950);
+    --color-text-on-deep: var(--palette-base-blanco);
+    --color-text-inverse: var(--palette-noche-950);
+    --color-icon-primary: var(--palette-noche-100);
+    --color-icon-secondary: var(--palette-noche-300);
+    --color-icon-brand: var(--palette-cobalto-200);
+    --color-icon-on-brand: var(--palette-noche-950);
+    --color-icon-danger: var(--palette-rosa-200);
+    --color-border-default: var(--palette-noche-700);
+    --color-border-strong: var(--palette-noche-500);
+    --color-border-brand: var(--palette-cobalto-300);
+    --color-border-accent: var(--palette-mostaza-300);
+    --color-border-danger: var(--palette-rosa-300);
+    --color-border-focus: var(--palette-cobalto-200);
+    --color-border-critical: var(--palette-carmesi-300);
+    --color-signal-searching: var(--palette-mostaza-300);
+    --color-signal-live: var(--palette-cobalto-300);
+    --color-signal-locked: var(--palette-cobalto-200);
+    --color-signal-off: var(--palette-carmesi-300);
+    --color-signal-glow: var(--palette-cobalto-850);
+    --color-chat-canvas: var(--palette-noche-950);
+    --color-chat-bubble-in: var(--palette-noche-850);
+    --color-chat-bubble-out: var(--palette-cobalto-850);
+    --color-chat-meta: var(--palette-noche-200);
+    --color-data-bar: var(--palette-cobalto-300);
+    --color-data-track: var(--palette-noche-700);
+    --color-radio-display: var(--palette-noche-925);
+    --color-radio-display-ink: var(--palette-mostaza-200);
+    --color-radio-display-live: var(--palette-cobalto-200);
+    --color-radio-chrome: var(--palette-noche-600);
+    --color-radio-grille: var(--palette-noche-700);
+    --color-bg-bakelite-soft: var(--palette-noche-850);
+    --color-text-bakelite: var(--palette-noche-200);
+    --color-border-warning: var(--palette-mostaza-300);
+    --color-radio-valve-glass: var(--palette-mostaza-500);
+    --color-radio-valve-core: var(--palette-mostaza-100);
+    --color-shadow-soft: #00000073;
+    --color-shadow-strong: #00000099;
+    --color-shadow-inner: #00000080;
+    color-scheme: dark;
+  }
+}
+
+/* Estilos de texto (Figma → .t-*) */
+.t-doc-display { font-family: var(--font-family-display); font-size: var(--font-size-64, 64px); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
+.t-doc-h1 { font-family: var(--font-family-display); font-size: var(--font-size-40, 40px); font-weight: 800; line-height: 1.15; letter-spacing: -0.015em; }
+.t-doc-h2 { font-family: var(--font-family-display); font-size: var(--font-size-28, 28px); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+.t-doc-h3 { font-family: var(--font-family-display); font-size: var(--font-size-26, 26px); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+.t-doc-h4 { font-family: var(--font-family-display); font-size: var(--font-size-24, 24px); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+.t-display-hero { font-family: var(--font-family-display); font-size: var(--font-size-32, 32px); font-weight: 800; line-height: 1.15; letter-spacing: -0.015em; }
+.t-brand-wordmark { font-family: var(--font-family-display); font-size: var(--font-size-19, 19px); font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; }
+.t-heading-h2 { font-family: var(--font-family-display); font-size: var(--font-size-19, 19px); font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
+.t-heading-h3 { font-family: var(--font-family-display); font-size: var(--font-size-17, 17px); font-weight: 700; line-height: 1.35; letter-spacing: -0.01em; }
+.t-heading-h4 { font-family: var(--font-family-display); font-size: var(--font-size-16, 16px); font-weight: 700; line-height: 1.4; letter-spacing: 0; }
+.t-body-chat { font-family: var(--font-family-sans); font-size: var(--font-size-17, 17px); font-weight: 400; line-height: 24px; letter-spacing: 0; }
+.t-body-default { font-family: var(--font-family-sans); font-size: var(--font-size-16, 16px); font-weight: 400; line-height: 1.5; letter-spacing: 0; }
+.t-body-strong { font-family: var(--font-family-sans); font-size: var(--font-size-16, 16px); font-weight: 600; line-height: 1.5; letter-spacing: 0; }
+.t-body-small { font-family: var(--font-family-sans); font-size: var(--font-size-14, 14px); font-weight: 400; line-height: 1.45; letter-spacing: 0; }
+.t-body-small-strong { font-family: var(--font-family-sans); font-size: var(--font-size-14, 14px); font-weight: 600; line-height: 1.45; letter-spacing: 0; }
+.t-caption-default { font-family: var(--font-family-sans); font-size: var(--font-size-13, 13px); font-weight: 400; line-height: 1.4; letter-spacing: 0; }
+.t-label-field { font-family: var(--font-family-sans); font-size: var(--font-size-16, 16px); font-weight: 600; line-height: 1.35; letter-spacing: 0; }
+.t-label-eyebrow { font-family: var(--font-family-sans); font-size: var(--font-size-13, 13px); font-weight: 600; line-height: 1.3; letter-spacing: 0.04em; text-transform: uppercase; }
+.t-label-compact { font-family: var(--font-family-sans); font-size: var(--font-size-13, 13px); font-weight: 600; line-height: 15px; letter-spacing: 0; }
+.t-button-default { font-family: var(--font-family-sans); font-size: var(--font-size-16, 16px); font-weight: 700; line-height: 1.25; letter-spacing: 0; }
+.t-button-small { font-family: var(--font-family-sans); font-size: var(--font-size-14, 14px); font-weight: 700; line-height: 1.25; letter-spacing: 0; }
+.t-badge-default { font-family: var(--font-family-sans); font-size: var(--font-size-12, 12px); font-weight: 700; line-height: 1.3; letter-spacing: 0; }
+.t-data-meter { font-family: var(--font-family-mono); font-size: var(--font-size-12, 12px); font-weight: 700; line-height: 16px; letter-spacing: 0.08em; }
+.t-data-time { font-family: var(--font-family-mono); font-size: var(--font-size-16, 16px); font-weight: 700; line-height: 22px; letter-spacing: 0; }
+.t-data-tabular { font-family: var(--font-family-mono); font-size: var(--font-size-14, 14px); font-weight: 500; line-height: 20px; letter-spacing: 0; }
+.t-data-tabular-strong { font-family: var(--font-family-mono); font-size: var(--font-size-14, 14px); font-weight: 700; line-height: 20px; letter-spacing: 0; }
+.t-data-kpi { font-family: var(--font-family-mono); font-size: var(--font-size-24, 24px); font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; }
+.t-data-display { font-family: var(--font-family-mono); font-size: var(--font-size-40, 40px); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
+.t-data-display-xl { font-family: var(--font-family-mono); font-size: var(--font-size-64, 64px); font-weight: 800; line-height: 1.0; letter-spacing: -0.03em; }

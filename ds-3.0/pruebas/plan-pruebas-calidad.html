@@ -1,0 +1,423 @@
+<title>Plan de pruebas E3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: documento de una columna (~68ch) con tres etapas en secuencia; cada etapa abre con una «banda» tipo escala de dial. */
+:root{
+  --bg:#faf9f6; --surface:#efede7; --line:#e6e3dc; --fg:#1f2226; --muted:#47494d; --soft:#827d73;
+  --accent:#1f4b7a; --accent-soft:#dce6f2; --warm:#654404; --warm-soft:#fbefd2;
+  --ok:#2f6b3f; --ok-soft:#e1efe3; --pend:#7a3b1f; --pend-soft:#f6e3d9;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16191d; --surface:#1f2226; --line:#33363b; --fg:#f2f0eb; --muted:#c9c5bd; --soft:#9a958b;
+  --accent:#b7cbe3; --accent-soft:#173a60; --warm:#f3d791; --warm-soft:#3a2c0e;
+  --ok:#a9d6b3; --ok-soft:#1e3324; --pend:#f0b99d; --pend-soft:#3d2216; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#16191d; --surface:#1f2226; --line:#33363b; --fg:#f2f0eb; --muted:#c9c5bd; --soft:#9a958b;
+  --accent:#b7cbe3; --accent-soft:#173a60; --warm:#f3d791; --warm-soft:#3a2c0e;
+  --ok:#a9d6b3; --ok-soft:#1e3324; --pend:#f0b99d; --pend-soft:#3d2216; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 var(--f-body);padding-inline:16px;padding-block:40px 80px}
+.wrap{max-width:62rem;margin:0 auto;display:grid;gap:56px}
+.prose{max-width:68ch}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,5vw,2.75rem);font-weight:800;letter-spacing:-.01em}
+h2{font-size:1.6rem;font-weight:800}
+h3{font-size:1.1rem;font-weight:700}
+p{margin:0}
+.stack{display:grid;gap:16px}
+.stack-s{display:grid;gap:8px}
+.eyebrow{font:700 .75rem/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.lead{font-size:1.125rem;color:var(--muted)}
+.meta{font:500 .8rem/1.5 var(--f-mono);color:var(--soft)}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+ul,ol{margin:0;padding-left:1.25rem;display:grid;gap:6px}
+strong{font-weight:700}
+code,.mono{font-family:var(--f-mono);font-size:.875em}
+
+/* escala de dial: tres marcas = tres etapas */
+.dial{display:grid;grid-template-columns:repeat(3,1fr);border-top:2px solid var(--fg);margin-top:8px}
+.dial a{display:grid;gap:4px;padding:12px 12px 0 0;text-decoration:none;color:var(--fg);position:relative}
+.dial a::before{content:"";position:absolute;top:-2px;left:0;width:2px;height:14px;background:var(--fg)}
+.dial .f{font:700 .75rem/1 var(--f-mono);color:var(--accent);letter-spacing:.06em;padding-top:10px}
+.dial .n{font:700 1rem/1.2 var(--f-display)}
+.dial .d{font-size:.85rem;color:var(--muted)}
+@media (max-width:560px){.dial{grid-template-columns:1fr}.dial a{padding:12px 0 12px 14px;border-bottom:1px solid var(--line)}.dial a::before{top:12px;height:calc(100% - 24px)}}
+
+.note{background:var(--warm-soft);color:var(--fg);border-radius:12px;padding:16px 18px;display:grid;gap:6px}
+.note .eyebrow{color:var(--warm)}
+.callout{border-left:3px solid var(--accent);padding:4px 0 4px 16px;color:var(--muted)}
+
+section.stage{display:grid;gap:24px;padding-top:32px;border-top:1px solid var(--line)}
+.stage-head{display:grid;gap:10px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:12px}
+.fact{background:var(--surface);border-radius:10px;padding:12px 14px;display:grid;gap:2px;min-width:0}
+.fact .k{font:700 .7rem/1.3 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.fact .v{font-weight:600}
+
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:40rem}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font:700 .72rem/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--soft);background:var(--surface)}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;font:700 .7rem/1 var(--f-mono);letter-spacing:.06em;padding:4px 7px;border-radius:999px;white-space:nowrap}
+.t-act{background:var(--accent-soft);color:var(--accent)}
+.t-int{background:var(--warm-soft);color:var(--warm)}
+.t-con{background:var(--ok-soft);color:var(--ok)}
+.t-rob{background:var(--ok-soft);color:var(--ok)}
+.t-eme{background:var(--warm-soft);color:var(--warm)}
+.t-pen{background:var(--pend-soft);color:var(--pend)}
+
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:24px}
+.two>*{min-width:0}
+.gate{display:grid;gap:8px;background:var(--surface);border-radius:12px;padding:16px 18px}
+.gate .eyebrow{color:var(--fg)}
+
+details{border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+details[open]{padding-bottom:16px}
+summary{cursor:pointer;font-weight:600}
+details>*+*{margin-top:12px}
+
+.timeline{display:grid;gap:0;border-left:2px solid var(--line);margin-left:6px}
+.timeline div{position:relative;padding:0 0 16px 20px;display:grid;gap:2px}
+.timeline div::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--accent)}
+.timeline .w{font:700 .75rem/1 var(--f-mono);color:var(--accent);letter-spacing:.06em}
+
+footer{border-top:1px solid var(--line);padding-top:24px;display:grid;gap:12px;font-size:.9rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<main class="wrap">
+
+<header class="stack">
+  <span class="eyebrow">Sintonía · E3 · DS 3.1.2 · borrador para revisión con Néstor</span>
+  <h1>Plan escalonado de pruebas de calidad</h1>
+  <p class="lead prose">Tres pruebas en orden de costo y profundidad: primero la primera impresión, luego si las personas logran las tareas solas y al final por qué fallan donde fallan. Cada etapa decide qué se corrige antes de pasar a la siguiente.</p>
+  <nav class="dial" aria-label="Etapas">
+    <a href="#e1"><span class="f">ETAPA 1</span><span class="n">Prueba de 5 segundos</span><span class="d">¿Se entiende qué es?</span></a>
+    <a href="#e2"><span class="f">ETAPA 2</span><span class="n">Usabilidad no moderada</span><span class="d">¿Lo logran solas?</span></a>
+    <a href="#e3"><span class="f">ETAPA 3</span><span class="n">Usabilidad moderada</span><span class="d">¿Por qué se traban?</span></a>
+  </nav>
+</header>
+
+<section class="stack" aria-labelledby="marco">
+  <h2 id="marco">Qué mide este plan y qué no</h2>
+  <div class="two">
+    <div class="stack-s prose">
+      <p>Las tres pruebas evalúan la <strong>interfaz del chat E3</strong> (las 32 pantallas A1–F5 del archivo DS 3.0, en Claro y Oscuro). Miden comprensión, éxito en tareas, esfuerzo percibido y sensación de presión o confianza frente a la pantalla.</p>
+      <p>No validan las hipótesis H1–H6: esas se refieren a encuentros reales (asistencia, contacto, reencuentro). Aquí, como mucho, dan <strong>señales tempranas</strong> sobre H1 (estructura clara) y H6 (seguimiento estructurado), y así se reportan.</p>
+    </div>
+    <div class="note">
+      <span class="eyebrow">Regla de evidencia</span>
+      <p>Las metas de aprobación de este documento son <strong>preliminares</strong>: se ajustan después de la primera corrida. Lo marcado como «simulado» es una predicción del equipo para preparar la observación; no es evidencia y se clasifica como <strong>Pendiente</strong> hasta probarse con personas.</p>
+    </div>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Momento</th><th>Qué se prueba en E3</th><th>Pantallas o componentes</th><th>Etapas</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag t-act">ACTIVACIÓN</span></td><td>Entender qué es Sintonía, aceptar el consentimiento sabiendo qué se guarda, entrar al grupo sin sentir presión</td><td>A1, A6, B3</td><td>1 · 2 · 3</td></tr>
+        <tr><td><span class="tag t-int">INTERACCIÓN</span></td><td>Votar una opción, decir «ninguna me sirve», leer el quórum, entender cuándo la IA está preparando algo, pedir ayuda humana</td><td>C1–C5, Tarjeta de votación, Cuadrante de opciones, Aguja de quórum, Válvulas calentando, E4</td><td>1 · 2 · 3</td></tr>
+        <tr><td><span class="tag t-con">CONTINUIDAD</span></td><td>Encontrar la próxima sintonía, volver a ver el plan, salir del grupo con tranquilidad</td><td>E1 «Mis sintonías», Panel · Próxima sintonía, F4 SALIR</td><td>2 · 3</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="stack" aria-labelledby="quien">
+  <h2 id="quien">Con quién</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Perfil</th><th>Rol en este plan</th><th>Condiciones</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Mateo</strong> · 25–40</td><td>Priorizado. Participa en las tres etapas.</td><td>Celular propio; sesiones cortas, en horario fuera de trabajo.</td></tr>
+        <tr><td><strong>Elena</strong> · 60+</td><td>Priorizado. Participa en las tres etapas.</td><td>Opción presencial y acompañante permitido; tiempos ajustados (ver sesgos de la Etapa 1); dispositivo de prueba con texto a 17/24.</td></tr>
+        <tr><td>Marcela · 40–50</td><td>Exploratorio. No hace tareas; puede revisar textos de seguridad y consentimiento como informante adulta.</td><td>Solo si sobra capacidad tras la Etapa 2.</td></tr>
+        <tr><td>Valentina · 13–17</td><td>Fuera de esta ronda.</td><td>Requiere permiso de acudiente y aval ético. Nunca en sesiones con adultos desconocidos.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="callout prose">Reclutamiento: si la encuesta de calibración (n=143 válidas, datos propios de Sintonía) registró autorización de recontacto, se parte de ahí; si no, se recluta de nuevo. Este dato está <strong>pendiente de confirmar</strong>.</p>
+</section>
+
+<!-- ETAPA 1 -->
+<section class="stage" id="e1" aria-labelledby="e1h">
+  <div class="stage-head">
+    <span class="eyebrow">Etapa 1 · la más barata · primero</span>
+    <h2 id="e1h">Prueba de 5 segundos</h2>
+    <p class="prose">La persona ve una pantalla durante cinco segundos, la pantalla desaparece y responde qué recuerda y qué cree que es. Sirve para saber si el diseño comunica «planes en grupo con ayuda de una IA, sin presión» y no «otra app de chat», «citas» o «terapia».</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><span class="k">Formato</span><span class="v">Remoto, sin moderador</span></div>
+    <div class="fact"><span class="k">Muestra objetivo</span><span class="v">20–25 por estímulo (mitad Mateo, mitad Elena)</span></div>
+    <div class="fact"><span class="k">Duración</span><span class="v">≈ 5 min por persona</span></div>
+    <div class="fact"><span class="k">Herramienta</span><span class="v">Lyssna, Maze o formulario con imagen temporizada</span></div>
+  </div>
+
+  <div class="two">
+    <div class="stack-s">
+      <h3>Estímulos</h3>
+      <ol>
+        <li><strong>C1 Claro</strong>: chat con la tarjeta de votación abierta.</li>
+        <li><strong>C1 Oscuro</strong>: la misma pantalla, para comparar la lectura entre modos.</li>
+        <li><strong>C4 Oscuro</strong>: válvulas calentando, para saber si se leen como «Sintonía está preparando algo».</li>
+        <li><strong>E1 «Mis sintonías»</strong>: para ver si se entiende que hay planes por venir.</li>
+      </ol>
+      <p class="meta">Cada persona ve máximo dos estímulos, en orden rotado.</p>
+    </div>
+    <div class="stack-s">
+      <h3>Preguntas, en este orden</h3>
+      <ol>
+        <li>¿Qué recuerdas de lo que viste? <span class="meta">(abierta)</span></li>
+        <li>¿Para qué crees que sirve esta pantalla? <span class="meta">(abierta)</span></li>
+        <li>¿Qué harías primero? <span class="meta">(abierta; se marca la zona mencionada)</span></li>
+        <li>Esto te parece una app de: citas · terapia · planes con otras personas · mensajería · otra <span class="meta">(cerrada, va después de las abiertas para no sugerir)</span></li>
+        <li>¿Qué tan tranquilo te hizo sentir? 1 muy presionado – 5 muy tranquilo</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Métrica</th><th>Cómo se calcula</th><th>Meta preliminar</th></tr></thead>
+      <tbody>
+        <tr><td>Propósito identificado</td><td>% de respuestas a la pregunta 2 que mencionan plan, grupo, votar o encuentro (codificación por dos personas del equipo)</td><td class="num">≥ 60 %</td></tr>
+        <tr><td>Categoría equivocada sensible</td><td>% que elige «citas» o «terapia» en la pregunta 4</td><td class="num">≤ 10 %</td></tr>
+        <tr><td>Recuerdo de la tarjeta de votación</td><td>% que la menciona en la pregunta 1 (estímulos C1)</td><td class="num">≥ 40 %</td></tr>
+        <tr><td>Lectura de las válvulas</td><td>% que las asocia a «cargando, pensando, preparando» (C4)</td><td class="num">≥ 50 %</td></tr>
+        <tr><td>Tranquilidad</td><td>Mediana de la pregunta 5, por perfil y por modo</td><td class="num">≥ 4 de 5</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <details>
+    <summary>Sesgos a controlar en esta etapa</summary>
+    <ul>
+      <li><strong>Edad y tiempo de exposición.</strong> Cinco segundos puede quedarse corto para parte de las personas 60+. Se mide igual a todos, pero se agrega una variante de 10 s solo para Elena y se reportan por separado; un mal resultado de Elena a 5 s no se lee como rechazo del diseño.</li>
+      <li><strong>Vocabulario del equipo.</strong> Las preguntas no usan «sintonía», «dial» ni «válvula», para no regalar la respuesta.</li>
+      <li><strong>Codificación.</strong> Dos personas codifican las respuestas abiertas por separado y se reporta su acuerdo antes de calcular porcentajes.</li>
+    </ul>
+  </details>
+
+  <div class="gate">
+    <span class="eyebrow">Compuerta 1 → 2</span>
+    <p>Si «citas» o «terapia» supera el 10 %, o el propósito identificado queda bajo 60 %, se corrigen texto y jerarquía de C1 antes de la Etapa 2. Si no, se pasa con los hallazgos como lista de vigilancia.</p>
+  </div>
+</section>
+
+<!-- ETAPA 2 -->
+<section class="stage" id="e2" aria-labelledby="e2h">
+  <div class="stage-head">
+    <span class="eyebrow">Etapa 2 · volumen · después de la compuerta 1</span>
+    <h2 id="e2h">Usabilidad no moderada</h2>
+    <p class="prose">Cada persona usa el prototipo navegable en su celular, sola, con instrucciones escritas. La herramienta registra clics, rutas y tiempos. Responde qué tan fácil fue cada tarea y una escala corta al final.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><span class="k">Formato</span><span class="v">Remoto, prototipo Figma en celular</span></div>
+    <div class="fact"><span class="k">Muestra objetivo</span><span class="v">12–15 por perfil priorizado</span></div>
+    <div class="fact"><span class="k">Duración</span><span class="v">15–20 min</span></div>
+    <div class="fact"><span class="k">Modo</span><span class="v">Mitad en Claro, mitad en Oscuro (asignación al azar)</span></div>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>#</th><th>Instrucción a la persona</th><th>Pantallas</th><th>Momento</th><th>Éxito si…</th></tr></thead>
+      <tbody>
+        <tr><td class="num">T1</td><td>Antes de entrar al grupo, revisa qué información se guarda y decide si aceptas.</td><td>A6 · B3</td><td><span class="tag t-act">ACTIVACIÓN</span></td><td>Acepta o rechaza y responde bien una pregunta de comprensión sobre qué se guarda</td></tr>
+        <tr><td class="num">T2</td><td>El grupo propone tres planes. Vota por el que más te guste.</td><td>C1 · C2</td><td><span class="tag t-int">INTERACCIÓN</span></td><td>Voto registrado sin ayuda</td></tr>
+        <tr><td class="num">T3</td><td>Ninguno de los planes te sirve. Hazlo saber.</td><td>C3</td><td><span class="tag t-int">INTERACCIÓN</span></td><td>Usa «Ninguna me sirve» o escribe el motivo</td></tr>
+        <tr><td class="num">T4</td><td>¿Cuántas personas faltan por votar?</td><td>Aguja de quórum</td><td><span class="tag t-int">INTERACCIÓN</span></td><td>Respuesta numérica correcta</td></tr>
+        <tr><td class="num">T5</td><td>Quieres hablar con una persona del equipo, no con la IA. Búscala.</td><td>E4</td><td><span class="tag t-int">INTERACCIÓN</span></td><td>Llega a «Habla con un humano»</td></tr>
+        <tr><td class="num">T6</td><td>¿Cuándo y dónde es tu próximo plan?</td><td>E1 · Próxima sintonía</td><td><span class="tag t-con">CONTINUIDAD</span></td><td>Fecha y lugar correctos</td></tr>
+        <tr><td class="num">T7</td><td>Decidiste no seguir en este grupo. Sal de él.</td><td>F4</td><td><span class="tag t-con">CONTINUIDAD</span></td><td>Confirma la salida</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Métrica</th><th>Instrumento</th><th>Meta preliminar</th></tr></thead>
+      <tbody>
+        <tr><td>Éxito por tarea</td><td>Directo / indirecto / fallo, según la ruta registrada</td><td class="num">≥ 80 % · T1, T5 y T7 ≥ 90 % (seguridad y salida)</td></tr>
+        <tr><td>Tiempo en tarea</td><td>Mediana por tarea y perfil</td><td>Se fija tras la corrida (línea base)</td></tr>
+        <tr><td>Clics fuera de ruta</td><td>Mapa de clics</td><td>Se fija tras la corrida (línea base)</td></tr>
+        <tr><td>Facilidad por tarea</td><td>SEQ, 1–7, después de cada tarea</td><td class="num">Mediana ≥ 5,5</td></tr>
+        <tr><td>Usabilidad global</td><td>SUS (10 ítems) al final</td><td class="num">≥ 68 (promedio de referencia de la literatura)</td></tr>
+        <tr><td>Diferencia Claro / Oscuro</td><td>Éxito y SEQ por modo</td><td>Sin diferencia mayor a 10 puntos en ninguna tarea</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <details>
+    <summary>Sesgos a controlar en esta etapa</summary>
+    <ul>
+      <li><strong>Instrucciones que guían.</strong> Las tareas describen la meta, no el botón: no dicen «toca Ninguna me sirve» ni «abre Mis sintonías».</li>
+      <li><strong>Orden.</strong> T2–T5 se rotan; T1 va primero y T7 al final porque así ocurren en el flujo real.</li>
+      <li><strong>Prototipo vs. producto.</strong> Un fallo puede venir de un enlace faltante en el prototipo. Antes de contarlo, se revisa la ruta.</li>
+      <li><strong>Autoselección.</strong> Quien completa una prueba remota suele tener más soltura digital. Se reporta y se compensa con la Etapa 3 presencial para Elena.</li>
+    </ul>
+  </details>
+
+  <div class="gate">
+    <span class="eyebrow">Compuerta 2 → 3</span>
+    <p>Las tareas bajo la meta y los clics fuera de ruta más repetidos se convierten en el guion de la Etapa 3. Si T1, T5 o T7 quedan bajo 90 %, se corrige antes de cualquier sesión moderada.</p>
+  </div>
+</section>
+
+<!-- ETAPA 3 -->
+<section class="stage" id="e3" aria-labelledby="e3h">
+  <div class="stage-head">
+    <span class="eyebrow">Etapa 3 · profundidad · al final</span>
+    <h2 id="e3h">Usabilidad moderada</h2>
+    <p class="prose">Una persona del equipo acompaña a cada participante mientras usa el prototipo y piensa en voz alta. Se profundiza en lo que falló en la Etapa 2 y en lo que una métrica no muestra: si se siente presión, si se confía en el grupo y en la persona que responde, si se lee bien.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><span class="k">Formato</span><span class="v">Videollamada (Mateo) · presencial u opcional remoto (Elena)</span></div>
+    <div class="fact"><span class="k">Muestra objetivo</span><span class="v">5–6 por perfil priorizado</span></div>
+    <div class="fact"><span class="k">Duración</span><span class="v">45 min (Elena) · 50 min (Mateo)</span></div>
+    <div class="fact"><span class="k">Roles</span><span class="v">Moderador + observador que toma notas</span></div>
+  </div>
+
+  <div class="two">
+    <div class="stack-s">
+      <h3>Guion</h3>
+      <ol>
+        <li><strong>Apertura (5 min).</strong> Consentimiento, aclarar que se prueba el diseño y no a la persona, que puede parar cuando quiera y que esto no es terapia ni una app de citas.</li>
+        <li><strong>Contexto (5 min).</strong> ¿Cómo suele organizar planes con otras personas? ¿Qué le cuesta?</li>
+        <li><strong>Tareas (20–25 min).</strong> Las que fallaron en la Etapa 2, más T2 y T7 siempre. Pensar en voz alta; el moderador no ayuda salvo bloqueo de más de 2 min.</li>
+        <li><strong>Modo oscuro (5 min).</strong> Repetir T2 en Oscuro y preguntar qué cambia en la lectura.</li>
+        <li><strong>Cierre (5–10 min).</strong> ¿Qué tan tranquilo se sentiría entrando a este grupo? ¿Qué le daría confianza? ¿Volvería?</li>
+      </ol>
+    </div>
+    <div class="stack-s">
+      <h3>Qué se observa</h3>
+      <ul>
+        <li>Dudas y relecturas en la tarjeta de votación y el cuadrante.</li>
+        <li>Si la metáfora de radio ayuda o estorba (válvulas, aguja, presintonías).</li>
+        <li>Lectura a 17/24 y toques a 48 px, sobre todo con Elena.</li>
+        <li>Cuándo aparece la intención de buscar a un humano.</li>
+        <li>Frases de presión, desconfianza o alivio, anotadas textuales.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Salida</th><th>Cómo se registra</th></tr></thead>
+      <tbody>
+        <tr><td>Lista de problemas</td><td>Cada problema con pantalla, tarea, cuántas personas lo tuvieron y severidad 0–4 (Nielsen)</td></tr>
+        <tr><td>Facilidad por tarea</td><td>SEQ 1–7, comparable con la Etapa 2</td></tr>
+        <tr><td>Tranquilidad antes y después</td><td>Una pregunta 1–5 al inicio y al cierre sobre entrar a un grupo nuevo; señal temprana para el objetivo 4, no medida clínica</td></tr>
+        <tr><td>Citas</td><td>Textuales, con perfil y tarea, separadas de la interpretación del equipo</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SIMULACIÓN -->
+<section class="stack" aria-labelledby="sim">
+  <span class="eyebrow">Corrida simulada · no es evidencia</span>
+  <h2 id="sim">Lo que el equipo espera ver</h2>
+  <p class="prose">Antes de reclutar, el equipo recorre las siete tareas con las pantallas de Figma como si fuera Mateo y como si fuera Elena (recorrido cognitivo), y hace un ensayo con dos o tres colegas para calibrar tiempos e instrucciones. Esas personas no cuentan en la muestra. La tabla siguiente es la predicción de partida: indica dónde mirar, no lo que pasa.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Dónde</th><th>Riesgo previsto</th><th>Perfil más expuesto</th><th>Se confirma o descarta en</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>C1 · Tarjeta de votación</td><td>No queda claro si se vota tocando la opción o moviendo el dial</td><td>Elena</td><td>Etapa 2 (T2) · Etapa 3</td><td><span class="tag t-pen">PENDIENTE</span></td></tr>
+        <tr><td>C3 · Ninguna me sirve</td><td>La salida «ninguna» se ve menos que las opciones y se pasa por alto</td><td>Ambos</td><td>Etapa 2 (T3)</td><td><span class="tag t-pen">PENDIENTE</span></td></tr>
+        <tr><td>C4 · Válvulas calentando</td><td>Se leen como adorno y no como «Sintonía está preparando algo», sobre todo en Oscuro</td><td>Ambos</td><td>Etapa 1 (C4) · Etapa 3</td><td><span class="tag t-pen">PENDIENTE</span></td></tr>
+        <tr><td>Aguja de quórum</td><td>Se entiende el avance pero no cuántas personas faltan ni el plazo (48 h, supuesto sin validar)</td><td>Mateo</td><td>Etapa 2 (T4)</td><td><span class="tag t-pen">PENDIENTE</span></td></tr>
+        <tr><td>A6 · B3 · Consentimiento</td><td>Se acepta sin leer; la pregunta de comprensión falla aunque la tarea «se logre»</td><td>Mateo</td><td>Etapa 2 (T1)</td><td><span class="tag t-pen">PENDIENTE</span></td></tr>
+        <tr><td>E4 · Habla con un humano</td><td>Sin nombre ni foto (hoy son iniciales), baja la confianza</td><td>Elena</td><td>Etapa 3</td><td><span class="tag t-pen">PENDIENTE</span></td></tr>
+        <tr><td>F4 · SALIR</td><td>Salir genera culpa o temor a que el grupo se entere</td><td>Ambos</td><td>Etapa 3 (cierre)</td><td><span class="tag t-pen">PENDIENTE</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CLASIFICACIÓN -->
+<section class="stack" aria-labelledby="clas">
+  <h2 id="clas">Cómo se clasifican los hallazgos</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Estado</th><th>Regla para estas pruebas</th><th>Ejemplo de uso</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag t-rob">ROBUSTO</span></td><td>Aparece en la Etapa 2 con un patrón claro en las métricas y se confirma en al menos 3 sesiones moderadas, o aparece en las tres etapas</td><td>Se corrige en el DS y se registra en el Changelog</td></tr>
+        <tr><td><span class="tag t-eme">EMERGENTE</span></td><td>Aparece en una sola etapa, o en un solo perfil con muestra suficiente</td><td>Se prueba una alternativa en la siguiente ronda</td></tr>
+        <tr><td><span class="tag t-pen">PENDIENTE</span></td><td>Menos de 5 personas en el perfil, solo predicción del equipo, o fallo que puede venir del prototipo</td><td>Se anota y no se decide con eso</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="callout prose">En cada reporte va primero el dato (qué pasó, cuántas personas, en qué tarea) y después la lectura del equipo, en párrafos separados.</p>
+</section>
+
+<!-- ÉTICA -->
+<section class="stack" aria-labelledby="etica">
+  <h2 id="etica">Riesgos y ética</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Dimensión</th><th>Medida en estas pruebas</th></tr></thead>
+      <tbody>
+        <tr><td>Privacidad y consentimiento</td><td>Consentimiento informado en cada etapa. En la no moderada solo se graba la pantalla del prototipo; en la moderada, voz y pantalla con permiso explícito. Identificadores anónimos; los datos de contacto van en un archivo aparte de las respuestas.</td></tr>
+        <tr><td>Exclusión</td><td>Opción presencial y con acompañante para Elena, tiempos ajustados, sin instalar apps. Se reporta quién no pudo participar y por qué.</td></tr>
+        <tr><td>Seguridad</td><td>El prototipo usa grupos y personas ficticias: nadie conoce a otro participante. No hay menores en esta ronda.</td></tr>
+        <tr><td>Sesgo metodológico</td><td>Tareas sin pistas, orden rotado, Claro/Oscuro al azar, doble codificación, separación entre dato e interpretación.</td></tr>
+        <tr><td>Impacto emocional</td><td>No se pregunta por soledad ni por la vida personal más allá de cómo organiza planes. Se puede saltar cualquier pregunta. Se aclara que no es terapia.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="prose"><em>Antes de diseñar conexiones, diseñamos confianza.</em></p>
+</section>
+
+<!-- CRONOGRAMA -->
+<section class="stack" aria-labelledby="crono">
+  <h2 id="crono">Secuencia estimada</h2>
+  <p class="meta">Semanas relativas al aval de Néstor. Es una estimación de trabajo, no un compromiso.</p>
+  <div class="timeline">
+    <div><span class="w">SEMANA 0</span><strong>Preparación</strong><span>Aval del protocolo y del texto de consentimiento, prototipo navegable conectado en Figma, ensayo con 2–3 colegas.</span></div>
+    <div><span class="w">SEMANA 1</span><strong>Etapa 1 · 5 segundos</strong><span>Corrida, codificación doble, compuerta 1.</span></div>
+    <div><span class="w">SEMANAS 2–3</span><strong>Etapa 2 · no moderada</strong><span>Correcciones de la compuerta 1, corrida, análisis, compuerta 2.</span></div>
+    <div><span class="w">SEMANAS 4–5</span><strong>Etapa 3 · moderada</strong><span>10–12 sesiones, lista de problemas con severidad.</span></div>
+    <div><span class="w">SEMANA 6</span><strong>Síntesis</strong><span>Hallazgos clasificados, cambios al DS, implicaciones.</span></div>
+  </div>
+</section>
+
+<!-- PENDIENTES -->
+<section class="stack" aria-labelledby="pend">
+  <h2 id="pend">Antes de arrancar</h2>
+  <ul class="prose">
+    <li>Aval de Néstor al protocolo, las metas preliminares y el texto de consentimiento (A6 y B3 siguen en borrador).</li>
+    <li>Confirmar si la encuesta de calibración guardó autorización de recontacto.</li>
+    <li>Conectar las interacciones del prototipo en Figma para las siete tareas (hoy las pantallas están compuestas, no enlazadas).</li>
+    <li>Elegir herramienta para las Etapas 1 y 2 y definir si habrá reconocimiento a participantes.</li>
+    <li>Decidir quién modera y quién observa, idealmente sin rotar entre sesiones del mismo perfil.</li>
+  </ul>
+</section>
+
+<!-- IMPLICACIONES -->
+<section class="stack" aria-labelledby="impl">
+  <h2 id="impl">Implicaciones</h2>
+  <div class="two">
+    <div class="stack-s"><h3>JTBD</h3><p>Para Mateo, el tiempo en tarea y el SEQ dicen si conectar «no requiere tanta energía». Para Elena, la confianza en E4 y la lectura de E1 dicen si el espacio se percibe recurrente y confiable. Si los resultados lo contradicen, se ajusta la redacción del JTBD, no la meta.</p></div>
+    <div class="stack-s"><h3>Matriz de oportunidades</h3><p>Los hallazgos Robustos suben el puntaje de «evidencia disponible» y «facilidad de prototipado» de las oportunidades ligadas al chat de votación. Los problemas de severidad 3–4 en seguridad o salida bajan su viabilidad hasta corregirse.</p></div>
+    <div class="stack-s"><h3>Siguiente fase</h3><p>Una interfaz que pasa las tres etapas es condición para la Aplicación del Reto de Innovación, donde sí se prueban H1–H6 con encuentros reales. Este plan no reemplaza esa validación.</p></div>
+  </div>
+</section>
+
+<footer>
+  <p><strong>Referencias</strong></p>
+  <p>Brooke, J. (1996). SUS: A «quick and dirty» usability scale. En P. W. Jordan, B. Thomas, B. A. Weerdmeester y I. L. McClelland (Eds.), <em>Usability evaluation in industry</em> (pp. 189–194). Taylor &amp; Francis.</p>
+  <p>Nielsen, J., y Landauer, T. K. (1993). A mathematical model of the finding of usability problems. En <em>Proceedings of the INTERACT '93 and CHI '93 Conference on Human Factors in Computing Systems</em> (pp. 206–213). ACM.</p>
+  <p>Sauro, J., y Lewis, J. R. (2016). <em>Quantifying the user experience: Practical statistics for user research</em> (2.ª ed.). Morgan Kaufmann.</p>
+  <p class="meta">Archivo fuente: Figma «Sintonía DS 3.0 · E3», v3.1.2. Las decisiones de metodología pasan por Néstor.</p>
+</footer>
+
+</main>
