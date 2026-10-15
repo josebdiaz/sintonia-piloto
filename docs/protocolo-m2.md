@@ -1,6 +1,6 @@
 # Sintonía · Protocolo de operación M2 (frontend 2.0.0)
 
-*Un solo frontend para los dos experimentos: E1 (WhatsApp + mago) y E2 (web app). Frontend 2.0.7 y backend `backend/Codigo_Piloto.gs` 2.2.5. Mapa de todas las vistas por fase: `piloto/investigadores.html`. Versión del 6/10/2026.*
+*Un solo frontend para los dos experimentos: E1 (WhatsApp + mago) y E2 (web app). Frontend 2.0.8 y backend `backend/Codigo_Piloto.gs` 2.2.6. Mapa de todas las vistas por fase: `piloto/investigadores.html`. Versión del 14/10/2026 (usabilidad SEQ + SUS, §6 bis).*
 
 > **Al abrir la consola, elige arriba el experimento que vas a operar (E1 o E2) y el modo (piloto o prueba).** Todo lo que se ve después corresponde solo a ese experimento, y la guía «Cómo funciona» lista los pasos en orden. Ronda 1 = W1 (10–11/10), Ronda 2 = W2 (17–18/10).
 
@@ -94,6 +94,24 @@ Cada grupo se queda en la misma condición en W1 y W2. La comparación es descri
 ## 6. Un solo cambio entre W1 y W2 (I4)
 
 El domingo 11/10, después de W1, el equipo revisa el panel y elige **una** mejora por condición. Se registra en la consola, pestaña "Cambios (I4)". La versión de los grupos de esa condición sube a `v2`. Si se intenta registrar un segundo cambio, la consola avisa. Decisión pendiente del equipo: si ese aviso debe pasar a ser un bloqueo.
+
+## 6 bis. Usabilidad: SEQ + SUS (desde el 14/10, fuera de I4)
+
+Sugerencia de Néstor, validada por el equipo el 14/10. Se mide en **E1 y E2 por igual**, así que es instrumentación y no un cambio del tratamiento: **no se registra en «Cambios (I4)» ni sube la versión de los grupos**.
+
+- **Qué se pregunta** (dentro del pulso, `retro.html`, después de las preguntas de siempre):
+  - **SEQ** (*Single Ease Question*, 1 = muy difícil · 7 = muy fácil), una por momento del modelo: **activación** (unirse y elegir el plan), **interacción** (coordinar el día del encuentro) y **continuidad** (volver a armar un plan con el mismo grupo). La de continuidad **solo aparece desde la ronda 2**, porque en W1 todavía no hay una segunda salida; tiene la opción «No participé en armar este segundo plan».
+  - **SUS** (*System Usability Scale*, 10 afirmaciones, 1–5). El backend calcula el puntaje 0–100. Se puede omitir completa («Prefiero no responder»), por voluntariedad.
+  - El pulso pasa de unos 2 a unos 4 minutos; los textos del pulso y del mensaje `/retro` ya lo dicen.
+- **Montaje:** desplegar el backend **2.2.6** (Implementar → Gestionar implementaciones → editar → Nueva versión; la URL no cambia) y correr `probarMontaje`, que crea la hoja `usabilidad`.
+- **Dónde queda:** hoja `usabilidad` (una fila por persona y plan), con `toma` = `con_pulso` o `diferida` y `dias_desde_encuentro`.
+- **W1, recolección diferida (decisión del 14/10):** quien ya respondió el pulso de W1 abre el **mismo enlace del pulso de W1** y ve solo el bloque de usabilidad («Nos falta una parte»).
+  1. Consola → plan de W1 (cerrado) → «Enlaces personales al pulso». Cada persona aparece como «usabilidad pendiente» o «usabilidad ✓».
+  2. «Enviar complemento» abre WhatsApp con un texto único. **Mismo texto y mismo canal en E1 y E2**, para no darle a una condición un contacto que la otra no tiene.
+  3. Enviar **antes del 16/10** (antes del ensayo y de W2), para que la medición de W1 no se mezcle con la experiencia de W2.
+  4. Esos minutos **no** se registran en la pestaña de minutos (I3 mide la operación del servicio, no la de la investigación).
+- **Cómo se lee en el panel:** por ronda y por toma. La toma diferida de W1 tiene **sesgo de recuerdo** (la SEQ está pensada para responderse justo después de la tarea) y se reporta aparte. Con el n del piloto, SEQ y SUS son **descriptivos**: no se interpretan contra benchmarks (p. ej., el 68 de SUS) ni como diferencia E1/E2.
+- **Pendiente con Néstor:** (a) la traducción del SUS es una adaptación del equipo, no una versión validada en español; (b) en E1 hay una persona detrás del chat, así que el ítem 4 del SUS («ayuda de alguien que sepa») puede leerse distinto que en E2; (c) confirmar que el contacto diferido de W1 entra en el consentimiento y en el aval (el aviso se aclaró el 14/10 sin cambiar de versión).
 
 ## 7. Cierre del estudio
 

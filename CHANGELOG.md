@@ -16,6 +16,16 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Frontend del piloto (`piloto/`)
 
+### [2.0.8] · 2026-10-14 · Usabilidad SEQ + SUS (sugerencia de Néstor, fuera de I4)
+- Pulso (`retro.html`): bloque nuevo «¿Qué tan fácil fue usar Sintonía?» con una **SEQ 1–7 por momento** (activación, interacción y, desde la ronda 2, continuidad) y el **SUS de 10 ítems** (1–5, omitible completo). El pulso pasa a ~4 minutos.
+- Pulso: si la persona ya respondió el pulso de ese plan (W1) y falta la usabilidad, el mismo enlace abre solo ese bloque («Nos falta una parte»). Con un backend anterior a la 2.2.6 el bloque no aparece y el pulso sigue como antes.
+- Consola: en «Enlaces personales al pulso», estado «pulso ✓ / usabilidad ✓ / pendiente» y botón **«Enviar complemento»** con un texto único para E1 y E2. Pestaña de reinicio: etiqueta de la hoja `usabilidad`. `/retro` dice 4 minutos.
+- Panel: tabla de usabilidad por condición, con SEQ por momento, SUS y días desde el encuentro, separada por ronda y por toma (con el pulso o diferida).
+- `S.scale` acepta un máximo (1–7 para la SEQ); dos mensajes de error nuevos.
+- Aviso de privacidad: aclaración del punto 2 (preguntas de facilidad de uso, escala 1–7). Misma versión `v1-2026-10`.
+- **No es el cambio W1 → W2 (I4):** aplica igual a las dos condiciones y no sube la versión de los grupos.
+- Requiere el backend 2.2.6.
+
 ### [2.0.7] · 2026-10-06 · Recomendaciones de la prueba de punta a punta (6/10)
 - Consola, curaduría: al cerrar se confirma la **salida sugerida** (prellenada desde la opción ganadora) para que no contradiga la hora del encuentro (R2). En un plan cerrado, **«Corregir hora del encuentro»** cambia la hora y la salida sin tocar el cierre ni la opción elegida (R1, pendiente desde el 5/10).
 - Consola, curaduría: «+ Crear plan» solo aparece si el grupo no tiene un plan en curso (R7).
@@ -86,6 +96,12 @@ Las fechas son de 2026 (hora de Colombia).
 - Archivado en `archivo/piloto-m1-claude/`. Tag `piloto/v1.0.0`.
 
 ## Backend (`backend/Codigo_Piloto.gs`)
+
+### [2.2.6] · 2026-10-14 · Usabilidad SEQ + SUS
+- Hoja nueva `usabilidad` (`probarMontaje` la crea): `toma` (`con_pulso` | `diferida`), `dias_desde_encuentro`, `seq_activacion`, `seq_interaccion`, `seq_continuidad`, `sus_01`…`sus_10`, `sus_puntaje` (0–100) y `sus_omitido`.
+- Acción `usabilidad`: plan cerrado, después del encuentro, una por persona y plan, independiente de la retro (permite el complemento diferido de W1). La continuidad solo se guarda desde la ronda 2.
+- `?view=plan` devuelve `yo.usabilidad`; `?view=mago`, `retro_pids` y `usabilidad_pids` por plan; `?view=panel`, `usabilidad` por condición (total, por ronda y por toma).
+- `revocar` también borra la usabilidad de la persona.
 
 ### [2.2.5] · 2026-10-06 · Recomendaciones de la prueba de punta a punta
 - `cerrar_plan` rechaza planes ya cerrados o caídos (`plan_ya_cerrado`): antes pisaba `t_cerrado` (horas a cierre) y la opción elegida. Acepta `hora_salida` y la guarda en la opción ganadora.

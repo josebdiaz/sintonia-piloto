@@ -99,6 +99,8 @@
   function grupoLabel(g) { return g.tipo_grupo + ' · ' + g.experimento + ' · ' + g.grupo_id.slice(-6) + (g.modo === 'prueba' ? ' (prueba)' : ''); }
   function linkPlan(pid) { return S.link('plan.html', { pid: pid }); }
   function linkRetro(pid, planId) { return S.link('retro.html', { pid: pid, plan_id: planId }); }
+  // 2.0.8: texto único (E1 y E2) para pedir la usabilidad de W1 a quien ya respondió el pulso
+  function txtUsab(nom, l) { return (nom ? nom + ', g' : 'G') + 'racias otra vez por contarnos cómo les fue el fin de semana pasado 🙌 Nos faltó una parte: 2 minutos sobre qué tan fácil fue usar Sintonía en esa salida. Es voluntario y tus respuestas son privadas: ' + l; }
   function organizador(g) { return (g.miembros || []).filter(function (m) { return m.rol === 'organizador'; })[0]; }
   /** 2.0.4 (QA 5/10): "Abrir chat" deja escrito el primer mensaje según el estado del grupo y el rol de la persona. */
   function primerMensaje(g, m) {
@@ -292,10 +294,14 @@
       h += '<details class="small" style="margin:0 0 10px"><summary><b>Corregir hora del encuentro</b> · si el grupo la cambió después de cerrar</summary><div class="row" style="margin-top:8px;align-items:flex-end"><div class="field" style="margin:0"><label for="horaC">Nueva hora</label><input id="horaC" type="datetime-local" value="' + e(localDT(p.hora_encuentro)) + '"></div>' +
         '<div class="field" style="margin:0"><label for="salidaC">Salida sugerida</label><input id="salidaC" type="text" maxlength="40" value="' + e(((ops[Number(p.elegida)] || {}).hora_salida) || '') + '"></div><button class="btn btn-ghost btn-sm" id="corregir" data-busy="Guardando…" style="flex:0 0 auto">Guardar corrección</button></div>' +
         '<p class="tiny muted">No cambia la hora del cierre ni la opción elegida (las métricas quedan intactas). La hora anterior queda en la nota del plan.</p>' + (p.nota ? '<p class="tiny muted">Nota: ' + e(p.nota) + '</p>' : '') + '</details>';
-      h += '<h3>Enlaces personales al pulso</h3>' + (p.experimento === 'E2' ? '<p class="tiny muted">En E2 el pulso aparece solo en la página de cada persona desde la hora de encuentro; no hace falta enviarlo.</p>' : '') + (g3 ? g3.miembros : []).map(function (m) {
+      h += '<h3>Enlaces personales al pulso</h3>' + (p.experimento === 'E2' ? '<p class="tiny muted">En E2 el pulso aparece solo en la página de cada persona desde la hora de encuentro; no hace falta enviarlo.</p>' : '') +
+        (Array.isArray(p.usabilidad_pids) ? '<p class="tiny muted">«Enviar complemento» aparece para quien ya respondió el pulso pero no la usabilidad (SEQ + SUS), sobre todo en W1. Se envía en E1 y en E2 con el mismo texto, antes del 16/10, y esos minutos <b>no</b> se registran en la pestaña de minutos (no son operación del servicio).</p>' : '') + (g3 ? g3.miembros : []).map(function (m) {
         var st = (p.estado_por_pid || {})[m.pid] || {}, l = linkRetro(m.pid, p.plan_id);
-        return '<div class="member"><div class="who">' + e(m.nombre) + ' <span class="tiny muted">' + [st.apuntado ? 'apuntado' : '', st.llego ? 'llegó' : '', st.casa ? 'en casa' : ''].filter(Boolean).join(' · ') + '</span></div>' +
-          '<button class="btn btn-ghost btn-sm" data-copy="' + e(l) + '">Copiar</button>' + (p.experimento === 'E2' && !p.failover ? '' : '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp, '¿Cómo les fue? Si hubo sintonía, sigan 🙌 Cuéntanos en 2 minutos: ' + l)) + '">Enviar por WhatsApp</a>') + '</div>';
+        var hayU = Array.isArray(p.usabilidad_pids), yaR = (p.retro_pids || []).indexOf(m.pid) >= 0, yaU = hayU && p.usabilidad_pids.indexOf(m.pid) >= 0, pendUsab = hayU && yaR && !yaU;
+        return '<div class="member"><div class="who">' + e(m.nombre) + ' <span class="tiny muted">' + [st.apuntado ? 'apuntado' : '', st.llego ? 'llegó' : '', st.casa ? 'en casa' : '', yaR ? 'pulso ✓' : '', hayU ? (yaU ? 'usabilidad ✓' : (yaR ? 'usabilidad pendiente' : '')) : ''].filter(Boolean).join(' · ') + '</span></div>' +
+          '<button class="btn btn-ghost btn-sm" data-copy="' + e(l) + '">Copiar</button>' + (p.experimento === 'E2' && !p.failover ? '' : '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp, '¿Cómo les fue? Si hubo sintonía, sigan 🙌 Cuéntanos en 4 minutos: ' + l)) + '">Enviar por WhatsApp</a>') +
+          // 2.0.8: complemento de usabilidad (W1 diferida) para quien ya respondió el pulso y no la usabilidad. Mismo texto en E1 y E2.
+          (pendUsab ? '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp, txtUsab(m.nombre, l))) + '">Enviar complemento</a>' : '') + '</div>';
       }).join('');
       var ultima = planesDe(p.grupo_id).slice(-1)[0];
       h += '<div class="card soft small" style="margin-top:12px"><b>¿El plan ya pasó?</b> Registra llegadas y «en casa» en la pestaña 4 y envía el pulso con los enlaces de arriba. ' +
@@ -403,7 +409,7 @@
     ['/no_llega', 'Checkpoint · alguien no ha llegado', 'persona', 'preguntar con cuidado a una persona que todavía no llega cómo va y si está bien, sin culpa ni presión', function (d) { return d.nom + ', ¿cómo vas? El parche ya está en ' + d.lugar + '. ¿Todo bien? Si se te complicó llegar, cuéntanos y lo ajustamos. 🙌'; }],
     ['/llegaron', 'Ya llegaron todos', 'grupo', 'celebrar breve que ya llegó todo el parche y desear buen plan', function () { return '¡Ya está todo el parche! 🙌 Disfruten. Al volver, un "ya en casa" nos deja tranquilos.'; }],
     ['/en_casa', '¿Ya en casa?', 'ambos', 'preguntar si ya llegaron bien a la casa después del plan', function (d) { return (d.persona ? d.nom + ', ¿ya' : '¿Ya todos') + ' en casa? Cuando lleguen, un "ya en casa" basta. Gracias por sintonizar hoy.'; }],
-    ['/retro', 'Cierre y pulso', 'ambos', 'invitar a responder el pulso de 2 minutos después del plan', function (d) { return (d.persona ? d.nom + ', ¿c' : '¿C') + 'ómo les fue? Si hubo sintonía, sigan 🙌\nCuéntennos en 2 minutos (ábranlo en el mismo celular con el que se registraron): ' + d.retro + '\nSus respuestas son privadas.'; }],
+    ['/retro', 'Cierre y pulso', 'ambos', 'invitar a responder el pulso de 2 minutos después del plan', function (d) { return (d.persona ? d.nom + ', ¿c' : '¿C') + 'ómo les fue? Si hubo sintonía, sigan 🙌\nCuéntennos en 4 minutos (ábranlo en el mismo celular con el que se registraron): ' + d.retro + '\nSus respuestas son privadas.'; }],
     ['/guardrail', 'Fuera de alcance (política de IA de WhatsApp)', 'ambos', 'decir con amabilidad que solo ayudamos a armar planes y volver al plan', function () { return 'Mi tarea es ayudarles a armar y coordinar planes en Cali, así que en eso no les puedo ayudar. ¿Volvemos al plan?'; }],
     ['/humano', 'Escalar a una persona', 'ambos', 'presentarse como persona del equipo que toma la conversación', function (d) { return 'Hola' + (d.persona ? ' ' + d.nom : '') + ', soy ' + d.humano + ', del equipo de investigación de Sintonía. Tomo la conversación para ayudarles con lo que necesiten. Si es una emergencia, llamen al 123.'; }]
   ];
@@ -590,7 +596,7 @@
   /* ---------- 2.0.6 · Empezar el piloto real (backend 2.2.4: limpiar_registros) ----------
    * Borra los registros de los ensayos en la hoja. Conserva tokens, inventario y bitácora. Antes, el backend hace un respaldo sin contactos. */
   var HOJAS = { participantes: 'Personas inscritas', contactos: 'Nombres y WhatsApp', grupos: 'Grupos', linea_base_grupo: 'Línea base por grupo', linea_base: 'Línea base por persona',
-    preferencias: 'Preferencias', planes: 'Planes', votos: 'Votos', eventos: 'Eventos', operacion: 'Minutos del mago', cambios: 'Cambios W1 → W2', retro: 'Pulsos (retro)', wtp: 'Disposición a pagar',
+    preferencias: 'Preferencias', planes: 'Planes', votos: 'Votos', eventos: 'Eventos', operacion: 'Minutos del mago', cambios: 'Cambios W1 → W2', retro: 'Pulsos (retro)', wtp: 'Disposición a pagar', usabilidad: 'Usabilidad (SEQ + SUS)',
     alertas: 'Alertas E2', revisiones: 'Revisiones E2', suscripciones: 'Suscripciones a avisos', avisos: 'Avisos programados',
     tokens: 'Tokens de IA (costo)', inventario: 'Inventario de lugares', bitacora: 'Bitácora de reinicios' };
   var FRASE = 'EMPEZAR PILOTO', ultimoReinicio = null;

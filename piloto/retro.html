@@ -11,18 +11,18 @@
 <main class="wrap">
   <header class="top">
     <a class="brand" href="./"><span class="brand-mark" aria-hidden="true"></span>Sintonía</a>
-    <span class="tag">Pulso de 2 minutos</span>
+    <span class="tag" id="tagDur">Pulso de 4 minutos</span>
   </header>
 
   <div id="estado" class="card empty"><div class="pulse" aria-hidden="true"></div><p class="muted">Cargando…</p></div>
 
   <section id="vistaForm" class="hidden">
     <div class="hero">
-      <h1>Si hubo sintonía, sigan.</h1>
-      <p>Cuéntennos cómo les fue en este pulso breve de 2 minutos. No hay respuestas buenas ni malas.</p>
+      <h1 id="heroT">Si hubo sintonía, sigan.</h1>
+      <p id="heroP">Cuéntennos cómo les fue en este pulso breve de 4 minutos. No hay respuestas buenas ni malas.</p>
     </div>
     <form id="form" novalidate>
-      <div class="card">
+      <div class="card" id="bloqueRetro1">
         <div class="field"><span class="label" id="l1">¿Qué tan bien les funcionó el plan que eligieron?</span><div id="satisfaccion" aria-labelledby="l1"></div></div>
         <div class="field"><span class="label" id="l2">Con este plan, ¿qué tan desgastante fue cuadrar la salida?</span><div id="fatiga" aria-labelledby="l2"></div></div>
         <div class="field hidden" id="bloqueCarga"><span class="label" id="l3">¿Cuánto del trabajo de organizar recayó en ti?</span><span class="hint" style="margin:-2px 0 8px">Solo para quien organiza.</span><div id="carga" aria-labelledby="l3"></div></div>
@@ -31,9 +31,23 @@
         <div class="field"><span class="label" id="l5">¿Qué tan cómod@ te sentiste con Sintonía <span id="canal">en el chat</span>?</span><div id="confort" aria-labelledby="l5"></div></div>
         <div class="field"><span class="label">¿Cómo describirías tu experiencia?</span><div id="sentimiento"></div></div>
       </div>
-      <div class="card">
+      <div class="card" id="bloqueRetro2">
         <div class="field"><label for="agregaria">¿Qué le agregarías o cambiarías a Sintonía? <span class="counter" id="agrN"></span></label><textarea id="agregaria" maxlength="300" placeholder="Lo que sea: una función, un tipo de plan, algo que sobró…"></textarea></div>
         <div class="field"><label for="comentario">¿Algo más que quieras contarnos? <span class="counter" id="comN"></span></label><textarea id="comentario" maxlength="600"></textarea><span class="hint">Opcional. No incluyas datos de otras personas.</span></div>
+      </div>
+
+      <!-- 2.0.8 · Usabilidad (fuera de I4): SEQ 1–7 por momento + SUS 10 ítems. Se llena con el pulso o, para W1, como complemento diferido. -->
+      <div class="card hidden" id="bloqueUsab">
+        <h2>¿Qué tan fácil fue usar Sintonía?</h2>
+        <p class="small">Piensa solo en Sintonía <span class="canalU">en el chat</span>, no en el plan ni en el grupo.</p>
+        <div class="field"><span class="label" id="ls1">En general, ¿qué tan difícil o fácil fue <b>unirte y elegir el plan</b> con tu grupo (aceptar, ver las opciones y votar)?</span><div id="seqActivacion" aria-labelledby="ls1"></div></div>
+        <div class="field"><span class="label" id="ls2">En general, ¿qué tan difícil o fácil fue <b>coordinar el día del encuentro</b> (confirmar si ibas, la hora de salida y avisar que llegaste)?</span><div id="seqInteraccion" aria-labelledby="ls2"></div></div>
+        <div class="field hidden" id="bloqueSeqCont"><span class="label" id="ls3">En general, ¿qué tan difícil o fácil fue <b>volver a armar un plan con este mismo grupo</b>?</span><div id="seqContinuidad" aria-labelledby="ls3"></div>
+          <label class="check" style="margin-top:6px"><input type="checkbox" id="seqContNa"><span>No participé en armar este segundo plan.</span></label></div>
+        <h3 style="margin-top:18px">Diez afirmaciones sobre Sintonía</h3>
+        <p class="small muted">Responde rápido, con lo primero que pienses. 1 = totalmente en desacuerdo, 5 = totalmente de acuerdo.</p>
+        <div id="susItems"></div>
+        <label class="check"><input type="checkbox" id="susOmitir"><span>Prefiero no responder estas diez afirmaciones.</span></label>
       </div>
 
       <!-- Van Westendorp + preventa: solo organizador (I5) -->
@@ -78,6 +92,43 @@
   var sen = S.chips(S.$('#sentimiento'), 'sen', [['contento', '😊 Contento'], ['tranqui', '😌 Tranqui'], ['normal', '😐 Normal'], ['cansado', '😮‍💨 Cansado'], ['incomodo', '😕 Incómodo']]);
   S.counter(S.$('#agregaria'), S.$('#agrN')); S.counter(S.$('#comentario'), S.$('#comN'));
 
+  // 2.0.8 · Usabilidad: SEQ (1–7) por momento del modelo y SUS (10 ítems, 1–5). Ítems SUS en orden estándar: impares positivos, pares negativos.
+  var SEQ_ENDS = ['Muy difícil', 'Muy fácil'];
+  var seqA = S.scale(S.$('#seqActivacion'), SEQ_ENDS, 7), seqI = S.scale(S.$('#seqInteraccion'), SEQ_ENDS, 7), seqC = S.scale(S.$('#seqContinuidad'), SEQ_ENDS, 7);
+  var SUS = [
+    'Creo que me gustaría usar Sintonía con frecuencia.',
+    'Sintonía me pareció más complicado de lo necesario.',
+    'Sintonía me pareció fácil de usar.',
+    'Creo que necesitaría ayuda de alguien que sepa para poder usar Sintonía.',
+    'Las distintas partes de Sintonía funcionan bien juntas.',
+    'Sintonía me pareció poco coherente: algunas cosas funcionaban de una forma y otras de otra.',
+    'Me imagino que la mayoría de las personas aprendería a usar Sintonía muy rápido.',
+    'Sintonía me pareció engorroso de usar.',
+    'Me sentí con confianza usando Sintonía.',
+    'Tuve que aprender muchas cosas antes de poder arrancar con Sintonía.'
+  ];
+  var susBox = S.$('#susItems'), sus = SUS.map(function (t, i) {
+    var f = document.createElement('div'); f.className = 'field';
+    f.innerHTML = '<span class="label" id="lsus' + i + '">' + (i + 1) + '. ' + S.esc(t) + '</span><div aria-labelledby="lsus' + i + '"></div>';
+    susBox.appendChild(f);
+    return S.scale(f.lastElementChild, ['Totalmente en desacuerdo', 'Totalmente de acuerdo']);
+  });
+  S.$('#susOmitir').addEventListener('change', function () { susBox.style.opacity = this.checked ? '.4' : ''; susBox.style.pointerEvents = this.checked ? 'none' : ''; });
+  S.$('#seqContNa').addEventListener('change', function () { var c = S.$('#seqContinuidad'); c.style.opacity = this.checked ? '.4' : ''; c.style.pointerEvents = this.checked ? 'none' : ''; });
+  var conUsab = false, soloUsab = false, ronda = 1;   // conUsab: el backend ya tiene la 2.2.6; soloUsab: complemento de W1 (la retro ya estaba)
+  function usabOk() {
+    if (!seqA.value() || !seqI.value()) return 'Cuéntanos qué tan fácil fue unirte y coordinar el día (escalas de 1 a 7).';
+    if (ronda >= 2 && !seqC.value() && !S.$('#seqContNa').checked) return 'Cuéntanos qué tan fácil fue volver a armar el plan, o marca que no participaste.';
+    if (!S.$('#susOmitir').checked && sus.some(function (x) { return !x.value(); })) return 'Responde las diez afirmaciones o marca que prefieres no responderlas.';
+    return '';
+  }
+  function usabPayload(junto) {
+    var o = { action: 'usabilidad', plan_id: planId, pid: pid, junto_al_pulso: junto, seq_activacion: seqA.value(), seq_interaccion: seqI.value(),
+      seq_continuidad: ronda >= 2 && !S.$('#seqContNa').checked ? seqC.value() : '', sus_omitido: S.$('#susOmitir').checked };
+    sus.forEach(function (x, i) { o['sus_' + (i < 9 ? '0' + (i + 1) : (i + 1))] = x.value(); });
+    return o;
+  }
+
   if (!pid) return msg('warn', 'Abre tu enlace personal', 'Este formulario se abre desde el enlace del plan o desde el mensaje de Sintonía.');
   var q = { view: 'plan', pid: pid }; if (planId) q.plan_id = planId;
   S.get(q).then(function (r) {
@@ -85,11 +136,24 @@
     S.saveMe({ rol: r.rol, exp: r.experimento });
     if (r.estado === 'caido') return msg('warn', 'Este plan no se dio', 'No hay salida para evaluar. Cuando haya un próximo plan, el pulso se abre aquí.');
     if (!r.plan_id || r.estado !== 'cerrado') return msg('warn', 'Todavía no hay una salida para evaluar', 'El pulso se abre cuando el plan ya quedó cerrado.');
-    if (r.yo && r.yo.retro) return msg('soft', '¡Ya nos contaste!', 'Tu respuesta para este plan ya está guardada. Gracias.');
+    conUsab = !!(r.yo && r.yo.usabilidad !== undefined);   // backend 2.2.5 o anterior: sin bloque de usabilidad
+    if (r.yo && r.yo.retro && (!conUsab || r.yo.usabilidad)) return msg('soft', '¡Ya nos contaste!', 'Tu respuesta para este plan ya está guardada. Gracias.');
+    soloUsab = !!(r.yo && r.yo.retro);   // 2.0.8: ya respondió el pulso (p. ej. W1) y falta solo la usabilidad
     var he = r.hora_encuentro ? new Date(r.hora_encuentro) : null;   // 2.0.2: el pulso es sobre una salida que ya pasó
     if (he && !isNaN(he) && Date.now() < he.getTime()) return msg('soft', 'El pulso se abre después del encuentro', 'Vuelve después de ' + S.fecha(he) + ' para contarnos cómo les fue.');
     planId = r.plan_id; rol = r.rol;
     S.$('#canal').textContent = r.experimento === 'E2' ? 'en la página' : 'en el chat';
+    S.$$('.canalU').forEach(function (x) { x.textContent = r.experimento === 'E2' ? 'en la página' : 'en el chat'; });
+    ronda = Number(r.ronda) || 1;
+    S.show('#bloqueUsab', conUsab); S.show('#bloqueSeqCont', conUsab && ronda >= 2);
+    if (soloUsab) {
+      S.show('#bloqueRetro1', false); S.show('#bloqueRetro2', false); S.show('#bloqueWtp', false);
+      S.$('#tagDur').textContent = 'Complemento de 2 minutos';
+      S.$('#heroT').textContent = 'Nos falta una parte.';
+      S.$('#heroP').textContent = 'Ya nos contaste cómo les fue' + (he && !isNaN(he) ? ' en la salida del ' + S.fecha(he) : '') + '. Ahora, 2 minutos sobre qué tan fácil fue usar Sintonía en esa salida. No hay respuestas buenas ni malas.';
+      S.show(estado, false); S.show('#vistaForm', true); return;
+    }
+    if (!conUsab) { S.$('#tagDur').textContent = 'Pulso de 2 minutos'; S.$('#heroP').textContent = 'Cuéntennos cómo les fue en este pulso breve de 2 minutos. No hay respuestas buenas ni malas.'; }
     S.show('#bloqueCarga', rol === 'organizador'); S.show('#bloqueWtp', rol === 'organizador');
     S.show(estado, false); S.show('#vistaForm', true);
   });
@@ -97,8 +161,13 @@
   function n(id) { var v = S.$(id).value; return v === '' ? '' : Math.max(0, parseInt(v, 10)); }
   S.$('#form').addEventListener('submit', function (ev) {
     ev.preventDefault();
+    if (soloUsab) {
+      var f0 = usabOk(); if (f0) return S.toast(f0, true);
+      return S.busy(S.$('#enviar'), function () { return S.post(usabPayload(false)); }).then(fin_);
+    }
     if (!sat.value() || !fat.value() || !fin.value() || !con.value() || !rep.value()) return S.toast('Responde las preguntas de escala y si repetirían.', true);
     if (rol === 'organizador' && !car.value()) return S.toast('Cuéntanos cuánto del trabajo recayó en ti.', true);
+    if (conUsab) { var fu = usabOk(); if (fu) return S.toast(fu, true); }
     var w = { muy_barato: n('#muyBarato'), barato: n('#barato'), caro: n('#caro'), muy_caro: n('#muyCaro') };
     var hayWtp = rol === 'organizador' && (w.muy_barato !== '' || w.barato !== '' || w.caro !== '' || w.muy_caro !== '' || S.$('#preventa').checked);
     if (hayWtp) {
@@ -109,16 +178,21 @@
       return S.post({ action: 'retro', plan_id: planId, pid: pid, satisfaccion_plan: sat.value(), fatiga_post: fat.value(), carga_organizador: rol === 'organizador' ? car.value() : '',
         valor_final: fin.value(), repetiria: rep.value(), confort_bot: con.value(), sentimiento: sen.value(),
         que_agregaria: S.$('#agregaria').value.trim(), comentario: S.$('#comentario').value.trim() })
+      .then(function (r) {   // 2.0.8: después de la retro va la usabilidad (si el backend la tiene); un reintento la tolera ya enviada
+        if (!r || (!r.ok && r.error !== 'retro_ya_enviada') || !conUsab) return r;
+        return S.post(usabPayload(true)).then(function (u) { return u && (u.ok || u.error === 'usabilidad_ya_enviada') ? { ok: true } : u; });
+      })
       .then(function (r) {
         if (!r || (!r.ok && r.error !== 'retro_ya_enviada')) return r;
         if (!hayWtp) return r;   // si la retro ya estaba (reintento tras una falla), igual se intenta guardar el precio
         return S.post(Object.assign({ action: 'wtp', pid: pid, preventa: S.$('#preventa').checked }, w));
       });
-    }).then(function (r) {
-      if (!r || !r.ok) return S.toast(S.errMsg(r), true);
-      S.show('#vistaForm', false); S.show('#vistaOk', true); S.show('#toast', false); window.scrollTo(0, 0);
-    });
+    }).then(fin_);
   });
+  function fin_(r) {
+    if (!r || (!r.ok && r.error !== 'usabilidad_ya_enviada')) return S.toast(S.errMsg(r), true);
+    S.show('#vistaForm', false); S.show('#vistaOk', true); S.show('#toast', false); window.scrollTo(0, 0);
+  }
 })();
 </script>
 </body>

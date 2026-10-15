@@ -1,7 +1,15 @@
 /**
- * Sintonía · Piloto v2.2.5 (E1 WhatsApp + E2 web app) — backend en Google Apps Script
+ * Sintonía · Piloto v2.2.6 (E1 WhatsApp + E2 web app) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.2.6 (14/10, para el frontend 2.0.8 · usabilidad SEQ + SUS, sugerencia de Néstor):
+ *   - Hoja nueva 'usabilidad': SEQ 1–7 por momento (activación, interacción, continuidad) y SUS de 10 ítems (1–5) con su puntaje 0–100.
+ *     La continuidad solo se pregunta desde la ronda 2 (en W1 todavía no hay una segunda salida que evaluar).
+ *   - Acción usabilidad: una respuesta por persona y plan, independiente de la retro. Sirve tanto junto al pulso (toma = con_pulso)
+ *     como para recoger W1 después (toma = diferida, con dias_desde_encuentro para leer el sesgo de recuerdo).
+ *   - Es instrumentación de medición en las dos condiciones: NO cuenta como el cambio W1 → W2 (I4) ni sube la versión del grupo.
+ *   - ?view=plan devuelve yo.usabilidad; ?view=mago devuelve retro_pids y usabilidad_pids por plan; el panel reporta SEQ y SUS por ronda y por toma.
+ *   - revocar_ también borra la usabilidad de la persona.
  * Versión 2.2.5 (6/10, para el frontend 2.0.7 · recomendaciones de la prueba de punta a punta):
  *   - cerrar_plan no re-cierra un plan cerrado o caído (plan_ya_cerrado): ya no pisa t_cerrado ni la opción elegida. Acepta hora_salida y la guarda en la opción ganadora.
  *   - corregir_plan (equipo): corrige la hora del encuentro y la salida de un plan cerrado; deja la hora anterior en la nota.
@@ -77,7 +85,10 @@ var SHEETS = {
   bitacora:         ['ts','accion','detalle','respaldo_url','registrado_por'],   // v2.2.4: reinicios de la hoja
   tokens:           ['ts','plan_id','grupo_id','uso','modelo','prompt_version','tokens_in','tokens_out','costo_usd'],
   retro:            ['ts','plan_id','pid','rol','fatiga_post','carga_organizador','satisfaccion_plan','valor_final','repetiria','confort_bot','sentimiento_autodeclarado','que_agregaria','comentario'],
-  wtp:              ['ts','pid','grupo_id','muy_barato','barato','caro','muy_caro','preventa']
+  wtp:              ['ts','pid','grupo_id','muy_barato','barato','caro','muy_caro','preventa'],
+  // v2.2.6: usabilidad (fuera de I4). SEQ 1–7 por momento; SUS 1–5 × 10 → sus_puntaje 0–100. toma: con_pulso | diferida
+  usabilidad:       ['ts','plan_id','pid','grupo_id','rol','experimento','ronda','toma','dias_desde_encuentro','seq_activacion','seq_interaccion','seq_continuidad',
+                     'sus_01','sus_02','sus_03','sus_04','sus_05','sus_06','sus_07','sus_08','sus_09','sus_10','sus_puntaje','sus_omitido']
 };
 
 var TIPOS_GRUPO  = ['amigos','familia','pareja','trabajo','otro'];
@@ -162,7 +173,7 @@ function doPost(e) {
       registrar: registrar_, cerrar_reclutamiento: cerrarReclutamiento_, crear_plan: crearPlan_,
       proponer_ia: proponerIA_, publicar_plan: publicarPlan_, votar: votar_, cerrar_plan: cerrarPlan_, marcar_caido: marcarCaido_, corregir_plan: corregirPlan_, marcar_failover: marcarFailover_,
       evento: evento_, operacion: operacion_, registrar_cambio: registrarCambio_, redactar_ia: redactarIA_,
-      retro: retro_, wtp: wtp_, revocar: revocar_, limpiar_registros: limpiarRegistros_
+      retro: retro_, wtp: wtp_, usabilidad: usabilidad_, revocar: revocar_, limpiar_registros: limpiarRegistros_
     };
     var a = String(d.action || '');
     if (!H[a]) return json_({ ok: false, error: 'accion_desconocida' });
@@ -427,6 +438,38 @@ function retro_(d) {
   return { ok: true };
 }
 
+/**
+ * v2.2.6 · Usabilidad (sugerencia de Néstor). SEQ = Single Ease Question (1 muy difícil – 7 muy fácil), una por momento del modelo.
+ * SUS = System Usability Scale (10 afirmaciones, 1–5). Puntaje: ítems impares (r − 1), pares (5 − r), suma × 2,5.
+ * Fuera de I4: es medición en ambas condiciones, no un cambio del tratamiento. Una respuesta por persona y plan.
+ */
+function seq_(v) { var n = int_(v); return (n !== '' && n >= 1 && n <= 7) ? n : ''; }
+function susPuntaje_(r) {
+  if (r.some(function (x) { return x === ''; })) return '';
+  return r.reduce(function (s, x, i) { return s + (i % 2 === 0 ? x - 1 : 5 - x); }, 0) * 2.5;
+}
+function usabilidad_(d) {
+  var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
+  var m = findOne_('participantes', 'pid', d.pid);
+  if (!m || m.grupo_id !== p.grupo_id || m.estado !== 'activo') return { ok: false, error: 'no_miembro' };
+  if (p.estado !== 'cerrado') return { ok: false, error: 'plan_no_cerrado' };
+  var he = p.hora_encuentro ? new Date(p.hora_encuentro) : null;
+  if (he && !isNaN(he.getTime()) && new Date() < he) return { ok: false, error: 'retro_antes_del_plan' };
+  if (rows_('usabilidad').some(function (r) { return r.plan_id === p.plan_id && r.pid === d.pid; })) return { ok: false, error: 'usabilidad_ya_enviada' };
+  var ronda = Number(p.ronda) || 1;
+  var sa = seq_(d.seq_activacion), si = seq_(d.seq_interaccion), sc = ronda >= 2 ? seq_(d.seq_continuidad) : '';   // 'na' o vacío → ''
+  var omitido = bool_(d.sus_omitido), sus = [];
+  for (var i = 1; i <= 10; i++) sus.push(omitido ? '' : escala_(d['sus_' + (i < 10 ? '0' + i : i)]));
+  if (sa === '' || si === '' || (!omitido && sus.some(function (x) { return x === ''; }))) return { ok: false, error: 'usabilidad_incompleta' };
+  var fila = { plan_id: p.plan_id, pid: d.pid, grupo_id: p.grupo_id, rol: m.rol, experimento: p.experimento, ronda: ronda,
+    toma: bool_(d.junto_al_pulso) ? 'con_pulso' : 'diferida',
+    dias_desde_encuentro: he && !isNaN(he.getTime()) ? Math.round((new Date() - he) / 864e5 * 10) / 10 : '',
+    seq_activacion: sa, seq_interaccion: si, seq_continuidad: sc, sus_puntaje: omitido ? '' : susPuntaje_(sus), sus_omitido: omitido };
+  sus.forEach(function (x, k) { fila['sus_' + (k < 9 ? '0' + (k + 1) : (k + 1))] = x; });
+  append_('usabilidad', fila);
+  return { ok: true, sus_puntaje: fila.sus_puntaje };
+}
+
 /** I5: disposición a pagar SOLO del organizador (Van Westendorp + preventa sin cobro). */
 function wtp_(d) {
   var m = findOne_('participantes', 'pid', d.pid); if (!m || m.estado !== 'activo') return { ok: false, error: 'no_miembro' };
@@ -439,7 +482,7 @@ function wtp_(d) {
 function revocar_(d) {
   var m = findOne_('participantes', 'pid', d.pid); if (!m) return { ok: false, error: 'no_existe' };
   var pid = m.pid, gid = m.grupo_id;
-  ['contactos', 'votos', 'retro', 'wtp', 'linea_base', 'preferencias'].forEach(function (n) { deleteWhere_(n, function (r) { return r.pid === pid; }); });
+  ['contactos', 'votos', 'retro', 'wtp', 'usabilidad', 'linea_base', 'preferencias'].forEach(function (n) { deleteWhere_(n, function (r) { return r.pid === pid; }); });
   deleteWhere_('eventos', function (r) { return r.pid === pid; });
   if (m.rol === 'organizador') deleteWhere_('linea_base_grupo', function (r) { return r.grupo_id === gid; });   // v2.2: la línea base del grupo la declaró el organizador (incluye su fatiga)
   updateRow_('participantes', findOne_('participantes', 'pid', pid)._row, { estado: 'revocado' });
@@ -512,9 +555,10 @@ function vistaPlan_(q) {
   var apuntado = false, llego = false;
   ev.forEach(function (e) { if (e.tipo === 'me_apunto') apuntado = true; if (e.tipo === 'no_puedo') apuntado = false; if (e.tipo === 'checkpoint_llegada') { llego = true; apuntado = true; } });
   var ya_retro = rows_('retro').some(function (r) { return r.plan_id === p.plan_id && r.pid === q.pid; });
+  var ya_usab = rows_('usabilidad').some(function (r) { return r.plan_id === p.plan_id && r.pid === q.pid; });   // v2.2.6
   return { ok: true, plan_id: p.plan_id, experimento: p.experimento, failover: p.failover || '', estado: p.estado, modo: g.modo || 'piloto', ronda: p.ronda, opciones: JSON.parse(p.opciones_json || '[]'), conteo: conteo, vetos: vetos,
     mi_voto: mio, rol: me ? me.rol : '', elegida: p.elegida === '' ? null : p.elegida, hora_encuentro: p.hora_encuentro || '',
-    n_invitados: p.n_invitados, n_apuntados: p.n_apuntados, n_votos: votos.length, yo: { apuntado: apuntado, llego: llego, retro: ya_retro } };
+    n_invitados: p.n_invitados, n_apuntados: p.n_apuntados, n_votos: votos.length, yo: { apuntado: apuntado, llego: llego, retro: ya_retro, usabilidad: ya_usab } };
 }
 
 function vistaMago_() {
@@ -527,9 +571,12 @@ function vistaMago_() {
         return { pid: p.pid, rol: p.rol, nombre: (nombres[p.pid] || {}).nombre || '', whatsapp: (nombres[p.pid] || {}).whatsapp || '' }; }),
       preferencias: rows_('preferencias').filter(function (r) { return r.grupo_id === g.grupo_id; }).map(function (r) { return r.resumen; }) };
   });
-  var votos = rows_('votos'), evs = rows_('eventos'), oper = rows_('operacion');
+  var votos = rows_('votos'), evs = rows_('eventos'), oper = rows_('operacion'), rts = rows_('retro'), usb = rows_('usabilidad');
   var planes = rows_('planes').map(function (p) {
     var o = {}; SHEETS.planes.forEach(function (c) { o[c] = p[c]; });
+    // v2.2.6: quién ya respondió el pulso y la usabilidad (para enviar el complemento de W1 solo a quien falta)
+    o.retro_pids = rts.filter(function (r) { return r.plan_id === p.plan_id; }).map(function (r) { return r.pid; });
+    o.usabilidad_pids = usb.filter(function (r) { return r.plan_id === p.plan_id; }).map(function (r) { return r.pid; });
     // v2.2.1: la consola ve el conteo y el estado de cada persona (para registrar lo que pasa en el chat del E1)
     o.conteo = {}; o.vetos = 0; o.votos_por_pid = {};
     votos.filter(function (v) { return v.plan_id === p.plan_id; }).forEach(function (v) {
@@ -555,7 +602,7 @@ function vistaMago_() {
 /** Panel: solo grupos 'piloto' y no excluidos (I7, I9). Métrica principal: personas que llegaron / personas invitadas (I2). */
 function vistaPanel_() {
   var grupos = rows_('grupos'), planes = rows_('planes'), votos = rows_('votos'), retro = rows_('retro'), tokens = rows_('tokens'),
-      oper = rows_('operacion'), wtp = rows_('wtp'), lbg = rows_('linea_base_grupo'), part = rows_('participantes');
+      oper = rows_('operacion'), wtp = rows_('wtp'), lbg = rows_('linea_base_grupo'), part = rows_('participantes'), usb = rows_('usabilidad');
   var validos = {}; grupos.forEach(function (g) { if (g.modo === 'piloto' && g.estado !== 'excluido') validos[g.grupo_id] = g; });
   var costoHora = parseFloat(prop_('COSTO_HORA_HUMANA_COP', '0'));
   var tolMs = (parseFloat(prop_('TOLERANCIA_MIN', '15')) || 0) * 6e4;
@@ -611,7 +658,8 @@ function vistaPanel_() {
       costo: { tokens_usd: usd, minutos_humanos: minutos, minutos_por_causa: causas,
         costo_humano_cop: costoHora ? minutos / 60 * costoHora : null,
         usd_tokens_por_plan_cerrado: cerr.length ? usd / cerr.length : null, minutos_por_plan_cerrado: cerr.length ? minutos / cerr.length : null },
-      versiones: pl.reduce(function (o, p) { o[p.version] = (o[p.version] || 0) + 1; return o; }, {})
+      versiones: pl.reduce(function (o, p) { o[p.version] = (o[p.version] || 0) + 1; return o; }, {}),
+      usabilidad: resumenUsab_(usb.filter(function (u) { return ids.indexOf(u.plan_id) >= 0; }), mean)   // v2.2.6 · fuera de I4
     };
   });
   var lb = lbg.filter(function (b) { return validos[b.grupo_id]; });
@@ -628,6 +676,23 @@ function vistaPanel_() {
     wtp_organizadores: wtp.filter(function (w) { return validos[w.grupo_id]; }).map(function (w) { return { muy_barato: w.muy_barato, barato: w.barato, caro: w.caro, muy_caro: w.muy_caro, preventa: bool_(w.preventa) }; }),
     cambios: rows_('cambios').map(function (c) { return { experimento: c.experimento, version: c.version, descripcion: c.descripcion }; })
   };
+}
+
+/** v2.2.6: SEQ y SUS por ronda y por toma (con_pulso vs. diferida). Cada valor lleva su n. */
+function resumenUsab_(u, mean) {
+  function bloque(a) {
+    var s = a.filter(function (x) { return x.sus_puntaje !== ''; });
+    return { n: a.length,
+      seq_activacion: mean(a.map(function (x) { return x.seq_activacion; })), seq_interaccion: mean(a.map(function (x) { return x.seq_interaccion; })),
+      seq_continuidad: mean(a.map(function (x) { return x.seq_continuidad; })), n_seq_continuidad: a.filter(function (x) { return x.seq_continuidad !== ''; }).length,
+      sus_prom: mean(s.map(function (x) { return x.sus_puntaje; })), n_sus: s.length,
+      dias_prom: mean(a.map(function (x) { return x.dias_desde_encuentro; })) };
+  }
+  var out = { total: bloque(u), por_ronda: {}, por_toma: {} };
+  u.forEach(function (x) { out.por_ronda[x.ronda] = true; out.por_toma[x.toma] = true; });
+  Object.keys(out.por_ronda).forEach(function (r) { out.por_ronda[r] = bloque(u.filter(function (x) { return String(x.ronda) === r; })); });
+  Object.keys(out.por_toma).forEach(function (t) { out.por_toma[t] = bloque(u.filter(function (x) { return x.toma === t; })); });
+  return out;
 }
 
 /* ============================== v2.2.4 · Empezar el piloto real ============================== */
@@ -687,7 +752,7 @@ function probarMontaje() {
   });
   try { var ss = ss_(); r.push('✅ Hoja: ' + ss.getName()); } catch (x) { r.push('❌ No abre la hoja (revisa SHEET_ID): ' + x); Logger.log(r.join('\n')); return; }
   Object.keys(SHEETS).forEach(function (n) { sheet_(n); }); r.push('✅ ' + Object.keys(SHEETS).length + ' hojas listas');
-  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.2.5)');
+  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.2.6)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');
   r.push('Zona horaria del proyecto: ' + Session.getScriptTimeZone() + (Session.getScriptTimeZone() === 'America/Bogota' ? ' ✅' : ' ⚠️ cambiar a America/Bogota'));
   if (prop_('GEMINI_API_KEY', '')) {

@@ -69,6 +69,18 @@
   }
   function obj(o) { var k = Object.keys(o || {}); return k.length ? k.map(function (x) { return e(x) + ': <b>' + e(typeof o[x] === 'number' ? S.num(o[x], 0) : o[x]) + '</b>'; }).join(' · ') : '—'; }
 
+  // 2.0.8 · Usabilidad (fuera de I4). SEQ 1–7 por momento; SUS 0–100. Se separa por ronda y por toma: la diferida (W1) tiene sesgo de recuerdo.
+  function usab(u) {
+    if (!u) return '<h3 style="margin-top:14px">Usabilidad</h3><p class="small muted">Requiere el backend 2.2.6.</p>';
+    function fila(nom, b) { b = b || {}; return '<tr><td>' + e(nom) + '</td><td>' + (b.n || 0) + '</td><td>' + S.num(b.seq_activacion) + '</td><td>' + S.num(b.seq_interaccion) + '</td><td>' + S.num(b.seq_continuidad) + ' <span class="tiny muted">(n = ' + (b.n_seq_continuidad || 0) + ')</span></td><td>' + S.num(b.sus_prom, 0) + ' <span class="tiny muted">(n = ' + (b.n_sus || 0) + ')</span></td><td>' + S.num(b.dias_prom) + '</td></tr>'; }
+    var rs = Object.keys(u.por_ronda || {}).sort(), ts = Object.keys(u.por_toma || {}).sort();
+    var NOMT = { con_pulso: 'Toma con el pulso', diferida: 'Toma diferida (complemento)' };
+    return '<h3 style="margin-top:14px">Usabilidad · SEQ y SUS</h3><p class="tiny muted" style="margin:0 0 6px">Medición en las dos condiciones; no es el cambio W1 → W2 (I4). SEQ: 1 muy difícil – 7 muy fácil. SUS: 0–100. La continuidad solo se pregunta desde la ronda 2.</p>' +
+      '<div class="table-scroll"><table><thead><tr><th></th><th>n</th><th>SEQ activación</th><th>SEQ interacción</th><th>SEQ continuidad</th><th>SUS</th><th>Días desde el encuentro</th></tr></thead><tbody>' +
+      fila('Total', u.total) + rs.map(function (r) { return fila('Ronda ' + r, u.por_ronda[r]); }).join('') + ts.map(function (t) { return fila(NOMT[t] || t, u.por_toma[t]); }).join('') +
+      '</tbody></table></div>';
+  }
+
   function col(nombre, x) {
     if (!x) return '';
     var c = x.costo || {}, o = x.organizador || {}, t = x.todos || {};
@@ -92,6 +104,7 @@
         kpi(S.num(o.fatiga_post_prom), 'Fatiga post del organizador, 1–5') +
         kpi(S.num(t.confort_bot_prom), 'Confort con Sintonía, 1–5') +
         kpi((t.repetiria_si || 0) + ' / ' + (t.n || 0), 'Repetirían (sí)') + '</div>' +
+      usab(x.usabilidad) +
       '<h3 style="margin-top:14px">Costo y operación</h3><div class="kpis">' +
         kpi(S.usd(c.tokens_usd), 'Tokens Gemini · total') +
         kpi(S.usd(c.usd_tokens_por_plan_cerrado), 'Tokens por plan cerrado') +
