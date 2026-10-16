@@ -233,10 +233,43 @@ svg.wires{position:absolute;left:0;top:0;width:1664px;height:640px;overflow:visi
 .eth{position:absolute;width:380px;transform:translate(-50%,-50%)}
 .eth .card{padding:28px 32px}
 
+/* ═════════ Navegación libre: dial arrastrable + barra móvil ═════════ */
+#dial{pointer-events:auto;cursor:pointer;touch-action:none;bottom:36px;height:80px}
+#dial .track{top:38px}
+#dial .tick{top:30px}
+#dial .tick.minor{top:35px}
+#dial .lbl{top:54px;pointer-events:none}
+#needle{top:14px;cursor:grab}
+#dial:hover #needle,#dial.drag #needle{width:6px;transform:translateX(-3px);box-shadow:0 0 26px 6px var(--color-signal-searching)}
+#dial.drag{cursor:grabbing}
+#dial.drag #needle{transition:none}
+#dialtip{position:absolute;bottom:84px;transform:translateX(-50%);padding:10px 18px;border-radius:999px;background:var(--color-bg-surface);border:1.5px solid var(--color-border-strong);box-shadow:var(--shadow-toast);font:700 20px/1 var(--font-family-mono);color:var(--color-text-primary);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s var(--ease)}
+#dial:hover #dialtip,#dial.drag #dialtip{opacity:1}
+#dialtip b{color:var(--color-text-accent-strong);margin-right:10px}
+
+#mnav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:20;align-items:center;gap:10px;padding:10px 12px calc(10px + env(safe-area-inset-bottom, 0px));background:var(--color-bg-surface);border-top:1px solid var(--color-border-default);box-shadow:0 -8px 24px var(--color-shadow-soft)}
+#mnav button{flex:none;width:48px;height:48px;border-radius:14px;border:1.5px solid var(--color-border-default);background:var(--color-bg-surface-muted);display:grid;place-items:center;color:var(--color-text-primary)}
+#mnav button:active{transform:scale(.94)}
+#mscrub{flex:1;min-width:0;height:48px;display:flex;flex-direction:column;justify-content:center;gap:8px;touch-action:none;cursor:pointer}
+#mtrack{position:relative;height:8px;border-radius:4px;background:var(--color-data-track)}
+#mfill{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--color-data-bar);width:0}
+#mknob{position:absolute;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:var(--color-signal-searching);box-shadow:0 0 12px 2px var(--color-signal-searching);left:0}
+#mscrub:not(.drag) #mfill,#mscrub:not(.drag) #mknob{transition:left .45s var(--ease),width .45s var(--ease)}
+#mlabel{font:700 12px/1 var(--font-family-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mlabel b{color:var(--color-text-accent-strong)}
+#rotate{display:none;position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top, 0px));transform:translateX(-50%);z-index:15;padding:10px 16px;border-radius:999px;background:var(--color-bg-surface);border:1px solid var(--color-border-default);font:600 13px/1.2 var(--font-family-sans);color:var(--color-text-secondary);white-space:nowrap}
+body{touch-action:manipulation}
+@media (pointer:coarse), (max-width:900px){
+  #mnav{display:flex}
+  #hud{display:none}
+  #hint{bottom:calc(88px + env(safe-area-inset-bottom, 0px));font-size:12px;white-space:normal;max-width:calc(100vw - 32px);text-align:center}
+}
+@media (max-width:900px) and (orientation:portrait){ #rotate{display:block} }
+
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important}
 }
-@media (max-width:900px){#hint{display:none}}
+
 @media print{ #hud,#hint{display:none} }
 </style>
 </head>
@@ -633,6 +666,16 @@ svg.wires{position:absolute;left:0;top:0;width:1664px;height:640px;overflow:visi
   <button id="theme" aria-label="Cambiar tema"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg></button>
   <button id="fs" aria-label="Pantalla completa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
 </div>
+<nav id="mnav" aria-label="Navegación del deck">
+  <button id="mprev" type="button" aria-label="Anterior"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+  <div id="mscrub" role="slider" tabindex="0" aria-label="Ir a diapositiva" aria-valuemin="1">
+    <div id="mtrack"><i id="mfill"></i><span id="mknob"></span></div>
+    <span id="mlabel"></span>
+  </div>
+  <button id="mnext" type="button" aria-label="Siguiente"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  <button id="mtheme" type="button" aria-label="Cambiar tema"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg></button>
+</nav>
+<div id="rotate">Gira el teléfono para verlo más grande</div>
 <div id="hint">→ / espacio / clic avanza · ← retrocede · F pantalla completa · T tema</div>
 
 <script>
@@ -645,10 +688,10 @@ svg.wires{position:absolute;left:0;top:0;width:1664px;height:640px;overflow:visi
   const countEl = document.getElementById('count');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fmt = new Intl.NumberFormat('es-CO');
-  let cur = 0, step = 0;
+  let cur = 0, step = 0, navReady = false;
 
   /* Escala del escenario */
-  function fit(){ const s = Math.min(innerWidth/1920, innerHeight/1080); stage.style.transform = `translate(-50%,-50%) scale(${s})`; }
+  function fit(){ const m = document.getElementById('mnav'); const bar = m && getComputedStyle(m).display !== 'none' ? m.offsetHeight : 0; const h = innerHeight - bar; const s = Math.min(innerWidth/1920, h/1080); stage.style.top = (h/2) + 'px'; stage.style.transform = `translate(-50%,-50%) scale(${s})`; }
   addEventListener('resize', fit); fit();
 
   /* Longitud de trazos SVG */
@@ -738,6 +781,7 @@ svg.wires{position:absolute;left:0;top:0;width:1664px;height:640px;overflow:visi
     s._lbl.classList.add('on');
     applySteps(s, st, dir < 0 && prev !== s);
     needle.style.left = pos(i) + '%';
+    if (navReady) updateNav(i);
     countEl.textContent = `${i+1} / ${slides.length}`;
     ambient(i);
     history.replaceState(null, '', `#${i+1}.${st}`);
@@ -770,18 +814,72 @@ svg.wires{position:absolute;left:0;top:0;width:1664px;height:640px;overflow:visi
       case 't': case 'T': toggleTheme(); break;
     }
   });
-  document.getElementById('viewport').addEventListener('click', e => { e.clientX < innerWidth * 0.18 ? prev() : next(); });
+  document.getElementById('viewport').addEventListener('click', e => { if (e.target.closest && e.target.closest('#dial')) return; const zone = matchMedia('(pointer:coarse)').matches ? 0.33 : 0.18; e.clientX < innerWidth * zone ? prev() : next(); });
   document.getElementById('next').addEventListener('click', e => { e.stopPropagation(); next(); });
   document.getElementById('prev').addEventListener('click', e => { e.stopPropagation(); prev(); });
   document.getElementById('theme').addEventListener('click', e => { e.stopPropagation(); toggleTheme(); });
   document.getElementById('fs').addEventListener('click', e => { e.stopPropagation(); toggleFS(); });
   let tx = null;
-  addEventListener('touchstart', e => tx = e.touches[0].clientX, {passive:true});
+  addEventListener('touchstart', e => { tx = (e.target.closest && e.target.closest('#dial,#mnav')) ? null : e.touches[0].clientX; }, {passive:true});
   addEventListener('touchend', e => { if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) { dx < 0 ? next() : prev(); } tx = null; });
 
   function toggleTheme(){ const h = document.documentElement; const isDark = h.dataset.theme ? h.dataset.theme === 'dark' : !matchMedia('(prefers-color-scheme: light)').matches; h.dataset.theme = isDark ? 'light' : 'dark'; try { localStorage.setItem('sintonia-p7-theme', h.dataset.theme); } catch(e){} }
   function toggleFS(){ try { const p = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); p?.catch?.(() => {}); } catch(e){} }
   try { const t = localStorage.getItem('sintonia-p7-theme'); if (t) document.documentElement.dataset.theme = t; } catch(e){}
+
+
+  /* ── Navegación libre: arrastrar el dial o la barra móvil ── */
+  const mnav = document.getElementById('mnav'), mscrub = document.getElementById('mscrub');
+  const mfill = document.getElementById('mfill'), mknob = document.getElementById('mknob'), mlabel = document.getElementById('mlabel');
+  const tip = document.createElement('div'); tip.id = 'dialtip'; dial.appendChild(tip);
+  dial.setAttribute('role', 'slider'); dial.setAttribute('tabindex', '0'); dial.setAttribute('aria-label', 'Ir a diapositiva');
+  dial.removeAttribute('aria-hidden');
+  const N = slides.length;
+  const two = n => String(n).padStart(2, '0');
+  const clamp = f => Math.min(1, Math.max(0, f));
+  const idxAt = f => Math.round(clamp(f) * (N - 1));
+  function tipAt(f){ const i = idxAt(f); tip.innerHTML = `<b>${two(i+1)}</b>${slides[i].dataset.label}`; tip.style.left = (clamp(f) * 100) + '%'; }
+  function updateNav(i){
+    const p = pos(i);
+    mfill.style.width = p + '%'; mknob.style.left = p + '%';
+    mlabel.innerHTML = `<b>${two(i+1)} / ${two(N)}</b> · ${slides[i].dataset.label}`;
+    [dial, mscrub].forEach(el => { el.setAttribute('aria-valuemax', N); el.setAttribute('aria-valuenow', i + 1); el.setAttribute('aria-valuetext', `${i+1} de ${N}: ${slides[i].dataset.label}`); });
+  }
+  function goTo(i){ if (i !== cur) show(i, slides[i]._max, i > cur ? 1 : -1); }
+  function bindScrub(el, area, onLive){
+    let active = false;
+    const frac = e => { const r = area.getBoundingClientRect(); return clamp((e.clientX - r.left) / r.width); };
+    el.addEventListener('pointerdown', e => {
+      e.preventDefault(); e.stopPropagation(); hint();
+      active = true; el.classList.add('drag');
+      try { el.setPointerCapture(e.pointerId); } catch(_){}
+      const f = frac(e); onLive(f); goTo(idxAt(f));
+    });
+    el.addEventListener('pointermove', e => {
+      const f = frac(e);
+      if (el === dial) tipAt(f);
+      if (!active) return;
+      onLive(f); goTo(idxAt(f));
+    });
+    const end = () => { if (!active) return; active = false; el.classList.remove('drag'); needle.style.left = pos(cur) + '%'; updateNav(cur); };
+    el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end); el.addEventListener('lostpointercapture', end);
+    el.addEventListener('click', e => e.stopPropagation());
+    el.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); e.stopPropagation(); goTo(Math.min(N-1, cur+1)); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); e.stopPropagation(); goTo(Math.max(0, cur-1)); }
+    });
+  }
+  bindScrub(dial, dial.querySelector('.track'), f => { needle.style.left = (f * 100) + '%'; tipAt(f); });
+  bindScrub(mscrub, document.getElementById('mtrack'), f => { mfill.style.width = (f * 100) + '%'; mknob.style.left = (f * 100) + '%'; });
+  const stop = fn => e => { e.stopPropagation(); fn(); };
+  document.getElementById('mprev').addEventListener('click', stop(() => prev()));
+  document.getElementById('mnext').addEventListener('click', stop(() => next()));
+  document.getElementById('mtheme').addEventListener('click', stop(() => toggleTheme()));
+  mnav.addEventListener('touchstart', e => e.stopPropagation(), {passive:true});
+  mnav.addEventListener('touchend', e => e.stopPropagation(), {passive:true});
+  if (matchMedia('(pointer:coarse)').matches) document.getElementById('hint').textContent = 'Toca a la derecha para avanzar, a la izquierda para volver, o arrastra la barra';
+  addEventListener('resize', () => requestAnimationFrame(fit));
+  navReady = true; fit();
 
   /* Arranque (respeta #slide.paso) */
   const m = location.hash.match(/^#(\d+)(?:\.(\d+))?/);
