@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Método Interno P7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap">
+<style>
+/* ═════════ Tokens ═════════ */
+:root{
+  --palette-papel-0:#ffffff;--palette-papel-50:#faf9f6;--palette-papel-100:#efede7;--palette-papel-150:#ece9e1;--palette-papel-200:#e6e3dc;--palette-papel-300:#dad6cc;--palette-papel-500:#827d73;--palette-papel-600:#8e8c86;--palette-papel-700:#47494d;--palette-papel-900:#1f2226;
+  --palette-noche-100:#e8ecf1;--palette-noche-200:#c7ced7;--palette-noche-300:#a9b2be;--palette-noche-500:#6f7886;--palette-noche-600:#3a4350;--palette-noche-700:#2c3440;--palette-noche-800:#212833;--palette-noche-850:#1a2029;--palette-noche-900:#141920;--palette-noche-925:#0a0d11;--palette-noche-950:#0e1116;
+  --palette-cobalto-100:#dce6f2;--palette-cobalto-200:#b7cbe3;--palette-cobalto-300:#8db1dd;--palette-cobalto-500:#2f639b;--palette-cobalto-700:#1f4b7a;--palette-cobalto-800:#173a60;--palette-cobalto-850:#1a3150;--palette-cobalto-900:#0f2843;
+  --palette-mostaza-100:#fbefd2;--palette-mostaza-200:#f3d791;--palette-mostaza-300:#ebc46a;--palette-mostaza-500:#b8800f;--palette-mostaza-600:#9c6c0b;--palette-mostaza-700:#654404;--palette-mostaza-900:#3a2c0e;
+  --palette-rosa-100:#fbe6e9;--palette-rosa-200:#f2b8c0;--palette-rosa-300:#e8939e;--palette-rosa-500:#bf4f5c;--palette-rosa-700:#7a2d3a;--palette-rosa-900:#3d1e25;
+  --palette-carmesi-100:#fbe4e2;--palette-carmesi-200:#f6a8a1;--palette-carmesi-300:#f28b82;--palette-carmesi-600:#a11f1a;--palette-carmesi-700:#8a1d17;--palette-carmesi-900:#3f1a18;
+  --radius-md:12px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:28px;--radius-full:9999px;
+  --font-family-display:'Archivo','Inter',system-ui,sans-serif;
+  --font-family-sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-family-mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+
+  /* Claro */
+  --color-bg-canvas:var(--palette-papel-50);--color-bg-surface:var(--palette-papel-0);--color-bg-surface-muted:var(--palette-papel-100);
+  --color-bg-brand:var(--palette-cobalto-700);--color-bg-brand-soft:var(--palette-cobalto-100);--color-bg-brand-deep:var(--palette-cobalto-900);
+  --color-bg-accent:var(--palette-mostaza-500);--color-bg-accent-soft:var(--palette-mostaza-100);
+  --color-bg-danger:var(--palette-rosa-500);--color-bg-danger-soft:var(--palette-rosa-100);--color-bg-critical-soft:var(--palette-carmesi-100);
+  --color-text-primary:var(--palette-papel-900);--color-text-secondary:var(--palette-papel-700);--color-text-disabled:var(--palette-papel-600);
+  --color-text-brand:var(--palette-cobalto-700);--color-text-accent-strong:var(--palette-mostaza-700);--color-text-danger:var(--palette-rosa-700);--color-text-critical:var(--palette-carmesi-700);
+  --color-text-on-brand:#fff;--color-text-on-deep:#fff;
+  --color-border-default:var(--palette-papel-200);--color-border-strong:var(--palette-papel-500);--color-border-brand:var(--palette-cobalto-700);--color-border-accent:var(--palette-mostaza-600);--color-border-danger:var(--palette-rosa-500);
+  --color-signal-searching:var(--palette-mostaza-500);--color-signal-live:var(--palette-cobalto-500);--color-signal-off:var(--palette-carmesi-600);--color-signal-glow:var(--palette-cobalto-200);
+  --color-data-bar:var(--palette-cobalto-700);--color-data-track:var(--palette-papel-150);
+  --color-radio-display:var(--palette-papel-100);--color-radio-display-ink:var(--palette-mostaza-700);--color-radio-chrome:var(--palette-papel-300);
+  --color-shadow-soft:#1f212614;--color-shadow-strong:#1f21262e;
+  --shadow-card:0 2px 8px 0 var(--color-shadow-soft);--shadow-toast:0 8px 24px 0 var(--color-shadow-strong);
+  --glow-a:var(--palette-cobalto-100);--glow-b:var(--palette-mostaza-100);
+  color-scheme:light;
+
+  /* Motion (deck) */
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --ease-spring:cubic-bezier(0.34,1.36,0.64,1);
+  --dur-in:640ms;
+  --dur-slide:900ms;
+}
+:root{
+  --color-bg-canvas:var(--palette-noche-950);--color-bg-surface:var(--palette-noche-900);--color-bg-surface-muted:var(--palette-noche-850);
+  --color-bg-brand:var(--palette-cobalto-300);--color-bg-brand-soft:var(--palette-cobalto-850);--color-bg-brand-deep:var(--palette-cobalto-700);
+  --color-bg-accent:var(--palette-mostaza-300);--color-bg-accent-soft:var(--palette-mostaza-900);
+  --color-bg-danger:var(--palette-rosa-300);--color-bg-danger-soft:var(--palette-rosa-900);--color-bg-critical-soft:var(--palette-carmesi-900);
+  --color-text-primary:var(--palette-noche-100);--color-text-secondary:var(--palette-noche-200);--color-text-disabled:var(--palette-noche-500);
+  --color-text-brand:var(--palette-cobalto-200);--color-text-accent-strong:var(--palette-mostaza-200);--color-text-danger:var(--palette-rosa-200);--color-text-critical:var(--palette-carmesi-200);
+  --color-text-on-brand:var(--palette-noche-950);--color-text-on-deep:#fff;
+  --color-border-default:var(--palette-noche-700);--color-border-strong:var(--palette-noche-500);--color-border-brand:var(--palette-cobalto-300);--color-border-accent:var(--palette-mostaza-300);--color-border-danger:var(--palette-rosa-300);
+  --color-signal-searching:var(--palette-mostaza-300);--color-signal-live:var(--palette-cobalto-300);--color-signal-off:var(--palette-carmesi-300);--color-signal-glow:var(--palette-cobalto-850);
+  --color-data-bar:var(--palette-cobalto-300);--color-data-track:var(--palette-noche-700);
+  --color-radio-display:var(--palette-noche-925);--color-radio-display-ink:var(--palette-mostaza-200);--color-radio-chrome:var(--palette-noche-600);
+  --color-shadow-soft:#00000073;--color-shadow-strong:#00000099;
+  --glow-a:var(--palette-cobalto-850);--glow-b:var(--palette-mostaza-900);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){  /* Claro */
+  --color-bg-canvas:var(--palette-papel-50);--color-bg-surface:var(--palette-papel-0);--color-bg-surface-muted:var(--palette-papel-100);
+  --color-bg-brand:var(--palette-cobalto-700);--color-bg-brand-soft:var(--palette-cobalto-100);--color-bg-brand-deep:var(--palette-cobalto-900);
+  --color-bg-accent:var(--palette-mostaza-500);--color-bg-accent-soft:var(--palette-mostaza-100);
+  --color-bg-danger:var(--palette-rosa-500);--color-bg-danger-soft:var(--palette-rosa-100);--color-bg-critical-soft:var(--palette-carmesi-100);
+  --color-text-primary:var(--palette-papel-900);--color-text-secondary:var(--palette-papel-700);--color-text-disabled:var(--palette-papel-600);
+  --color-text-brand:var(--palette-cobalto-700);--color-text-accent-strong:var(--palette-mostaza-700);--color-text-danger:var(--palette-rosa-700);--color-text-critical:var(--palette-carmesi-700);
+  --color-text-on-brand:#fff;--color-text-on-deep:#fff;
+  --color-border-default:var(--palette-papel-200);--color-border-strong:var(--palette-papel-500);--color-border-brand:var(--palette-cobalto-700);--color-border-accent:var(--palette-mostaza-600);--color-border-danger:var(--palette-rosa-500);
+  --color-signal-searching:var(--palette-mostaza-500);--color-signal-live:var(--palette-cobalto-500);--color-signal-off:var(--palette-carmesi-600);--color-signal-glow:var(--palette-cobalto-200);
+  --color-data-bar:var(--palette-cobalto-700);--color-data-track:var(--palette-papel-150);
+  --color-radio-display:var(--palette-papel-100);--color-radio-display-ink:var(--palette-mostaza-700);--color-radio-chrome:var(--palette-papel-300);
+  --color-shadow-soft:#1f212614;--color-shadow-strong:#1f21262e;
+  --shadow-card:0 2px 8px 0 var(--color-shadow-soft);--shadow-toast:0 8px 24px 0 var(--color-shadow-strong);
+  --glow-a:var(--palette-cobalto-100);--glow-b:var(--palette-mostaza-100);
+  color-scheme:light;}}
+:root[data-theme="light"]{  /* Claro */
+  --color-bg-canvas:var(--palette-papel-50);--color-bg-surface:var(--palette-papel-0);--color-bg-surface-muted:var(--palette-papel-100);
+  --color-bg-brand:var(--palette-cobalto-700);--color-bg-brand-soft:var(--palette-cobalto-100);--color-bg-brand-deep:var(--palette-cobalto-900);
+  --color-bg-accent:var(--palette-mostaza-500);--color-bg-accent-soft:var(--palette-mostaza-100);
+  --color-bg-danger:var(--palette-rosa-500);--color-bg-danger-soft:var(--palette-rosa-100);--color-bg-critical-soft:var(--palette-carmesi-100);
+  --color-text-primary:var(--palette-papel-900);--color-text-secondary:var(--palette-papel-700);--color-text-disabled:var(--palette-papel-600);
+  --color-text-brand:var(--palette-cobalto-700);--color-text-accent-strong:var(--palette-mostaza-700);--color-text-danger:var(--palette-rosa-700);--color-text-critical:var(--palette-carmesi-700);
+  --color-text-on-brand:#fff;--color-text-on-deep:#fff;
+  --color-border-default:var(--palette-papel-200);--color-border-strong:var(--palette-papel-500);--color-border-brand:var(--palette-cobalto-700);--color-border-accent:var(--palette-mostaza-600);--color-border-danger:var(--palette-rosa-500);
+  --color-signal-searching:var(--palette-mostaza-500);--color-signal-live:var(--palette-cobalto-500);--color-signal-off:var(--palette-carmesi-600);--color-signal-glow:var(--palette-cobalto-200);
+  --color-data-bar:var(--palette-cobalto-700);--color-data-track:var(--palette-papel-150);
+  --color-radio-display:var(--palette-papel-100);--color-radio-display-ink:var(--palette-mostaza-700);--color-radio-chrome:var(--palette-papel-300);
+  --color-shadow-soft:#1f212614;--color-shadow-strong:#1f21262e;
+  --shadow-card:0 2px 8px 0 var(--color-shadow-soft);--shadow-toast:0 8px 24px 0 var(--color-shadow-strong);
+  --glow-a:var(--palette-cobalto-100);--glow-b:var(--palette-mostaza-100);
+  color-scheme:light;}
+
+/* ═════════ Base ═════════ */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--color-bg-canvas);color:var(--color-text-primary);font-family:var(--font-family-sans);-webkit-font-smoothing:antialiased;transition:background .6s var(--ease),color .6s var(--ease)}
+h1,h2,h3,p{margin:0}
+h1,h2{text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus{outline:none}
+:focus-visible{outline:2px solid var(--palette-cobalto-300);outline-offset:2px}
+
+/* ═════════ Escenario 1920×1080 ═════════ */
+#viewport{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden}
+#ambient{position:absolute;inset:-20%;pointer-events:none;z-index:0}
+#ambient i{position:absolute;width:60vmax;height:60vmax;border-radius:50%;filter:blur(120px);opacity:.75;transition:transform 1.6s var(--ease),background 1s var(--ease)}
+#ambient i:nth-child(1){background:var(--glow-a);transform:translate(var(--ax,10vw),var(--ay,10vh))}
+#ambient i:nth-child(2){background:var(--glow-b);opacity:.45;transform:translate(var(--bx,60vw),var(--by,50vh))}
+#stage{position:absolute;left:50%;top:50%;z-index:1;width:1920px;height:1080px;transform-origin:center center}
+
+.slide{position:absolute;inset:0;padding:96px 128px 150px;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateX(calc(var(--d,1) * 7%)) scale(.96);filter:blur(12px);
+  transition:opacity 600ms var(--ease),transform var(--dur-slide) var(--ease),filter 700ms var(--ease),visibility 0s linear var(--dur-slide)}
+.slide.active{opacity:1;visibility:visible;pointer-events:auto;transform:none;filter:none;
+  transition:opacity 700ms var(--ease) 120ms,transform var(--dur-slide) var(--ease) 60ms,filter 700ms var(--ease) 120ms,visibility 0s}
+.slide.leaving{transform:translateX(calc(var(--d,1) * -7%)) scale(.94)}
+
+/* ═════════ Coreografía de pasos ═════════ */
+[data-step]{opacity:0;transform:translateY(24px) scale(.96);
+  transition:opacity var(--dur-in) var(--ease),transform var(--dur-in) var(--ease),filter var(--dur-in) var(--ease);
+  transition-delay:calc(var(--i,0) * 90ms)}
+svg [data-step]{transform-box:fill-box;transform-origin:center}
+[data-step].in{opacity:1;transform:none}
+[data-step].past{opacity:.4;transform:scale(.98);filter:saturate(.55)}
+[data-step].past[data-keep]{opacity:1;transform:none;filter:none}
+[data-step].now{opacity:1}
+.stagger > *{opacity:0;transform:translateY(24px) scale(.96);transition:opacity var(--dur-in) var(--ease),transform var(--dur-in) var(--ease-spring);transition-delay:calc(var(--i,0) * 110ms + 80ms)}
+.in .stagger > *, .stagger.in > *{opacity:1;transform:none}
+
+.draw{fill:none;stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000);transition:stroke-dashoffset 1100ms var(--ease) 120ms}
+.in .draw,.draw.in{stroke-dashoffset:0}
+
+/* ═════════ Tipografía de deck (escala gigante) ═════════ */
+.eyebrow{font:600 22px/1.3 var(--font-family-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--color-text-brand);display:flex;align-items:center;gap:16px}
+.eyebrow .num{font-family:var(--font-family-mono);font-weight:700;color:var(--color-text-accent-strong)}
+.title{font:800 88px/1.04 var(--font-family-display);letter-spacing:-.025em;margin-top:20px;max-width:1500px}
+.title em{font-style:normal;color:var(--color-text-brand)}
+.hero{font:800 156px/0.98 var(--font-family-display);letter-spacing:-.035em}
+.hero em{font-style:normal;color:var(--color-text-brand);position:relative}
+.lead{font:600 44px/1.2 var(--font-family-sans);color:var(--color-text-secondary)}
+.big{font:800 64px/1.05 var(--font-family-display);letter-spacing:-.02em}
+.mid{font:700 36px/1.2 var(--font-family-display);letter-spacing:-.01em}
+.small{font:400 26px/1.35 var(--font-family-sans);color:var(--color-text-secondary)}
+.mono{font-family:var(--font-family-mono)}
+.kpi{font:800 120px/1 var(--font-family-mono);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.kpi small{font-size:.38em;letter-spacing:0;font-weight:700;color:var(--color-text-secondary);margin-left:10px}
+.body{flex:1;position:relative;margin-top:48px}
+
+/* ═════════ Componentes ═════════ */
+.card{background:var(--color-bg-surface);border:1.5px solid var(--color-border-default);border-radius:var(--radius-2xl);padding:40px 44px;box-shadow:var(--shadow-toast);position:relative}
+.card.brand{background:var(--color-bg-brand-soft);border-color:var(--color-border-brand)}
+.card.deep{background:var(--color-bg-brand-deep);border-color:transparent;color:var(--color-text-on-deep)}
+.card.accent{background:var(--color-bg-accent-soft);border-color:var(--color-border-accent)}
+.card.muted{background:var(--color-bg-surface-muted)}
+.card .label{font:700 20px/1.3 var(--font-family-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-secondary);margin-bottom:16px}
+
+.pill{display:inline-flex;align-items:center;gap:12px;padding:12px 26px;border-radius:var(--radius-full);border:1.5px solid var(--color-border-default);background:var(--color-bg-surface);font:700 28px/1.2 var(--font-family-sans);white-space:nowrap}
+.pill.brand{background:var(--color-bg-brand);color:var(--color-text-on-brand);border-color:transparent}
+.pill.soft{background:var(--color-bg-brand-soft);color:var(--color-text-brand);border-color:transparent}
+
+/* Badges de estatus */
+.st{display:inline-flex;align-items:center;gap:12px;padding:8px 20px 8px 16px;border-radius:var(--radius-full);font:700 20px/1.3 var(--font-family-sans);white-space:nowrap;vertical-align:middle}
+.st::before{content:"";width:12px;height:12px;border-radius:50%;flex:none}
+.st.v{background:var(--color-bg-brand-soft);color:var(--color-text-brand)}
+.st.v::before{background:var(--color-signal-live);box-shadow:0 0 10px 2px var(--color-signal-live)}
+.st.h{background:var(--color-bg-accent-soft);color:var(--color-text-accent-strong)}
+.st.h::before{background:var(--color-signal-searching);box-shadow:0 0 10px 2px var(--color-signal-searching);animation:blink 1.6s ease-in-out infinite}
+.st.p{background:var(--color-bg-critical-soft);color:var(--color-text-critical)}
+.st.p::before{background:transparent;border:2.5px solid var(--color-signal-off)}
+@keyframes blink{50%{opacity:.35}}
+
+.node{position:absolute;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:26px 32px;border-radius:var(--radius-xl);background:var(--color-bg-surface);border:1.5px solid var(--color-border-default);box-shadow:var(--shadow-toast)}
+.node b{font:800 34px/1.1 var(--font-family-display);letter-spacing:-.01em}
+.node span{font:500 22px/1.3 var(--font-family-sans);color:var(--color-text-secondary)}
+.node.brand{background:var(--color-bg-brand);color:var(--color-text-on-brand);border-color:transparent}
+.node.brand span{color:inherit;opacity:.85}
+.node.accent{background:var(--color-bg-accent-soft);border-color:var(--color-border-accent)}
+.node.deep{background:var(--color-bg-brand-deep);color:var(--color-text-on-deep);border-color:transparent}
+.node.deep span{color:inherit;opacity:.85}
+svg.wires{position:absolute;left:0;top:0;width:1664px;height:640px;overflow:visible;pointer-events:none}
+.wire{stroke:var(--color-border-strong);stroke-width:3;stroke-linecap:round}
+.wire.brand{stroke:var(--color-data-bar)}
+.wire.accent{stroke:var(--color-signal-searching)}
+.wire.dash{stroke-dasharray:4 12;stroke-dashoffset:0}
+
+/* ═════════ Dial persistente ═════════ */
+#dial{position:absolute;left:128px;right:128px;bottom:44px;height:64px;z-index:5;pointer-events:none}
+#dial .track{position:absolute;left:0;right:0;top:30px;height:2px;background:var(--color-border-default)}
+#dial .tick{position:absolute;top:22px;width:2px;height:18px;background:var(--color-border-strong);transform:translateX(-1px)}
+#dial .tick.minor{top:27px;height:8px;opacity:.5}
+#dial .lbl{position:absolute;top:46px;transform:translateX(-50%);font:700 13px/1 var(--font-family-mono);letter-spacing:.08em;color:var(--color-text-disabled);text-transform:uppercase;white-space:nowrap;transition:color .5s var(--ease)}
+#dial .lbl.on{color:var(--color-text-accent-strong)}
+#needle{position:absolute;top:6px;width:4px;height:48px;border-radius:2px;background:var(--color-signal-searching);box-shadow:0 0 18px 3px var(--color-signal-searching);transform:translateX(-2px);transition:left 1100ms var(--ease-spring)}
+#brand{position:absolute;top:44px;right:128px;z-index:5;display:flex;align-items:center;gap:14px;font:800 22px/1 var(--font-family-display);letter-spacing:-.02em;color:var(--color-text-secondary)}
+#brand svg{width:30px;height:30px}
+#stepdots{position:absolute;top:52px;left:128px;z-index:5;display:flex;gap:8px}
+#stepdots i{width:28px;height:6px;border-radius:3px;background:var(--color-border-default);transition:background .4s var(--ease),width .5s var(--ease)}
+#stepdots i.on{background:var(--color-signal-searching);width:44px}
+
+/* HUD fuera del escenario */
+#hud{position:fixed;right:20px;bottom:calc(16px + env(safe-area-inset-bottom, 0px));z-index:10;display:flex;gap:8px;align-items:center;opacity:.35;transition:opacity .3s}
+#hud:hover{opacity:1}
+#hud button{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--color-border-default);background:var(--color-bg-surface);display:grid;place-items:center}
+#hud span{font:700 13px/1 var(--font-family-mono);color:var(--color-text-secondary);padding:0 8px}
+#hint{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);z-index:10;font:600 13px/1 var(--font-family-mono);color:var(--color-text-secondary);background:var(--color-bg-surface);border:1px solid var(--color-border-default);padding:10px 16px;border-radius:999px;white-space:nowrap;transition:opacity .8s var(--ease)}
+#hint.gone{opacity:0;pointer-events:none}
+
+/* ═════════ Específicos ═════════ */
+.wave path{stroke:var(--color-signal-live);stroke-width:4;fill:none;stroke-linecap:round}
+.wave .locked{stroke:var(--color-signal-searching)}
+.grid{display:grid;gap:32px}
+.row{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.strike{display:inline;background:linear-gradient(var(--color-signal-off),var(--color-signal-off)) no-repeat 0 58%/0% 6px;-webkit-box-decoration-break:clone;box-decoration-break:clone;transition:background-size 800ms var(--ease) 450ms}
+.past .strike,.past.strike,.in .strike.go{background-size:100% 6px}
+.bar-axis{position:absolute;top:0;bottom:0;width:3px;background:var(--color-text-primary);border-radius:2px}
+.bar{position:absolute;height:84px;border-radius:14px;transform-origin:var(--o,left);transform:scaleX(0);transition:transform 1100ms var(--ease) 150ms}
+.in > .bar,.in .bar{transform:scaleX(1)}
+.gauge-needle{transform-origin:200px 200px;transform:rotate(-90deg);transition:transform 1400ms var(--ease-spring) 200ms}
+.confirm{display:inline-flex;align-items:center;gap:20px;padding:18px 20px 18px 30px;border-radius:var(--radius-xl);background:var(--color-bg-surface);border:1.5px solid var(--color-border-brand);box-shadow:var(--shadow-toast)}
+.confirm b{font:700 30px/1.2 var(--font-family-sans)}
+.confirm .btn{padding:14px 28px;border-radius:999px;background:var(--color-bg-brand);color:var(--color-text-on-brand);font:700 24px/1 var(--font-family-sans)}
+.confirm .btn.ghost{background:transparent;color:var(--color-text-brand);border:1.5px solid var(--color-border-brand)}
+.tl-node{position:absolute;top:0;margin-left:-150px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;width:300px}
+.tl-dot{width:32px;height:32px;border-radius:50%;background:var(--color-bg-surface);border:4px solid var(--color-data-bar)}
+.tl-dot.now{background:var(--color-signal-searching);border-color:var(--color-signal-searching);box-shadow:0 0 22px 4px var(--color-signal-searching)}
+.tl-dot.end{background:var(--color-bg-brand);width:44px;height:44px;margin-top:-6px}
+.tl-date{font:800 34px/1 var(--font-family-mono)}
+.tl-what{font:600 24px/1.25 var(--font-family-sans);color:var(--color-text-secondary)}
+.eth{position:absolute;width:380px;transform:translate(-50%,-50%)}
+.eth .card{padding:28px 32px}
+
+/* ═════════ Deck de método ═════════ */
+.dlab{position:absolute;width:260px;margin-left:-30px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.dlab span{font:700 18px/1 var(--font-family-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-accent-strong);margin-bottom:4px}
+.dlab b{font:800 30px/1.1 var(--font-family-display);letter-spacing:-.01em}
+.rung{position:absolute;height:92px;width:1000px;display:flex;align-items:center;gap:28px;padding:0 32px;border-radius:20px;background:var(--color-bg-surface);border:1.5px solid var(--color-border-default);box-shadow:var(--shadow-card)}
+.rung .lv{flex:none;width:230px;font:700 18px/1.2 var(--font-family-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-secondary)}
+.rung .tx{font:700 32px/1.15 var(--font-family-display);letter-spacing:-.01em}
+.rung.now-rung{background:var(--color-bg-brand);color:var(--color-text-on-brand);border-color:transparent;box-shadow:var(--shadow-toast)}
+.rung.now-rung .lv{color:inherit;opacity:.85}
+.eco{width:280px;height:90px;padding:14px 24px;gap:4px}
+.eco b{font-size:28px}
+.eco span{font-size:20px}
+.opt{min-height:250px;padding:32px}
+.optl{display:block;font:800 72px/1 var(--font-family-mono);color:var(--color-text-disabled);margin-bottom:16px}
+.slist{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:14px}
+.slist li{font:600 28px/1.25 var(--font-family-sans)}
+.slist b{font-family:var(--font-family-mono);color:var(--color-text-brand);margin-right:10px}
+.rank{list-style:none;margin:0;padding:0;display:grid;gap:14px;width:820px}
+.rank li{display:flex;align-items:center;gap:22px;padding:18px 26px;border-radius:18px;background:var(--color-bg-surface);border:1.5px solid var(--color-border-default);font:700 30px/1.2 var(--font-family-sans)}
+.rank li.rk-f{border-style:dashed;border-color:var(--color-border-danger)}
+.rk{flex:none;width:30px;font:800 30px/1 var(--font-family-mono);color:var(--color-text-accent-strong)}
+.bp-head{position:absolute;left:220px;right:0;top:0;display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.bp-head span{font:700 18px/1.2 var(--font-family-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-brand);padding-bottom:10px;border-bottom:2px solid var(--color-border-brand)}
+.bp-lane{position:absolute;left:0;right:0;top:60px;display:grid;grid-template-columns:206px repeat(6,1fr);gap:14px;align-items:stretch}
+.bp-lane > div{background:var(--color-bg-surface);border:1.5px solid var(--color-border-default);border-radius:18px;padding:20px;font:600 24px/1.25 var(--font-family-sans);min-height:190px;min-width:0}
+.bp-lane.back > div{background:var(--color-bg-surface-muted);border-style:dashed}
+.bp-tag{align-self:center;font:700 18px/1.25 var(--font-family-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-secondary)}
+.rig{display:grid;gap:22px}
+.rig-row{display:grid;grid-template-columns:220px repeat(3,1fr);gap:20px;align-items:stretch}
+.rig-row .card{padding:24px 28px;font:700 30px/1.2 var(--font-family-display);box-shadow:var(--shadow-card)}
+.rig-row .card b{display:block;font:800 22px/1 var(--font-family-mono);color:var(--color-text-accent-strong);margin-bottom:10px}
+.rig-l{align-self:center;font:700 20px/1.2 var(--font-family-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-secondary)}
+.loopn{width:220px;height:70px;padding:0;align-items:center;justify-content:center}
+.loopn b{font-size:30px}
+.chain{left:0;width:560px;height:120px}
+.tool{padding:26px 28px;display:flex;flex-direction:column;gap:8px}
+.tool b{font:800 30px/1.1 var(--font-family-display);letter-spacing:-.01em}
+.tool span{font:500 22px/1.3 var(--font-family-sans);color:var(--color-text-secondary)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important}
+}
+@media (max-width:900px){#hint{display:none}}
+@media print{ #hud,#hint{display:none} }
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="ambient"><i></i><i></i></div>
+  <div id="stage">
+
+    <div id="stepdots" aria-hidden="true"></div>
+    <div id="brand" aria-hidden="true">
+      <svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M8 17c2-5 4-5 7 0s5 5 7 0" fill="none" stroke="var(--color-signal-searching)" stroke-width="2.5" stroke-linecap="round"/></svg>
+      Sintonía
+    </div>
+
+    <!-- ═════ 1 · PORTADA ═════ -->
+    <section class="slide" data-label="Portada" aria-label="Portada">
+      <div class="eyebrow" style="margin-top:80px"><span class="num">P7 · 2026</span> Método · Tutoría Icesi</div>
+      <h1 class="hero" style="margin-top:40px">Cada decisión salió<br>de una <em>herramienta.</em></h1>
+      <p class="lead" data-step="1" style="margin-top:56px">La travesía del innovador, aplicada a Sintonía.</p>
+      <div class="row" style="margin-top:40px">
+        <span class="pill" data-step="2" style="--i:0"><span class="mono">6</span> etapas</span>
+        <span class="pill" data-step="2" style="--i:1">Doble Diamante</span>
+        <span class="pill" data-step="2" style="--i:2">Mago de Oz</span>
+        <span class="st v" data-step="2" style="--i:3;font-size:24px;padding:12px 24px 12px 18px">Dato primero, lectura después</span>
+      </div>
+      <svg class="wave" data-step="3" viewBox="0 0 1660 160" style="position:absolute;left:128px;bottom:140px;width:1664px;height:160px" aria-hidden="true">
+        <path class="draw" d="M0 80 C 60 10, 120 150, 180 80 S 300 15, 360 80 S 480 145, 540 80 S 640 45, 700 80 S 790 115, 850 80 S 930 70, 990 80 S 1060 88, 1120 80"/>
+        <path class="draw locked" d="M1120 80 L 1660 80" style="stroke-width:6"/>
+        <circle cx="1120" cy="80" r="10" fill="var(--color-signal-searching)"/>
+      </svg>
+    </section>
+
+    <!-- ═════ 2 · MARCO ═════ -->
+    <section class="slide" data-label="Marco" aria-label="Marco de método">
+      <div class="eyebrow"><span class="num">Marco</span> Betancourt et al. (2021) · Universidad Icesi</div>
+      <h2 class="title">La travesía <em>del innovador.</em></h2>
+      <div class="body">
+        <svg class="wires" viewBox="0 0 1664 640" aria-hidden="true">
+          <g data-step="1" data-keep><path class="draw wire brand" style="stroke-width:4" d="M40 260 L 420 30 L 800 260 L 420 490 Z"/><path class="draw wire" style="stroke-dasharray:4 10" d="M420 30 L 420 490"/></g>
+          <g data-step="2" data-keep><path class="draw wire accent" style="stroke-width:4" d="M864 260 L 1244 30 L 1624 260 L 1244 490 Z"/><path class="draw wire" style="stroke-dasharray:4 10" d="M1244 30 L 1244 490"/></g>
+        </svg>
+        <div data-step="1">
+          <div class="dlab" style="left:120px;top:190px"><span>Descubrir</span><b>1 Ubicar</b><b>2 Sentir</b></div>
+          <div class="dlab" style="left:510px;top:205px"><span>Definir</span><b>3 Comprender</b></div>
+        </div>
+        <div data-step="2">
+          <div class="dlab" style="left:954px;top:205px"><span>Desarrollar</span><b>4 Proponer</b></div>
+          <div class="dlab" style="left:1334px;top:205px"><span>Entregar</span><b>5 Ofrecer valor</b></div>
+        </div>
+        <div data-step="3" style="position:absolute;left:0;right:0;top:530px">
+          <div class="card muted" style="padding:20px 32px;display:flex;align-items:center;gap:28px;border-radius:999px">
+            <span class="mono" style="font:800 30px/1 var(--font-family-mono);color:var(--color-text-accent-strong)">6</span>
+            <p class="mid" style="font-size:30px">Convergencia, transversal: evaluar, filtrar, priorizar</p>
+          </div>
+        </div>
+        <div data-step="4" style="position:absolute;right:0;top:-70px"><span class="pill soft" style="font-size:24px"><span class="mono">61</span> herramientas · plantillas innlab.org</span></div>
+      </div>
+    </section>
+
+    <!-- ═════ 3 · EVIDENCIA ═════ -->
+    <section class="slide" data-label="Evidencia" aria-label="Reglas de evidencia">
+      <div class="eyebrow"><span class="num">Regla</span> Cómo clasificamos lo que sabemos</div>
+      <h2 class="title">Primero el dato, <em>después la lectura.</em></h2>
+      <div class="body">
+        <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:32px">
+          <div class="card" data-step="1"><span class="st v" style="font-size:24px">Robusto</span><p class="mid" style="margin-top:22px">Muestra, recurrencia o triangulación</p><p class="small" style="margin-top:10px">Se decide con esto</p></div>
+          <div class="card" data-step="2"><span class="st h" style="font-size:24px">Emergente</span><p class="mid" style="margin-top:22px">Fuerza inicial, falta validar</p><p class="small" style="margin-top:10px">Se prueba una alternativa</p></div>
+          <div class="card" data-step="3"><span class="st p" style="font-size:24px">Pendiente</span><p class="mid" style="margin-top:22px">Muestra baja o sin evidencia</p><p class="small" style="margin-top:10px">Se anota, no se decide</p></div>
+        </div>
+        <div class="row stagger" data-step="4" style="margin-top:44px;gap:18px">
+          <span class="pill" style="--i:0">Umbral fijado antes de los datos</span>
+          <span class="pill" style="--i:1">Metas preliminares, sujetas a línea base</span>
+          <span class="pill" style="--i:2">Interpretación siempre marcada</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ 4 · NIVELES ═════ -->
+    <section class="slide" data-label="Niveles" aria-label="Niveles de abstracción">
+      <div class="eyebrow"><span class="num">Etapa 1</span> Ubicar · InnLab 01 Niveles de abstracción</div>
+      <h2 class="title">Subir y bajar <em>para reencuadrar.</em></h2>
+      <div class="body">
+        <div class="stagger" data-step="1">
+          <div class="rung" style="--i:0;top:0;left:0"><span class="lv">▲ Muy abstracto</span><span class="tx">Infraestructura de pertenencia en la ciudad</span></div>
+          <div class="rung" style="--i:1;top:104px;left:40px"><span class="lv">Abstracto</span><span class="tx">Coordinación social urbana</span></div>
+          <div class="rung now-rung" style="--i:2;top:208px;left:80px"><span class="lv">● Actual · v2.3</span><span class="tx">Orquestación multiagente</span></div>
+          <div class="rung" style="--i:3;top:312px;left:40px"><span class="lv">Concreto</span><span class="tx">El quinto amigo del parche</span></div>
+          <div class="rung" style="--i:4;top:416px;left:0"><span class="lv">▼ Muy concreto</span><span class="tx">Un bot que manda planes</span></div>
+        </div>
+        <div data-step="2" style="position:absolute;right:0;top:0;width:520px">
+          <div class="card muted" style="padding:28px 32px">
+            <div class="label">Descartado · v1</div>
+            <p class="mid"><span class="strike go">Capa de curaduría consultable por agentes</span></p>
+          </div>
+        </div>
+        <div data-step="3" style="position:absolute;right:0;top:230px;width:520px">
+          <div class="card brand" style="padding:28px 32px">
+            <div class="label" style="color:var(--color-text-brand)">Reencuadre</div>
+            <p class="mid" style="color:var(--color-text-brand)">De catálogo que otros consultan a sistema que hace que el plan ocurra</p>
+          </div>
+        </div>
+        <div data-step="4" style="position:absolute;right:0;top:470px;width:520px">
+          <p class="small" style="font-size:26px">WhatsApp pasa a ser táctica, no identidad.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ 5 · SUPUESTOS ═════ -->
+    <section class="slide" data-label="Supuestos" aria-label="Supuestos contradichos">
+      <div class="eyebrow"><span class="num">Etapa 1–3</span> Matriz de supuestos · Respaldado · Parcial · Contradicho · Pendiente</div>
+      <h2 class="title">Lo que la evidencia <em>nos tumbó.</em></h2>
+      <div class="body">
+        <div data-step="1" style="position:absolute;left:0;top:0;width:440px">
+          <div class="kpi" style="font-size:150px"><span data-count="21">0</span></div>
+          <p class="mid">supuestos con estado</p>
+          <div class="kpi" style="font-size:150px;margin-top:30px;color:var(--color-text-danger)"><span data-count="4">0</span></div>
+          <p class="mid">contradichos</p>
+        </div>
+        <div class="grid" style="position:absolute;left:520px;right:0;top:0;grid-template-columns:1fr 1fr;gap:24px">
+          <div class="card" data-step="2" style="padding:28px 32px"><p class="small"><span class="strike go">Bot en el grupo de siempre</span></p><p class="mid" style="margin-top:12px">→ Sintonía crea el grupo del plan</p><p class="small mono" style="margin-top:10px;font-size:20px">Groups API · ≤ 8 · cuenta oficial</p></div>
+          <div class="card" data-step="3" style="padding:28px 32px"><p class="small"><span class="strike go">IA de propósito general</span></p><p class="mid" style="margin-top:12px">→ Bot acotado a coordinar planes</p><p class="small mono" style="margin-top:10px;font-size:20px">Política de WhatsApp 2026</p></div>
+          <div class="card" data-step="4" style="padding:28px 32px"><p class="small"><span class="strike go">«No hay competidor»</span></p><p class="mid" style="margin-top:12px">→ Memoria del grupo + contexto de Cali</p><p class="small mono" style="margin-top:10px;font-size:20px">Muse (Meta) · por verificar</p></div>
+          <div class="card" data-step="5" style="padding:28px 32px"><p class="small"><span class="strike go">Importar redes sociales</span></p><p class="mid" style="margin-top:12px">→ Perfil conversacional y declarado</p><p class="small mono" style="margin-top:10px;font-size:20px">Sin API · Ley 1581</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ 6 · ECOSISTEMA ═════ -->
+    <section class="slide" data-label="Ecosistema" aria-label="Mapa del ecosistema">
+      <div class="eyebrow"><span class="num">Etapa 3</span> Comprender · InnLab 03 Mapa del ecosistema</div>
+      <h2 class="title">¿Quién gana, <em>quién paga?</em></h2>
+      <div class="body">
+        <svg class="wires" viewBox="0 0 1664 640" aria-hidden="true">
+          <g data-step="1" data-keep><path class="draw wire brand" d="M580 280 L 372 100"/><path class="draw wire brand" d="M580 280 L 300 280"/></g>
+          <g data-step="2" data-keep><path class="draw wire" d="M580 280 L 820 100"/><path class="draw wire" d="M580 280 L 371 465"/><path class="draw wire" d="M580 280 L 821 465"/><path class="draw wire" d="M580 280 L 597 545"/></g>
+          <g data-step="3" data-keep><path class="draw wire accent" style="stroke-width:6" d="M580 280 L 910 280"/></g>
+          <circle cx="580" cy="280" r="108" fill="var(--color-bg-brand-deep)"/>
+        </svg>
+        <div style="position:absolute;left:472px;top:250px;width:216px;text-align:center;color:var(--color-text-on-deep);font:800 30px/1.1 var(--font-family-display)">Sintonía</div>
+        <div data-step="1">
+          <div class="node brand eco" style="left:180px;top:10px"><b>Organizador</b><span>Único que paga</span></div>
+          <div class="node eco" style="left:20px;top:235px"><b>Miembros</b><span>≤ 8 · votan y asisten</span></div>
+        </div>
+        <div data-step="2">
+          <div class="node eco" style="left:740px;top:10px"><b>SIC</b><span>Vigila la Ley 1581</span></div>
+          <div class="node eco" style="left:180px;top:465px"><b>Lugares</b><span>No pagan por aparecer</span></div>
+          <div class="node eco" style="left:740px;top:465px"><b>Proveedores de IA</b><span>Tokens = costo</span></div>
+          <div class="node eco" style="left:460px;top:545px;height:80px"><b>Datos urbanos</b><span>Tráfico y clima</span></div>
+        </div>
+        <div class="node accent eco" data-step="3" data-keep style="left:910px;top:235px"><b>Meta / WhatsApp</b><span>Plataforma y competidor</span></div>
+        <div data-step="3" style="position:absolute;left:1220px;top:150px;width:444px">
+          <span class="st p" style="font-size:22px">Punto crítico</span>
+          <p class="mid" style="margin-top:14px">Doble dependencia de Meta</p>
+        </div>
+        <div data-step="4" style="position:absolute;left:1220px;top:360px;width:444px">
+          <div class="card" style="padding:26px 30px">
+            <div class="label">Ten Types · dónde concentrar</div>
+            <p class="mid" style="font-size:30px">Canal · Servicio · Compromiso · Proceso</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ 7 · RNI ═════ -->
+    <section class="slide" data-label="RNI" aria-label="Apropiado para innovar">
+      <div class="eyebrow"><span class="num">Convergencia</span> InnLab 04 · Relevancia · Novedad · Influencia</div>
+      <h2 class="title">Elegir sin <em>inventar puntajes.</em></h2>
+      <div class="body">
+        <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:24px">
+          <div class="card opt" data-step="1" style="--i:0"><span class="optl">A</span><p class="mid">Bot 1:1 que comparte en el grupo de siempre</p></div>
+          <div class="card opt" data-step="1" style="--i:1"><span class="optl">B</span><p class="mid"><span class="strike">Capa MCP</span></p><p class="small" style="margin-top:8px">Ya no aplica tras el pivote</p></div>
+          <div class="card opt brand" data-step="1" data-keep style="--i:2"><span class="optl" style="color:var(--color-text-brand)">C</span><p class="mid" style="color:var(--color-text-brand)">Sintonía crea el grupo + 3 capas</p></div>
+          <div class="card opt" data-step="1" style="--i:3"><span class="optl">C′</span><p class="mid">Respaldo: chat 1:1 + enlace de voto</p></div>
+        </div>
+        <div data-step="2" style="position:absolute;left:0;top:330px;display:flex;gap:16px;align-items:center">
+          <span class="st v" style="font-size:22px">C elegida</span><span class="small">Mago de Oz en H1 · viabilidad técnica a H2</span>
+        </div>
+        <div data-step="3" style="position:absolute;left:0;top:420px;display:flex;gap:30px;align-items:center">
+          <span class="mono" style="font:800 56px/1 var(--font-family-mono);color:var(--color-text-disabled)"><span class="strike go">A 50 · B 41 · C 63</span></span>
+          <div><p class="mid">Puntajes retirados</p><p class="small">Sin ponderación documentada</p></div>
+        </div>
+        <div data-step="4" style="position:absolute;left:0;bottom:0"><span class="st h" style="font-size:22px">Por verificar · repetir con voto secreto y revelación simultánea</span></div>
+      </div>
+    </section>
+
+    <!-- ═════ 8 · S1–S9 ═════ -->
+    <section class="slide" data-label="S1–S9" aria-label="Validación de mercado">
+      <div class="eyebrow"><span class="num">Etapa 5</span> InnLab 11.2 Validación de mercado · Bland y Osterwalder (2019)</div>
+      <h2 class="title">Probar primero lo <em>importante sin evidencia.</em></h2>
+      <div class="body">
+        <div class="grid" style="grid-template-columns:1fr 1.3fr 1fr;gap:28px">
+          <div class="card" data-step="1"><span class="st p" style="font-size:22px">Riesgo</span>
+            <ul class="slist"><li><b>S1</b> Cuenta oficial de Meta</li><li><b>S6</b> Meta permite coordinar planes</li></ul></div>
+          <div class="card" data-step="2"><span class="st h" style="font-size:22px">Hipótesis</span>
+            <ul class="slist"><li><b>S2</b> El grupo consiente</li><li><b>S3</b> Más planes, menos carga</li><li><b>S4</b> Tokens &lt; suscripción</li><li><b>S5</b> Pagan 10.000–20.000 COP</li><li><b>S7</b> No se siente vigilado</li></ul></div>
+          <div class="card" data-step="3"><span class="st v" style="font-size:22px">Respaldado · monitorear</span>
+            <ul class="slist"><li><b>S8</b> WhatsApp domina</li><li><b>S9</b> Tráfico y lluvia tumban planes</li></ul>
+            <p class="small" style="margin-top:12px;font-size:20px">Fuente secundaria</p></div>
+        </div>
+        <div data-step="4" style="position:absolute;left:0;right:0;bottom:0" class="row">
+          <span class="pill soft">Creemos que…</span><span class="mono" style="font-size:28px;color:var(--color-text-disabled)">→</span>
+          <span class="pill soft">Lo sabremos si…</span><span class="mono" style="font-size:28px;color:var(--color-text-disabled)">→</span>
+          <span class="pill soft">Experimento</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ 9 · PRIORIZACIÓN ═════ -->
+    <section class="slide" data-label="Prioridad" aria-label="Priorización">
+      <div class="eyebrow"><span class="num">Convergencia</span> InnLab 11.5 · variable: urgencia para arrancar el 10/10</div>
+      <h2 class="title">Ordenar por <em>extremos.</em></h2>
+      <div class="body">
+        <ol class="rank stagger" data-step="1">
+          <li style="--i:0"><span class="rk">a</span>Consentimiento, aviso y hoja segura</li>
+          <li style="--i:1"><span class="rk">b</span>Guion acotado y datos sensibles</li>
+          <li style="--i:2"><span class="rk">c</span>Aceptación (S2) y confort (S7)</li>
+          <li style="--i:3"><span class="rk">d</span>Costo de tokens, 5 grupos simulados</li>
+          <li style="--i:4"><span class="rk">e</span>Van Westendorp + preventa</li>
+          <li style="--i:5" class="rk-f"><span class="rk">f</span>Trámite de cuenta oficial (S1)</li>
+        </ol>
+        <div data-step="2" style="position:absolute;left:880px;top:420px;width:784px">
+          <span class="st p" style="font-size:22px">f baja al último</span>
+          <p class="mid" style="margin-top:12px">La cuenta oficial no es viable hoy → H2</p>
+        </div>
+        <div data-step="3" style="position:absolute;left:880px;top:0;width:784px;display:grid;gap:20px">
+          <div class="card brand" style="padding:24px 30px"><p class="mid" style="color:var(--color-text-brand)">a y b antes del 9/10</p></div>
+          <div class="card" style="padding:24px 30px"><p class="mid">c, d y e se miden en el piloto</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ 10 · MAGO DE OZ ═════ -->
+    <section class="slide" data-label="Mago" aria-label="Mago de Oz y service blueprint">
+      <div class="eyebrow"><span class="num">Etapa 4</span> Proponer · InnLab 05 Mago de Oz · 11.3 Service blueprint</div>
+      <h2 class="title">Simular antes <em>de automatizar.</em></h2>
+      <div class="body">
+        <div class="bp-head stagger" data-step="1" data-keep>
+          <span style="--i:0">Registro</span><span style="--i:1">Invitación</span><span style="--i:2">Grupo del plan</span><span style="--i:3">Propuesta</span><span style="--i:4">Día del plan</span><span style="--i:5">Cierre</span>
+        </div>
+        <div class="bp-lane" data-step="1">
+          <span class="bp-tag">El grupo vive</span>
+          <div>Autoriza: opt-in y 18+</div><div>Cada uno acepta por sí mismo</div><div>Entra al grupo (≤ 8)</div><div>Vota 1–3 opciones</div><div>Recibe la hora y llega</div><div>Responde la retro corta</div>
+        </div>
+        <svg class="wires" viewBox="0 0 1664 640" aria-hidden="true"><g data-step="2" data-keep><path class="draw wire accent" style="stroke-width:3;stroke-dasharray:10 8" d="M0 300 L 1664 300"/></g></svg>
+        <span data-step="2" class="mono" style="position:absolute;right:0;top:268px;font:700 16px/1 var(--font-family-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-accent-strong)">Línea de visibilidad</span>
+        <div class="bp-lane back" data-step="2" style="top:320px">
+          <span class="bp-tag">Trastienda · mago</span>
+          <div>Guarda la autorización con fecha</div><div>Cuenta quién aceptó</div><div>Crea el grupo a mano</div><div>Cruza least misery, tráfico y clima</div><div>Revisa y envía recordatorios</div><div>Registra métricas por grupo</div>
+        </div>
+        <div data-step="3" style="position:absolute;left:0;bottom:-10px;display:flex;gap:18px;align-items:center">
+          <span class="st h" style="font-size:22px">Límite</span><p class="mid">Valida la propuesta de valor, no la viabilidad técnica.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ 11 · RIGOR ═════ -->
+    <section class="slide" data-label="Rigor" aria-label="Reglas de rigor I1 a I9">
+      <div class="eyebrow"><span class="num">Control P6</span> Ajustes de rigor I1–I9</div>
+      <h2 class="title">Reglas escritas <em>antes del piloto.</em></h2>
+      <div class="body">
+        <div class="rig">
+          <div class="rig-row" data-step="1"><span class="rig-l">Medición</span>
+            <div class="card"><b>I1</b>Línea base por grupo</div><div class="card"><b>I2</b>Denominador = invitados</div><div class="card"><b>I3</b>Minutos humanos por causa</div></div>
+          <div class="rig-row" data-step="2"><span class="rig-l">Diseño</span>
+            <div class="card"><b>I4</b>Un solo cambio entre rondas</div><div class="card"><b>I7</b>Modo prueba excluido</div><div class="card"><b>I8</b>Sin flujo individual</div></div>
+          <div class="rig-row" data-step="3"><span class="rig-l">Datos y ética</span>
+            <div class="card"><b>I5</b>Pago y carga: solo organizador</div><div class="card"><b>I6</b>IA solo del inventario</div><div class="card"><b>I9</b>Un «no» desestima el grupo</div></div>
+        </div>
+        <div data-step="4" style="position:absolute;left:0;right:0;bottom:-10px;display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+          <p class="mid">Lectura descriptiva, no causal.</p>
+          <span class="st h" style="font-size:20px">Numeración de I1, I2, I7 e I8 por confirmar</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ 12 · PRE-MORTEM ═════ -->
+    <section class="slide" data-label="Pre-mortem" aria-label="Pre-mortem">
+      <div class="eyebrow"><span class="num">Convergencia</span> Pre-mortem · Klein (2007)</div>
+      <h2 class="title">Es abril de 2027 y <em>Sintonía fracasó.</em></h2>
+      <div class="body">
+        <div class="row stagger" data-step="1" style="gap:16px;max-width:1300px">
+          <span class="pill" style="--i:0">Meta nos apagó</span><span class="pill" style="--i:1">Nunca tuvimos cuenta oficial</span><span class="pill" style="--i:2">Muse lo hizo primero</span><span class="pill" style="--i:3">Los amigos no aceptaron</span><span class="pill" style="--i:4">Se sintió vigilancia</span>
+          <span class="pill" style="--i:5">Los tokens nos comieron</span><span class="pill" style="--i:6">Nadie pagó</span><span class="pill" style="--i:7">El mago no daba abasto</span><span class="pill" style="--i:8">Planes genéricos</span><span class="pill" style="--i:9">Fuga de datos</span>
+        </div>
+        <div data-step="2" style="position:absolute;left:0;top:300px;width:900px">
+          <div class="card brand" style="padding:28px 34px">
+            <div class="label" style="color:var(--color-text-brand)">Regla</div>
+            <p class="mid" style="color:var(--color-text-brand)">Cada integrante agrega 3 causas en secreto. Se revelan a la vez.</p>
+          </div>
+        </div>
+        <div data-step="3" style="position:absolute;left:960px;top:330px;width:704px">
+          <span class="st p" style="font-size:22px">Causas propias del equipo: Pendiente</span>
+          <p class="small" style="margin-top:14px">Las 10 de arriba son semilla para arrancar.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ 13 · CICLO ═════ -->
+    <section class="slide" data-label="Ciclo" aria-label="Ciclo de decisión">
+      <div class="eyebrow"><span class="num">Experimentos</span> Ciclo común · scorecard por experimento</div>
+      <h2 class="title">Decidir con la regla <em>ya escrita.</em></h2>
+      <div class="body">
+        <svg class="wires" viewBox="0 0 1664 640" aria-hidden="true">
+          <g data-step="1" data-keep><path class="draw wire brand" style="stroke-width:5" d="M400 75 A 230 230 0 1 1 399.9 75"/></g>
+        </svg>
+        <div data-step="1" data-keep>
+          <div class="node brand loopn" style="left:290px;top:40px"><b>Preparar</b></div>
+          <div class="node loopn" style="left:520px;top:270px"><b>Ejecutar</b></div>
+          <div class="node loopn" style="left:290px;top:500px"><b>Registrar</b></div>
+          <div class="node accent loopn" style="left:60px;top:270px"><b>Decidir</b></div>
+        </div>
+        <div data-step="2" style="position:absolute;left:300px;top:250px;width:200px;text-align:center">
+          <p class="small" style="font-size:22px;color:var(--color-text-primary);font-weight:600">Umbral fijado antes de ver datos</p>
+        </div>
+        <div data-step="3" style="position:absolute;left:880px;top:60px;width:784px">
+          <div class="label mono" style="font:700 20px/1.3 var(--font-family-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-secondary)">Decisiones posibles</div>
+          <div class="row stagger" style="margin-top:18px;gap:14px">
+            <span class="pill brand" style="--i:0">Perseverar</span><span class="pill" style="--i:1">Iterar</span><span class="pill" style="--i:2">Descartar</span><span class="pill" style="--i:3;border-color:var(--color-border-danger);color:var(--color-text-danger)">Stop</span>
+          </div>
+        </div>
+        <div data-step="4" style="position:absolute;left:880px;top:300px;width:784px">
+          <div class="card" style="padding:28px 32px">
+            <p class="mid">Con 4 personas por sesión, el techo es</p>
+            <div style="margin-top:14px"><span class="st h" style="font-size:24px">Emergente</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ 14 · CANAL ═════ -->
+    <section class="slide" data-label="Canal" aria-label="Cómo decidimos el canal">
+      <div class="eyebrow"><span class="num">P7</span> Decisión de canal · 14–15 oct</div>
+      <h2 class="title">Así decidimos <em>WhatsApp.</em></h2>
+      <div class="body">
+        <svg class="wires" viewBox="0 0 1664 640" aria-hidden="true">
+          <g data-step="1" data-keep><path class="draw wire" d="M560 80 C 760 80, 760 240, 960 240"/></g>
+          <g data-step="2" data-keep><path class="draw wire" d="M560 240 L 960 240"/></g>
+          <g data-step="3" data-keep><path class="draw wire" d="M560 400 C 760 400, 760 240, 960 240"/></g>
+          <g data-step="4" data-keep><path class="draw wire accent" style="stroke-width:5" d="M560 560 C 760 560, 760 240, 960 240"/></g>
+        </svg>
+        <div class="node chain" data-step="1" style="top:20px"><b>Mago de Oz</b><span>Minutos humanos por causa (I3)</span></div>
+        <div class="node chain" data-step="2" style="top:180px"><b>Hoja de ruta 07b</b><span>Compuertas y costo por plan</span></div>
+        <div class="node chain" data-step="3" style="top:340px"><b>Mapa del ecosistema</b><span>Punto crítico: Meta</span></div>
+        <div class="node chain accent" data-step="4" data-keep style="top:500px"><b>Revisión técnica con Monk</b><span>Viabilidad de n8n o Make</span></div>
+        <div class="card brand" data-step="5" data-keep style="position:absolute;left:960px;top:90px;width:704px">
+          <div class="label" style="color:var(--color-text-brand)">Decisión</div>
+          <p class="big" style="color:var(--color-text-brand);font-size:52px">Canal fijo: WhatsApp</p>
+          <div class="row" style="margin-top:22px;gap:12px">
+            <span class="pill" style="font-size:22px;padding:10px 20px">E1 hasta el <span class="mono">24/10</span></span>
+            <span class="pill" style="font-size:22px;padding:10px 20px">Ronda 2 en n8n o Make</span>
+            <span class="pill" style="font-size:22px;padding:10px 20px">Standalone mitiga Meta</span>
+          </div>
+        </div>
+        <div data-step="6" style="position:absolute;left:960px;top:500px;width:704px;display:flex;gap:14px;flex-wrap:wrap">
+          <span class="st v" style="font-size:20px">Viabilidad · Verificado (revisión)</span>
+          <span class="st h" style="font-size:20px">Costo por plan · Hipótesis</span>
+          <span class="st p" style="font-size:20px">W1 · sin analizar</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════ 15 · PENDIENTES ═════ -->
+    <section class="slide" data-label="Pendientes" aria-label="Herramientas pendientes">
+      <div class="eyebrow"><span class="num">P7–P8</span> Lo que le falta al método</div>
+      <h2 class="title">Siete herramientas <em>por aplicar.</em></h2>
+      <div class="body">
+        <div class="grid stagger" data-step="1" style="grid-template-columns:repeat(4,1fr);gap:22px">
+          <div class="card tool" style="--i:0"><b>JTBD</b><span>Organizador y miembro</span></div>
+          <div class="card tool" style="--i:1"><b>Forces of Progress</b><span>Push, pull, ansiedad, inercia</span></div>
+          <div class="card tool" style="--i:2"><b>Opportunity Solution Tree</b><span>De resultado a experimento</span></div>
+          <div class="card tool" style="--i:3"><b>Experiment Cards</b><span>Una por supuesto</span></div>
+          <div class="card tool" style="--i:4"><b>Business Model Canvas</b><span>Modelo con el pagador</span></div>
+          <div class="card tool" style="--i:5"><b>St Gallen</b><span>Lógica del negocio</span></div>
+          <div class="card tool" style="--i:6"><b>Codebook grupal</b><span>Codificar al grupo, no al individuo</span></div>
+          <div class="card tool brand" style="--i:7"><b>Gate KTH</b><span>Preliminar en P8</span></div>
+        </div>
+        <div data-step="2" style="position:absolute;left:0;right:0;bottom:0">
+          <p class="big" style="font-size:60px">¿Qué herramienta cierra el caso <span style="color:var(--color-text-accent-strong)">el 26/11?</span></p>
+        </div>
+      </div>
+    </section>
+
+    <div id="dial" aria-hidden="true"><div class="track"></div><div id="needle"></div></div>
+  </div>
+</div>
+
+<div id="hud">
+  <button id="prev" aria-label="Anterior"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+  <span id="count">1 / 11</span>
+  <button id="next" aria-label="Siguiente"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  <button id="theme" aria-label="Cambiar tema"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg></button>
+  <button id="fs" aria-label="Pantalla completa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+</div>
+<div id="hint">→ / espacio / clic avanza · ← retrocede · F pantalla completa · T tema</div>
+
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const dial = document.getElementById('dial');
+  const needle = document.getElementById('needle');
+  const dots = document.getElementById('stepdots');
+  const countEl = document.getElementById('count');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fmt = new Intl.NumberFormat('es-CO');
+  let cur = 0, step = 0;
+
+  /* Escala del escenario */
+  function fit(){ const s = Math.min(innerWidth/1920, innerHeight/1080); stage.style.transform = `translate(-50%,-50%) scale(${s})`; }
+  addEventListener('resize', fit); fit();
+
+  /* Longitud de trazos SVG */
+  document.querySelectorAll('path.draw').forEach(p => {
+    if (p.style.getPropertyValue('--len')) return;
+    try { const L = Math.ceil(p.getTotalLength()) + 2; p.style.setProperty('--len', L); } catch(e){}
+  });
+
+  /* Días al cierre (26/11/2026), calculados con la fecha de hoy */
+  { const d = document.getElementById('days'); if (d) { const t = new Date(); t.setHours(0,0,0,0); d.dataset.count = Math.max(0, Math.round((new Date(2026,10,26) - t) / 864e5)); } }
+
+  /* Pasos por diapositiva */
+  slides.forEach(s => {
+    s._els = [...s.querySelectorAll('[data-step]')];
+    s._max = s._els.reduce((m, e) => Math.max(m, +e.dataset.step), 0);
+  });
+
+  /* Dial persistente */
+  const pos = i => (slides.length === 1 ? 0 : i / (slides.length - 1)) * 100;
+  slides.forEach((s, i) => {
+    const t = document.createElement('div'); t.className = 'tick'; t.style.left = pos(i) + '%'; dial.appendChild(t);
+    const l = document.createElement('div'); l.className = 'lbl'; l.style.left = pos(i) + '%'; l.textContent = s.dataset.label; dial.appendChild(l);
+    s._lbl = l;
+    if (i < slides.length - 1) for (let k = 1; k < 4; k++) { const m = document.createElement('div'); m.className = 'tick minor'; m.style.left = (pos(i) + (pos(i+1)-pos(i)) * k/4) + '%'; dial.appendChild(m); }
+  });
+
+  /* Contadores */
+  function count(el, instant){
+    const to = +el.dataset.count, from = +(el.dataset.from || 0), pre = el.dataset.prefix || '';
+    cancelAnimationFrame(el._raf);
+    if (instant || reduce) { el.textContent = pre + fmt.format(to); return; }
+    const t0 = performance.now(), D = 1400;
+    const tick = now => {
+      const p = Math.min(1, (now - t0) / D), e = 1 - Math.pow(2, -10 * p);
+      el.textContent = pre + fmt.format(Math.round(from + (to - from) * (p === 1 ? 1 : e)));
+      if (p < 1) el._raf = requestAnimationFrame(tick);
+    };
+    el._raf = requestAnimationFrame(tick);
+  }
+  function resetCount(el){ cancelAnimationFrame(el._raf); el.textContent = (el.dataset.prefix||'') + fmt.format(+(el.dataset.from||0)); }
+
+  function fire(el, on, instant){
+    const counters = el.matches('[data-count]') ? [el] : [...el.querySelectorAll('[data-count]')];
+    counters.forEach(c => on ? count(c, instant) : resetCount(c));
+    el.querySelectorAll('[data-arc]').forEach(a => {
+      const L = 534; a.style.strokeDashoffset = on ? L * (1 - +a.dataset.arc) : L;
+    });
+    el.querySelectorAll('.gauge-needle').forEach(g => {
+      g.style.transform = `rotate(${on ? +g.dataset.rot : -90}deg)`;
+    });
+  }
+
+  function applySteps(s, st, instant){
+    s._els.forEach(el => {
+      const n = +el.dataset.step;
+      const was = el.classList.contains('in');
+      if (instant) el.style.transitionDuration = '0ms';
+      el.classList.toggle('in', n <= st);
+      el.classList.toggle('now', n === st);
+      el.classList.toggle('past', n < st);
+      if (n <= st && !was) fire(el, true, instant);
+      if (n > st && was) fire(el, false);
+      if (instant) requestAnimationFrame(() => requestAnimationFrame(() => el.style.transitionDuration = ''));
+    });
+    dots.innerHTML = '';
+    for (let i = 1; i <= s._max; i++) { const d = document.createElement('i'); if (i <= st) d.className = 'on'; dots.appendChild(d); }
+  }
+
+  function ambient(i){
+    const a = [[5,5,60,50],[40,0,0,60],[0,40,55,0],[50,30,5,10],[10,55,60,5],[55,5,10,55],[20,0,50,55],[0,20,60,40],[45,50,0,0],[25,20,55,50],[30,10,50,40]][i % 11];
+    const r = document.documentElement.style;
+    r.setProperty('--ax', a[0]+'vw'); r.setProperty('--ay', a[1]+'vh'); r.setProperty('--bx', a[2]+'vw'); r.setProperty('--by', a[3]+'vh');
+  }
+
+  function show(i, st, dir){
+    const prev = slides[cur];
+    stage.style.setProperty('--d', dir >= 0 ? 1 : -1);
+    if (prev !== slides[i]) {
+      prev.classList.remove('active'); prev.classList.add('leaving');
+      setTimeout(() => prev.classList.remove('leaving'), 950);
+      prev._lbl.classList.remove('on');
+    }
+    cur = i; step = st;
+    const s = slides[i];
+    s.classList.remove('leaving');
+    s.classList.add('active');
+    s._lbl.classList.add('on');
+    applySteps(s, st, dir < 0 && prev !== s);
+    needle.style.left = pos(i) + '%';
+    countEl.textContent = `${i+1} / ${slides.length}`;
+    ambient(i);
+    history.replaceState(null, '', `#${i+1}.${st}`);
+  }
+
+  function next(){
+    hint();
+    const s = slides[cur];
+    if (step < s._max) { step++; applySteps(s, step); history.replaceState(null,'',`#${cur+1}.${step}`); }
+    else if (cur < slides.length - 1) show(cur + 1, 0, 1);
+  }
+  function prev(){
+    hint();
+    const s = slides[cur];
+    if (step > 0) { step--; applySteps(s, step); history.replaceState(null,'',`#${cur+1}.${step}`); }
+    else if (cur > 0) show(cur - 1, slides[cur - 1]._max, -1);
+  }
+  let hinted = false;
+  function hint(){ if (!hinted) { hinted = true; document.getElementById('hint').classList.add('gone'); } }
+  setTimeout(hint, 6000);
+
+  addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    switch (e.key) {
+      case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown': case 'Enter': e.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'ArrowUp': case 'PageUp': case 'Backspace': e.preventDefault(); prev(); break;
+      case 'Home': show(0, 0, -1); break;
+      case 'End': show(slides.length - 1, slides[slides.length-1]._max, 1); break;
+      case 'f': case 'F': toggleFS(); break;
+      case 't': case 'T': toggleTheme(); break;
+    }
+  });
+  document.getElementById('viewport').addEventListener('click', e => { e.clientX < innerWidth * 0.18 ? prev() : next(); });
+  document.getElementById('next').addEventListener('click', e => { e.stopPropagation(); next(); });
+  document.getElementById('prev').addEventListener('click', e => { e.stopPropagation(); prev(); });
+  document.getElementById('theme').addEventListener('click', e => { e.stopPropagation(); toggleTheme(); });
+  document.getElementById('fs').addEventListener('click', e => { e.stopPropagation(); toggleFS(); });
+  let tx = null;
+  addEventListener('touchstart', e => tx = e.touches[0].clientX, {passive:true});
+  addEventListener('touchend', e => { if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) { dx < 0 ? next() : prev(); } tx = null; });
+
+  function toggleTheme(){ const h = document.documentElement; const isDark = h.dataset.theme ? h.dataset.theme === 'dark' : !matchMedia('(prefers-color-scheme: light)').matches; h.dataset.theme = isDark ? 'light' : 'dark'; try { localStorage.setItem('sintonia-metodo-theme', h.dataset.theme); } catch(e){} }
+  function toggleFS(){ try { const p = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); p?.catch?.(() => {}); } catch(e){} }
+  try { const t = localStorage.getItem('sintonia-metodo-theme'); if (t) document.documentElement.dataset.theme = t; } catch(e){}
+
+  /* Arranque (respeta #slide.paso) */
+  const m = location.hash.match(/^#(\d+)(?:\.(\d+))?/);
+  const si = m ? Math.min(slides.length - 1, Math.max(0, +m[1] - 1)) : 0;
+  const ss = m && m[2] ? Math.min(slides[si]._max, +m[2]) : 0;
+  slides[si].classList.add('active'); cur = si;
+  show(si, ss, ss ? -1 : 1);
+})();
+</script>
+
+</body>
+</html>
