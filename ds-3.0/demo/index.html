@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sintonía DS 3.0 · Pantallas E3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+<style>
+  /* Solo del demo (no forma parte del DS) */
+  .demo-bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; display: flex; flex-wrap: wrap; gap: var(--space-12); align-items: center; justify-content: space-between; padding: var(--space-12) var(--space-16); background: var(--color-bg-surface); border-bottom: var(--stroke-1) solid var(--color-border-default); }
+  .demo-bar h1 { font: 800 var(--font-size-19)/1.2 var(--font-family-display); letter-spacing: -0.02em; }
+  .demo-bar p { font-size: var(--font-size-13); color: var(--color-text-secondary); }
+  .demo-bar .s-band { padding: var(--space-4); gap: var(--space-4); }
+  .demo-bar .s-band [role="radio"] { min-height: var(--size-touch-min); padding: 0 var(--space-12); }
+  .demo-main { padding-block: var(--space-24) var(--space-64); padding-inline: var(--space-16); display: grid; gap: var(--space-48); }
+  .demo-section h2 { font: 700 var(--font-size-24)/1.2 var(--font-family-display); }
+  .demo-section > p { color: var(--color-text-secondary); margin-bottom: var(--space-16); }
+  .demo-row { display: flex; gap: var(--space-24); overflow-x: auto; padding-bottom: var(--space-16); align-items: flex-start; }
+  .demo-phone { flex: none; width: min(390px, calc(100vw - 32px)); display: grid; gap: var(--space-8); }
+  .demo-phone > h3 { font-size: var(--font-size-14); font-weight: 700; }
+  .demo-phone > small { color: var(--color-text-secondary); font-family: var(--font-family-mono); font-size: var(--font-size-12); min-height: 32px; }
+  .phone { min-height: 760px; display: flex; flex-direction: column; border-radius: var(--radius-device); overflow: hidden; background: var(--color-chat-canvas); border: var(--stroke-1) solid var(--color-border-default); }
+  .phone[data-panel] { background: var(--color-bg-canvas); }
+  .phone .s-thread { flex: 1; }
+  .phone .s-content { flex: 1; display: grid; align-content: start; gap: var(--space-16); padding: var(--space-4) var(--space-16) var(--space-20); }
+  .s-attach > * { width: 100%; }
+</style>
+</head>
+<body>
+<header class="demo-bar">
+  <div><h1>Sintonía DS 3.0 · E3</h1><p>32 pantallas con los componentes de «Convergencias visuales». Fuente: Figma «Sintonía DS 3.0 · E3».</p></div>
+  <div class="s-band" role="radiogroup" aria-label="Tema">
+    <button role="radio" aria-checked="true" data-theme-choice="system"><b>SISTEMA</b></button>
+    <button role="radio" aria-checked="false" data-theme-choice="light"><b>CLARO</b></button>
+    <button role="radio" aria-checked="false" data-theme-choice="dark"><b>OSCURO</b></button>
+  </div>
+</header>
+<main class="demo-main" id="demo"></main>
+<script>
+(() => {
+  const root = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)');
+  const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : mq.matches;
+  const setTheme = c => { if (c === 'system') delete root.dataset.theme; else root.dataset.theme = c; document.querySelectorAll('[data-theme-choice]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.themeChoice === c))); try { localStorage.setItem('sintonia-theme', c); } catch (e) {} swap(); };
+  document.querySelectorAll('[data-theme-choice]').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.themeChoice)));
+  mq.addEventListener('change', () => swap());
+  const NAME = { 'el-quinto': 'El Quinto', 'el-mago': 'El Mago', 'el-resonador': 'El Resonador', 'la-antena': 'La Antena', 'la-guardiana': 'La Guardiana', 'el-despertador': 'El Despertador', 'la-gramola': 'La Gramola', 'la-estatica': 'La Estática' };
+  const src = id => `../assets/avatares/${id}_${isDark() ? 'oscuro' : 'claro'}_512.jpg`;
+  const swap = () => document.querySelectorAll('img[data-avatar]').forEach(i => { i.src = src(i.dataset.avatar); });
+  const I = { 'arrow-left': '<path d="M19 12H5"/><path d="M11 6L5 12L11 18"/>', 'arrow-right': '<path d="M5 12H19"/><path d="M13 6L19 12L13 18"/>', users: '<path d="M9 12C10.93 12 12.5 10.43 12.5 8.5C12.5 6.57 10.93 5 9 5C7.07 5 5.5 6.57 5.5 8.5C5.5 10.43 7.07 12 9 12Z"/><path d="M3 19.5C3.6 16.3 6 14.5 9 14.5C12 14.5 14.4 16.3 15 19.5"/><path d="M15.5 5.3C16.76 5.86 17.58 7.12 17.58 8.5C17.58 9.88 16.76 11.14 15.5 11.7"/><path d="M17.5 14.8C19.3 15.4 20.5 17 21 19.5"/>', chat: '<path d="M6.5 4C5.12 4 4 5.12 4 6.5V14.5C4 15.6 4.6 16.6 5.5 17V20.5L10 17H17.5C18.88 17 20 15.88 20 14.5V6.5C20 5.12 18.88 4 17.5 4H6.5Z"/>', calendar: '<path d="M17.5 5.5H6.5C5.12 5.5 4 6.62 4 8V17.5C4 18.88 5.12 20 6.5 20H17.5C18.88 20 20 18.88 20 17.5V8C20 6.62 18.88 5.5 17.5 5.5Z"/><path d="M4 10H20"/><path d="M8.5 3.5V7.5"/><path d="M15.5 3.5V7.5"/>', clock: '<path d="M12 20.5C16.69 20.5 20.5 16.69 20.5 12C20.5 7.31 16.69 3.5 12 3.5C7.31 3.5 3.5 7.31 3.5 12C3.5 16.69 7.31 20.5 12 20.5Z"/><path d="M12 7.5V12L15 14"/>', check: '<path d="M5 12.5L9.5 17L19 7.5"/>', refresh: '<path d="M19.5 12C19.5 16.14 16.14 19.5 12 19.5C7.86 19.5 4.5 16.14 4.5 12C4.5 7.86 7.86 4.5 12 4.5C14.07 4.5 15.94 5.34 17.3 6.7"/><path d="M19.5 4.5V9H15"/>', 'chevron-right': '<path d="M9 6L15 12L9 18"/>', alert: '<path d="M20.5 19.5L12 4.5L3.5 19.5H20.5Z"/><path d="M12 10V14.5"/><path d="M12 17V17.5"/>', copy: '<path d="M17.5 8H10.5C9.12 8 8 9.12 8 10.5V17.5C8 18.88 9.12 20 10.5 20H17.5C18.88 20 20 18.88 20 17.5V10.5C20 9.12 18.88 8 17.5 8Z"/><path d="M16 8V6.5C16 5.12 14.88 4 13.5 4H6.5C5.12 4 4 5.12 4 6.5V13.5C4 14.88 5.12 16 6.5 16H8"/>' };
+  const ic = (n, s = 24) => `<svg class="s-icon" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+  const av = id => `<img data-avatar="${id}" src="${src(id)}" alt="${NAME[id]}, anfitrión de Sintonía" width="40" height="42">`;
+
+  // ── Piezas (mismos nombres que en Figma) ──
+  const P = {
+    head: h => { const g = h.tipo !== 'Sintonía'; const st = { Votación: 'live', Buscando: 'searching', Fijado: 'fixed' }[h.estado];
+      return `<header class="s-chat-header"><div class="s-bar"><button class="s-back" aria-label="Volver">${ic('arrow-left')}</button>${g ? `<span class="s-group-avatar">${ic('users', 18)}</span>` : `<figure class="s-cathedral" ${h.estado === 'Escribiendo' || !g ? 'data-on-air' : ''}>${av(h.who || 'el-quinto')}</figure>`}<div class="s-title"><h1>${h.title || (g ? 'Parche del domingo' : 'Sintonía')}</h1><p>${h.estado === 'Escribiendo' ? `<b>Sintonía</b><span class="s-wave"><svg viewBox="0 0 30 8" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M0 4 Q 3.75 0 7.5 4 T 15 4 T 22.5 4 T 30 4"/></svg>escribiendo…</span>` : (h.sub || (g ? '4 personas · Sintonía (IA)' : 'IA · una persona revisa'))}</p></div><a class="s-human" data-size="header" href="#humano" ${h.ph === 'live' ? 'data-state="live"' : ''}><span class="s-grip" aria-hidden="true"></span><span>${h.ph === 'live' ? 'En línea<br>con alguien' : 'Habla con<br>un humano'}</span></a></div>${st ? `<div class="s-station" data-state="${st}" aria-live="polite"><span><i></i>${h.reading}</span></div>` : '<div class="s-scale" aria-hidden="true"></div>'}</header>`; },
+    sep: t => `<div class="s-date" role="separator">${t}</div>`,
+    ai: (t, h, who) => `<article class="s-message" data-author="ai"><figure class="s-cathedral">${av(who || 'el-quinto')}</figure><div class="s-bubble"><header>Sintonía <span class="s-ia">IA</span></header><p>${t}</p><time>${h}</time></div></article>`,
+    p: (n, t, h, ini) => `<article class="s-message" data-author="member"><span class="s-initial" aria-hidden="true">${ini || n[0]}</span><div class="s-bubble"><header>${n}</header><p>${t}</p><time>${h}</time></div></article>`,
+    me: (t, h) => `<article class="s-message" data-author="me"><div class="s-bubble"><p>${t}</p><time>${h} ✓✓ <span class="sr-only">Leído</span></time></div></article>`,
+    att: html => `<div class="s-attach">${html}</div>`,
+    chips: arr => `<div class="s-quick-replies">${arr.map(([t, d]) => `<button class="s-quick-reply" aria-pressed="${!!d}">${t}</button>`).join('')}</div>`,
+    comp: (r = [], ph = 'Escribe al grupo') => `<div class="s-composer">${r.length ? P.chips(r) : ''}<form onsubmit="return false"><input aria-label="Mensaje" placeholder="${ph}"><button class="s-send" aria-label="Enviar">${ic('arrow-right')}</button></form></div>`,
+    toggle: (t, on) => `<button class="s-toggle" role="switch" aria-checked="${!!on}"><span>${t}</span><span class="s-lever-switch" aria-hidden="true"></span></button>`,
+    band: sel => `<div class="s-band" role="radiogroup" aria-label="Franja">${[['MAÑANA', '6 – 12 a. m.'], ['TARDE', '12 – 6 p. m.'], ['NOCHE', '6 – 10 p. m.']].map(([b, s], i) => `<button role="radio" aria-checked="${i + 1 === sel}"><b>${b}</b><small>${s}</small></button>`).join('')}</div>`,
+    energy: (q, v) => `<label class="s-energy-dial"><span class="t-label-field">${q}</span><input type="range" min="1" max="5" value="${v}" aria-valuetext="${v} de 5"><output>${v} DE 5</output></label>`,
+    gauge: n => { const a = [-160, -125, -90, -55, -20][n] * Math.PI / 180; const x = 38 + 24 * Math.cos(a), y = 40 + 24 * Math.sin(a); return `<svg class="s-gauge" viewBox="0 0 76 46" aria-hidden="true"><path d="M8 40 A30 30 0 0 1 68 40" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5"/><path d="M60 22 A30 30 0 0 1 68 40" fill="none" stroke="var(--color-signal-live)" stroke-width="3.5"/><line x1="38" y1="40" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(${n === 4 ? '--color-signal-locked' : '--color-text-accent-strong'})" stroke-width="2" stroke-linecap="round"/><circle cx="38" cy="40" r="4" fill="var(--color-text-primary)"/></svg>`; },
+    quorum: n => `<div class="s-quorum" role="progressbar" aria-valuenow="${n}" aria-valuemax="4" aria-valuetext="${n} de 4" ${n === 4 ? 'data-complete' : ''}>${P.gauge(n)}<span><b>QUÓRUM ${n} DE 4</b><small>${['', 'Faltan 3 personas', 'Faltan 2 personas', 'Falta 1 persona', 'Parche en sintonía'][n]}</small></span></div>`,
+    vote: n => `<div class="s-vote-card"><div class="s-dial-vote" role="slider" aria-valuemin="1" aria-valuemax="3" aria-valuenow="${n}"><div class="s-rail" style="--fill:${[7, 50, 93][n - 1]}%"><i></i><b></b><ol>${[1, 2, 3].map(k => `<li ${k === n ? 'aria-current="true"' : ''}>${k}</li>`).join('')}</ol></div><output>${n}/3</output></div>${[['Museo y café', '2:30 p. m. · $30.000 · El Peñón'], ['Cerro temprano', '6:00 a. m. · Gratis · Norte'], ['Domingo en bici', '8:00 a. m. · Gratis · Varios']].map(([t, d], i) => `<button class="s-station-option" role="radio" aria-checked="${i + 1 === n}"><span class="s-num">${i + 1}</span><span><strong>${t}</strong><small>${d}</small></span></button>`).join('')}<div class="s-actions"><button class="s-button" data-block>Votar por la ${n}</button><div class="s-links"><a href="#">Ajustar hora</a><a href="#" data-tone="danger">Ninguna me sirve</a></div></div></div>`,
+    plan: st => { const done = st === 'done', cur = st === 'cur'; const rows = [['01', 'Museo La Tertulia', '2:30 p. m.', '1 h 15'], ['02', 'Café en San Antonio', '3:45 p. m.', '45 min'], ['03', 'Regreso a casa', '4:30 p. m.', '—']];
+      return `<section class="s-plan-list" ${done ? 'data-state="done"' : ''}><header><span class="s-control">${ic(done ? 'refresh' : 'clock', 18)}</span><span><b>Lista del plan</b><small>${done ? 'Domingo 12 oct · terminado' : 'Domingo 12 oct · 3 paradas · 2 h'}</small></span></header><div class="s-progress" aria-hidden="true">${[[52, 100], [32, cur ? 50 : 0], [15, 0]].map(([w, p]) => `<i style="--w:${w};--p:${done ? 100 : (cur ? p : 0)}%"></i>`).join('')}</div><ol>${rows.map(([n, t, h, d], i) => `<li ${cur && i === 1 ? 'aria-current="step"' : ''}>${done ? ic('check', 18) : `<em>${n}</em>`}<span><strong>${t}</strong>${h}</span>${d}</li>`).join('')}</ol>${done ? '<p class="t-body-strong">¿Repetimos con el mismo grupo?</p><button class="s-button" data-block>' + ic('refresh', 20) + 'Repetir el plan</button><button class="s-button" data-style="secondary" data-block>Otra idea</button>' : '<small class="t-caption-default" style="color:var(--color-text-secondary)">Se avisa al grupo antes de cada parada</small>'}</section>`; },
+    display: (type, label, value, unit) => `<time class="s-display" data-type="${type}"><span><small>${label}</small><b data-ghost="${value.replace(/\d/g, '8')}">${value}</b></span><small>${unit}</small></time>`,
+    valves: p => `<div class="s-valves" aria-live="polite"><span class="s-tubes" aria-hidden="true">${[0, 1, 2].map(i => `<i ${i < p ? 'data-on' : ''}></i>`).join('')}</span><span><strong>${['Leyendo lo que contaron…', 'Buscando lugares cerca…', 'Armando 3 opciones…'][p - 1]}</strong><small>Paso ${p} de 3</small></span></div>`,
+    invite: () => `<div class="s-invite"><b>Invita a tu parche</b><code>sintonia.co/p/cafe-sabado</code><button class="s-button" data-style="secondary" data-size="sm">${ic('copy', 16)}Copiar</button></div>`,
+    banner: (t, b) => `<div class="s-banner" data-type="error" role="alert">${ic('alert')}<div><strong>${t}</strong>${b}</div></div>`,
+    sheet: () => `<div class="s-sheet" role="dialog" aria-labelledby="h-borrar"><small>Salir y borrar</small><h2 id="h-borrar">¿Seguro que quieres salir?</h2><p class="t-body-small" style="color:var(--color-text-secondary)">Esto borra tus respuestas de este plan y te saca del grupo. No se puede deshacer.</p><div class="s-actions"><button class="s-button" data-style="secondary">Mejor no</button><button class="s-button" data-style="danger">Sí, salir y borrar</button></div></div>`,
+    // panel
+    phead: (t, s) => `<header class="s-panel-head"><div><h1>${t}</h1><p>${s}</p></div><span class="s-me">Tú</span></header>`,
+    tabs: a => `<div class="s-tabs" role="tablist">${[['Todas', 3], ['Por mí', 1], ['Me invitaron', 2]].map(([t, c], i) => `<button role="tab" aria-selected="${i === a}">${t}<span>${c}</span></button>`).join('')}</div>`,
+    next: () => `<article class="s-next">${P.display('countdown', 'Faltan · h:min', '02:15', 'PARA SALIR')}<div style="display:flex;gap:12px;align-items:center"><div style="flex:1"><h3>Museo y café</h3><p>Parche del domingo · dom 12 · 2:30 p. m.</p><p class="t-caption-default">Programada por Ana</p></div><span class="s-pilot" data-state="fixed">Plan fijado</span></div><button class="s-button" data-style="secondary" data-block>Abrir el chat del parche</button></article>`,
+    row: (st, d, h, n, e, a) => `<a class="s-tuning-row" href="#" data-state="${st}"><span class="s-when"><small>${d}</small><b>${h}</b></span><span><strong>${n}</strong><small><i></i>${e}</small><small>${a}</small></span>${ic('chevron-right', 20)}</a>`,
+    presets: full => `<section class="s-presets"><header>Mis parches <span>${full ? '3 de 4' : '0 de 4'}</span></header><ul>${(full ? [['active', 'Parche del domingo', 'Próximo: dom 12'], ['saved', 'Café de los martes', 'Sin plan'], ['saved', 'Bici al norte', 'Sin plan'], ['empty', 'Guardar', 'al repetir un plan']] : [['empty', 'Guardar', 'al repetir un plan'], ['empty', 'libre', ''], ['empty', 'libre', ''], ['empty', 'libre', '']]).map(([s, t, d], i) => `<li><button class="s-preset" data-state="${s}"><small>TRACK ${i + 1}</small><strong>${t}</strong>${d ? `<span>${d}</span>` : ''}</button></li>`).join('')}</ul>${full ? '' : '<p class="t-caption-default" style="color:var(--color-text-secondary)">Cuando repitas un plan con un grupo, guárdalo aquí para volver a sintonizarlo en un toque.</p>'}</section>`,
+    human: () => `<a class="s-human" href="#humano"><span class="s-grip" aria-hidden="true"></span><span><strong>Habla con un humano</strong><small>Una persona del equipo responde</small></span></a>`,
+    nav: cur => `<nav class="s-nav" aria-label="Principal">${[['Chats', 'chat'], ['Mis sintonías', 'calendar'], ['Perfil', 'users']].map(([t, i]) => `<a href="#"${t === cur ? ' aria-current="page"' : ''}>${ic(i, 22)}${t}</a>`).join('')}</nav>`,
+    btn: (t, style = 'primary', icn) => `<button class="s-button" data-style="${style}" data-block>${icn ? ic(icn, 20) : ''}${t}</button>`,
+    eyebrow: t => `<p class="s-eyebrow">${t}</p>`,
+    empty: () => `<section class="s-empty">${av('la-estatica').replace('width="40" height="42"', 'width="96" height="96" style="border-radius:50%"')}<h3 class="t-heading-h3">Todavía no te han invitado</h3><p class="t-body-small">Cuando alguien te invite a un plan, lo verás aquí.</p></section>`,
+  };
+  const S1 = (who, estado = 'Normal') => ({ tipo: 'Sintonía', estado, who });
+  const G = (estado, reading, sub) => ({ tipo: 'Grupo', estado, reading, sub });
+  const auth = (a, b, c) => P.att(`<div style="display:grid;gap:8px">${P.toggle('Recibir el plan por WhatsApp', a)}${P.toggle('Mostrar mi nombre al grupo', b)}${P.toggle('Usar mis respuestas para mejorar', c)}</div>`);
+  const W = 'Escribe a Sintonía';
+  // Mismo inventario y contenido que las pantallas de Figma
+  const S = {
+    'A · Activación (organiza)': [
+      ['A1', 'Bienvenida y tipo de grupo', 'tipo_grupo', { head: S1(), items: [P.ai('¡Hola! Soy Sintonía (IA), el quinto amigo de tu parche. Te ayudo a armar un plan cerca, corto y posible. Una persona del equipo revisa todo.', '9:00'), P.ai('Para empezar, ¿con quién quieres salir?', '9:00')], comp: P.comp([['Amigos'], ['Familia'], ['Compañeros']], W) }],
+      ['A2', 'Tamaño del grupo', 'tamano_grupo', { head: S1(), items: [P.ai('Para empezar, ¿con quién quieres salir?', '9:00'), P.me('Amigos', '9:01'), P.ai('¡Buenísimo! ¿Cuántos serían, contándote a ti?', '9:01')], comp: P.comp([['2 a 3'], ['4 a 5'], ['6 o más']], W) }],
+      ['A3', 'Historia y quién organiza', 'planes_realizados_mes · planes_fallidos_mes · quien_organiza', { head: S1(), items: [P.me('Somos 4', '9:01'), P.ai('En el último mes, ¿cuántos planes armaron y cuántos se cayeron?', '9:02'), P.me('Hicimos 1 y se cayeron 2', '9:02'), P.ai('¿Y quién suele organizar?', '9:02')], comp: P.comp([['Yo, siempre'], ['Nos turnamos'], ['Nadie: se cae solo']], W) }],
+      ['A4', 'Fatiga previa', 'fatiga_previa_org', { head: S1(), items: [P.me('Yo, siempre', '9:03'), P.ai('Organizar a veces cansa. ¿Con cuánta energía llegas a armar este plan?', '9:03'), P.att(P.energy('¿Con cuánta energía llegas?', 2))], comp: P.comp([], W) }],
+      ['A5', 'Antojos y franja', 'antojos[] · franja_horaria', { head: S1(), items: [P.ai('Tranqui, por eso estoy yo. ¿Qué se les antoja? Puedes elegir varias.', '9:04'), P.att(P.chips([['Café', 1], ['Almuerzo'], ['Caminata'], ['Juegos de mesa', 1], ['Algo cultural']])), P.ai('¿Y a qué hora del día les queda mejor?', '9:04'), P.att(P.band(1))], comp: P.comp([], W) }],
+      ['A6', 'Datos y consentimiento', 'acepta_whatsapp · muestra_nombre · usa_respuestas · nombre_pila', { head: S1('la-guardiana'), items: [P.ai('¡Hola! Antes de armar tu primer plan, tú decides qué compartir. Nada viene encendido:', '9:05', 'la-guardiana'), auth(true, false, false), P.ai('¿Cómo te llamamos? Solo tu nombre de pila.', '9:05', 'la-guardiana'), P.me('Caro', '9:06')], comp: P.comp([['¿Para qué es esto?'], ['Continuar', 1]], W) }],
+      ['A7', 'Invitar y esperar quórum', 'invitacion_enviada_ts · n_unidos', { head: G('Buscando', 'Buscando señal · 1/4', '1 persona · Sintonía (IA)'), items: [P.ai('¡Listo, Caro! Comparte este enlace con tu parche. Cuando se unan, les propongo tres planes.', '9:08'), P.att(P.invite()), P.att(P.quorum(1))], comp: P.comp([['Copiar enlace', 1], ['¿Quién falta?']]) }],
+    ],
+    'B · Invitado': [
+      ['B1', 'Invitación y datos', 'origen_invitacion · nombre_pila', { head: S1(), items: [P.ai('¡Hola! Ana te invitó al «Parche del domingo». Soy Sintonía (IA); una persona del equipo revisa todo.', '18:02'), P.ai('¿Cómo te llamamos? Solo tu nombre de pila.', '18:02'), P.me('Luis', '18:03')], comp: P.comp([['Quiero participar', 1], ['Ahora no']], W) }],
+      ['B2', 'Restricciones', 'restricciones[] · franja_horaria', { head: S1(), items: [P.ai('¿Hay algo que deba tener en cuenta? Esto no se lo muestro a nadie del grupo.', '18:03'), P.att(P.chips([['Presupuesto bajo', 1], ['Sin alcohol'], ['Accesibilidad'], ['Que quede cerca', 1], ['Nada especial']])), P.ai('¿Qué franja te queda mejor?', '18:04'), P.att(P.band(2))], comp: P.comp([], W) }],
+      ['B3', 'Consentimiento', 'acepta_whatsapp · muestra_nombre · usa_respuestas', { head: S1('la-guardiana'), items: [P.ai('Antes de unirte, tú decides qué compartir. Nada viene encendido y puedes salir cuando quieras escribiendo SALIR.', '18:04', 'la-guardiana'), auth(true, true, false)], comp: P.comp([['¿Para qué es esto?'], ['Continuar', 1]], W) }],
+      ['B4', 'Listo y esperando quórum', '—', { head: G('Buscando', 'Buscando señal · 3/4', '3 personas · Sintonía (IA)'), items: [P.sep('Hoy'), P.ai('¡Ya estás dentro, Luis! Falta 1 persona para que les proponga planes.', '18:05'), P.att(P.quorum(3)), P.p('Ana', '¡Bienvenido, Luis!', '18:06')], comp: P.comp([['¿Quién falta?']]) }],
+    ],
+    'C · Interacción': [
+      ['C1', 'Votación abierta', 'propuesta_ids[3] · votacion_abre_ts', { head: G('Votación', 'Votación abierta · 2/4'), items: [P.sep('Ayer'), P.p('Ana', '¿Qué hacemos el domingo?', '8:15 p. m.'), P.sep('Hoy'), P.p('Luis', 'Yo puedo después del almuerzo', '10:39'), P.ai('Tengo 3 opciones cerca, cortas y posibles. Compárenlas y voten:', '10:41', 'el-mago'), P.att(P.vote(1))], comp: P.comp([['¿Y si llueve?'], ['Ver mapa'], ['Cambiar mi voto']]) }],
+      ['C2', 'Voto registrado', 'voto_opcion · voto_ts', { head: G('Votación', 'Votación abierta · 3/4'), items: [P.ai('Tengo 3 opciones cerca, cortas y posibles. Compárenlas y voten:', '10:41', 'el-mago'), P.att(P.vote(1)), P.p('Marta', '¡El museo suena bien!', '10:43'), P.me('Voté por la 1', '10:44'), P.ai('Voto registrado. Van 3 de 4.', '10:44', 'el-mago')], comp: P.comp([['¿Y si llueve?'], ['Ver mapa'], ['Cambiar mi voto']]) }],
+      ['C3', 'Ninguna me sirve', 'veto_opcion · veto_motivo', { head: G('Votación', 'Votación abierta · 3/4'), items: [P.att(P.vote(2)), P.me('Ninguna me sirve', '10:46'), P.ai('Entendido. No le digo a nadie quién fue. ¿Qué no te sirve?', '10:46', 'el-resonador')], comp: P.comp([['Muy lejos'], ['Muy caro'], ['No me llama']]) }],
+      ['C4', 'Resolviendo', 'votacion_cierra_ts', { head: { tipo: 'Grupo', estado: 'Escribiendo' }, items: [P.ai('Cerró la votación. Estoy revisando con el equipo.', '20:00', 'el-mago'), P.att(P.valves(2))], comp: P.comp() }],
+      ['C5', 'Plan fijado', 'plan_fijado_id · asistencia_intencion', { head: G('Fijado', 'Plan fijado · dom 12, 2:30 p. m.'), items: [P.ai('¡Plan fijado! Los 4 dijeron que sí. Les aviso un día antes y una hora antes.', '20:05', 'la-antena'), P.att(P.quorum(4)), P.att(P.plan('todo')), P.p('Ana', '¡Nos vemos en el museo!', '20:06'), P.me('¡Listo! Allá llego', '20:07')], comp: P.comp([['Me apunto', 1], ['No puedo'], ['Cómo llegar']]) }],
+      ['C6', 'Recordatorio', 'confirmacion_d1', { head: G('Fijado', 'Plan fijado · dom 12, 2:30 p. m.'), items: [P.sep('Sáb. 11 oct.'), P.ai('Mañana es el plan. ¿Sigue en pie para ti?', '2:30 p. m.', 'el-despertador'), P.att(P.display('countdown', 'Faltan · h:min', '24:00', 'PARA EL PLAN'))], comp: P.comp([['Ahí estaré', 1], ['Ya no puedo']]) }],
+      ['C7', 'Día del plan', 'llegada_ts · asistencia_real', { head: G('Fijado', 'Plan fijado · hoy, 2:30 p. m.'), items: [P.sep('Dom. 12 oct.'), P.ai('Hoy es el plan. Salida a las 2:30 p. m. desde el Museo La Tertulia.', '1:30 p. m.', 'la-antena'), P.att(P.display('time', 'Salida · dom 12 oct', '2:30', 'P. M.')), P.p('Luis', 'Voy llegando, 5 min', '2:25 p. m.'), P.me('¡Llegué!', '2:31 p. m.'), P.ai('¡Ya llegaron 3! Disfruten.', '2:32 p. m.', 'la-antena')], comp: P.comp([['Cómo llegar'], ['Voy tarde'], ['¡Llegué!', 1]]) }],
+    ],
+    'D · Sobremesa': [
+      ['D1', 'Fatiga post', 'fatiga_post', { head: S1('la-gramola'), items: [P.sep('Dom. 12 oct.'), P.ai('¿Qué tal estuvo? Primero lo primero: ¿con cuánta energía quedaste?', '7:30 p. m.', 'la-gramola'), P.att(P.energy('¿Con cuánta energía quedaste?', 4))], comp: P.comp([], W) }],
+      ['D2', 'Satisfacción y valor', 'satisfaccion_1a5 · valor_principal', { head: S1('la-gramola'), items: [P.ai('Del 1 al 5, ¿qué tan bueno estuvo el plan?', '7:31 p. m.', 'la-gramola'), P.att(P.chips([['1'], ['2'], ['3'], ['4', 1], ['5']])), P.ai('¿Qué fue lo que más valió la pena?', '7:31 p. m.', 'la-gramola')], comp: P.comp([['La conversación'], ['El lugar'], ['Que fue fácil']], W) }],
+      ['D3', 'Sentimiento y repetiría', 'sentimiento_grupo · repetiria', { head: S1('la-gramola'), items: [P.ai('¿Cómo te sentiste con el grupo?', '7:32 p. m.', 'la-gramola'), P.att(P.chips([['Conectado'], ['Cómodo', 1], ['Indiferente'], ['Incómodo']])), P.ai('¿Lo repetirías con este parche?', '7:32 p. m.', 'la-gramola')], comp: P.comp([['Sí, pronto', 1], ['Tal vez'], ['No']], W) }],
+      ['D4', 'Disposición a pagar', 'dpp_rango (borrador)', { head: S1('la-gramola'), items: [P.ai('Una más, solo para ti que organizaste: si Sintonía te ahorrara organizar, ¿cuánto pagarías por plan?', '7:33 p. m.', 'la-gramola'), P.att(P.chips([['Nada'], ['Hasta $5.000'], ['$5.000 a $10.000'], ['Más de $10.000'], ['No sé']]))], comp: P.comp([], W) }],
+      ['D5', 'Cierre, repetir y guardar parche', 'contacto_compartido (N1) · intencion_reencuentro (N2) · parche_guardado', { head: { tipo: 'Grupo', estado: 'Sin plan' }, items: [P.sep('Dom. 12 oct.'), P.ai('¡Llegaron los 4 y se quedaron hasta el café!', '7:30 p. m.', 'la-gramola'), P.att(P.plan('done')), P.sep('Hoy'), P.p('Ana', '¡Qué buen plan, gracias!', '9:12'), P.p('Luis', 'Repitamos pronto', '9:14'), P.me('¡Sí, repitamos!', '9:16'), P.att(P.toggle('Compartir mi contacto con el grupo', true))], comp: P.comp([['Guardar en mis parches', 1], ['Otra idea']]) }],
+    ],
+    'E · Fuera del chat': [
+      ['E1', 'Mis sintonías', '—', { panel: 1, nav: 'Mis sintonías', items: [P.phead('Mis sintonías', '3 planes próximos · 3 parches guardados'), P.tabs(0), P.eyebrow('La próxima'), P.next(), P.eyebrow('Después'), `<div class="s-list">${P.row('voting', 'MAR 14', '6:00 p. m.', 'Café de los martes', 'Votación abierta · 2 de 3', 'Programada por ti')}${P.row('searching', 'SÁB 18', '7:00 a. m.', 'Bici al norte', 'Buscando señal · 1 de 4', 'Programada por Luis')}</div>`, P.presets(true), P.btn('Programar una sintonía', 'primary', 'chat')] }],
+      ['E2', 'Mis sintonías · vacío', '—', { panel: 1, nav: 'Mis sintonías', items: [P.phead('Mis sintonías', 'Sin planes próximos'), P.tabs(2), P.empty(), P.presets(false), P.btn('Programar una sintonía', 'primary', 'chat')] }],
+      ['E3', 'Perfil y permisos', 'nombre_pila · acepta_whatsapp · muestra_nombre · usa_respuestas', { panel: 1, nav: 'Perfil', items: [P.phead('Perfil', 'Tus datos y permisos'), P.eyebrow('Permisos'), `<div style="display:grid;gap:8px">${P.toggle('Recibir el plan por WhatsApp', true)}${P.toggle('Mostrar mi nombre al grupo', true)}${P.toggle('Usar mis respuestas para mejorar')}</div>`, P.eyebrow('Ayuda'), P.human(), P.btn('Salir y borrar mis datos', 'danger')] }],
+      ['E4', 'Habla con un humano', 'motivo_contacto_humano · escalado_ts', { head: { tipo: 'Sintonía', estado: 'Normal', title: 'Equipo de Sintonía', sub: 'Una persona del equipo · en línea', ph: 'live' }, items: [P.ai('Te paso con una persona del equipo. Este chat sigue siendo privado.', '16:20'), P.p('Equipo de Sintonía', 'Hola, soy del equipo. Cuéntame qué pasó y lo resolvemos.', '16:22', 'E'), P.me('No me llegó el enlace del plan', '16:23')], comp: P.comp([], 'Escribe al equipo') }],
+    ],
+    'F · Estados del sistema': [
+      ['F1', 'Sin conexión', 'cola_offline[]', { head: G('Fijado', 'Plan fijado · dom 12, 2:30 p. m.'), items: [P.ai('Se fue la señal. No pasa nada: guardo lo que respondas y lo envío apenas vuelva.', '12:40', 'la-estatica'), P.att(P.display('off', 'Sin señal · reintentando', '--:--', 'SIN CONEXIÓN'))], comp: P.comp([], 'Sin conexión · se envía al volver') }],
+      ['F2', 'Error al enviar', 'error_envio_codigo', { head: G('Votación', 'Votación abierta · 3/4'), items: [P.me('Voté por la 1', '12:41'), P.att(P.banner('No se pudo enviar', 'Toca «Reintentar». Tu mensaje sigue aquí.'))], comp: P.comp([['Reintentar', 1]]) }],
+      ['F3', 'Sin quórum o plan cancelado', 'quorum_fallido_ts · decision_sin_quorum', { head: G('Buscando', 'Buscando señal · 2/4'), items: [P.ai('No se completó el quórum a tiempo. Puede pasar. ¿Qué hacemos?', '9:00', 'la-estatica'), P.att(P.quorum(2))], comp: P.comp([['Dar 24 h más', 1], ['Seguir con 2'], ['Cancelar el plan']]) }],
+      ['F4', 'Salir y borrar datos', 'salida_ts · borrado_ok', { head: G('Fijado', 'Plan fijado · dom 12, 2:30 p. m.'), items: [P.me('SALIR', '15:10'), P.ai('Entendido. Antes de borrar, confírmalo abajo. Si cambias de opinión, puedes volver con el enlace.', '15:10', 'la-guardiana')], after: P.sheet() }],
+      ['F5', 'Cargando', '—', { head: S1(null, 'Escribiendo'), items: [P.att(P.valves(1))], comp: P.comp([], W) }],
+    ],
+  };
+  const phone = s => s.panel
+    ? `<div class="phone" data-panel>${s.items[0]}<div class="s-content">${s.items.slice(1).join('')}</div>${P.nav(s.nav)}</div>`
+    : `<div class="phone">${P.head(s.head)}<div class="s-thread" role="log" aria-live="polite">${s.items.join('')}</div>${s.after || ''}${s.comp || ''}</div>`;
+  document.getElementById('demo').innerHTML = Object.entries(S).map(([sec, list]) => `<section class="demo-section"><h2>${sec}</h2><p>${list.length} pantallas</p><div class="demo-row">${list.map(([c, t, f, s]) => `<div class="demo-phone" id="${c}"><h3>${c} · ${t}</h3><small>Datos: ${f}</small>${phone(s)}</div>`).join('')}</div></section>`).join('');
+  document.addEventListener('click', e => {
+    const q = e.target.closest('.s-quick-replies .s-quick-reply'); if (q && q.closest('.s-attach')) q.setAttribute('aria-pressed', String(q.getAttribute('aria-pressed') !== 'true'));
+    const t = e.target.closest('.s-toggle'); if (t) t.setAttribute('aria-checked', String(t.getAttribute('aria-checked') !== 'true'));
+    const r = e.target.closest('[role="radio"]'); if (r && !r.dataset.themeChoice) r.parentElement.querySelectorAll('[role="radio"]').forEach(x => x.setAttribute('aria-checked', String(x === r)));
+  });
+  let saved = 'system'; try { saved = localStorage.getItem('sintonia-theme') || 'system'; } catch (e) {}
+  setTheme(saved);
+})();
+</script>
+</body>
+</html>

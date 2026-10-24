@@ -16,6 +16,50 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Frontend del piloto (`piloto/`)
 
+### [2.2.2] · 2026-10-24 · Feedback del QA, radios y controles de la barra superior
+- **Mago in / off rediseñado:** un estado (luz, «Fuera de línea» o «En línea · 57 min», quién y en qué plan) y un solo botón (Button primario «▶ Mago in» o «■ Mago off»). Se quitan la empuñadura y el punto decorativo de «Presione para hablar». Aviso a las 2 h; a las 4 h la sesión se cierra sola sin minutos y la consola pide registrarlos a mano.
+- **Modo prueba:** título, estado escrito y un interruptor estándar; activo = mostaza con «SÍ» y aviso en la lista de grupos.
+- **Radios consistentes:** contenedores 16 px, controles internos 12 px, botones y fichas en píldora.
+- **Recorrido:** crear el grupo de WhatsApp, /ingreso y el plan 1 son un solo paso (con dos botones). /opciones y /confirmado se marcan como enviados en Mensajes y el recorrido avanza. Las secciones terminadas se pliegan. Aviso «Abre Mago in» si no hay sesión abierta.
+- **Lista de grupos:** cada fila muestra su paso pendiente.
+- **Pestaña Plan:** fichas «Plan 1 · Plan 2» en lugar del menú. La pestaña Llegadas pasa a «Llegadas y tiempo».
+- **Participantes:** «Ahora: …» debajo de la Luz piloto en el plan fijado; en E1 el paso del día dice que se avisa en el grupo de WhatsApp. Fichas de días y franjas con ✓.
+- Requiere el backend 2.3.2.
+
+### [2.2.1] · 2026-10-24 · DS 3.0 en las páginas de participantes y mago in / off inequívoco
+- **Participantes** (inscripción, aceptación, plan, pulso, aviso): tema DS 3.0 y **Button** del DS (anatomía de `.s-button` sobre `.btn`).
+- **Plan:** **Luz piloto** con el estado (Esperando al parche, Buscando opciones, Votación abierta, Plan fijado, El plan no se dio) y **Lista del plan** «Así va tu plan» (5 pasos con el actual marcado). El pulso dice «unos 4 minutos».
+- **Consola · Mago in / off:** caja gris punteada con «Fuera de línea» frente a caja cobalto profundo con «En línea» y el reloj; **tira fija arriba** mientras la sesión está abierta, con «■ Mago off» siempre a mano; el título de la pestaña muestra «● En línea». El estado cambia en el acto al abrir o cerrar la sesión, sin esperar la recarga.
+
+### [2.2.0] · 2026-10-24 · Consola con componentes del DS 3.0
+- **Tema DS 3.0 en la consola y el panel** (`assets/ds3.css`): tokens del DS 3.0 en modo Claro, puente de las variables del piloto y fuentes Archivo, Inter y JetBrains Mono. Inscripción, aceptación, plan y pulso siguen con el estilo actual.
+- **Barra superior:** Selector de banda (E1 / E1.5), Interruptor de palanca para el modo prueba (apagado = piloto real) y **Mago in / mago off** con «Presione para hablar» y el Display de señal (minutos en línea).
+- **Grupos como lista** (Fila de sintonía + Luz piloto: Reclutando, Votación, Fijado, Caído, Desestimado). Elegir un grupo reemplaza el menú «Grupo».
+- **«Lo que toca ahora»** (Próxima sintonía): el siguiente paso del grupo con un botón que lleva a la pestaña y resalta el control. **Recorrido del grupo** (Lista del plan): 12 pasos del grupo, plan 1 y plan 2, con hecho / ahora / pendiente.
+- **Pestañas:** Grupo · Plan · Mensajes · Llegadas; Inventario, Cambios entre planes y Empezar piloto real pasan al menú «Ajustes».
+- **Confirmaciones en una Hoja con asa** (diálogo) en lugar de los dos toques en el botón.
+- **Mensajes** con aspecto de burbuja de WhatsApp (Sync P7c).
+- Sin cambios de backend (sigue la 2.3.0) ni de las páginas de participantes.
+
+### [2.1.0] · 2026-10-24 · Semana de pruebas desde cero (Sync P7c)
+- **E1.5 · WhatsApp automatizado reemplaza a la web app.** Usa el valor interno `E2`. Las dos condiciones corren en WhatsApp: se quitan la votación en página, el recordatorio al organizador de E2 y los textos de web app en consola, inscripción, aceptación, plan, pulso, panel y mapa.
+- **Consola · Mago in / mago off:** barra superior con quién opera, sesión abierta y minutos. Al cerrar, los minutos se suman al plan. El formulario de minutos por bloque pasa a «Registro manual» plegado.
+- **Consola:** dos planes por grupo («Plan 1», «Plan 2», «+ Crear plan 2»); guía «Cómo funciona» para E1 y E1.5; en E1.5 se pueden registrar votos y estados a mano si el motor falla; contingencias «Pasar al mago» (E1.5) y «Pasar a la web» (las dos). Cambios I4 «entre planes», opcionales.
+- **Panel rediseñado:** arriba, E1 frente a E1.5 con las métricas validadas con Néstor (SEQ por momento y SUS, cada una con su n) y tres de contexto (llegaron / invitadas, minutos humanos por plan, Nivel 2). SEQ y SUS por plan en cada condición. El resto (embudo, capas, costo, línea base, disposición a pagar, cambios) queda plegado.
+- **Inscripción:** se quita «¿Cuántas personas tiene tu parche?»; queda «¿Cuántas personas van a este plan, contándote?». Nueva pregunta de disponibilidad del organizador (días y franjas). Parámetro opcional `origen` en el enlace.
+- **Mapa del piloto:** fases nuevas (preparación, ensayo 25/10, empezar desde cero, semana de pruebas con carriles E1 y E1.5, lectura y cierre).
+- Requiere el backend 2.3.0. Con uno anterior, la consola avisa que mago in / mago off no está disponible y el panel avisa que no llegan SEQ ni SUS.
+
+### [2.0.8] · 2026-10-14 · Usabilidad SEQ + SUS (sugerencia de Néstor, fuera de I4)
+- Pulso (`retro.html`): bloque nuevo «¿Qué tan fácil fue usar Sintonía?» con una **SEQ 1–7 por momento** (activación, interacción y, desde la ronda 2, continuidad) y el **SUS de 10 ítems** (1–5, omitible completo). El pulso pasa a ~4 minutos.
+- Pulso: si la persona ya respondió el pulso de ese plan (W1) y falta la usabilidad, el mismo enlace abre solo ese bloque («Nos falta una parte»). Con un backend anterior a la 2.2.6 el bloque no aparece y el pulso sigue como antes.
+- Consola: en «Enlaces personales al pulso», estado «pulso ✓ / usabilidad ✓ / pendiente» y botón **«Enviar complemento»** con un texto único para E1 y E2. Pestaña de reinicio: etiqueta de la hoja `usabilidad`. `/retro` dice 4 minutos.
+- Panel: tabla de usabilidad por condición, con SEQ por momento, SUS y días desde el encuentro, separada por ronda y por toma (con el pulso o diferida).
+- `S.scale` acepta un máximo (1–7 para la SEQ); dos mensajes de error nuevos.
+- Aviso de privacidad: aclaración del punto 2 (preguntas de facilidad de uso, escala 1–7). Misma versión `v1-2026-10`.
+- **No es el cambio W1 → W2 (I4):** aplica igual a las dos condiciones y no sube la versión de los grupos.
+- Requiere el backend 2.2.6.
+
 ### [2.0.7] · 2026-10-06 · Recomendaciones de la prueba de punta a punta (6/10)
 - Consola, curaduría: al cerrar se confirma la **salida sugerida** (prellenada desde la opción ganadora) para que no contradiga la hora del encuentro (R2). En un plan cerrado, **«Corregir hora del encuentro»** cambia la hora y la salida sin tocar el cierre ni la opción elegida (R1, pendiente desde el 5/10).
 - Consola, curaduría: «+ Crear plan» solo aparece si el grupo no tiene un plan en curso (R7).
@@ -86,6 +130,29 @@ Las fechas son de 2026 (hora de Colombia).
 - Archivado en `archivo/piloto-m1-claude/`. Tag `piloto/v1.0.0`.
 
 ## Backend (`backend/Codigo_Piloto.gs`)
+
+### [2.3.2] · 2026-10-24 · Feedback del QA
+- Eventos nuevos `msg_ingreso`, `msg_opciones`, `msg_confirmado` y `msg_retro` (solo equipo): los mensajes marcados como enviados.
+- Sesiones de mago abiertas más de 4 h: se cierran solas sin minutos (`cerrada_auto`) y `?view=mago` las lista en `sesiones_por_revisar`. Un registro manual con `sesion_id` las completa (`cerrada_a_mano`).
+- QA: 67 de 67 (`node backend/qa/qa_backend.js`).
+
+### [2.3.1] · 2026-10-24 · QA
+- `rows_` ignora filas completamente vacías: después de «Empezar piloto real» la fila 2 vacía aparecía como un grupo y un plan fantasma en `?view=mago`.
+- QA de punta a punta con una hoja simulada: 63 de 63 comprobaciones (E1 y E1.5, dos planes por grupo, mago in / off, MOTOR_KEY, resolver, SEQ/SUS, panel y limpieza).
+
+### [2.3.0] · 2026-10-24 · Semana de pruebas desde cero (Sync P7c)
+- Hoja nueva `sesiones` y acción `sesion_mago` (`in` / `off`, solo equipo): al cerrar, guarda minutos y suma una fila en `operacion` con causa `sesion`. Abrir una sesión cierra la anterior del mismo mago. `?view=mago` devuelve `sesiones_abiertas`.
+- `MOTOR_KEY` (propiedad): el motor de E1.5 puede llamar `evento`, `operacion` (actor `motor`), `proponer_ia`, `publicar_plan`, `cerrar_plan` y `redactar_ia`. `?view=resolver` devuelve solo el `pid` y el `rol` de un número en un grupo activo. `probarMontaje` revisa que `MOTOR_KEY` exista y no sea igual a `ADMIN_KEY`.
+- `linea_base_grupo` + `disponibilidad` y `origen` (columnas al final). `tamano_grupo` pasa a opcional (si falta, vale `n_invitados`).
+- `marcar_failover` acepta `hacia = web | mago`. Actor nuevo `motor`; causa nueva `sesion`.
+- `probarMontaje` acepta columnas extra al final de una hoja (p. ej. el inventario ampliado a 33 columnas): avisa con ℹ️ en lugar de ❌.
+- Nota de versiones: 2.3.0 (y el frontend 2.1.0) eran los números del borrador «E2 autónoma» (`docs/guias/e2-autonoma-backend-y-firebase.md`), que nunca se publicó y queda superado porque la web app sale del experimento.
+
+### [2.2.6] · 2026-10-14 · Usabilidad SEQ + SUS
+- Hoja nueva `usabilidad` (`probarMontaje` la crea): `toma` (`con_pulso` | `diferida`), `dias_desde_encuentro`, `seq_activacion`, `seq_interaccion`, `seq_continuidad`, `sus_01`…`sus_10`, `sus_puntaje` (0–100) y `sus_omitido`.
+- Acción `usabilidad`: plan cerrado, después del encuentro, una por persona y plan, independiente de la retro (permite el complemento diferido de W1). La continuidad solo se guarda desde la ronda 2.
+- `?view=plan` devuelve `yo.usabilidad`; `?view=mago`, `retro_pids` y `usabilidad_pids` por plan; `?view=panel`, `usabilidad` por condición (total, por ronda y por toma).
+- `revocar` también borra la usabilidad de la persona.
 
 ### [2.2.5] · 2026-10-06 · Recomendaciones de la prueba de punta a punta
 - `cerrar_plan` rechaza planes ya cerrados o caídos (`plan_ya_cerrado`): antes pisaba `t_cerrado` (horas a cierre) y la opción elegida. Acepta `hora_salida` y la guarda en la opción ganadora.

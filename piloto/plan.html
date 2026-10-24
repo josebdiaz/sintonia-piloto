@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Sintonía · El plan de tu parche</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap">
 <link rel="stylesheet" href="assets/sintonia.css">
+<link rel="stylesheet" href="assets/ds3.css">
 </head>
 <body>
 <main class="wrap">
@@ -25,6 +27,28 @@
   var app = S.$('#app'), extra = S.$('#extra'), pid = S.adoptPid(S.param('pid')), planId = S.param('plan_id') || '', timer = null, data = null;
 
   function html(h) { app.innerHTML = h; }
+  /* 2.2.0 · DS 3.0: Luz piloto (estado del plan) y Lista del plan (recorrido de la persona) */
+  function luz(r) {
+    var m = r.grupo_estado === 'excluido' ? ['off', 'Grupo fuera de la prueba'] : r.estado === 'sin_plan' && r.grupo_estado === 'reclutando' ? ['searching', 'Esperando al parche'] :
+      r.estado === 'votando' ? ['live', 'Votación abierta'] : r.estado === 'cerrado' ? ['fixed', 'Plan fijado'] : r.estado === 'caido' ? ['off', 'El plan no se dio'] : ['searching', 'Buscando opciones'];
+    return '<p style="margin:4px 0 12px"><span class="s-pilot" data-state="' + m[0] + '">' + S.esc(m[1]) + '</span>' + (r.ronda ? ' <span class="tiny muted">· Plan ' + S.esc(r.ronda) + '</span>' : '') + '</p>';
+  }
+  function recorrido(r, compacto) {
+    var yo = r.yo || {}, he = r.hora_encuentro ? new Date(r.hora_encuentro).getTime() : null, paso = he && Date.now() > he;
+    var L = [
+      ['Todo el parche acepta la invitación', !(r.estado === 'sin_plan' && r.grupo_estado === 'reclutando')],
+      ['Opciones y votación en el grupo de WhatsApp', r.estado === 'cerrado' || r.estado === 'caido'],
+      ['Plan fijado: lugar, día, hora y salida', r.estado === 'cerrado'],
+      ['El día del plan: avisar en el grupo de WhatsApp que llegaste y que estás «ya en casa»', r.estado === 'cerrado' && paso],
+      ['Contarnos cómo les fue (unos 4 minutos)', !!yo.retro]
+    ];
+    if (r.estado === 'caido') L = L.slice(0, 2);
+    var i = L.findIndex(function (x) { return !x[1]; }), n = L.filter(function (x) { return x[1]; }).length;
+    if (compacto) return i < 0 ? '' : '<p class="small" style="margin:-4px 0 12px"><b>Ahora:</b> ' + S.esc(L[i][0]) + ' · <a href="#recorrido">ver el recorrido</a></p>';
+    return '<div class="s-plan-list" id="recorrido" style="margin:14px 0"' + (i < 0 ? ' data-state="done"' : '') + '><header><span style="flex:1"><b>Así va tu plan</b><small>' + n + ' de ' + L.length + ' pasos</small></span></header>' +
+      '<div class="s-progress"><i style="--p:' + Math.round(n / L.length * 100) + '%"></i></div><ol>' +
+      L.map(function (x, k) { return '<li data-st="' + (x[1] ? 'hecho' : 'pendiente') + '"' + (k === i ? ' aria-current="step"' : '') + '><span class="marca" aria-hidden="true">' + (x[1] ? '✓' : '') + '</span><span><strong>' + S.esc(x[0]) + '</strong></span>' + (k === i ? '<em>Ahora</em>' : '') + '</li>'; }).join('') + '</ol></div>';
+  }
   function poll(on) { clearTimeout(timer); if (on) timer = setTimeout(load, 20000); }
 
   function stopsHtml(o) {
@@ -58,10 +82,10 @@
   }
 
   function render(r) {
-    if (r.estado === 'sin_plan' && r.grupo_estado === 'reclutando') { poll(true); return esperando(r); }   // 2.0.2: en E1 y E2 el organizador recupera su invitación
-    if (r.experimento === 'E1' && !r.failover && r.estado !== 'cerrado') {
+    if (r.estado === 'sin_plan' && r.grupo_estado === 'reclutando') { poll(true); return esperando(r); }   // 2.0.2: el organizador recupera su invitación
+    if (!r.failover && r.estado !== 'cerrado') {   // 2.1.0: E1 y E1.5 van por WhatsApp
       poll(false);
-      return html('<div class="card soft empty"><h2>Tu plan va por WhatsApp</h2><p class="small">Tu parche está en la versión de WhatsApp: las opciones, la votación y los recordatorios te llegan por el chat de Sintonía.</p></div>');
+      return html(luz(r) + '<div class="card soft empty"><h2>Tu plan va por WhatsApp</h2><p class="small">Las opciones, la votación y los recordatorios te llegan por el grupo de WhatsApp de Sintonía.</p></div>' + recorrido(r));
     }
     if (r.estado === 'sin_plan') {
       poll(true);
@@ -72,14 +96,14 @@
     if (r.estado === 'preparando') { poll(true); return preparando(); }
     if (r.estado === 'votando') { poll(true); return votando(r); }
     if (r.estado === 'cerrado') { poll(false); return cerrado(r); }
-    if (r.estado === 'caido') { poll(false); return html('<div class="card warn empty"><h2>Esta vez el plan no se dio</h2><p class="small">Pasa. Cuando haya una nueva propuesta, aparecerá aquí mismo.</p></div>'); }
+    if (r.estado === 'caido') { poll(false); return html(luz(r) + '<div class="card warn empty"><h2>Esta vez el plan no se dio</h2><p class="small">Pasa. Cuando haya una nueva propuesta, aparecerá aquí mismo.</p></div>' + recorrido(r)); }
     html('<div class="card empty"><p class="muted">Estado del plan: ' + S.esc(r.estado) + '</p></div>');
   }
 
   /** 2.0.2: mientras el grupo recluta, el organizador recupera su invitación y ve cuántos aceptaron. */
   function esperando(r) {
     var cuenta = (r.n_consentidos !== undefined && r.n_invitados) ? '<p class="small"><b>' + r.n_consentidos + ' de ' + r.n_invitados + '</b> ya aceptaron.</p>' : '';
-    var h = '<div class="card empty"><div class="pulse" aria-hidden="true"></div><h2>Esperando a tu parche</h2>' + cuenta +
+    var h = luz(r) + '<div class="card empty"><div class="pulse" aria-hidden="true"></div><h2>Esperando a tu parche</h2>' + cuenta +
       '<p class="small muted">El plan arranca cuando todas las personas invitadas acepten desde su enlace.</p></div>';
     if (r.codigo_invitacion) {
       var inv = S.link('unirse.html', { inv: r.codigo_invitacion });
@@ -87,17 +111,17 @@
         '<div class="linkbox">' + S.esc(inv) + '</div><div class="actions split"><button class="btn btn-ghost" id="invCopiar" type="button">Copiar enlace</button>' +
         '<a class="btn btn-primary" target="_blank" rel="noopener" href="' + S.esc(S.waShare('¡Parche! Estoy probando Sintonía para que el plan sí se dé. Únete aquí (toma 2 minutos): ' + inv)) + '">Compartir por WhatsApp</a></div></div>';
     }
-    html(h);
+    html(h + recorrido(r));
     if (r.codigo_invitacion) S.$('#invCopiar').onclick = function () { S.copy(S.link('unirse.html', { inv: r.codigo_invitacion })); };
   }
 
   function preparando() {
-    html('<div class="card empty"><div class="pulse" aria-hidden="true"></div><h2>Sintonía está armando las opciones para tu parche.</h2><p class="small muted">Vuelve en un momento. Esta página se actualiza sola.</p></div>');
+    html(luz({ estado: 'preparando' }) + '<div class="card empty"><div class="pulse" aria-hidden="true"></div><h2>Sintonía está armando las opciones para tu parche.</h2><p class="small muted">Vuelve en un momento. Esta página se actualiza sola.</p></div>');
   }
 
   function votando(r) {
     var ops = r.opciones || [], total = Math.max(1, Number(r.n_invitados) || 1);
-    var h = '<div class="hero"><h1>¿Cuál les suena?</h1><p>Vota por una opción. Si te sirve cualquiera, dilo; si ninguna te sirve, también: así nadie queda incómodo.</p></div>';
+    var h = luz(r) + '<div class="hero"><h1>¿Cuál les suena?</h1><p>Vota por una opción. Si te sirve cualquiera, dilo; si ninguna te sirve, también: así nadie queda incómodo.</p></div>';
     h += '<p class="small muted">' + (r.n_votos || 0) + ' de ' + (r.n_invitados || '?') + ' ya votaron · el conteo es anónimo</p>';
     // 2.0.5: «Sí a todo» (me sirve cualquiera) se guarda como opción -1: cuenta como voto y deja que el resto decida
     var flex = (r.conteo && r.conteo[-1]) || 0, todoMio = String(r.mi_voto) === '-1';
@@ -125,9 +149,9 @@
     var hora = r.hora_encuentro ? new Date(r.hora_encuentro) : null, now = Date.now();
     var ventana = !hora || (now >= hora.getTime() - 3 * 36e5 && now <= hora.getTime() + 8 * 36e5);
     var yo = r.yo || {};
-    var h = '<div class="hero"><h1>¡El plan quedó!</h1><p>Llega sabiendo qué esperar. Ruta clara, ganas intactas.</p></div>';
+    var h = luz(r) + recorrido(r, true) + '<div class="hero"><h1>¡El plan quedó!</h1><p>Llega sabiendo qué esperar. Ruta clara, ganas intactas.</p></div>';
     h += '<article class="option win">' + optionHtml(o, 0, hora ? '<p style="margin:12px 0 0"><b>Encuentro: ' + S.esc(S.fecha(hora)) + '</b></p>' : '') + '</article>';
-    if (r.experimento !== 'E1' || r.failover) {
+    if (r.failover) {   // 2.1.0: solo si el plan pasó a la web por contingencia
       h += '<div class="card"><h3>¿Vas?</h3><p class="small muted">' + (r.n_apuntados || 0) + ' de ' + (r.n_invitados || '?') + ' ya se apuntaron.</p><div class="actions split">' +
         (yo.apuntado ? '<button class="btn btn-ghost" data-ev="no_puedo" data-busy="Guardando…">Ya no puedo</button><span class="btn btn-primary" aria-disabled="true">✓ Te apuntaste</span>'
                      : '<button class="btn btn-primary" data-ev="me_apunto" data-busy="Guardando…">Me apunto</button><button class="btn btn-ghost" data-ev="no_puedo" data-busy="Guardando…">No puedo</button>') + '</div></div>';
@@ -137,10 +161,10 @@
     var antes = hora && now < hora.getTime();   // 2.0.2: el pulso se abre desde la hora de encuentro
     if (antes) h += calendario(o, hora);
     h += '<div class="card soft"><h3>Después de la salida</h3>' + (yo.retro ? '<p class="small">¡Gracias por contarnos cómo les fue!</p>' :
-      antes ? '<p class="small muted">Después del encuentro te pediremos 2 minutos para contarnos cómo les fue.</p>' :
-      '<p class="small">Si hubo sintonía, sigan. Cuéntanos cómo te fue en 2 minutos.</p><div class="actions"><a class="btn btn-primary btn-block" href="' + S.esc(S.link('retro.html', { plan_id: planId, pid: pid })) + '">Cuéntanos cómo te fue</a></div>') + '</div>';
+      antes ? '<p class="small muted">Después del encuentro te pediremos unos 4 minutos para contarnos cómo les fue.</p>' :
+      '<p class="small">Si hubo sintonía, sigan. Cuéntanos cómo te fue en unos 4 minutos.</p><div class="actions"><a class="btn btn-primary btn-block" href="' + S.esc(S.link('retro.html', { plan_id: planId, pid: pid })) + '">Cuéntanos cómo te fue</a></div>') + '</div>';
     if (antes && hora.getTime() - now < 12 * 36e5) { clearTimeout(timer); timer = setTimeout(load, hora.getTime() - now + 5000); }   // una sola recarga al llegar la hora (sin sondear el backend)
-    html(h);
+    html(h + recorrido(r));
     S.$$('[data-ev]', app).forEach(function (b) {
       b.onclick = function () {
         S.busy(b, function () { return S.post({ action: 'evento', plan_id: planId, pid: pid, tipo: b.dataset.ev }); })

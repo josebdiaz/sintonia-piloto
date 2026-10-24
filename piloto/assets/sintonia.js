@@ -1,5 +1,5 @@
-/* Sintonía · piloto (frontend 2.0.x, «M2») · utilidades compartidas (JavaScript sin dependencias)
- * Backend: backend/Codigo_Piloto.gs v2.2.5 (Google Apps Script). Un solo frontend para E1 (WhatsApp + mago) y E2 (web).
+/* Sintonía · piloto (frontend 2.1.x) · utilidades compartidas (JavaScript sin dependencias)
+ * Backend: backend/Codigo_Piloto.gs v2.3.0 (Google Apps Script). Un solo frontend para E1 (WhatsApp + mago) y E1.5 (WhatsApp automatizado; valor interno 'E2').
  * Versiones: ver CHANGELOG.md en la raíz del repositorio. Al publicar un cambio, sube FRONTEND_VERSION.
  */
 (function () {
@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.0.7',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.2.2',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
@@ -81,7 +81,11 @@
     respuesta_no_json: 'Gemini respondió en un formato raro. Inténtalo otra vez o arma las opciones a mano.',
     vista_desconocida: 'El backend no reconoce esta vista: revisa que esté publicada la última versión.',
     plan_ya_cerrado: 'Este plan ya está cerrado. Para cambiar la hora usa «Corregir hora».',
-    plan_en_curso: 'Este grupo ya tiene un plan en curso. Ciérralo o márcalo como caído antes de crear otro.'
+    plan_en_curso: 'Este grupo ya tiene un plan en curso. Ciérralo o márcalo como caído antes de crear otro.',
+    // 2.0.8: SEQ y SUS (usabilidad)
+    usabilidad_ya_enviada: 'Ya nos habías contado qué tan fácil fue usar Sintonía en este plan. ¡Gracias!',
+    sin_sesion_abierta: 'No tienes una sesión de mago abierta. Pulsa «Mago in» primero.',
+    usabilidad_incompleta: 'Responde las preguntas de facilidad (1 a 7) y las 10 afirmaciones, o marca que prefieres no responder esa parte.'
   };
   function errMsg(r) {
     var code = (r && r.error) || 'red', base = String(code).split(':')[0];
@@ -126,16 +130,18 @@
   }
 
   /* ---------- Componentes ---------- */
-  /** Escala 1–5 accesible. Devuelve { value(), set(n) }. */
-  function scale(el, ends) {
-    var val = '';
+  /** Escala 1–N accesible (por defecto 1–5; 2.0.8: la SEQ usa 1–7). Devuelve { value(), set(n) }. */
+  function scale(el, ends, max) {
+    var val = '', top = max || 5, nums = [];
+    for (var i = 1; i <= top; i++) nums.push(i);
     el.classList.add('scale'); el.setAttribute('role', 'radiogroup');
-    el.innerHTML = [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" role="radio" aria-checked="false" data-v="' + n + '">' + n + '</button>'; }).join('');
-    var e = document.createElement('div'); e.className = 'scale-ends'; e.innerHTML = '<span>1 · ' + esc(ends[0]) + '</span><span>5 · ' + esc(ends[1]) + '</span>';
+    if (top !== 5) el.style.gridTemplateColumns = 'repeat(' + top + ', 1fr)';
+    el.innerHTML = nums.map(function (n) { return '<button type="button" role="radio" aria-checked="false" data-v="' + n + '">' + n + '</button>'; }).join('');
+    var e = document.createElement('div'); e.className = 'scale-ends'; e.innerHTML = '<span>1 · ' + esc(ends[0]) + '</span><span>' + top + ' · ' + esc(ends[1]) + '</span>';
     el.insertAdjacentElement('afterend', e);
     function set(n) { val = n; $$('button', el).forEach(function (b) { b.setAttribute('aria-checked', String(Number(b.dataset.v) === n)); }); el.dispatchEvent(new Event('change')); }
     el.addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (b) set(Number(b.dataset.v)); });
-    el.addEventListener('keydown', function (ev) { if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') { var n = (val || 3) + (ev.key === 'ArrowRight' ? 1 : -1); set(Math.min(5, Math.max(1, n))); ev.preventDefault(); } });
+    el.addEventListener('keydown', function (ev) { if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') { var n = (val || Math.ceil(top / 2)) + (ev.key === 'ArrowRight' ? 1 : -1); set(Math.min(top, Math.max(1, n))); ev.preventDefault(); } });
     return { value: function () { return val; }, set: set };
   }
   /** Chips de selección única. */
