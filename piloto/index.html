@@ -47,11 +47,12 @@
         <h2>¿Cómo es tu parche?</h2>
         <p class="small muted">Con esto sabemos cómo arrancan. No hay respuestas buenas ni malas.</p>
         <div class="field"><span class="label">¿Qué tipo de grupo es?</span><div id="tipo"></div></div>
-        <div class="row">
-          <div class="field"><label for="tamano">¿Cuántas personas tiene tu parche?</label><input id="tamano" type="number" inputmode="numeric" min="2" max="60" required><span class="hint">Todo el grupo, aunque casi nunca salgan todos.</span></div>
-          <div class="field"><label for="ninv">¿Cuántas van a este plan, contándote?</label><input id="ninv" type="number" inputmode="numeric" min="2" max="8" required><span class="hint">Entre 2 y 8. Pueden ser menos que el parche completo.</span></div>
-        </div>
-        <p class="small muted" id="resumenN" aria-live="polite"></p>
+        <div class="field"><label for="ninv">¿Cuántas personas van a este plan, contándote?</label><input id="ninv" type="number" inputmode="numeric" min="2" max="8" required><span class="hint">Entre 2 y 8. Cada una acepta desde su propio enlace.</span></div>
+        <!-- 2.1.0 (Sync P7c): disponibilidad del organizador en lugar de una segunda pregunta de tamaño -->
+        <div class="field"><span class="label" id="diasLbl">¿Qué días suelen poder salir?</span><div class="chips" id="dias" role="group" aria-labelledby="diasLbl">
+          <label class="chip"><input type="checkbox" value="entre_semana"><span>Entre semana</span></label><label class="chip"><input type="checkbox" value="viernes"><span>Viernes</span></label><label class="chip"><input type="checkbox" value="sabado"><span>Sábado</span></label><label class="chip"><input type="checkbox" value="domingo"><span>Domingo</span></label></div></div>
+        <div class="field"><span class="label" id="franjasLbl">¿A qué hora les queda mejor?</span><div class="chips" id="franjas" role="group" aria-labelledby="franjasLbl">
+          <label class="chip"><input type="checkbox" value="manana"><span>Mañana</span></label><label class="chip"><input type="checkbox" value="tarde"><span>Tarde</span></label><label class="chip"><input type="checkbox" value="noche"><span>Noche</span></label></div><span class="hint">Marca todas las que apliquen.</span></div>
         <div class="row">
           <div class="field"><label for="realizados">Planes que sí hicieron el último mes</label><input id="realizados" type="number" inputmode="numeric" min="0" max="31" required></div>
           <div class="field"><label for="fallidos">Planes que se cayeron el último mes</label><input id="fallidos" type="number" inputmode="numeric" min="0" max="31" required></div>
@@ -95,7 +96,7 @@
         <a class="btn btn-primary" id="okWa" target="_blank" rel="noopener">Compartir por WhatsApp</a>
       </div>
     </div>
-    <div class="card" id="okE2">
+    <div class="card hidden" id="okE2">
       <h3>Tu acceso personal al plan</h3>
       <p class="small muted">Guárdalo: desde aquí votas, confirmas y nos cuentas cómo les fue.</p>
       <div class="actions"><a class="btn btn-ghost btn-block" id="okPlan" href="#">Abrir mi plan</a></div>
@@ -116,7 +117,7 @@
   var exp = expRaw === 'E2' ? 'E2' : 'E1';
   var modo = S.param('modo') === 'prueba' ? 'prueba' : 'piloto';
   // 2.0.5: el canal del experimento queda visible desde la inscripción (E1 por WhatsApp, E2 en la web)
-  if (expValida) S.$('#tagExp').textContent = (modo === 'prueba' ? 'Modo prueba · ' : 'Piloto · Cali · ') + (exp === 'E2' ? 'en la web' : 'por WhatsApp');
+  if (expValida) S.$('#tagExp').textContent = (modo === 'prueba' ? 'Modo prueba · ' : 'Piloto · Cali · ') + 'por WhatsApp';
 
   var yo = S.me();
   if (yo.pid && yo.rol === 'organizador' && modo !== 'prueba') {
@@ -140,20 +141,14 @@
     S.$('#stepLabel').textContent = labels[n]; window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   function int(id) { var v = S.$(id).value; return v === '' ? '' : parseInt(v, 10); }
-  // 2.0.4 (QA 5/10): una frase que confirma la diferencia entre el parche y las personas de este plan
-  function resumenN() {
-    var t = int('#tamano'), n = int('#ninv'), out = S.$('#resumenN');
-    if (t === '' || n === '' || n < 2) { out.textContent = ''; return; }
-    out.textContent = n > t ? 'Al plan no pueden ir más personas de las que tiene tu parche.'
-      : 'Tu parche tiene ' + t + ' personas y a este plan van ' + n + ': tú y ' + (n - 1) + ' más. Cada una acepta desde su propio enlace.';
-  }
-  ['#tamano', '#ninv'].forEach(function (id) { S.$(id).addEventListener('input', resumenN); });
+  // 2.1.0: disponibilidad del organizador (días y franjas), varias opciones
+  function marcados(id) { return S.$$('#' + id + ' input:checked').map(function (x) { return x.value; }); }
+  function disponibilidad() { var d = marcados('dias'), f = marcados('franjas'); return d.length || f.length ? 'dias: ' + d.join(', ') + ' · franjas: ' + f.join(', ') : ''; }
   function valida1() {
     if (!tipo.value()) return 'Elige qué tipo de grupo es.';
-    var t = int('#tamano'), n = int('#ninv');
-    if (t === '' || t < 2) return 'Cuéntanos cuántas personas tiene tu parche (mínimo 2).';
+    var n = int('#ninv');
     if (n === '' || n < 2 || n > 8) return 'Al plan van entre 2 y 8 personas, contándote.';
-    if (n > t) return 'Al plan no pueden ir más personas de las que tiene tu parche.';
+    if (!marcados('dias').length || !marcados('franjas').length) return 'Marca al menos un día y una franja en que suelen poder salir.';
     if (int('#realizados') === '' || int('#fallidos') === '') return 'Cuéntanos cuántos planes hicieron y cuántos se cayeron (puede ser 0).';
     if (!fatiga.value()) return 'Marca qué tan desgastante es cuadrar un plan (1 a 5).';
     return '';
@@ -175,7 +170,7 @@
     if (wa.length !== 10 || wa.charAt(0) !== '3') return S.toast('Escribe tu celular de 10 dígitos (empieza por 3).', true);
     if (!cons.valid()) return S.toast('Para participar necesitamos las 4 autorizaciones.', true);
     var payload = Object.assign({
-      action: 'registrar', experimento: exp, modo: modo, tipo_grupo: tipo.value(), tamano_grupo: int('#tamano'), n_invitados: int('#ninv'),
+      action: 'registrar', experimento: exp, modo: modo, tipo_grupo: tipo.value(), n_invitados: int('#ninv'), disponibilidad: disponibilidad(), origen: S.param('origen') || '',
       planes_realizados_mes: int('#realizados'), planes_fallidos_mes: int('#fallidos'), quien_organiza: S.$('#quien').value.trim(),
       fatiga_previa: fatiga.value(), preferencias: S.$('#prefs').value.trim(), nombre_pila: nombre, whatsapp: '+57' + wa,
       consent_metodo: cons.metodo(), aviso_version: S.CONFIG.AVISO_VERSION
@@ -191,7 +186,7 @@
       S.$('#okCopiar').onclick = function () { S.copy(inv); };
       S.$('#okWa').href = S.waShare('¡Parche! Estoy probando Sintonía para que el plan sí se dé. Únete aquí (toma 2 minutos): ' + inv);
       S.$('#okPlan').href = S.link('plan.html', { pid: r.pid }); S.$('#okPlanE1').href = S.link('plan.html', { pid: r.pid });
-      S.show('#okE2', r.experimento === 'E2'); S.show('#okE1', r.experimento !== 'E2');
+      S.show('#okE2', false); S.show('#okE1', true);   // 2.1.0: E1 y E1.5 siguen por WhatsApp
       S.show('#vistaForm', false); S.show('#vistaOk', true); S.show('#toast', false); window.scrollTo(0, 0);
     });
   });

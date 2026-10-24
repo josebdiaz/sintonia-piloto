@@ -1,7 +1,15 @@
 /**
- * Sintonía · Piloto v2.2.6 (E1 WhatsApp + E2 web app) — backend en Google Apps Script
+ * Sintonía · Piloto v2.3.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.3.0 (24/10, para el frontend 2.1.0 · Sync P7c, semana de pruebas desde cero):
+ *   - E1.5 · WhatsApp automatizado reemplaza a la web app. Usa el valor interno 'E2' (sin cambio de esquema); las dos condiciones corren en WhatsApp.
+ *   - Mago in / mago off (sesion_mago): cada sesión guarda inicio, fin y minutos en la hoja 'sesiones' y suma una fila en 'operacion'
+ *     (causa 'sesion') ligada al plan. Reemplaza el registro manual de minutos por bloque (I3).
+ *   - Motor (n8n): propiedad MOTOR_KEY. Con ella el motor puede llamar evento, operacion, proponer_ia, publicar_plan, cerrar_plan y redactar_ia,
+ *     y ?view=resolver&grupo_id=…&wa=… devuelve solo el pid y el rol de ese número (nunca nombres ni la tabla de contactos).
+ *   - Inscripción: tamano_grupo pasa a opcional (si falta, vale n_invitados); linea_base_grupo.disponibilidad (días y franjas del organizador).
+ *   - Dos planes por grupo: la SEQ de continuidad se pregunta en el plan 2 (sin cambio: ya era desde la ronda 2).
  * Versión 2.2.6 (14/10, para el frontend 2.0.8 · usabilidad SEQ + SUS, sugerencia de Néstor):
  *   - Hoja nueva 'usabilidad': SEQ 1–7 por momento (activación, interacción, continuidad) y SUS de 10 ítems (1–5) con su puntaje 0–100.
  *     La continuidad solo se pregunta desde la ronda 2 (en W1 todavía no hay una segunda salida que evaluar).
@@ -73,7 +81,7 @@ var SHEETS = {
   participantes:    ['ts','pid','grupo_id','rol','experimento','autoriza_datos','optin_whatsapp','mayor_18','consent_investigacion','aviso_version','estado','consent_metodo'],
   contactos:        ['ts','pid','nombre_pila','whatsapp'],
   grupos:           ['ts','grupo_id','experimento','modo','organizador_pid','codigo_invitacion','tipo_grupo','tamano_grupo','n_invitados','estado','motivo','version'],
-  linea_base_grupo: ['ts','grupo_id','tipo_grupo','tamano_grupo','planes_realizados_mes','planes_fallidos_mes','quien_organiza','fatiga_previa_org'],
+  linea_base_grupo: ['ts','grupo_id','tipo_grupo','tamano_grupo','planes_realizados_mes','planes_fallidos_mes','quien_organiza','fatiga_previa_org','disponibilidad','origen'],
   linea_base:       ['ts','pid','grupo_id','fatiga_previa'],
   preferencias:     ['ts','pid','grupo_id','resumen'],
   inventario:       ['id','categoria','nombre','zona','direccion','costo_aprox','horario','duracion','acceso','apto_para','fuente','verificado_el','estado','telefono_para_llamar'],
@@ -88,14 +96,16 @@ var SHEETS = {
   wtp:              ['ts','pid','grupo_id','muy_barato','barato','caro','muy_caro','preventa'],
   // v2.2.6: usabilidad (fuera de I4). SEQ 1–7 por momento; SUS 1–5 × 10 → sus_puntaje 0–100. toma: con_pulso | diferida
   usabilidad:       ['ts','plan_id','pid','grupo_id','rol','experimento','ronda','toma','dias_desde_encuentro','seq_activacion','seq_interaccion','seq_continuidad',
-                     'sus_01','sus_02','sus_03','sus_04','sus_05','sus_06','sus_07','sus_08','sus_09','sus_10','sus_puntaje','sus_omitido']
+                     'sus_01','sus_02','sus_03','sus_04','sus_05','sus_06','sus_07','sus_08','sus_09','sus_10','sus_puntaje','sus_omitido'],
+  // v2.3.0: mago in / mago off. Una fila por sesión; al cerrarla se suma a 'operacion' con causa 'sesion'
+  sesiones:         ['ts','sesion_id','experimento','grupo_id','plan_id','mago','inicio','fin','minutos','estado']
 };
 
 var TIPOS_GRUPO  = ['amigos','familia','pareja','trabajo','otro'];
 var TIPOS_EVENTO = ['activacion','recordatorio','me_apunto','no_puedo','salida_sugerida','checkpoint_llegada','llego_casa','cuenta','mensaje_mago','plan_caido','salir','cambio_canal'];
 var EVENTOS_PARTICIPANTE = ['me_apunto', 'no_puedo', 'checkpoint_llegada', 'llego_casa', 'salir'];   // v2.2.5: lo único que un participante registra por sí mismo
-var ACTORES      = ['mago','soporte','tecnico'];
-var CAUSAS       = ['coordinacion','redactar_mensaje','resolver_duda','cambio_plan','recordatorio','falla_tecnica','seguridad','otro'];
+var ACTORES      = ['mago','soporte','tecnico','motor'];   // v2.3.0: motor = n8n
+var CAUSAS       = ['sesion','coordinacion','redactar_mensaje','resolver_duda','cambio_plan','recordatorio','falla_tecnica','seguridad','otro'];
 var CAUSAS_CAIDA = ['trafico','lluvia','agenda','costo','desinteres','imprevisto','otro'];   // S9 y capa 2; sin causas de salud (dato sensible)
 
 /* ============================== Utilidades ============================== */
@@ -145,6 +155,8 @@ function int_(v) { var n = parseInt(v, 10); return isNaN(n) ? '' : n; }
 function bool_(v) { return v === true || v === 'true' || v === 1 || v === '1'; }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 function isAdmin_(k) { var a = prop_('ADMIN_KEY', ''); return a !== '' && String(k || '') === a; }
+function isMotor_(k) { var m = prop_('MOTOR_KEY', ''); return m !== '' && String(k || '') === m; }   // v2.3.0
+var MOTOR_ACCIONES = ['evento', 'operacion', 'proponer_ia', 'publicar_plan', 'cerrar_plan', 'redactar_ia'];   // lo único que el motor puede hacer con MOTOR_KEY
 function findOne_(name, key, val) { var r = rows_(name); for (var i = 0; i < r.length; i++) if (String(r[i][key]) === String(val)) return r[i]; return null; }
 function activos_(gid) { return rows_('participantes').filter(function (p) { return p.grupo_id === gid && p.estado === 'activo'; }); }
 /** v2.2.3: ¿ese celular ya está activo en el grupo? Compara los últimos 10 dígitos (se guarda como +57…). */
@@ -173,10 +185,11 @@ function doPost(e) {
       registrar: registrar_, cerrar_reclutamiento: cerrarReclutamiento_, crear_plan: crearPlan_,
       proponer_ia: proponerIA_, publicar_plan: publicarPlan_, votar: votar_, cerrar_plan: cerrarPlan_, marcar_caido: marcarCaido_, corregir_plan: corregirPlan_, marcar_failover: marcarFailover_,
       evento: evento_, operacion: operacion_, registrar_cambio: registrarCambio_, redactar_ia: redactarIA_,
-      retro: retro_, wtp: wtp_, usabilidad: usabilidad_, revocar: revocar_, limpiar_registros: limpiarRegistros_
+      retro: retro_, wtp: wtp_, usabilidad: usabilidad_, revocar: revocar_, sesion_mago: sesionMago_, limpiar_registros: limpiarRegistros_
     };
     var a = String(d.action || '');
     if (!H[a]) return json_({ ok: false, error: 'accion_desconocida' });
+    if (isMotor_(d.key) && MOTOR_ACCIONES.indexOf(a) >= 0) { d.key = prop_('ADMIN_KEY', ''); d.por_motor = true; }   // v2.3.0: el motor actúa solo en su lista
     return json_(H[a](d));
   } catch (err) {
     return json_({ ok: false, error: String(err) });
@@ -197,11 +210,12 @@ function registrar_(d) {
     var gid = id_('g'), inv = code_();
     grupo = { grupo_id: gid, experimento: d.experimento === 'E2' ? 'E2' : 'E1', codigo_invitacion: inv };
     append_('grupos', { grupo_id: gid, experimento: grupo.experimento, modo: d.modo === 'prueba' ? 'prueba' : 'piloto',
-      organizador_pid: pid, codigo_invitacion: inv, tipo_grupo: tipo, tamano_grupo: int_(d.tamano_grupo), n_invitados: nInv,
+      organizador_pid: pid, codigo_invitacion: inv, tipo_grupo: tipo, tamano_grupo: int_(d.tamano_grupo) === '' ? nInv : int_(d.tamano_grupo), n_invitados: nInv,
       estado: 'reclutando', version: 'v1' });
-    append_('linea_base_grupo', { grupo_id: gid, tipo_grupo: tipo, tamano_grupo: int_(d.tamano_grupo),
+    append_('linea_base_grupo', { grupo_id: gid, tipo_grupo: tipo, tamano_grupo: int_(d.tamano_grupo) === '' ? nInv : int_(d.tamano_grupo),
       planes_realizados_mes: int_(d.planes_realizados_mes), planes_fallidos_mes: int_(d.planes_fallidos_mes),
-      quien_organiza: limpiar_(str_(d.quien_organiza, 40)), fatiga_previa_org: int_(d.fatiga_previa) });
+      quien_organiza: limpiar_(str_(d.quien_organiza, 40)), fatiga_previa_org: int_(d.fatiga_previa),
+      disponibilidad: limpiar_(str_(d.disponibilidad, 200)), origen: str_(d.origen, 20).replace(/[^\w-]/g, '') });   // v2.3.0: origen = campaña del enlace (p. ej. ig)
   } else {
     rol = 'miembro';
     var g = findOne_('grupos', 'codigo_invitacion', str_(d.codigo_invitacion, 20).toUpperCase());
@@ -354,7 +368,7 @@ function marcarCaido_(d) {
 function marcarFailover_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
-  var hacia = d.hacia === 'E1' ? 'E1' : 'E2';
+  var hacia = ['web', 'mago'].indexOf(String(d.hacia)) >= 0 ? String(d.hacia) : 'web';   // v2.3.0: web (contingencia de WhatsApp) o mago (el motor de E1.5 falló)
   updateRow_('planes', p._row, { failover: p.experimento + '>' + hacia });
   append_('eventos', { plan_id: p.plan_id, grupo_id: p.grupo_id, tipo: 'cambio_canal', canal: hacia, nota: str_(d.motivo, 200) });
   return { ok: true, failover: p.experimento + '>' + hacia };
@@ -390,7 +404,7 @@ function recontar_(p) {
 function operacion_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = d.plan_id ? findOne_('planes', 'plan_id', d.plan_id) : null;
-  var actor = ACTORES.indexOf(String(d.actor)) >= 0 ? String(d.actor) : 'mago';
+  var actor = d.por_motor ? 'motor' : (ACTORES.indexOf(String(d.actor)) >= 0 ? String(d.actor) : 'mago');
   var causa = CAUSAS.indexOf(String(d.causa)) >= 0 ? String(d.causa) : 'otro';
   var min = int_(d.minutos); if (min === '' || min < 0 || min > 600) return { ok: false, error: 'minutos_invalidos' };
   append_('operacion', { plan_id: p ? p.plan_id : '', grupo_id: p ? p.grupo_id : str_(d.grupo_id, 20), experimento: p ? p.experimento : str_(d.experimento, 4),
@@ -509,6 +523,38 @@ function gemini_(prompt, asJson, planId, grupoId, uso) {
   return { ok: true, text: text, usage: { in: tin, out: tout, costo_usd: costo } };
 }
 
+/**
+ * v2.3.0 · Mago in / mago off (Sync P7c). accion = 'in' | 'off'.
+ * 'in' abre una sesión para el plan (o el grupo) que el mago está operando; si ese mago tenía otra abierta, la cierra antes.
+ * 'off' la cierra: guarda fin y minutos, y suma una fila en 'operacion' (causa 'sesion') para que el costo humano por plan salga solo (I3).
+ */
+function sesionMago_(d) {
+  if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
+  var mago = str_(d.mago, 40) || 'mago', ahora = new Date();
+  function cerrar(r, como) {
+    var ini = new Date(r.inicio), min = isNaN(ini.getTime()) ? 0 : Math.round((ahora - ini) / 6e4 * 10) / 10;
+    updateRow_('sesiones', r._row, { fin: ahora, minutos: min, estado: como });
+    if (min > 0) append_('operacion', { plan_id: r.plan_id, grupo_id: r.grupo_id, experimento: r.experimento, actor: 'mago', minutos: min, causa: 'sesion', nota: r.sesion_id });
+    return min;
+  }
+  var abiertas = rows_('sesiones').filter(function (r) { return r.estado === 'abierta' && r.mago === mago; });
+  if (d.accion === 'in') {
+    abiertas.forEach(function (r) { cerrar(r, 'cerrada_al_abrir_otra'); });
+    var p = d.plan_id ? findOne_('planes', 'plan_id', d.plan_id) : null;
+    var g = p ? findOne_('grupos', 'grupo_id', p.grupo_id) : (d.grupo_id ? findOne_('grupos', 'grupo_id', d.grupo_id) : null);
+    var sid = id_('s');
+    append_('sesiones', { sesion_id: sid, experimento: p ? p.experimento : (g ? g.experimento : str_(d.experimento, 4)), grupo_id: g ? g.grupo_id : '',
+      plan_id: p ? p.plan_id : '', mago: mago, inicio: ahora, estado: 'abierta' });
+    return { ok: true, sesion_id: sid, inicio: ahora.toISOString() };
+  }
+  if (d.accion === 'off') {
+    var r = abiertas.filter(function (x) { return !d.sesion_id || x.sesion_id === d.sesion_id; }).pop();
+    if (!r) return { ok: false, error: 'sin_sesion_abierta' };
+    return { ok: true, sesion_id: r.sesion_id, minutos: cerrar(r, 'cerrada') };
+  }
+  return { ok: false, error: 'faltan_datos' };
+}
+
 /* ============================== GET ============================== */
 
 function doGet(e) {
@@ -516,11 +562,20 @@ function doGet(e) {
   try {
     if (q.view === 'plan') return json_(vistaPlan_(q));
     if (q.view === 'invitacion') return json_(vistaInvitacion_(q));
+    if (q.view === 'resolver' && (isMotor_(q.key) || isAdmin_(q.key))) return json_(vistaResolver_(q));   // v2.3.0
     if (!isAdmin_(q.key)) return json_({ ok: false, error: 'no_autorizado' });
     if (q.view === 'mago') return json_(vistaMago_());
     if (q.view === 'panel') return json_(vistaPanel_());
     return json_({ ok: false, error: 'vista_desconocida' });
   } catch (err) { return json_({ ok: false, error: String(err) }); }
+}
+
+/** v2.3.0: para el motor. Número de WhatsApp → pid y rol de esa persona en el grupo activo. Nunca devuelve nombres ni otros números. */
+function vistaResolver_(q) {
+  var t = String(q.wa || '').replace(/\D/g, '').slice(-10); if (t.length < 7 || !q.grupo_id) return { ok: false, error: 'faltan_datos' };
+  var act = {}; activos_(String(q.grupo_id)).forEach(function (p) { act[p.pid] = p.rol; });
+  var c = rows_('contactos').filter(function (x) { return act[x.pid] && String(x.whatsapp).replace(/\D/g, '').slice(-10) === t; })[0];
+  return c ? { ok: true, pid: c.pid, rol: act[c.pid] } : { ok: false, error: 'no_miembro' };
 }
 
 /** v2.2.3: vista pública de una invitación. Solo estado y modo: ni nombres, ni condición E1/E2, ni conteos. */
@@ -594,7 +649,9 @@ function vistaMago_() {
   });
   var copia = function (i) { var o = {}; SHEETS.inventario.forEach(function (c) { o[c] = i[c]; }); return o; };
   var inventario = inventarioActivo_().map(copia), pendiente = inventarioPendiente_().map(copia);
-  return { ok: true, grupos: grupos, planes: planes, inventario: inventario, inventario_pendiente: pendiente, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }),
+  var sesionesAbiertas = rows_('sesiones').filter(function (r) { return r.estado === 'abierta'; }).map(function (r) {   // v2.3.0
+    return { sesion_id: r.sesion_id, mago: r.mago, plan_id: r.plan_id, grupo_id: r.grupo_id, experimento: r.experimento, inicio: r.inicio }; });
+  return { ok: true, sesiones_abiertas: sesionesAbiertas, grupos: grupos, planes: planes, inventario: inventario, inventario_pendiente: pendiente, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }),
     registros: conteoRegistros_(), conservar_al_limpiar: CONSERVAR_AL_LIMPIAR,
     bitacora: rows_('bitacora').slice(-5).map(function (b) { return { ts: b.ts, accion: b.accion, detalle: b.detalle, respaldo_url: b.respaldo_url }; }) };
 }
@@ -665,7 +722,7 @@ function vistaPanel_() {
   var lb = lbg.filter(function (b) { return validos[b.grupo_id]; });
   return {
     ok: true,
-    nota: 'Solo grupos en modo piloto y no desestimados. Comparación E1/E2 descriptiva; n pequeño.',
+    nota: 'Solo grupos en modo piloto y no desestimados. Comparación E1 (mago) / E1.5 (automatizado) descriptiva; n pequeño.',
     grupos_excluidos: grupos.filter(function (g) { return g.modo === 'piloto' && g.estado === 'excluido'; }).map(function (g) { return { grupo_id: g.grupo_id, experimento: g.experimento, motivo: g.motivo }; }),
     grupos_prueba: grupos.filter(function (g) { return g.modo === 'prueba'; }).length,
     planes_con_cambio_de_canal: planes.filter(function (p) { return p.failover && validos[p.grupo_id]; }).map(function (p) { return { plan_id: p.plan_id, grupo_id: p.grupo_id, failover: p.failover, estado: p.estado }; }),
@@ -750,9 +807,10 @@ function probarMontaje() {
   ['SHEET_ID', 'ADMIN_KEY', 'GEMINI_API_KEY', 'GEMINI_MODEL', 'PRICE_IN_PER_M', 'PRICE_OUT_PER_M', 'AVISO_VERSION'].forEach(function (k) {
     r.push((prop_(k, '') ? '✅ ' : '❌ falta ') + k);
   });
+  r.push(prop_('MOTOR_KEY', '') ? (prop_('MOTOR_KEY', '') === prop_('ADMIN_KEY', '') ? '❌ MOTOR_KEY no puede ser igual a ADMIN_KEY' : '✅ MOTOR_KEY (motor n8n)') : '⚠️ sin MOTOR_KEY: el motor de E1.5 no puede escribir');   // v2.3.0
   try { var ss = ss_(); r.push('✅ Hoja: ' + ss.getName()); } catch (x) { r.push('❌ No abre la hoja (revisa SHEET_ID): ' + x); Logger.log(r.join('\n')); return; }
   Object.keys(SHEETS).forEach(function (n) { sheet_(n); }); r.push('✅ ' + Object.keys(SHEETS).length + ' hojas listas');
-  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.2.6)');
+  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.3.0)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');
   r.push('Zona horaria del proyecto: ' + Session.getScriptTimeZone() + (Session.getScriptTimeZone() === 'America/Bogota' ? ' ✅' : ' ⚠️ cambiar a America/Bogota'));
   if (prop_('GEMINI_API_KEY', '')) {

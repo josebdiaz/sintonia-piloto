@@ -47,7 +47,7 @@
       <h2 id="okTitulo">¡Listo! Ya estás en sintonía.</h2>
       <p class="small">Tu confirmación quedó registrada. En cuanto el grupo esté completo, recibirás las opciones para votar.</p>
     </div>
-    <div class="card" id="okE2">
+    <div class="card hidden" id="okE2">
       <h3>Tu acceso personal al plan</h3>
       <p class="small muted">Guárdalo: desde aquí votas, confirmas y nos cuentas cómo les fue. Es solo tuyo, no lo reenvíes.</p>
       <div class="linkbox" id="okLink"></div>
@@ -105,7 +105,7 @@
       S.$('#okLink').textContent = mio;
       S.$('#okCopiar').onclick = function () { S.copy(mio); };
       S.$('#okPlan').href = mio;
-      S.show('#okE2', r.experimento === 'E2'); S.show('#okE1', r.experimento !== 'E2');
+      S.show('#okE2', false); S.show('#okE1', true);   // 2.1.0: E1 y E1.5 siguen por WhatsApp
       S.show('#vistaForm', false); S.show('#vistaOk', true); S.show('#toast', false); window.scrollTo(0, 0);
     });
   });

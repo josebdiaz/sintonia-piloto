@@ -1,5 +1,5 @@
-/* Sintonía · piloto (frontend 2.0.x, «M2») · utilidades compartidas (JavaScript sin dependencias)
- * Backend: backend/Codigo_Piloto.gs v2.2.5 (Google Apps Script). Un solo frontend para E1 (WhatsApp + mago) y E2 (web).
+/* Sintonía · piloto (frontend 2.1.x) · utilidades compartidas (JavaScript sin dependencias)
+ * Backend: backend/Codigo_Piloto.gs v2.3.0 (Google Apps Script). Un solo frontend para E1 (WhatsApp + mago) y E1.5 (WhatsApp automatizado; valor interno 'E2').
  * Versiones: ver CHANGELOG.md en la raíz del repositorio. Al publicar un cambio, sube FRONTEND_VERSION.
  */
 (function () {
@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.0.8',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.1.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
@@ -84,6 +84,7 @@
     plan_en_curso: 'Este grupo ya tiene un plan en curso. Ciérralo o márcalo como caído antes de crear otro.',
     // 2.0.8: SEQ y SUS (usabilidad)
     usabilidad_ya_enviada: 'Ya nos habías contado qué tan fácil fue usar Sintonía en este plan. ¡Gracias!',
+    sin_sesion_abierta: 'No tienes una sesión de mago abierta. Pulsa «Mago in» primero.',
     usabilidad_incompleta: 'Responde las preguntas de facilidad (1 a 7) y las 10 afirmaciones, o marca que prefieres no responder esa parte.'
   };
   function errMsg(r) {

@@ -16,6 +16,15 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Frontend del piloto (`piloto/`)
 
+### [2.1.0] · 2026-10-24 · Semana de pruebas desde cero (Sync P7c)
+- **E1.5 · WhatsApp automatizado reemplaza a la web app.** Usa el valor interno `E2`. Las dos condiciones corren en WhatsApp: se quitan la votación en página, el recordatorio al organizador de E2 y los textos de web app en consola, inscripción, aceptación, plan, pulso, panel y mapa.
+- **Consola · Mago in / mago off:** barra superior con quién opera, sesión abierta y minutos. Al cerrar, los minutos se suman al plan. El formulario de minutos por bloque pasa a «Registro manual» plegado.
+- **Consola:** dos planes por grupo («Plan 1», «Plan 2», «+ Crear plan 2»); guía «Cómo funciona» para E1 y E1.5; en E1.5 se pueden registrar votos y estados a mano si el motor falla; contingencias «Pasar al mago» (E1.5) y «Pasar a la web» (las dos). Cambios I4 «entre planes», opcionales.
+- **Panel rediseñado:** arriba, E1 frente a E1.5 con las métricas validadas con Néstor (SEQ por momento y SUS, cada una con su n) y tres de contexto (llegaron / invitadas, minutos humanos por plan, Nivel 2). SEQ y SUS por plan en cada condición. El resto (embudo, capas, costo, línea base, disposición a pagar, cambios) queda plegado.
+- **Inscripción:** se quita «¿Cuántas personas tiene tu parche?»; queda «¿Cuántas personas van a este plan, contándote?». Nueva pregunta de disponibilidad del organizador (días y franjas). Parámetro opcional `origen` en el enlace.
+- **Mapa del piloto:** fases nuevas (preparación, ensayo 25/10, empezar desde cero, semana de pruebas con carriles E1 y E1.5, lectura y cierre).
+- Requiere el backend 2.3.0. Con uno anterior, la consola avisa que mago in / mago off no está disponible y el panel avisa que no llegan SEQ ni SUS.
+
 ### [2.0.8] · 2026-10-14 · Usabilidad SEQ + SUS (sugerencia de Néstor, fuera de I4)
 - Pulso (`retro.html`): bloque nuevo «¿Qué tan fácil fue usar Sintonía?» con una **SEQ 1–7 por momento** (activación, interacción y, desde la ronda 2, continuidad) y el **SUS de 10 ítems** (1–5, omitible completo). El pulso pasa a ~4 minutos.
 - Pulso: si la persona ya respondió el pulso de ese plan (W1) y falta la usabilidad, el mismo enlace abre solo ese bloque («Nos falta una parte»). Con un backend anterior a la 2.2.6 el bloque no aparece y el pulso sigue como antes.
@@ -96,6 +105,13 @@ Las fechas son de 2026 (hora de Colombia).
 - Archivado en `archivo/piloto-m1-claude/`. Tag `piloto/v1.0.0`.
 
 ## Backend (`backend/Codigo_Piloto.gs`)
+
+### [2.3.0] · 2026-10-24 · Semana de pruebas desde cero (Sync P7c)
+- Hoja nueva `sesiones` y acción `sesion_mago` (`in` / `off`, solo equipo): al cerrar, guarda minutos y suma una fila en `operacion` con causa `sesion`. Abrir una sesión cierra la anterior del mismo mago. `?view=mago` devuelve `sesiones_abiertas`.
+- `MOTOR_KEY` (propiedad): el motor de E1.5 puede llamar `evento`, `operacion` (actor `motor`), `proponer_ia`, `publicar_plan`, `cerrar_plan` y `redactar_ia`. `?view=resolver` devuelve solo el `pid` y el `rol` de un número en un grupo activo. `probarMontaje` revisa que `MOTOR_KEY` exista y no sea igual a `ADMIN_KEY`.
+- `linea_base_grupo` + `disponibilidad` y `origen` (columnas al final). `tamano_grupo` pasa a opcional (si falta, vale `n_invitados`).
+- `marcar_failover` acepta `hacia = web | mago`. Actor nuevo `motor`; causa nueva `sesion`.
+- Nota de versiones: 2.3.0 (y el frontend 2.1.0) eran los números del borrador «E2 autónoma» (`docs/guias/e2-autonoma-backend-y-firebase.md`), que nunca se publicó y queda superado porque la web app sale del experimento.
 
 ### [2.2.6] · 2026-10-14 · Usabilidad SEQ + SUS
 - Hoja nueva `usabilidad` (`probarMontaje` la crea): `toma` (`con_pulso` | `diferida`), `dias_desde_encuentro`, `seq_activacion`, `seq_interaccion`, `seq_continuidad`, `sus_01`…`sus_10`, `sus_puntaje` (0–100) y `sus_omitido`.

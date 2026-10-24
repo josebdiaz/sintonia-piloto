@@ -58,8 +58,8 @@
   }
 
   function render(r) {
-    if (r.estado === 'sin_plan' && r.grupo_estado === 'reclutando') { poll(true); return esperando(r); }   // 2.0.2: en E1 y E2 el organizador recupera su invitación
-    if (r.experimento === 'E1' && !r.failover && r.estado !== 'cerrado') {
+    if (r.estado === 'sin_plan' && r.grupo_estado === 'reclutando') { poll(true); return esperando(r); }   // 2.0.2: el organizador recupera su invitación
+    if (!r.failover && r.estado !== 'cerrado') {   // 2.1.0: E1 y E1.5 van por WhatsApp
       poll(false);
       return html('<div class="card soft empty"><h2>Tu plan va por WhatsApp</h2><p class="small">Tu parche está en la versión de WhatsApp: las opciones, la votación y los recordatorios te llegan por el chat de Sintonía.</p></div>');
     }
@@ -127,7 +127,7 @@
     var yo = r.yo || {};
     var h = '<div class="hero"><h1>¡El plan quedó!</h1><p>Llega sabiendo qué esperar. Ruta clara, ganas intactas.</p></div>';
     h += '<article class="option win">' + optionHtml(o, 0, hora ? '<p style="margin:12px 0 0"><b>Encuentro: ' + S.esc(S.fecha(hora)) + '</b></p>' : '') + '</article>';
-    if (r.experimento !== 'E1' || r.failover) {
+    if (r.failover) {   // 2.1.0: solo si el plan pasó a la web por contingencia
       h += '<div class="card"><h3>¿Vas?</h3><p class="small muted">' + (r.n_apuntados || 0) + ' de ' + (r.n_invitados || '?') + ' ya se apuntaron.</p><div class="actions split">' +
         (yo.apuntado ? '<button class="btn btn-ghost" data-ev="no_puedo" data-busy="Guardando…">Ya no puedo</button><span class="btn btn-primary" aria-disabled="true">✓ Te apuntaste</span>'
                      : '<button class="btn btn-primary" data-ev="me_apunto" data-busy="Guardando…">Me apunto</button><button class="btn btn-ghost" data-ev="no_puedo" data-busy="Guardando…">No puedo</button>') + '</div></div>';

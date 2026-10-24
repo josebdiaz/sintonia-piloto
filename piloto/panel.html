@@ -31,13 +31,16 @@
 
   <section id="vista" class="hidden">
     <div class="card warn small" id="nota"></div>
+    <div class="card" id="foco"></div>
     <div class="grid two" id="cols"></div>
-    <div class="grid two">
-      <div class="card" id="base"></div>
-      <div class="card" id="excluidos"></div>
-    </div>
-    <div class="card" id="wtp"></div>
-    <div class="card" id="cambios"></div>
+    <details class="card" id="masDet"><summary><b>Más métricas</b> · línea base, grupos desestimados, disposición a pagar y cambios entre planes</summary>
+      <div class="grid two">
+        <div id="base"></div>
+        <div id="excluidos"></div>
+      </div>
+      <div id="wtp"></div>
+      <div id="cambios"></div>
+    </details>
     <p class="tiny muted center" id="hora"></p>
   </section>
 </main>
@@ -68,66 +71,85 @@
     }).join('') + '</div>';
   }
   function obj(o) { var k = Object.keys(o || {}); return k.length ? k.map(function (x) { return e(x) + ': <b>' + e(typeof o[x] === 'number' ? S.num(o[x], 0) : o[x]) + '</b>'; }).join(' · ') : '—'; }
+  function nn(v, n, d) { return v === null || v === undefined ? '—' : S.num(v, d === undefined ? 1 : d) + ' <span class="tiny muted">(n = ' + (n || 0) + ')</span>'; }
 
-  // 2.0.8 · Usabilidad (fuera de I4). SEQ 1–7 por momento; SUS 0–100. Se separa por ronda y por toma: la diferida (W1) tiene sesgo de recuerdo.
-  function usab(u) {
-    if (!u) return '<h3 style="margin-top:14px">Usabilidad</h3><p class="small muted">Requiere el backend 2.2.6.</p>';
-    function fila(nom, b) { b = b || {}; return '<tr><td>' + e(nom) + '</td><td>' + (b.n || 0) + '</td><td>' + S.num(b.seq_activacion) + '</td><td>' + S.num(b.seq_interaccion) + '</td><td>' + S.num(b.seq_continuidad) + ' <span class="tiny muted">(n = ' + (b.n_seq_continuidad || 0) + ')</span></td><td>' + S.num(b.sus_prom, 0) + ' <span class="tiny muted">(n = ' + (b.n_sus || 0) + ')</span></td><td>' + S.num(b.dias_prom) + '</td></tr>'; }
-    var rs = Object.keys(u.por_ronda || {}).sort(), ts = Object.keys(u.por_toma || {}).sort();
-    var NOMT = { con_pulso: 'Toma con el pulso', diferida: 'Toma diferida (complemento)' };
-    return '<h3 style="margin-top:14px">Usabilidad · SEQ y SUS</h3><p class="tiny muted" style="margin:0 0 6px">Medición en las dos condiciones; no es el cambio W1 → W2 (I4). SEQ: 1 muy difícil – 7 muy fácil. SUS: 0–100. La continuidad solo se pregunta desde la ronda 2.</p>' +
-      '<div class="table-scroll"><table><thead><tr><th></th><th>n</th><th>SEQ activación</th><th>SEQ interacción</th><th>SEQ continuidad</th><th>SUS</th><th>Días desde el encuentro</th></tr></thead><tbody>' +
-      fila('Total', u.total) + rs.map(function (r) { return fila('Ronda ' + r, u.por_ronda[r]); }).join('') + ts.map(function (t) { return fila(NOMT[t] || t, u.por_toma[t]); }).join('') +
-      '</tbody></table></div>';
+  /* 2.1.0 (Sync P7c): arriba, solo las métricas validadas con Néstor (SEQ y SUS) y tres de contexto, E1 frente a E1.5. Lo demás va plegado. */
+  var NOMBRE = { E1: 'E1 · WhatsApp + mago', E2: 'E1.5 · WhatsApp automatizado' };
+  function u(x) { return (x && x.usabilidad) || null; }
+  function foco(pe) {
+    var filas = [
+      ['SEQ activación · unirse y elegir el plan (1–7)', function (x) { var t = (u(x) || {}).total || {}; return nn(t.seq_activacion, t.n); }],
+      ['SEQ interacción · coordinar el día del encuentro (1–7)', function (x) { var t = (u(x) || {}).total || {}; return nn(t.seq_interaccion, t.n); }],
+      ['SEQ continuidad · volver a armar un plan (1–7, plan 2)', function (x) { var t = (u(x) || {}).total || {}; return nn(t.seq_continuidad, t.n_seq_continuidad); }],
+      ['SUS · facilidad de uso del sistema (0–100)', function (x) { var t = (u(x) || {}).total || {}; return nn(t.sus_prom, t.n_sus, 0); }]
+    ], ctx = [
+      ['Llegaron / invitadas', function (x) { return x ? S.pct(x.metrica_principal_llegaron_sobre_invitados) + ' <span class="tiny muted">(n = ' + ((x.embudo || {}).invitados || 0) + ')</span>' : '—'; }],
+      ['Minutos humanos por plan cerrado', function (x) { var c = (x || {}).costo || {}; return x ? nn(c.minutos_por_plan_cerrado, x.planes_cerrados, 0) : '—'; }],
+      ['Repetirían con este grupo · Nivel 2', function (x) { var t = (x || {}).todos || {}; return x ? (t.repetiria_si || 0) + ' de ' + (t.n || 0) : '—'; }],
+      ['Planes cerrados · caídos', function (x) { return x ? x.planes_cerrados + ' · ' + x.planes_caidos : '—'; }]
+    ];
+    function tabla(tit, rows) {
+      return '<h3 style="margin-top:14px">' + tit + '</h3><div class="table-scroll"><table><thead><tr><th></th><th>' + NOMBRE.E1 + '</th><th>' + NOMBRE.E2 + '</th></tr></thead><tbody>' +
+        rows.map(function (r) { return '<tr><td>' + e(r[0]) + '</td><td>' + r[1](pe.E1) + '</td><td>' + r[1](pe.E2) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    }
+    var sinU = !u(pe.E1) && !u(pe.E2);
+    return '<h2 style="margin:0">E1 frente a E1.5</h2><p class="small muted" style="margin:4px 0 0">' + (pe.E1 ? pe.E1.grupos : 0) + ' grupo(s) en E1 y ' + (pe.E2 ? pe.E2.grupos : 0) + ' en E1.5. Cada cifra lleva su n; con 2 grupos por condición la lectura es descriptiva.</p>' +
+      (sinU ? '<p class="small" style="color:var(--danger)">El backend en vivo no envía SEQ ni SUS: despliega la versión 2.3.0.</p>' : '') +
+      tabla('Métricas validadas con Néstor', filas) + tabla('Contexto', ctx);
   }
 
-  function col(nombre, x) {
+  function porPlan(x) {
+    var pr = ((u(x) || {}).por_ronda) || {}, ks = Object.keys(pr).sort();
+    if (!ks.length) return '<p class="small muted">Sin pulsos con SEQ y SUS todavía.</p>';
+    return '<div class="table-scroll"><table><thead><tr><th>Plan</th><th>n</th><th>SEQ activación</th><th>SEQ interacción</th><th>SEQ continuidad</th><th>SUS</th></tr></thead><tbody>' +
+      ks.map(function (k) { var b = pr[k]; return '<tr><td>Plan ' + e(k) + '</td><td>' + (b.n || 0) + '</td><td>' + S.num(b.seq_activacion) + '</td><td>' + S.num(b.seq_interaccion) + '</td><td>' + S.num(b.seq_continuidad) + '</td><td>' + S.num(b.sus_prom, 0) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+  }
+
+  function col(k, x) {
     if (!x) return '';
     var c = x.costo || {}, o = x.organizador || {}, t = x.todos || {};
-    return '<div class="card"><div class="actions" style="margin:0 0 8px;justify-content:space-between"><h2 style="margin:0">' + nombre + '</h2><span class="small muted">' + x.grupos + ' grupo(s) · ' + x.planes + ' plan(es)</span></div>' +
-      '<p class="tiny muted" style="margin:0 0 8px">Tipos: ' + obj(x.tipos_grupo) + ' · versiones: ' + obj(x.versiones) + '</p>' +
-      '<div class="kpis">' + kpi(S.pct(x.metrica_principal_llegaron_sobre_invitados), 'Métrica principal · llegaron / invitados (n = ' + ((x.embudo || {}).invitados || 0) + ')', 'main') + '</div>' +
-      '<h3 style="margin-top:14px">Embudo</h3>' + funnel(x.embudo || {}) +
+    return '<div class="card"><div class="actions" style="margin:0 0 8px;justify-content:space-between"><h2 style="margin:0">' + NOMBRE[k] + '</h2><span class="small muted">' + x.grupos + ' grupo(s) · ' + x.planes + ' plan(es)</span></div>' +
+      '<h3>SEQ y SUS por plan</h3>' + porPlan(x) +
+      '<p class="tiny muted" style="margin:6px 0 0">La SEQ de continuidad solo se pregunta en el plan 2.</p>' +
+      '<details style="margin-top:12px"><summary class="small"><b>Métricas secundarias</b> · embudo, coordinación, capas, costo</summary>' +
+      '<p class="tiny muted" style="margin:8px 0">Tipos: ' + obj(x.tipos_grupo) + ' · versiones: ' + obj(x.versiones) + '</p>' +
+      '<h3>Embudo</h3>' + funnel(x.embudo || {}) +
       '<h3 style="margin-top:14px">Coordinación</h3><div class="kpis">' +
         kpi(S.pct(x.llegaron_sobre_apuntados), 'Llegaron / se apuntaron') +
         kpi(S.pct(x.cierres_sin_veto), 'Cierres sin veto (n = ' + x.planes_cerrados + ')') +
         kpi(S.num(x.horas_a_cierre_prom), 'Horas de publicación a cierre') +
-        kpi(x.repeticion_grupos_2_planes, 'Grupos con ≥ 2 planes cerrados') +
-        kpi(x.planes_caidos, 'Planes caídos · ' + obj(x.caidas_por_causa)) +
-        kpi(x.planes_cerrados, 'Planes cerrados') + '</div>' +
+        kpi(x.repeticion_grupos_2_planes, 'Grupos con 2 planes cerrados') + '</div>' +
       '<h3 style="margin-top:14px">Navegación social</h3><div class="kpis">' +
         kpi(S.num(x.capa1_least_misery_prom), 'Capa 1 · satisfacción mínima del grupo, 1–5 (n = ' + x.capa1_planes_con_retro + ' planes)') +
         kpi(S.pct(x.capa2_llegadas_a_tiempo), 'Capa 2 · llegadas a tiempo (n = ' + x.capa2_llegadas_medidas + ')') +
-        kpi(S.num(t.valor_final_prom), 'Capa 3 · cómo terminó la salida, 1–5 (n = ' + (t.n || 0) + ')') + '</div>' +
-      '<h3 style="margin-top:14px">Retro</h3><div class="kpis">' +
+        kpi(S.num(t.valor_final_prom), 'Capa 3 · cómo terminó la salida, 1–5 (n = ' + (t.n || 0) + ')') +
+        kpi(S.num(t.confort_bot_prom), 'Confort con Sintonía, 1–5') + '</div>' +
+      '<h3 style="margin-top:14px">Organizador</h3><div class="kpis">' +
         kpi(S.num(o.carga_prom), 'Carga del organizador, 1–5 (n = ' + (o.n || 0) + ')') +
-        kpi(S.num(o.fatiga_post_prom), 'Fatiga post del organizador, 1–5') +
-        kpi(S.num(t.confort_bot_prom), 'Confort con Sintonía, 1–5') +
-        kpi((t.repetiria_si || 0) + ' / ' + (t.n || 0), 'Repetirían (sí)') + '</div>' +
-      usab(x.usabilidad) +
+        kpi(S.num(o.fatiga_post_prom), 'Fatiga post del organizador, 1–5') + '</div>' +
       '<h3 style="margin-top:14px">Costo y operación</h3><div class="kpis">' +
+        kpi(S.num(c.minutos_humanos, 0) + ' min', 'Minutos humanos · total') +
         kpi(S.usd(c.tokens_usd), 'Tokens Gemini · total') +
         kpi(S.usd(c.usd_tokens_por_plan_cerrado), 'Tokens por plan cerrado') +
-        kpi(S.num(c.minutos_humanos, 0) + ' min', 'Minutos humanos · total') +
-        kpi(S.num(c.minutos_por_plan_cerrado, 0) + ' min', 'Minutos por plan cerrado') +
         kpi(S.cop(c.costo_humano_cop), 'Costo humano (COP)') + '</div>' +
-      '<p class="tiny muted" style="margin-top:8px">Minutos por causa: ' + obj(c.minutos_por_causa) + '</p></div>';
+      '<p class="tiny muted" style="margin-top:8px">Minutos por causa: ' + obj(c.minutos_por_causa) + ' · caídas: ' + obj(x.caidas_por_causa) + '</p></details></div>';
   }
 
   function render(r) {
     var pe = r.por_experimento || {};
-    S.$('#nota').innerHTML = '<b>Lectura con cuidado.</b> ' + e(r.nota) + ' Excluye grupos en modo prueba (' + r.grupos_prueba + ') y desestimados (' + (r.grupos_excluidos || []).length + '). También excluye los planes con cambio de canal (' + (r.planes_con_cambio_de_canal || []).length + '), que se reportan aparte. Cada tasa muestra su n.';
-    S.$('#cols').innerHTML = col('E1 · WhatsApp Business', pe.E1) + col('E2 · Web app', pe.E2);
+    S.$('#nota').innerHTML = '<b>Lectura con cuidado.</b> ' + e(r.nota) + ' Excluye grupos en modo prueba (' + r.grupos_prueba + ') y desestimados (' + (r.grupos_excluidos || []).length + '), y los planes con contingencia (' + (r.planes_con_cambio_de_canal || []).length + '), que se reportan aparte.';
+    S.$('#foco').innerHTML = foco(pe);
+    S.$('#cols').innerHTML = col('E1', pe.E1) + col('E2', pe.E2);
     var lb = r.linea_base_grupos || {};
     S.$('#base').innerHTML = '<h3>Línea base (por grupo)</h3><div class="kpis">' + kpi(lb.n || 0, 'Grupos con línea base') + kpi(S.num(lb.planes_realizados_mes_prom), 'Planes hechos el mes anterior') +
       kpi(S.num(lb.planes_fallidos_mes_prom), 'Planes caídos el mes anterior') + kpi(S.num(lb.fatiga_previa_org_prom), 'Fatiga previa del organizador, 1–5') + kpi(r.participantes_activos, 'Participantes activos') + '</div>';
     var ex = r.grupos_excluidos || [];
-    S.$('#excluidos').innerHTML = '<h3>Grupos desestimados (I9)</h3>' + (ex.length ? '<table><thead><tr><th>Grupo</th><th>Cond.</th><th>Motivo</th></tr></thead><tbody>' + ex.map(function (g) { return '<tr><td>' + e(g.grupo_id.slice(-6)) + '</td><td>' + e(g.experimento) + '</td><td>' + e(g.motivo) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="small muted">Ninguno.</p>');
+    S.$('#excluidos').innerHTML = '<h3>Grupos desestimados (I9)</h3>' + (ex.length ? '<table><thead><tr><th>Grupo</th><th>Cond.</th><th>Motivo</th></tr></thead><tbody>' + ex.map(function (g) { return '<tr><td>' + e(g.grupo_id.slice(-6)) + '</td><td>' + e(g.experimento === 'E2' ? 'E1.5' : g.experimento) + '</td><td>' + e(g.motivo) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="small muted">Ninguno.</p>');
     var w = r.wtp_organizadores || [];
     S.$('#wtp').innerHTML = '<h3>Disposición a pagar · Van Westendorp (solo organizadores, n = ' + w.length + ')</h3><p class="small muted">Con un n tan pequeño se reportan los valores, no curvas ni precio óptimo.</p>' +
       (w.length ? '<div class="table-scroll"><table><thead><tr><th>Muy barato</th><th>Barato</th><th>Caro</th><th>Muy caro</th><th>Preventa</th></tr></thead><tbody>' + w.map(function (x) { return '<tr><td>' + S.cop(x.muy_barato) + '</td><td>' + S.cop(x.barato) + '</td><td>' + S.cop(x.caro) + '</td><td>' + S.cop(x.muy_caro) + '</td><td>' + (x.preventa ? 'Sí' : 'No') + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="small muted">Sin respuestas todavía.</p>');
     var cs = r.cambios || [];
-    S.$('#cambios').innerHTML = '<h3>Cambios registrados entre W1 y W2 (I4)</h3>' + (cs.length ? '<ul class="small">' + cs.map(function (c) { return '<li><b>' + e(c.experimento) + ' ' + e(c.version) + '</b> · ' + e(c.descripcion) + '</li>'; }).join('') + '</ul>' : '<p class="small muted">Ninguno.</p>');
+    S.$('#cambios').innerHTML = '<h3>Cambios entre plan 1 y plan 2 (I4)</h3>' + (cs.length ? '<ul class="small">' + cs.map(function (c) { return '<li><b>' + e(c.experimento === 'E2' ? 'E1.5' : c.experimento) + ' ' + e(c.version) + '</b> · ' + e(c.descripcion) + '</li>'; }).join('') + '</ul>' : '<p class="small muted">Ninguno.</p>');
     S.$('#hora').textContent = 'Actualizado: ' + new Date().toLocaleString('es-CO');
   }
   load();
