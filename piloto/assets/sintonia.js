@@ -1,5 +1,5 @@
-/* Sintonía · piloto (frontend 2.1.x) · utilidades compartidas (JavaScript sin dependencias)
- * Backend: backend/Codigo_Piloto.gs v2.3.0 (Google Apps Script). Un solo frontend para E1 (WhatsApp + mago) y E1.5 (WhatsApp automatizado; valor interno 'E2').
+/* Sintonía · piloto (frontend 2.2.x) · utilidades compartidas (JavaScript sin dependencias)
+ * Backend: backend/Codigo_Piloto.gs v2.3.2 (Google Apps Script). Un solo frontend para E1 (WhatsApp + mago) y E1.5 (WhatsApp automatizado; valor interno 'E2').
  * Versiones: ver CHANGELOG.md en la raíz del repositorio. Al publicar un cambio, sube FRONTEND_VERSION.
  */
 (function () {

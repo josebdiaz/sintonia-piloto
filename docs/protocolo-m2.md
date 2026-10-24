@@ -1,6 +1,6 @@
-# Sintonía · Protocolo de operación M2 (frontend 2.1.0)
+# Sintonía · Protocolo de operación M2 (frontend 2.2.2)
 
-*Un solo frontend para las dos condiciones, las dos en WhatsApp: **E1 · WhatsApp + mago** y **E1.5 · WhatsApp automatizado** (n8n; valor interno `E2`). Frontend 2.1.0 y backend `backend/Codigo_Piloto.gs` 2.3.0. Mapa de todas las vistas por fase: `piloto/investigadores.html`. Versión del 24/10/2026 (Sync P7c).*
+*Un solo frontend para las dos condiciones, las dos en WhatsApp: **E1 · WhatsApp + mago** y **E1.5 · WhatsApp automatizado** (n8n; valor interno `E2`). Frontend 2.2.2 y backend `backend/Codigo_Piloto.gs` 2.3.2 (publicados el 24/10). Mapa de todas las vistas por fase: `piloto/investigadores.html`. Versión del 24/10/2026 (Sync P7c).*
 
 > **La sección «Semana de pruebas (desde el 25/10)» manda sobre todo lo que sigue.** Las secciones 0–7 se conservan como referencia; donde hablan de E2 como web app o de W1/W2, ya no aplican.
 
@@ -11,14 +11,16 @@
 **Métricas principales (validadas con Néstor):** SEQ 1–7 por momento —activación, interacción y, en el plan 2, continuidad— y SUS 0–100, en el pulso de cada plan. **De contexto:** llegaron / invitadas (I2), minutos humanos por plan (I3, con mago in / mago off) y si repetirían con el grupo (Nivel 2). El resto queda como métricas secundarias en el panel.
 
 **Antes de empezar (24–25/10)**
-1. Desplegar el backend **2.3.0** (Nueva versión; la URL no cambia) y correr `probarMontaje`. Crea las hojas `usabilidad` y `sesiones` y agrega `disponibilidad` y `origen` a `linea_base_grupo`.
+1. ✅ Backend **2.3.2** desplegado y `probarMontaje` en verde (24/10). Creó las hojas `usabilidad`, `sesiones` y `bitacora` y agregó `disponibilidad` y `origen` a `linea_base_grupo`.
 2. Si el motor de E1.5 ya existe: propiedad **`MOTOR_KEY`** (distinta de `ADMIN_KEY`). Sin ella, el motor no puede escribir.
 3. **Aviso de privacidad v2** con n8n como encargado nuevo, aprobado por Néstor, **antes** de que el motor trate datos de E1.5. Mientras no esté, E1.5 no arranca con participantes.
 4. Ensayo en modo prueba de las dos condiciones, incluido «Mago in / Mago off».
-5. Consola → «⟲ Empezar piloto real»: escribir `EMPEZAR PILOTO`, **sin** conservar cambios. Antes, una copia manual de la hoja (Archivo → Hacer una copia).
+5. Consola → **Ajustes** → «⟲ Empezar piloto real»: escribir `EMPEZAR PILOTO`, **sin** conservar cambios. Antes, una copia manual de la hoja (Archivo → Hacer una copia).
 
 **Operación**
-- **Mago in / mago off.** Al empezar a operar un plan, «▶ Mago in» (barra superior de la consola). Al terminar, «■ Mago off»: los minutos se suman solos al plan con causa `sesion`. Si cambias de plan con la sesión abierta, la consola la mueve al plan nuevo. El registro manual de minutos queda solo para bloques olvidados.
+- **Consola 2.2:** elige la condición arriba (E1 / E1.5) y el grupo en la lista. «Lo que toca ahora» dice el siguiente paso y su botón lleva al lugar exacto; el recorrido muestra los pasos del grupo, plan 1 y plan 2. Pestañas: Grupo · Plan · Mensajes · Llegadas y tiempo; inventario, cambios y reinicio están en Ajustes.
+- **Mago in / mago off.** Al empezar a operar un plan, «▶ Mago in». Mientras está abierta, la barra superior queda en cobalto con el tiempo y «■ Mago off». Al cerrar, los minutos se suman solos al plan con causa `sesion`. Si cambias de grupo o de plan con la sesión abierta, la consola la mueve. A las 2 h aparece un aviso; a las 4 h la sesión se cierra sola **sin minutos** y hay que registrar los reales en «Llegadas y tiempo» → Registro manual.
+- **Mensajes:** /opciones, /confirmado y /retro se marcan como enviados («Marcar como enviado») para que el recorrido avance.
 - **E1:** el mago crea el grupo de WhatsApp a mano (Meta no lo permite automático), envía los mensajes de la pestaña 3 y registra votos, confirmaciones y llegadas.
 - **E1.5:** el motor envía los mensajes y escribe votos y llegadas con `MOTOR_KEY` (acciones `evento`, `operacion`, `proponer_ia`, `publicar_plan`, `cerrar_plan`, `redactar_ia`; `votar` es pública). Para saber quién escribió, usa `?view=resolver&key=MOTOR_KEY&grupo_id=…&wa=…`, que devuelve solo `pid` y `rol`. La persona del equipo abre «Mago in» mientras revisa lo que manda el motor.
 - **Plan 2:** al cerrar el plan 1, «+ Crear plan 2 para este grupo» en la pestaña 2, en el mismo grupo de WhatsApp.

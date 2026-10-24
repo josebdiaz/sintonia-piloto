@@ -2,7 +2,9 @@
 
 Sistema de diseño del Experimento 3 (chat con IA para armar planes en grupo), en modo Claro y Oscuro.
 
-**v3.3.0** (detalle en `CHANGELOG.md`). Prototipo de pruebas en la página «Prototipo · Pruebas E3» de Figma. Para React Native usa `tokens/theme.native.ts`: `getTheme(useColorScheme())` devuelve colores, sombras, espaciado y tipografía con lineHeight y letterSpacing ya en px. No uses los valores en % de Figma tal cual. Desde **v3.1.0** los componentes son los de «Convergencias visuales» (archivo DS 2.x, página «Convergencias visuales»), traídos tal cual y ligados a las variables del DS 3.0. Las 32 pantallas siguen la composición de los «Cinco momentos».
+> **Posición (P7, 15 oct 2026):** E3 es una frontera de solución standalone. No es el núcleo de Sintonía, que vive en WhatsApp. Su papel es mitigar la dependencia de un solo canal. Desde el 24/10 el piloto usa los tokens y algunos componentes de este DS (`piloto/assets/ds3.css`).
+
+**v3.4.0** (detalle en `CHANGELOG.md`). Prototipo de pruebas en la página «Prototipo · Pruebas E3» de Figma. Para React Native usa `tokens/theme.native.ts`: `getTheme(useColorScheme())` devuelve colores, sombras, espaciado y tipografía con lineHeight y letterSpacing ya en px. No uses los valores en % de Figma tal cual. Desde **v3.1.0** los componentes son los de «Convergencias visuales» (archivo DS 2.x, página «Convergencias visuales»), traídos tal cual y ligados a las variables del DS 3.0. Las 32 pantallas siguen la composición de los «Cinco momentos».
 
 - **Fuente de verdad:** Figma «Sintonía DS 3.0 · E3», https://www.figma.com/design/bUYQpDmwzNgTPwCwchD2W3
 - **User flow:** FigJam, sección «E3 · User flow (DS 3.0)»: https://www.figma.com/board/GGBZUvGckGpphSR9X1qEw7

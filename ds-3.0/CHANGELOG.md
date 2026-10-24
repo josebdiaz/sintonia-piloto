@@ -74,4 +74,6 @@ Versionado semántico: **mayor** = cambia un nombre de token o componente (rompe
 
 ## Documentación sin versión de DS
 
+- **Uso en el piloto · 24 oct 2026.** El piloto (frontend 2.2.x) carga una copia de los tokens en modo Claro y de los componentes Button, Selector de banda, Banner, Estado vacío, Enlace de invitación, Display de señal, Luz piloto, Lista del plan, Hoja con asa, Pestañas, Lista y Fila de sintonía, y Próxima sintonía (`piloto/assets/ds3.css`). Ajustes propios del piloto: radios 16 / 12 / píldora, Mago in / off con Button en vez de «Presione para hablar», e interruptor estándar para el modo prueba. No cambian tokens ni componentes del DS; no sube versión.
+- **Posición P7 · 15 oct 2026.** E3 queda como frontera standalone y mitigación del riesgo de canal único. El piloto sigue en WhatsApp. No cambian tokens ni componentes; no sube versión.
 - `pruebas/plan-pruebas-calidad.html` · Plan escalonado de pruebas de calidad para E3 (prueba de 5 segundos → usabilidad no moderada → moderada). Protocolo con aval de Néstor (8 oct 2026); aún sin correr con personas. Las metas siguen siendo preliminares hasta la primera corrida.

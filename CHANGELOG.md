@@ -5,6 +5,19 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-10-24 · Sync P7c · Semana de pruebas desde cero
+- **Diseño nuevo:** dos condiciones en paralelo, las dos en WhatsApp: **E1 · WhatsApp + mago** y **E1.5 · WhatsApp automatizado** (n8n; valor interno `E2`). Reemplaza a E2 (web app). 2 grupos por condición más 1 de reserva, y 2 planes por grupo.
+- **Métricas principales:** SEQ por momento y SUS, validadas con Néstor. De contexto: llegaron / invitadas, minutos humanos por plan (mago in / mago off) y Nivel 2.
+- **Publicado:** frontend 2.2.2 en `main` (GitHub Pages) y backend 2.3.2 en Apps Script. QA del backend: 67 de 67 (`node backend/qa/qa_backend.js`).
+- **DS 3.0 en el piloto:** tokens, Button, Luz piloto, Lista del plan, Selector de banda y Hoja con asa en la consola, el panel y las páginas de participantes (`piloto/assets/ds3.css`).
+- La viabilidad técnica del motor queda **pendiente**: la revisión con Monk no ocurrió. Corrige D4 de las Decisiones P7.
+- Fuera del piloto: botón de pánico (hoja de ruta).
+
+### 2026-10-15 · Decisiones P7 · Canal único
+- **Canal fijo: WhatsApp.** Se cierra la comparación con la web app (E2).
+- **E3 (chat con IA y DS 3.0)** queda como frontera de solución standalone; mitiga la dependencia de un solo canal (Meta).
+- Sin cambios de código en este registro. Detalle en `.cowork/decisiones-p7.md` (local).
+
 ### 2026-10-04 · Reestructura
 - Estructura por componentes: `piloto/`, `backend/`, `datos/`, `docs/`, `archivo/`.
 - El frontend en uso pasa de `/M2-Claude/` a la URL estable `/piloto/`. `404.html` redirige las URLs anteriores con sus parámetros.
