@@ -124,6 +124,7 @@ function revisarEncabezados_() {
   Object.keys(SHEETS).forEach(function (n) {
     var sh = sheet_(n), want = SHEETS[n], have = sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), 1)).getValues()[0].filter(function (x) { return x !== ''; });
     if (have.join('|') === want.join('|')) return;
+    if (have.length > want.length && have.slice(0, want.length).join('|') === want.join('|')) { avisos.push('ℹ️ ' + n + ': ' + (have.length - want.length) + ' columnas extra al final (se conservan; el código lee por nombre)'); return; }   // v2.3.0: inventario ampliado
     if (have.length < want.length && want.slice(0, have.length).join('|') === have.join('|')) {   // solo faltan columnas nuevas al final
       sh.getRange(1, have.length + 1, 1, want.length - have.length).setValues([want.slice(have.length)]); avisos.push('🔧 ' + n + ': columnas nuevas agregadas al final'); return; }
     if (sh.getLastRow() <= 1) { sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), want.length)).clearContent(); sh.getRange(1, 1, 1, want.length).setValues([want]); avisos.push('🔧 ' + n + ': encabezado actualizado'); }

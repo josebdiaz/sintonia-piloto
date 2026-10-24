@@ -111,6 +111,7 @@ Las fechas son de 2026 (hora de Colombia).
 - `MOTOR_KEY` (propiedad): el motor de E1.5 puede llamar `evento`, `operacion` (actor `motor`), `proponer_ia`, `publicar_plan`, `cerrar_plan` y `redactar_ia`. `?view=resolver` devuelve solo el `pid` y el `rol` de un número en un grupo activo. `probarMontaje` revisa que `MOTOR_KEY` exista y no sea igual a `ADMIN_KEY`.
 - `linea_base_grupo` + `disponibilidad` y `origen` (columnas al final). `tamano_grupo` pasa a opcional (si falta, vale `n_invitados`).
 - `marcar_failover` acepta `hacia = web | mago`. Actor nuevo `motor`; causa nueva `sesion`.
+- `probarMontaje` acepta columnas extra al final de una hoja (p. ej. el inventario ampliado a 33 columnas): avisa con ℹ️ en lugar de ❌.
 - Nota de versiones: 2.3.0 (y el frontend 2.1.0) eran los números del borrador «E2 autónoma» (`docs/guias/e2-autonoma-backend-y-firebase.md`), que nunca se publicó y queda superado porque la web app sale del experimento.
 
 ### [2.2.6] · 2026-10-14 · Usabilidad SEQ + SUS
