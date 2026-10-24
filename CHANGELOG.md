@@ -16,6 +16,16 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Frontend del piloto (`piloto/`)
 
+### [2.2.0] · 2026-10-24 · Consola con componentes del DS 3.0
+- **Tema DS 3.0 en la consola y el panel** (`assets/ds3.css`): tokens del DS 3.0 en modo Claro, puente de las variables del piloto y fuentes Archivo, Inter y JetBrains Mono. Inscripción, aceptación, plan y pulso siguen con el estilo actual.
+- **Barra superior:** Selector de banda (E1 / E1.5), Interruptor de palanca para el modo prueba (apagado = piloto real) y **Mago in / mago off** con «Presione para hablar» y el Display de señal (minutos en línea).
+- **Grupos como lista** (Fila de sintonía + Luz piloto: Reclutando, Votación, Fijado, Caído, Desestimado). Elegir un grupo reemplaza el menú «Grupo».
+- **«Lo que toca ahora»** (Próxima sintonía): el siguiente paso del grupo con un botón que lleva a la pestaña y resalta el control. **Recorrido del grupo** (Lista del plan): 12 pasos del grupo, plan 1 y plan 2, con hecho / ahora / pendiente.
+- **Pestañas:** Grupo · Plan · Mensajes · Llegadas; Inventario, Cambios entre planes y Empezar piloto real pasan al menú «Ajustes».
+- **Confirmaciones en una Hoja con asa** (diálogo) en lugar de los dos toques en el botón.
+- **Mensajes** con aspecto de burbuja de WhatsApp (Sync P7c).
+- Sin cambios de backend (sigue la 2.3.0) ni de las páginas de participantes.
+
 ### [2.1.0] · 2026-10-24 · Semana de pruebas desde cero (Sync P7c)
 - **E1.5 · WhatsApp automatizado reemplaza a la web app.** Usa el valor interno `E2`. Las dos condiciones corren en WhatsApp: se quitan la votación en página, el recordatorio al organizador de E2 y los textos de web app en consola, inscripción, aceptación, plan, pulso, panel y mapa.
 - **Consola · Mago in / mago off:** barra superior con quién opera, sesión abierta y minutos. Al cerrar, los minutos se suman al plan. El formulario de minutos por bloque pasa a «Registro manual» plegado.

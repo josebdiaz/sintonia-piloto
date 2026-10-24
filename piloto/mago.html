@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Sintonía · Consola del mago</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap">
 <link rel="stylesheet" href="assets/sintonia.css">
+<link rel="stylesheet" href="assets/ds3.css">
 </head>
 <body>
 <main class="wrap wide">
@@ -31,17 +33,18 @@
 
   <section id="consola" class="hidden">
     <p class="small muted" id="resumen"></p>
-    <div id="magobar"></div>
-    <div id="expbar"></div>
-    <nav class="tabs" role="tablist">
-      <button role="tab" data-tab="grupos" aria-selected="true">1 · Grupos y quórum</button>
-      <button role="tab" data-tab="planes">2 · Curaduría de planes</button>
-      <button role="tab" data-tab="mensajes">3 · Mensajes</button>
-      <button role="tab" data-tab="registro">4 · Eventos y minutos</button>
-      <span class="tabs-sep" aria-hidden="true"></span>
-      <button role="tab" data-tab="cambios" class="cfg">Cambios entre planes (I4)</button>
-      <button role="tab" data-tab="inventario" class="cfg">Inventario</button>
-      <button role="tab" data-tab="reinicio" class="cfg">⟲ Empezar piloto real</button>
+    <div class="consola-top"><div id="expbar"></div><div id="modobox"></div><div id="magobar"></div></div>
+    <div class="consola-mid"><div id="glist"></div><div id="siguiente"></div></div>
+    <nav class="s-tabs" role="tablist" aria-label="Operación">
+      <button role="tab" data-tab="grupos" aria-selected="true">Grupo</button>
+      <button role="tab" data-tab="planes">Plan</button>
+      <button role="tab" data-tab="mensajes">Mensajes</button>
+      <button role="tab" data-tab="registro">Llegadas</button>
+      <details class="ajustes"><summary>Ajustes ▾</summary><div class="menu">
+        <button role="tab" data-tab="inventario">Inventario</button>
+        <button role="tab" data-tab="cambios">Cambios entre planes (I4)</button>
+        <button role="tab" data-tab="reinicio">⟲ Empezar piloto real</button>
+      </div></details>
     </nav>
     <div id="tab-grupos" class="tab"></div>
     <div id="tab-planes" class="tab hidden"></div>
@@ -52,6 +55,7 @@
     <div id="tab-reinicio" class="tab hidden"></div>
   </section>
 </main>
+<dialog class="hoja" id="hoja" aria-label="Confirmar"></dialog>
 <script src="assets/sintonia.js"></script>
 <script>
 (function () {
@@ -138,24 +142,95 @@
   function rondaLabel(p) { return 'Plan ' + p.ronda + (Number(p.ronda) > 2 ? ' (extra)' : ''); }
   function gruposVista() { return (D.grupos || []).filter(function (g) { return g.experimento === vexp && (filtro === 'todos' || g.modo === filtro); }); }
   function linkInscripcion() { return S.link('index.html', filtro === 'prueba' ? { exp: vexp, modo: 'prueba' } : { exp: vexp }); }
-  function irA(tab) { var b = S.$('[data-tab="' + tab + '"]'); if (b) b.click(); }
+  function irA(tab, q) {   // 2.2.0: abre la pestaña y, si se indica, lleva al elemento y lo resalta
+    var b = S.$('[data-tab="' + tab + '"]'); if (b) b.click();
+    if (!q) return;
+    setTimeout(function () { var t = S.$('#tab-' + tab + ' ' + q) || S.$(q); if (!t) return; t.scrollIntoView({ behavior: 'smooth', block: 'center' }); t.classList.remove('resalta'); void t.offsetWidth; t.classList.add('resalta'); }, 60);
+  }
+  /* ---------- 2.2.0 · Barra superior con componentes DS 3.0 ----------
+   * Selector de banda (E1 / E1.5) · Interruptor de palanca (modo prueba) · Presione para hablar + Display de señal (mago in / mago off). */
   function renderExpbar() {
-    var x = EXP[vexp], el = S.$('#expbar'), gs = gruposVista();
-    var abierto = S.LS.get('sintonia_mago_guia_' + vexp) !== 'cerrada';
-    el.innerHTML = '<div class="expbar ' + x.clase + '"><div class="row" style="align-items:flex-end;flex-wrap:wrap">' +
-      '<div class="field" style="margin:0;flex:2 1 320px"><span class="label">¿Qué experimento estás operando?</span><div class="seg" role="radiogroup" aria-label="Experimento">' +
-      ['E1', 'E2'].map(function (k) { return '<button type="button" role="radio" aria-checked="' + (k === vexp) + '" class="' + EXP[k].clase + '" data-exp="' + k + '">' + e(EXP[k].nombre) + '</button>'; }).join('') + '</div></div>' +
-      '<div class="field" style="margin:0;flex:1 1 160px"><label for="filtro">Modo</label><select id="filtro">' + opts([['piloto', 'Piloto (cuenta)'], ['prueba', 'Prueba (no cuenta)'], ['todos', 'Todos']], filtro) + '</select></div></div>' +
-      '<details id="guia"' + (abierto ? ' open' : '') + '><summary><b>Cómo funciona ' + e(x.nombre) + '</b> · ' + gs.length + ' grupo(s) en esta vista</summary>' +
-      '<div class="grid two" style="margin-top:8px"><div class="small"><p style="margin:0 0 6px"><b>Qué se prueba.</b> ' + e(x.prueba) + '</p><p style="margin:0 0 6px"><b>El grupo.</b> ' + e(x.grupo) + '</p><p style="margin:0 0 6px"><b>El mago.</b> ' + e(x.mago) + '</p><p style="margin:0"><b>Se mide.</b> ' + e(x.mide) + '</p>' +
-      '<p class="tiny muted" style="margin:8px 0 0">Cada grupo hace 2 planes en su condición. La pregunta de facilidad de continuidad (SEQ) aparece en el pulso del plan 2.</p>' +
-      '<p class="small" style="margin:10px 0 4px"><b>Enlace para inscribir un grupo en ' + EXP[vexp].corto + (filtro === 'prueba' ? ' (modo prueba)' : '') + ':</b></p><div class="linkbox">' + e(linkInscripcion()) + '</div><div class="actions" style="margin-top:6px"><button class="btn btn-ghost btn-sm" type="button" id="copiarInsc">Copiar enlace</button></div></div>' +
-      '<ol class="pasos small">' + x.pasos.map(function (p) { return '<li><a href="#" class="linklike" data-ir="' + p[0] + '">' + e(p[1]) + '</a> <span class="tiny muted">(' + ({ grupos: 'pestaña 1', planes: 'pestaña 2', mensajes: 'pestaña 3', registro: 'pestaña 4' })[p[0]] + ')</span></li>'; }).join('') + '</ol></div></details></div>';
+    var el = S.$('#expbar');
+    el.innerHTML = '<div class="s-band" role="radiogroup" aria-label="Condición que estás operando">' +
+      ['E1', 'E2'].map(function (k) { return '<button type="button" role="radio" aria-checked="' + (k === vexp) + '" data-exp="' + k + '"><b>' + (k === 'E1' ? 'E1' : 'E1.5') + '</b><small>' + e(EXP[k].corto) + '</small></button>'; }).join('') + '</div>';
+    S.$('#modobox').innerHTML = '<button type="button" class="s-toggle" role="switch" id="modoPrueba" aria-checked="' + (filtro === 'prueba') + '"><span>Modo prueba<small>' + (filtro === 'prueba' ? 'Lo que hagas no cuenta en el panel' : 'Apagado: estás operando el piloto real') + '</small></span><span class="s-lever-switch" aria-hidden="true"></span></button>';
     S.$$('[data-exp]', el).forEach(function (b) { b.onclick = function () { vexp = b.dataset.exp; S.LS.set('sintonia_mago_exp', vexp); sel.grupo = ''; sel.plan = ''; borrador = []; dest = 'grupo'; renderAll(); }; });
-    S.$('#filtro', el).onchange = function () { filtro = this.value; sel.grupo = ''; sel.plan = ''; renderAll(); };
-    S.$('#guia', el).addEventListener('toggle', function () { S.LS.set('sintonia_mago_guia_' + vexp, this.open ? 'abierta' : 'cerrada'); });
-    S.$$('[data-ir]', el).forEach(function (b) { b.onclick = function (ev) { ev.preventDefault(); irA(b.dataset.ir); }; });
+    S.$('#modoPrueba').onclick = function () { filtro = filtro === 'prueba' ? 'piloto' : 'prueba'; sel.grupo = ''; sel.plan = ''; renderAll(); };
+  }
+  function linkInscripcionHtml() {
+    return '<details class="small" style="margin-top:10px"><summary><b>Inscribir un grupo nuevo en ' + e(EXP[vexp].corto) + (filtro === 'prueba' ? ' (modo prueba)' : '') + '</b></summary><div class="s-invite" style="margin-top:8px"><code>' + e(linkInscripcion()) + '</code><div class="actions" style="margin:0"><button class="btn btn-ghost btn-sm" type="button" id="copiarInsc">Copiar enlace</button></div></div></details>';
+  }
+
+  /* ---------- 2.2.0 · Lista de grupos (Lista + Fila de sintonía + Luz piloto) ---------- */
+  function senal(g, p) {   // estado del grupo en el lenguaje de la Luz piloto
+    if (g.estado === 'excluido') return ['off', 'Desestimado'];
+    if (g.estado === 'reclutando') return ['searching', 'Reclutando'];
+    if (!p) return ['live', 'Sin plan'];
+    if (p.estado === 'votando') return ['live', 'Votación'];
+    if (p.estado === 'cerrado') return ['fixed', 'Fijado'];
+    if (p.estado === 'caido') return ['off', 'Caído'];
+    return ['searching', 'Preparando'];
+  }
+  function renderGlist() {
+    var el = S.$('#glist'), gs = gruposVista();
+    var h = '<p class="s-eyebrow" style="margin:0 0 8px">Grupos · ' + e(EXP[vexp].corto) + (filtro === 'prueba' ? ' · prueba' : '') + '</p>';
+    if (!gs.length) h += '<div class="s-empty"><strong>Todavía no hay grupos aquí</strong><p class="small muted" style="margin:0">Comparte el enlace de inscripción con un organizador.</p></div>';
+    else h += '<div class="s-list">' + gs.map(function (g) {
+      var ps = planesDe(g.grupo_id), p = ps[ps.length - 1], s = senal(g, p), n = g.miembros.length, inv = Number(g.n_invitados) || 0;
+      return '<button type="button" class="s-tuning-row" data-state="' + s[0] + '" data-g="' + e(g.grupo_id) + '"' + (g.grupo_id === sel.grupo ? ' aria-current="true"' : '') + '><span><strong>' + e(g.tipo_grupo) + ' · ' + e(g.grupo_id.slice(-6)) + '</strong><small>' + (g.estado === 'reclutando' ? 'Aceptaron ' + n + ' de ' + inv : (p ? e(rondaLabel(p)) + ' · ' + e(p.estado) : n + ' personas')) + '</small></span><span class="s-pilot" data-state="' + s[0] + '">' + e(s[1]) + '</span><span class="chev" aria-hidden="true">›</span></button>';
+    }).join('') + '</div>';
+    el.innerHTML = h + linkInscripcionHtml();
+    S.$$('[data-g]', el).forEach(function (b) { b.onclick = function () { sel.grupo = b.dataset.g; var ps = planesDe(sel.grupo); sel.plan = ps.length ? ps[ps.length - 1].plan_id : ''; borrador = []; renderAll(); moverSesion(); }; });
     S.$('#copiarInsc', el).onclick = function () { S.copy(linkInscripcion()); };
+  }
+
+  /* ---------- 2.2.0 · Lo que toca ahora (Próxima sintonía) + recorrido (Lista del plan) ----------
+   * Se calcula con el estado del grupo y de sus planes. Cada paso dice dónde se hace y un botón lleva ahí. */
+  function pasosDe(g) {
+    var e15 = g.experimento === 'E2', ps = planesDe(g.grupo_id), n = g.miembros.length, inv = Number(g.n_invitados) || 0, ahora = Date.now();
+    var L = [];
+    function add(grupoPaso, txt, hecho, accion) { L.push({ grupo: grupoPaso, txt: txt, hecho: !!hecho, accion: accion }); }
+    add('Grupo', g.estado === 'reclutando' && n < inv ? 'Esperar que acepten todos (' + n + ' de ' + inv + ')' : 'Cerrar el reclutamiento', g.estado !== 'reclutando',
+      g.estado === 'reclutando' && n < inv ? { t: 'Ver la invitación', tab: 'grupos', q: '[data-cerrar]', ayuda: 'Si a las 24 h falta alguien, «Abrir chat con mensaje» le escribe al organizador.' } : { t: 'Ir a cerrar el reclutamiento', tab: 'grupos', q: '[data-cerrar]', ayuda: 'Aceptaron todos: cierra el reclutamiento para activar el grupo.' });
+    add('Grupo', 'Crear el grupo de WhatsApp y enviar /ingreso', ps.length > 0, { t: 'Ver nombres y números', tab: 'grupos', q: '#crearGrupoWA', ayuda: 'Meta no deja crearlo automático: créalo a mano desde el número Sintonía' + (e15 ? '; el motor envía /ingreso.' : ' y envía /ingreso (pestaña Mensajes).') });
+    [1, 2].forEach(function (r) {
+      var p = ps.filter(function (x) { return Number(x.ronda) === r; }).pop(), caido = p && p.estado === 'caido', cerr = p && (p.estado === 'cerrado' || caido);
+      var he = p && p.hora_encuentro ? new Date(p.hora_encuentro).getTime() : null, paso = he && ahora > he;
+      var faltanV = p ? g.miembros.filter(function (m) { return (p.votos_por_pid || {})[m.pid] === undefined; }).length : 0;
+      var est = (p && p.estado_por_pid) || {}, llegaron = g.miembros.filter(function (m) { return (est[m.pid] || {}).llego; }).length;
+      var faltanP = p ? g.miembros.filter(function (m) { return (p.retro_pids || []).indexOf(m.pid) < 0; }).length : n;
+      var G = 'Plan ' + r;
+      if (r === 2) add(G, 'Crear el plan 2 en el mismo grupo', !!p, { t: 'Ir a crear el plan 2', tab: 'planes', q: '#siguienteRonda', ayuda: 'Con el plan 1 cerrado y el pulso enviado, en el mismo grupo de WhatsApp.' });
+      else add(G, 'Crear el plan 1', !!p, { t: 'Ir a crear el plan', tab: 'planes', q: '#crearPlan', ayuda: 'En la pestaña Plan.' });
+      add(G, e15 ? 'El motor propone y publica las opciones' : 'Pedir opciones a Gemini, revisar y publicar', p && p.estado !== 'borrador' && p.estado !== 'en_revision', { t: 'Ir a las opciones', tab: 'planes', q: '#pedirIA', ayuda: 'Solo lugares del inventario activo; una persona revisa antes de publicar.' });
+      add(G, (e15 ? 'Revisar votos' : 'Enviar /opciones y registrar votos') + (p && p.estado === 'votando' ? (faltanV ? ' (faltan ' + faltanV + ')' : ' (ya votaron todos)') : '') + ' y cerrar con día y hora', cerr,
+        { t: faltanV ? (e15 ? 'Ver los votos' : 'Registrar votos') : 'Cerrar el plan', tab: 'planes', q: faltanV ? '[data-votopid]' : '#cerrarPlan', ayuda: faltanV ? (e15 ? 'Si el motor falla, regístralos a mano.' : 'Envía /opciones en la pestaña Mensajes y registra aquí lo que cada persona votó en el chat.') : 'Pon el día y la hora del encuentro y la salida sugerida.' });
+      add(G, caido ? 'Plan caído (' + (p.causa_caida || 'sin causa') + ')' : (paso ? 'Registrar llegadas y «en casa» (' + llegaron + ' de ' + n + ')' : (e15 ? 'Revisar confirmación y hora de salida' : 'Enviar /confirmado y, 2 h antes, /salida')), caido || (paso && (llegaron >= n || ahora > he + 8 * 36e5)),
+        paso ? { t: 'Registrar llegadas', tab: 'registro', q: '.estado-sel', ayuda: 'El menú registra; no le escribe a nadie.' } : { t: e15 ? 'Ver mensajes' : 'Ir a los mensajes', tab: 'mensajes', q: '#dest', ayuda: 'Los mensajes se llenan con el plan seleccionado.' });
+      add(G, 'Pulso con SEQ y SUS' + (p && cerr && !caido ? ' (faltan ' + faltanP + ')' : ''), caido || (p && cerr && faltanP === 0), { t: 'Ir a los enlaces del pulso', tab: 'planes', q: '#pulsos', ayuda: e15 ? 'Lo envía el motor; usa los enlaces solo si falla.' : 'Envíalo a cada persona después del encuentro (unos 4 minutos).' });
+    });
+    return L;
+  }
+  function renderSiguiente() {
+    var el = S.$('#siguiente'), g = grupo(sel.grupo);
+    if (!g) { el.innerHTML = '<div class="s-next"><p class="s-eyebrow" style="margin:0">Lo que toca ahora</p><h3 style="margin:0">Elige un grupo</h3><p style="margin:0">O inscribe uno nuevo con el enlace de la izquierda.</p></div>'; return; }
+    var L = pasosDe(g), i = L.findIndex(function (x) { return !x.hecho; }), cur = g.estado === 'excluido' || i < 0 ? null : L[i], hechos = L.filter(function (x) { return x.hecho; }).length;
+    var x = EXP[g.experimento];
+    var h = '<div class="s-next"><p class="s-eyebrow" style="margin:0">Lo que toca ahora · ' + e(g.tipo_grupo) + ' · ' + e(g.grupo_id.slice(-6)) + '</p>';
+    if (g.estado === 'excluido') h += '<h3 style="margin:0">Este grupo quedó desestimado</h3><p style="margin:0">' + e(g.motivo || 'Retiro o consentimiento incompleto') + '. No hay nada más que hacer con él (I9).</p>';
+    else if (!cur) h += '<h3 style="margin:0">Grupo completo: 2 planes y sus pulsos</h3><p style="margin:0">Si ya no vas a operar otro grupo, cierra tu sesión con «Mago off».</p>';
+    else h += '<h3 style="margin:0">' + e(cur.grupo) + ' · ' + e(cur.txt) + '</h3><p style="margin:0">' + e(cur.accion.ayuda) + '</p><div class="acciones"><button type="button" class="s-button" data-size="sm" id="irPaso">' + e(cur.accion.t) + ' →</button></div>';
+    h += '</div>';
+    h += '<div class="s-plan-list" style="margin-top:12px"' + (cur ? '' : ' data-state="done"') + '><header><span style="flex:1"><b>Recorrido del grupo</b><small>' + hechos + ' de ' + L.length + ' pasos</small></span></header>' +
+      '<div class="s-progress"><i style="--p:' + Math.round(hechos / L.length * 100) + '%"></i></div><ol>';
+    var gr = '';
+    L.forEach(function (s, k) {
+      if (s.grupo !== gr) { gr = s.grupo; h += '<li class="grupo-paso" aria-hidden="true">' + e(gr) + '</li>'; }
+      h += '<li data-st="' + (s.hecho ? 'hecho' : 'pendiente') + '"' + (cur && k === i ? ' aria-current="step"' : '') + '><span class="marca" aria-hidden="true">' + (s.hecho ? '✓' : '') + '</span><span><strong>' + e(s.txt) + '</strong></span>' + (cur && k === i ? '<em>Ahora</em>' : '') + '</li>';
+    });
+    h += '</ol><details class="small"><summary>Cómo funciona ' + e(x.nombre) + '</summary><p style="margin:6px 0 0"><b>Qué se prueba.</b> ' + e(x.prueba) + '</p><p style="margin:4px 0 0"><b>El mago.</b> ' + e(x.mago) + '</p><p style="margin:4px 0 0"><b>Se mide.</b> ' + e(x.mide) + '</p></details></div>';
+    el.innerHTML = h;
+    var b = S.$('#irPaso', el); if (b) b.onclick = function () { irA(cur.accion.tab, cur.accion.q); };
   }
 
   function renderAll() {
@@ -165,42 +240,44 @@
       (ultimaCarga ? ' · actualizado ' + String(ultimaCarga.getHours()).padStart(2, '0') + ':' + String(ultimaCarga.getMinutes()).padStart(2, '0') : '');
     if (!sel.grupo || !gs.some(function (g) { return g.grupo_id === sel.grupo; })) { var a = gs.filter(function (g) { return g.estado === 'activo'; })[0] || gs[0]; sel.grupo = a ? a.grupo_id : ''; }
     var ps = planesDe(sel.grupo); if (!sel.plan || !plan(sel.plan) || plan(sel.plan).grupo_id !== sel.grupo) sel.plan = ps.length ? ps[ps.length - 1].plan_id : '';
-    renderExpbar(); renderMagobar(); renderGrupos(); renderPlanes(); renderMensajes(); renderRegistro(); renderCambios(); renderInventario(); renderReinicio();
+    renderExpbar(); renderMagobar(); renderGlist(); renderSiguiente(); renderGrupos(); renderPlanes(); renderMensajes(); renderRegistro(); renderCambios(); renderInventario(); renderReinicio();
     if (!hashUsado) { hashUsado = true; var hh = location.hash.replace('#', ''); if (hh && S.$('[data-tab="' + hh + '"]')) irA(hh); }
   }
 
   /* ---------- Pestañas ---------- */
   S.$$('[data-tab]').forEach(function (b) {
-    b.onclick = function () { S.$$('[data-tab]').forEach(function (x) { x.setAttribute('aria-selected', String(x === b)); }); S.$$('.tab').forEach(function (t) { S.show(t, t.id === 'tab-' + b.dataset.tab); }); };
+    b.onclick = function () { S.$$('[data-tab]').forEach(function (x) { x.setAttribute('aria-selected', String(x === b)); }); S.$$('.tab').forEach(function (t) { S.show(t, t.id === 'tab-' + b.dataset.tab); }); var aj = S.$('.s-tabs .ajustes'); if (aj) aj.open = false; };
   });
 
-  /* ---------- 2.1.0 · Mago in / mago off (Sync P7c, I3) ----------
+  /* ---------- 2.2.0 · Mago in / mago off (Presione para hablar + Display de señal) ----------
    * Una sesión por persona del equipo, ligada al plan seleccionado. Al cerrarla, el backend calcula los minutos y los suma al plan.
-   * Si cambias de plan con la sesión abierta, la consola la cierra y abre otra en el plan nuevo. */
+   * Si cambias de grupo o de plan con la sesión abierta, la consola la cierra y abre otra en el plan nuevo. */
   var reloj = null;
   function miSesion() { var n = S.LS.get('sintonia_mago_nombre') || ''; return (D.sesiones_abiertas || []).filter(function (x) { return x.mago === n; })[0] || null; }
+  function hm(ms) { var m = Math.max(0, Math.floor(ms / 6e4)); return Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0'); }
   function renderMagobar() {
     var el = S.$('#magobar'); if (!el) return;
-    if (D.sesiones_abiertas === undefined) { el.innerHTML = '<div class="card warn small">«Mago in / Mago off» necesita el backend 2.3.0 desplegado. Mientras tanto, usa el registro manual de minutos (pestaña 4).</div>'; return; }
-    var ses = miSesion(), nom = S.LS.get('sintonia_mago_nombre') || '', p = plan(sel.plan);
-    var min = ses ? Math.max(0, Math.round((Date.now() - new Date(ses.inicio).getTime()) / 6e4)) : 0;
-    el.innerHTML = '<div class="card ' + (ses ? 'soft' : '') + '" style="padding:12px 16px"><div class="row" style="align-items:flex-end;flex-wrap:wrap">' +
-      '<div class="field" style="margin:0;flex:1 1 180px"><label for="magoQuien">Quién opera</label><input id="magoQuien" type="text" maxlength="30" value="' + e(nom) + '" placeholder="Tu nombre"' + (ses ? ' disabled' : '') + '></div>' +
-      '<div style="flex:2 1 260px" class="small">' + (ses ? '<b>● Mago in</b> desde las ' + hhmmL(ses.inicio) + ' · <b id="magoMin">' + min + ' min</b> · ' + e(ses.plan_id ? rondaLabel(plan(ses.plan_id) || { ronda: '?' }) + ' · ' + grupoLabel(grupo(ses.grupo_id) || { tipo_grupo: '', experimento: '', grupo_id: ses.grupo_id || '', modo: '' }) : 'sin plan') :
-        'Abre «Mago in» antes de operar ' + (p ? e(rondaLabel(p)) + ' de este grupo' : 'un grupo') + '. Los minutos se registran solos al cerrar.') + '</div>' +
-      '<div class="actions" style="margin:0">' + (ses ? '<button class="btn btn-danger btn-sm" id="magoOff" data-busy="Cerrando…">■ Mago off</button>' : '<button class="btn btn-primary btn-sm" id="magoIn" data-busy="Abriendo…">▶ Mago in</button>') + '</div></div></div>';
     clearInterval(reloj);
-    if (ses) reloj = setInterval(function () { var m = S.$('#magoMin'); if (m) m.textContent = Math.max(0, Math.round((Date.now() - new Date(ses.inicio).getTime()) / 6e4)) + ' min'; }, 30000);
-    var bi = S.$('#magoIn', el), bo = S.$('#magoOff', el);
-    if (bi) bi.onclick = function () {
-      var n = S.$('#magoQuien', el).value.trim(); if (!n) return S.toast('Escribe tu nombre para abrir la sesión.', true);
-      S.LS.set('sintonia_mago_nombre', n);
-      act(bi, { action: 'sesion_mago', accion: 'in', mago: n, plan_id: sel.plan, grupo_id: sel.grupo, experimento: vexp }, 'Mago in · los minutos corren');
-    };
-    if (bo) bo.onclick = function () { act(bo, { action: 'sesion_mago', accion: 'off', mago: nom, sesion_id: ses.sesion_id }, function (r) { return 'Mago off · ' + S.num(r.minutos, 1) + ' min sumados al plan'; }); };
+    if (D.sesiones_abiertas === undefined) { el.innerHTML = '<div class="s-banner" data-type="error"><span><strong>Mago in / mago off no está disponible</strong>El backend en vivo es anterior a la 2.3.0. Registra los minutos a mano en la pestaña Llegadas.</span></div>'; return; }
+    var ses = miSesion(), nom = S.LS.get('sintonia_mago_nombre') || '', p = plan(sel.plan);
+    if (ses) {
+      var ini = new Date(ses.inicio).getTime(), ps = ses.plan_id ? plan(ses.plan_id) : null;
+      el.innerHTML = '<div class="mago-box"><div class="s-display" data-type="time"><span><small>En línea</small><b data-ghost="8:88" id="magoMin">' + hm(Date.now() - ini) + '</b></span></div>' +
+        '<button type="button" class="s-human" data-state="live" id="magoOff" data-busy="Cerrando…"><span class="s-grip" aria-hidden="true"></span><span><strong>Mago off</strong><small>' + e(nom) + ' · desde las ' + hhmmL(ses.inicio) + (ps ? ' · ' + e(rondaLabel(ps)) : '') + '</small></span></button></div>';
+      reloj = setInterval(function () { var m = S.$('#magoMin'); if (m) m.textContent = hm(Date.now() - ini); }, 20000);
+      S.$('#magoOff', el).onclick = function () { act(this, { action: 'sesion_mago', accion: 'off', mago: nom, sesion_id: ses.sesion_id }, function (r) { return 'Mago off · ' + S.num(r.minutos, 1) + ' min sumados al plan'; }); };
+    } else {
+      el.innerHTML = '<div class="mago-box"><input id="magoQuien" type="text" maxlength="30" value="' + e(nom) + '" placeholder="Tu nombre" aria-label="Quién opera">' +
+        '<button type="button" class="s-human" id="magoIn" data-busy="Abriendo…"><span class="s-grip" aria-hidden="true"></span><span><strong>Mago in</strong><small>' + (p ? 'Abre tu sesión en ' + e(rondaLabel(p)) : 'Abre tu sesión antes de operar') + '. Los minutos se registran solos.</small></span></button></div>';
+      S.$('#magoIn', el).onclick = function () {
+        var n = S.$('#magoQuien', el).value.trim(); if (!n) { S.$('#magoQuien', el).focus(); return S.toast('Escribe tu nombre para abrir la sesión.', true); }
+        S.LS.set('sintonia_mago_nombre', n);
+        act(this, { action: 'sesion_mago', accion: 'in', mago: n, plan_id: sel.plan, grupo_id: sel.grupo, experimento: vexp }, 'Mago in · los minutos corren');
+      };
+    }
   }
   function hhmmL(iso) { var d = new Date(iso); return isNaN(d) ? '—' : String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
-  /** Si el mago cambia de plan con la sesión abierta, se cierra y se abre otra en el plan nuevo (los minutos quedan en el plan correcto). */
+  /** Si el mago cambia de grupo o de plan con la sesión abierta, se cierra y se abre otra en el plan nuevo (los minutos quedan en el plan correcto). */
   function moverSesion() {
     var ses = D && D.sesiones_abiertas !== undefined ? miSesion() : null;
     if (!ses || !sel.plan || ses.plan_id === sel.plan) return;
@@ -209,11 +286,23 @@
     });
   }
 
+  /* ---------- 2.2.0 · Confirmaciones en una Hoja con asa (reemplaza los «dos toques») ---------- */
+  S.dosPasos = function (btn, pregunta, run) {
+    var d = S.$('#hoja');
+    if (!d || typeof d.showModal !== 'function') { if (window.confirm(pregunta)) run(); return; }
+    var peligro = btn.classList.contains('btn-danger');
+    d.innerHTML = '<div class="s-sheet"><small>Confirmar</small><h2>' + e((btn.textContent || '').replace(/\s+/g, ' ').trim()) + '</h2><p>' + e(pregunta) + '</p>' +
+      '<div class="s-actions"><button type="button" class="s-button" data-style="secondary" id="hojaNo">Cancelar</button><button type="button" class="s-button" ' + (peligro ? 'data-style="danger" ' : '') + 'id="hojaSi">Sí, confirmar</button></div></div>';
+    S.$('#hojaNo', d).onclick = function () { d.close(); };
+    S.$('#hojaSi', d).onclick = function () { d.close(); run(); };
+    d.showModal(); S.$('#hojaNo', d).focus();
+  };
+
   /* ---------- 1 · Grupos y quórum (I9) ---------- */
   function renderGrupos() {
     var el = S.$('#tab-grupos');
-    var gs = gruposVista(), h = '';
-    if (!gs.length) h += '<div class="card empty"><p class="muted">No hay grupos de ' + e(EXP[vexp].nombre) + ' en este modo. Para inscribir uno, comparte <b>index.html?exp=' + vexp + (filtro === 'prueba' ? '&amp;modo=prueba' : '') + '</b>.</p></div>';
+    var gs = gruposVista().filter(function (g) { return g.grupo_id === sel.grupo; }), h = '';   // 2.2.0: solo el grupo elegido en la lista
+    if (!gs.length) h += '<div class="s-empty"><strong>Elige un grupo en la lista de arriba</strong><p class="small muted" style="margin:0">Aquí ves su quórum, sus miembros y el enlace de invitación.</p></div>';
     h += '<div class="grid two">' + gs.map(function (g) {
       var n = g.miembros.length, inv = Number(g.n_invitados) || 0, invLink = S.link('unirse.html', { inv: g.codigo_invitacion });
       var mm = g.miembros.map(function (m) {
@@ -230,7 +319,7 @@
           '<button class="btn btn-primary btn-sm" data-cerrar="' + e(g.grupo_id) + '" data-n="' + n + '" data-inv="' + inv + '" data-busy="Cerrando…">Cerrar reclutamiento</button></div>' : '') +
         (g.preferencias && g.preferencias.length ? '<details style="margin-top:10px"><summary class="small">Preferencias (' + g.preferencias.length + ')</summary><ul class="small">' + g.preferencias.map(function (p) { return '<li>' + e(p) + '</li>'; }).join('') + '</ul></details>' : '') +
         '<div style="margin-top:8px">' + (mm || '<p class="small muted">Sin miembros activos.</p>') + '</div>' +
-        (g.estado === 'activo' && n ? '<div class="card soft small" style="margin:10px 0 0"><b>Crear el grupo del plan en WhatsApp.</b> Meta no deja crearlo automáticamente desde una cuenta sin verificar: créalo a mano desde el número Sintonía con estas ' + n + ' personas y envía <b>/ingreso</b> (pestaña 3).<div class="actions" style="margin-top:8px"><button class="btn btn-ghost btn-sm" data-copy="' + e(g.miembros.map(function (x) { return x.nombre + ' +' + S.phone(x.whatsapp); }).join('\n')) + '">Copiar nombres y números</button></div></div>' : '') +
+        (g.estado === 'activo' && n ? '<div class="card soft small" id="crearGrupoWA" style="margin:10px 0 0"><b>Crear el grupo del plan en WhatsApp.</b> Meta no deja crearlo automáticamente desde una cuenta sin verificar: créalo a mano desde el número Sintonía con estas ' + n + ' personas y envía <b>/ingreso</b> (pestaña 3).<div class="actions" style="margin-top:8px"><button class="btn btn-ghost btn-sm" data-copy="' + e(g.miembros.map(function (x) { return x.nombre + ' +' + S.phone(x.whatsapp); }).join('\n')) + '">Copiar nombres y números</button></div></div>' : '') +
         '</div>';
     }).join('') + '</div>';
     el.innerHTML = h;
@@ -259,7 +348,7 @@
   function renderPlanes() {
     var el = S.$('#tab-planes'), gs = gruposVista(), g = grupo(sel.grupo), p = plan(sel.plan);
     if (!gs.length) { el.innerHTML = '<div class="card empty"><p class="muted">No hay grupos de ' + e(EXP[vexp].nombre) + ' en este modo.</p></div>'; return; }
-    var h = '<div class="card"><div class="row"><div class="field" style="margin:0"><label for="selG">Grupo</label><select id="selG">' + opts(gs.map(function (x) { return [x.grupo_id, grupoLabel(x) + ' · ' + x.estado]; }), sel.grupo) + '</select></div>' +
+    var h = '<div class="card"><div class="row"><div class="field" style="margin:0;display:none"><label for="selG">Grupo</label><select id="selG">' + opts(gs.map(function (x) { return [x.grupo_id, grupoLabel(x) + ' · ' + x.estado]; }), sel.grupo) + '</select></div>' +
       '<div class="field" style="margin:0"><label for="selP">Plan</label><select id="selP">' + (planesDe(sel.grupo).length ? opts(planesDe(sel.grupo).map(function (x) { return [x.plan_id, rondaLabel(x) + ' · ' + x.estado]; }), sel.plan) : '<option value="">Sin planes</option>') + '</select></div></div>' +
       '<div class="actions">' + (function () {
         var enCurso = planesDe(sel.grupo).filter(function (x) { return ['borrador', 'en_revision', 'votando'].indexOf(x.estado) >= 0; })[0];   // 2.0.7 (R7): un plan a la vez
@@ -328,7 +417,7 @@
       h += '<details class="small" style="margin:0 0 10px"><summary><b>Corregir hora del encuentro</b> · si el grupo la cambió después de cerrar</summary><div class="row" style="margin-top:8px;align-items:flex-end"><div class="field" style="margin:0"><label for="horaC">Nueva hora</label><input id="horaC" type="datetime-local" value="' + e(localDT(p.hora_encuentro)) + '"></div>' +
         '<div class="field" style="margin:0"><label for="salidaC">Salida sugerida</label><input id="salidaC" type="text" maxlength="40" value="' + e(((ops[Number(p.elegida)] || {}).hora_salida) || '') + '"></div><button class="btn btn-ghost btn-sm" id="corregir" data-busy="Guardando…" style="flex:0 0 auto">Guardar corrección</button></div>' +
         '<p class="tiny muted">No cambia la hora del cierre ni la opción elegida (las métricas quedan intactas). La hora anterior queda en la nota del plan.</p>' + (p.nota ? '<p class="tiny muted">Nota: ' + e(p.nota) + '</p>' : '') + '</details>';
-      h += '<h3>Enlaces personales al pulso</h3><p class="tiny muted">El pulso incluye SEQ y SUS (unos 4 minutos). ' + (p.experimento === 'E2' ? 'En E1.5 lo envía el motor; usa estos botones solo si falla.' : 'Envíalo a cada persona después del encuentro.') + (Array.isArray(p.usabilidad_pids) ? ' «Enviar complemento» aparece si alguien respondió el pulso pero no la parte de usabilidad.' : '') + '</p>' + (g3 ? g3.miembros : []).map(function (m) {
+      h += '<h3 id="pulsos">Enlaces personales al pulso</h3><p class="tiny muted">El pulso incluye SEQ y SUS (unos 4 minutos). ' + (p.experimento === 'E2' ? 'En E1.5 lo envía el motor; usa estos botones solo si falla.' : 'Envíalo a cada persona después del encuentro.') + (Array.isArray(p.usabilidad_pids) ? ' «Enviar complemento» aparece si alguien respondió el pulso pero no la parte de usabilidad.' : '') + '</p>' + (g3 ? g3.miembros : []).map(function (m) {
         var st = (p.estado_por_pid || {})[m.pid] || {}, l = linkRetro(m.pid, p.plan_id);
         var hayU = Array.isArray(p.usabilidad_pids), yaR = (p.retro_pids || []).indexOf(m.pid) >= 0, yaU = hayU && p.usabilidad_pids.indexOf(m.pid) >= 0, pendUsab = hayU && yaR && !yaU;
         return '<div class="member"><div class="who">' + e(m.nombre) + ' <span class="tiny muted">' + [st.apuntado ? 'apuntado' : '', st.llego ? 'llegó' : '', st.casa ? 'en casa' : '', yaR ? 'pulso ✓' : '', hayU ? (yaU ? 'usabilidad ✓' : (yaR ? 'usabilidad pendiente' : '')) : ''].filter(Boolean).join(' · ') + '</span></div>' +
