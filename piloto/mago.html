@@ -31,6 +31,7 @@
     </form>
   </section>
 
+  <div class="mago-tira" id="magoTira" hidden role="status"></div>
   <section id="consola" class="hidden">
     <p class="small muted" id="resumen"></p>
     <div class="consola-top"><div id="expbar"></div><div id="modobox"></div><div id="magobar"></div></div>
@@ -258,21 +259,32 @@
   function renderMagobar() {
     var el = S.$('#magobar'); if (!el) return;
     clearInterval(reloj);
-    if (D.sesiones_abiertas === undefined) { el.innerHTML = '<div class="s-banner" data-type="error"><span><strong>Mago in / mago off no está disponible</strong>El backend en vivo es anterior a la 2.3.0. Registra los minutos a mano en la pestaña Llegadas.</span></div>'; return; }
+    var tira = S.$('#magoTira');
+    if (D.sesiones_abiertas === undefined) { if (tira) tira.hidden = true; el.innerHTML = '<div class="s-banner" data-type="error"><span><strong>Mago in / mago off no está disponible</strong>El backend en vivo es anterior a la 2.3.0. Registra los minutos a mano en la pestaña Llegadas.</span></div>'; return; }
     var ses = miSesion(), nom = S.LS.get('sintonia_mago_nombre') || '', p = plan(sel.plan);
+    document.title = (ses ? '● En línea · ' : '') + 'Sintonía · Consola del mago';
     if (ses) {
       var ini = new Date(ses.inicio).getTime(), ps = ses.plan_id ? plan(ses.plan_id) : null;
-      el.innerHTML = '<div class="mago-box"><div class="s-display" data-type="time"><span><small>En línea</small><b data-ghost="8:88" id="magoMin">' + hm(Date.now() - ini) + '</b></span></div>' +
-        '<button type="button" class="s-human" data-state="live" id="magoOff" data-busy="Cerrando…"><span class="s-grip" aria-hidden="true"></span><span><strong>Mago off</strong><small>' + e(nom) + ' · desde las ' + hhmmL(ses.inicio) + (ps ? ' · ' + e(rondaLabel(ps)) : '') + '</small></span></button></div>';
-      reloj = setInterval(function () { var m = S.$('#magoMin'); if (m) m.textContent = hm(Date.now() - ini); }, 20000);
-      S.$('#magoOff', el).onclick = function () { act(this, { action: 'sesion_mago', accion: 'off', mago: nom, sesion_id: ses.sesion_id }, function (r) { return 'Mago off · ' + S.num(r.minutos, 1) + ' min sumados al plan'; }); };
+      el.innerHTML = '<div class="mago-box" data-state="in" role="status" aria-live="polite">' +
+        '<div class="mago-estado"><span class="s-pilot" data-state="live">En línea</span><b id="magoMin">' + hm(Date.now() - ini) + '</b><small>' + e(nom) + ' · desde las ' + hhmmL(ses.inicio) + (ps ? ' · ' + e(rondaLabel(ps)) : ' · sin plan') + '</small></div>' +
+        '<button type="button" class="s-human" data-state="live" id="magoOff" data-busy="Cerrando…"><span class="s-grip" aria-hidden="true"></span><span><strong>■ Mago off</strong><small>Cierra tu sesión al terminar: los minutos se suman al plan.</small></span></button></div>';
+      if (tira) { tira.hidden = false; tira.innerHTML = '<span class="s-pilot" data-state="live">Mago en línea</span> <b id="tiraMin">' + hm(Date.now() - ini) + '</b> <span class="tiny">' + e(nom) + (ps ? ' · ' + e(rondaLabel(ps)) : '') + '</span> <button type="button" class="s-button" data-size="sm" data-style="danger" id="tiraOff">■ Mago off</button>'; }
+      reloj = setInterval(function () { var t = hm(Date.now() - ini), m = S.$('#magoMin'), m2 = S.$('#tiraMin'); if (m) m.textContent = t; if (m2) m2.textContent = t; }, 15000);
+      var off = function () { var b = this; act(b, { action: 'sesion_mago', accion: 'off', mago: nom, sesion_id: ses.sesion_id }, function (r) { return 'Mago off · ' + S.num(r.minutos, 1) + ' min sumados al plan'; }).then(function (r) { if (r && r.ok) { D.sesiones_abiertas = (D.sesiones_abiertas || []).filter(function (x) { return x.sesion_id !== ses.sesion_id; }); renderMagobar(); } }); };
+      S.$('#magoOff', el).onclick = off; if (tira) S.$('#tiraOff', tira).onclick = off;
     } else {
-      el.innerHTML = '<div class="mago-box"><input id="magoQuien" type="text" maxlength="30" value="' + e(nom) + '" placeholder="Tu nombre" aria-label="Quién opera">' +
-        '<button type="button" class="s-human" id="magoIn" data-busy="Abriendo…"><span class="s-grip" aria-hidden="true"></span><span><strong>Mago in</strong><small>' + (p ? 'Abre tu sesión en ' + e(rondaLabel(p)) : 'Abre tu sesión antes de operar') + '. Los minutos se registran solos.</small></span></button></div>';
+      if (tira) tira.hidden = true;
+      el.innerHTML = '<div class="mago-box" data-state="off">' +
+        '<div class="mago-estado"><span class="s-pilot" data-state="off">Fuera de línea</span><input id="magoQuien" type="text" maxlength="30" value="' + e(nom) + '" placeholder="Tu nombre" aria-label="Quién opera"></div>' +
+        '<button type="button" class="s-human" id="magoIn" data-busy="Abriendo…"><span class="s-grip" aria-hidden="true"></span><span><strong>▶ Mago in</strong><small>' + (p ? 'Abre tu sesión en ' + e(rondaLabel(p)) : 'Abre tu sesión antes de operar') + '. Los minutos corren desde aquí.</small></span></button></div>';
       S.$('#magoIn', el).onclick = function () {
         var n = S.$('#magoQuien', el).value.trim(); if (!n) { S.$('#magoQuien', el).focus(); return S.toast('Escribe tu nombre para abrir la sesión.', true); }
         S.LS.set('sintonia_mago_nombre', n);
-        act(this, { action: 'sesion_mago', accion: 'in', mago: n, plan_id: sel.plan, grupo_id: sel.grupo, experimento: vexp }, 'Mago in · los minutos corren');
+        var b = this;
+        act(b, { action: 'sesion_mago', accion: 'in', mago: n, plan_id: sel.plan, grupo_id: sel.grupo, experimento: vexp }, 'Mago in · los minutos corren').then(function (r) {
+          // 2.2.1: el estado cambia en el acto, aunque la recarga tarde o el backend aún no devuelva la sesión
+          if (r && r.ok && !miSesion()) { (D.sesiones_abiertas = D.sesiones_abiertas || []).push({ sesion_id: r.sesion_id, mago: n, plan_id: sel.plan, grupo_id: sel.grupo, experimento: vexp, inicio: r.inicio || new Date().toISOString() }); renderMagobar(); }
+        });
       };
     }
   }

@@ -448,3 +448,35 @@ dialog.hoja::backdrop { background: rgba(31, 33, 38, .45); }
 .tpl { background: var(--color-chat-canvas); }
 .s-tuning-row > .s-pilot { flex: none; }
 .s-tuning-row > .chev { flex: none; }
+
+/* 2.2.1 · Mago in / mago off con estado inequívoco: caja apagada (gris) vs. en línea (cobalto profundo) + tira fija arriba */
+.mago-box { flex-wrap: wrap; transition: background .2s ease, border-color .2s ease; }
+.mago-box .mago-estado { display: grid; gap: var(--space-4); align-content: center; min-width: 150px; }
+.mago-box .mago-estado b { font: 800 var(--font-size-28)/1.1 var(--font-family-mono); font-variant-numeric: tabular-nums; }
+.mago-box .mago-estado small { font-size: var(--font-size-12); }
+.mago-box[data-state="off"] { background: var(--color-bg-surface-muted); border-style: dashed; border-color: var(--color-border-strong); }
+.mago-box[data-state="off"] .s-human { border-width: 2px; border-color: var(--color-border-brand); }
+.mago-box[data-state="off"] .s-human strong { color: var(--color-text-brand); }
+.mago-box[data-state="in"] { background: var(--color-bg-brand-deep); border-color: var(--color-bg-brand-deep); color: var(--color-text-on-deep); }
+.mago-box[data-state="in"] .mago-estado small { color: var(--color-text-on-deep); opacity: .85; }
+.mago-box[data-state="in"] .s-human { background: var(--color-bg-surface); color: var(--color-text-critical); border-color: var(--color-bg-surface); }
+.mago-box[data-state="in"] .s-human small { color: var(--color-text-secondary); }
+.mago-box[data-state="in"] .s-human::after { background: var(--color-signal-off); }
+.mago-tira { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: var(--space-12); flex-wrap: wrap; margin: 0 -16px; padding: var(--space-8) var(--space-16); background: var(--color-bg-brand-deep); color: var(--color-text-on-deep); box-shadow: var(--shadow-card); }
+.mago-tira b { font: 800 var(--font-size-17)/1 var(--font-family-mono); font-variant-numeric: tabular-nums; }
+.mago-tira .s-button { margin-left: auto; }
+.mago-tira[hidden] { display: none; }
+
+/* 2.2.1 · Button del DS 3.0 en todas las páginas: .btn del piloto con la anatomía de .s-button */
+.btn { height: auto; min-height: var(--size-control-md); padding: var(--space-12) var(--space-18); border-width: var(--stroke-1-5); border-radius: var(--radius-full); font: 700 var(--font-size-16)/1.25 var(--font-family-sans); }
+.btn-sm { min-height: var(--size-control-sm); padding: var(--space-6) var(--space-12); font-size: var(--font-size-14); }
+.btn-primary { background: var(--color-bg-brand); color: var(--color-text-on-brand); }
+.btn-primary:hover { background: var(--color-bg-brand-hover); }
+.btn-ghost { background: transparent; color: var(--color-text-primary); border-color: var(--color-border-default); }
+.btn-ghost:hover { background: var(--color-bg-surface-hover); }
+.btn-honey { background: var(--color-bg-accent); color: var(--color-text-on-accent); }
+.btn-honey:hover { background: var(--color-bg-accent-hover); }
+.btn-danger { background: var(--color-bg-surface); color: var(--color-text-danger); border-color: var(--color-border-danger); }
+.btn-danger:hover { background: var(--color-bg-danger-soft); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: .6; cursor: not-allowed; }
+.s-plan-list li em { color: var(--color-text-brand); }

@@ -1,7 +1,8 @@
 /**
- * Sintonía · Piloto v2.3.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.3.1 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.3.1 (24/10): rows_ ignora filas completamente vacías (la fila 2 que deja «Empezar piloto real» aparecía como un grupo y un plan fantasma).
  * Versión 2.3.0 (24/10, para el frontend 2.1.0 · Sync P7c, semana de pruebas desde cero):
  *   - E1.5 · WhatsApp automatizado reemplaza a la web app. Usa el valor interno 'E2' (sin cambio de esquema); las dos condiciones corren en WhatsApp.
  *   - Mago in / mago off (sesion_mago): cada sesión guarda inicio, fin y minutos en la hoja 'sesiones' y suma una fila en 'operacion'
@@ -137,7 +138,8 @@ function append_(name, obj) {
 }
 function rows_(name) {
   var v = sheet_(name).getDataRange().getValues(), h = v[0], out = [];
-  for (var i = 1; i < v.length; i++) { var o = {}; for (var j = 0; j < h.length; j++) o[h[j]] = v[i][j]; o._row = i + 1; out.push(o); }
+  for (var i = 1; i < v.length; i++) { if (v[i].every(function (x) { return x === '' || x === null; })) continue;   // v2.3.1: ignora la fila vacía que deja «Empezar piloto real»
+    var o = {}; for (var j = 0; j < h.length; j++) o[h[j]] = v[i][j]; o._row = i + 1; out.push(o); }
   return out;
 }
 function updateRow_(name, rowNum, patch) {
@@ -811,7 +813,7 @@ function probarMontaje() {
   r.push(prop_('MOTOR_KEY', '') ? (prop_('MOTOR_KEY', '') === prop_('ADMIN_KEY', '') ? '❌ MOTOR_KEY no puede ser igual a ADMIN_KEY' : '✅ MOTOR_KEY (motor n8n)') : '⚠️ sin MOTOR_KEY: el motor de E1.5 no puede escribir');   // v2.3.0
   try { var ss = ss_(); r.push('✅ Hoja: ' + ss.getName()); } catch (x) { r.push('❌ No abre la hoja (revisa SHEET_ID): ' + x); Logger.log(r.join('\n')); return; }
   Object.keys(SHEETS).forEach(function (n) { sheet_(n); }); r.push('✅ ' + Object.keys(SHEETS).length + ' hojas listas');
-  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.3.0)');
+  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.3.1)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');
   r.push('Zona horaria del proyecto: ' + Session.getScriptTimeZone() + (Session.getScriptTimeZone() === 'America/Bogota' ? ' ✅' : ' ⚠️ cambiar a America/Bogota'));
   if (prop_('GEMINI_API_KEY', '')) {

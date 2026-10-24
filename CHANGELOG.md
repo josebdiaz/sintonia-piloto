@@ -16,6 +16,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Frontend del piloto (`piloto/`)
 
+### [2.2.1] · 2026-10-24 · DS 3.0 en las páginas de participantes y mago in / off inequívoco
+- **Participantes** (inscripción, aceptación, plan, pulso, aviso): tema DS 3.0 y **Button** del DS (anatomía de `.s-button` sobre `.btn`).
+- **Plan:** **Luz piloto** con el estado (Esperando al parche, Buscando opciones, Votación abierta, Plan fijado, El plan no se dio) y **Lista del plan** «Así va tu plan» (5 pasos con el actual marcado). El pulso dice «unos 4 minutos».
+- **Consola · Mago in / off:** caja gris punteada con «Fuera de línea» frente a caja cobalto profundo con «En línea» y el reloj; **tira fija arriba** mientras la sesión está abierta, con «■ Mago off» siempre a mano; el título de la pestaña muestra «● En línea». El estado cambia en el acto al abrir o cerrar la sesión, sin esperar la recarga.
+
 ### [2.2.0] · 2026-10-24 · Consola con componentes del DS 3.0
 - **Tema DS 3.0 en la consola y el panel** (`assets/ds3.css`): tokens del DS 3.0 en modo Claro, puente de las variables del piloto y fuentes Archivo, Inter y JetBrains Mono. Inscripción, aceptación, plan y pulso siguen con el estilo actual.
 - **Barra superior:** Selector de banda (E1 / E1.5), Interruptor de palanca para el modo prueba (apagado = piloto real) y **Mago in / mago off** con «Presione para hablar» y el Display de señal (minutos en línea).
@@ -115,6 +120,10 @@ Las fechas son de 2026 (hora de Colombia).
 - Archivado en `archivo/piloto-m1-claude/`. Tag `piloto/v1.0.0`.
 
 ## Backend (`backend/Codigo_Piloto.gs`)
+
+### [2.3.1] · 2026-10-24 · QA
+- `rows_` ignora filas completamente vacías: después de «Empezar piloto real» la fila 2 vacía aparecía como un grupo y un plan fantasma en `?view=mago`.
+- QA de punta a punta con una hoja simulada: 63 de 63 comprobaciones (E1 y E1.5, dos planes por grupo, mago in / off, MOTOR_KEY, resolver, SEQ/SUS, panel y limpieza).
 
 ### [2.3.0] · 2026-10-24 · Semana de pruebas desde cero (Sync P7c)
 - Hoja nueva `sesiones` y acción `sesion_mago` (`in` / `off`, solo equipo): al cerrar, guarda minutos y suma una fila en `operacion` con causa `sesion`. Abrir una sesión cierra la anterior del mismo mago. `?view=mago` devuelve `sesiones_abiertas`.
