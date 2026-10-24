@@ -33,18 +33,19 @@
       r.estado === 'votando' ? ['live', 'Votación abierta'] : r.estado === 'cerrado' ? ['fixed', 'Plan fijado'] : r.estado === 'caido' ? ['off', 'El plan no se dio'] : ['searching', 'Buscando opciones'];
     return '<p style="margin:4px 0 12px"><span class="s-pilot" data-state="' + m[0] + '">' + S.esc(m[1]) + '</span>' + (r.ronda ? ' <span class="tiny muted">· Plan ' + S.esc(r.ronda) + '</span>' : '') + '</p>';
   }
-  function recorrido(r) {
+  function recorrido(r, compacto) {
     var yo = r.yo || {}, he = r.hora_encuentro ? new Date(r.hora_encuentro).getTime() : null, paso = he && Date.now() > he;
     var L = [
       ['Todo el parche acepta la invitación', !(r.estado === 'sin_plan' && r.grupo_estado === 'reclutando')],
       ['Opciones y votación en el grupo de WhatsApp', r.estado === 'cerrado' || r.estado === 'caido'],
       ['Plan fijado: lugar, día, hora y salida', r.estado === 'cerrado'],
-      ['El día del plan: llegar y avisar «ya en casa»', r.estado === 'cerrado' && paso],
+      ['El día del plan: avisar en el grupo de WhatsApp que llegaste y que estás «ya en casa»', r.estado === 'cerrado' && paso],
       ['Contarnos cómo les fue (unos 4 minutos)', !!yo.retro]
     ];
     if (r.estado === 'caido') L = L.slice(0, 2);
     var i = L.findIndex(function (x) { return !x[1]; }), n = L.filter(function (x) { return x[1]; }).length;
-    return '<div class="s-plan-list" style="margin:14px 0"' + (i < 0 ? ' data-state="done"' : '') + '><header><span style="flex:1"><b>Así va tu plan</b><small>' + n + ' de ' + L.length + ' pasos</small></span></header>' +
+    if (compacto) return i < 0 ? '' : '<p class="small" style="margin:-4px 0 12px"><b>Ahora:</b> ' + S.esc(L[i][0]) + ' · <a href="#recorrido">ver el recorrido</a></p>';
+    return '<div class="s-plan-list" id="recorrido" style="margin:14px 0"' + (i < 0 ? ' data-state="done"' : '') + '><header><span style="flex:1"><b>Así va tu plan</b><small>' + n + ' de ' + L.length + ' pasos</small></span></header>' +
       '<div class="s-progress"><i style="--p:' + Math.round(n / L.length * 100) + '%"></i></div><ol>' +
       L.map(function (x, k) { return '<li data-st="' + (x[1] ? 'hecho' : 'pendiente') + '"' + (k === i ? ' aria-current="step"' : '') + '><span class="marca" aria-hidden="true">' + (x[1] ? '✓' : '') + '</span><span><strong>' + S.esc(x[0]) + '</strong></span>' + (k === i ? '<em>Ahora</em>' : '') + '</li>'; }).join('') + '</ol></div>';
   }
@@ -148,7 +149,7 @@
     var hora = r.hora_encuentro ? new Date(r.hora_encuentro) : null, now = Date.now();
     var ventana = !hora || (now >= hora.getTime() - 3 * 36e5 && now <= hora.getTime() + 8 * 36e5);
     var yo = r.yo || {};
-    var h = luz(r) + '<div class="hero"><h1>¡El plan quedó!</h1><p>Llega sabiendo qué esperar. Ruta clara, ganas intactas.</p></div>';
+    var h = luz(r) + recorrido(r, true) + '<div class="hero"><h1>¡El plan quedó!</h1><p>Llega sabiendo qué esperar. Ruta clara, ganas intactas.</p></div>';
     h += '<article class="option win">' + optionHtml(o, 0, hora ? '<p style="margin:12px 0 0"><b>Encuentro: ' + S.esc(S.fecha(hora)) + '</b></p>' : '') + '</article>';
     if (r.failover) {   // 2.1.0: solo si el plan pasó a la web por contingencia
       h += '<div class="card"><h3>¿Vas?</h3><p class="small muted">' + (r.n_apuntados || 0) + ' de ' + (r.n_invitados || '?') + ' ya se apuntaron.</p><div class="actions split">' +

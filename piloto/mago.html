@@ -40,7 +40,7 @@
       <button role="tab" data-tab="grupos" aria-selected="true">Grupo</button>
       <button role="tab" data-tab="planes">Plan</button>
       <button role="tab" data-tab="mensajes">Mensajes</button>
-      <button role="tab" data-tab="registro">Llegadas</button>
+      <button role="tab" data-tab="registro">Llegadas y tiempo</button>
       <details class="ajustes"><summary>Ajustes ▾</summary><div class="menu">
         <button role="tab" data-tab="inventario">Inventario</button>
         <button role="tab" data-tab="cambios">Cambios entre planes (I4)</button>
@@ -154,7 +154,9 @@
     var el = S.$('#expbar');
     el.innerHTML = '<div class="s-band" role="radiogroup" aria-label="Condición que estás operando">' +
       ['E1', 'E2'].map(function (k) { return '<button type="button" role="radio" aria-checked="' + (k === vexp) + '" data-exp="' + k + '"><b>' + (k === 'E1' ? 'E1' : 'E1.5') + '</b><small>' + e(EXP[k].corto) + '</small></button>'; }).join('') + '</div>';
-    S.$('#modobox').innerHTML = '<button type="button" class="s-toggle" role="switch" id="modoPrueba" aria-checked="' + (filtro === 'prueba') + '"><span>Modo prueba<small>' + (filtro === 'prueba' ? 'Lo que hagas no cuenta en el panel' : 'Apagado: estás operando el piloto real') + '</small></span><span class="s-lever-switch" aria-hidden="true"></span></button>';
+    var on = filtro === 'prueba';
+    S.$('#modobox').innerHTML = '<button type="button" class="modo-ctl" role="switch" id="modoPrueba" aria-checked="' + on + '" aria-label="Modo prueba"><span class="modo-txt"><b>Modo prueba</b><small>' + (on ? 'Activo: lo que hagas no cuenta en el panel' : 'Operando el piloto real') + '</small></span>' +
+      '<span class="modo-sw" aria-hidden="true"><i></i></span><span class="modo-val">' + (on ? 'SÍ' : 'NO') + '</span></button>';
     S.$$('[data-exp]', el).forEach(function (b) { b.onclick = function () { vexp = b.dataset.exp; S.LS.set('sintonia_mago_exp', vexp); sel.grupo = ''; sel.plan = ''; borrador = []; dest = 'grupo'; renderAll(); }; });
     S.$('#modoPrueba').onclick = function () { filtro = filtro === 'prueba' ? 'piloto' : 'prueba'; sel.grupo = ''; sel.plan = ''; renderAll(); };
   }
@@ -174,11 +176,12 @@
   }
   function renderGlist() {
     var el = S.$('#glist'), gs = gruposVista();
-    var h = '<p class="s-eyebrow" style="margin:0 0 8px">Grupos · ' + e(EXP[vexp].corto) + (filtro === 'prueba' ? ' · prueba' : '') + '</p>';
+    var h = (filtro === 'prueba' ? '<div class="s-banner" data-type="progress" style="margin-bottom:10px"><span><strong>Modo prueba activo</strong>Estás viendo y creando grupos de prueba: no cuentan en el panel.</span></div>' : '') +
+      '<p class="s-eyebrow" style="margin:0 0 8px">Grupos · ' + e(EXP[vexp].corto) + (filtro === 'prueba' ? ' · prueba' : '') + '</p>';
     if (!gs.length) h += '<div class="s-empty"><strong>Todavía no hay grupos aquí</strong><p class="small muted" style="margin:0">Comparte el enlace de inscripción con un organizador.</p></div>';
     else h += '<div class="s-list">' + gs.map(function (g) {
       var ps = planesDe(g.grupo_id), p = ps[ps.length - 1], s = senal(g, p), n = g.miembros.length, inv = Number(g.n_invitados) || 0;
-      return '<button type="button" class="s-tuning-row" data-state="' + s[0] + '" data-g="' + e(g.grupo_id) + '"' + (g.grupo_id === sel.grupo ? ' aria-current="true"' : '') + '><span><strong>' + e(g.tipo_grupo) + ' · ' + e(g.grupo_id.slice(-6)) + '</strong><small>' + (g.estado === 'reclutando' ? 'Aceptaron ' + n + ' de ' + inv : (p ? e(rondaLabel(p)) + ' · ' + e(p.estado) : n + ' personas')) + '</small></span><span class="s-pilot" data-state="' + s[0] + '">' + e(s[1]) + '</span><span class="chev" aria-hidden="true">›</span></button>';
+      return '<button type="button" class="s-tuning-row" data-state="' + s[0] + '" data-g="' + e(g.grupo_id) + '"' + (g.grupo_id === sel.grupo ? ' aria-current="true"' : '') + '><span><strong>' + e(g.tipo_grupo) + ' · ' + e(g.grupo_id.slice(-6)) + '</strong><small>' + e(pendienteDe(g)) + '</small></span><span class="s-pilot" data-state="' + s[0] + '">' + e(s[1]) + '</span><span class="chev" aria-hidden="true">›</span></button>';
     }).join('') + '</div>';
     el.innerHTML = h + linkInscripcionHtml();
     S.$$('[data-g]', el).forEach(function (b) { b.onclick = function () { sel.grupo = b.dataset.g; var ps = planesDe(sel.grupo); sel.plan = ps.length ? ps[ps.length - 1].plan_id : ''; borrador = []; renderAll(); moverSesion(); }; });
@@ -191,9 +194,13 @@
     var e15 = g.experimento === 'E2', ps = planesDe(g.grupo_id), n = g.miembros.length, inv = Number(g.n_invitados) || 0, ahora = Date.now();
     var L = [];
     function add(grupoPaso, txt, hecho, accion) { L.push({ grupo: grupoPaso, txt: txt, hecho: !!hecho, accion: accion }); }
+    function env(p, tipo) { return !!(p && p.mensajes && (p.mensajes[tipo] || []).length); }
     add('Grupo', g.estado === 'reclutando' && n < inv ? 'Esperar que acepten todos (' + n + ' de ' + inv + ')' : 'Cerrar el reclutamiento', g.estado !== 'reclutando',
       g.estado === 'reclutando' && n < inv ? { t: 'Ver la invitación', tab: 'grupos', q: '[data-cerrar]', ayuda: 'Si a las 24 h falta alguien, «Abrir chat con mensaje» le escribe al organizador.' } : { t: 'Ir a cerrar el reclutamiento', tab: 'grupos', q: '[data-cerrar]', ayuda: 'Aceptaron todos: cierra el reclutamiento para activar el grupo.' });
-    add('Grupo', 'Crear el grupo de WhatsApp y enviar /ingreso', ps.length > 0, { t: 'Ver nombres y números', tab: 'grupos', q: '#crearGrupoWA', ayuda: 'Meta no deja crearlo automático: créalo a mano desde el número Sintonía' + (e15 ? '; el motor envía /ingreso.' : ' y envía /ingreso (pestaña Mensajes).') });
+    // 2.2.2 (QA N1): crear el grupo de WhatsApp, /ingreso y el plan 1 son un solo paso; se completa al crear el plan 1
+    var p1 = ps.filter(function (x) { return Number(x.ronda) === 1; }).pop();
+    add('Grupo', e15 ? 'Crear el grupo de WhatsApp y el plan 1' : 'Crear el grupo de WhatsApp, enviar /ingreso y crear el plan 1', !!p1,
+      { t: 'Ver nombres y números', tab: 'grupos', q: '#crearGrupoWA', t2: 'Crear el plan 1', tab2: 'planes', q2: '#crearPlan', ayuda: 'Meta no deja crearlo automático: créalo a mano desde el número Sintonía' + (e15 ? '; el motor envía /ingreso.' : ' y envía /ingreso (pestaña Mensajes).') + ' Luego crea el plan 1.' });
     [1, 2].forEach(function (r) {
       var p = ps.filter(function (x) { return Number(x.ronda) === r; }).pop(), caido = p && p.estado === 'caido', cerr = p && (p.estado === 'cerrado' || caido);
       var he = p && p.hora_encuentro ? new Date(p.hora_encuentro).getTime() : null, paso = he && ahora > he;
@@ -202,12 +209,14 @@
       var faltanP = p ? g.miembros.filter(function (m) { return (p.retro_pids || []).indexOf(m.pid) < 0; }).length : n;
       var G = 'Plan ' + r;
       if (r === 2) add(G, 'Crear el plan 2 en el mismo grupo', !!p, { t: 'Ir a crear el plan 2', tab: 'planes', q: '#siguienteRonda', ayuda: 'Con el plan 1 cerrado y el pulso enviado, en el mismo grupo de WhatsApp.' });
-      else add(G, 'Crear el plan 1', !!p, { t: 'Ir a crear el plan', tab: 'planes', q: '#crearPlan', ayuda: 'En la pestaña Plan.' });
       add(G, e15 ? 'El motor propone y publica las opciones' : 'Pedir opciones a Gemini, revisar y publicar', p && p.estado !== 'borrador' && p.estado !== 'en_revision', { t: 'Ir a las opciones', tab: 'planes', q: '#pedirIA', ayuda: 'Solo lugares del inventario activo; una persona revisa antes de publicar.' });
-      add(G, (e15 ? 'Revisar votos' : 'Enviar /opciones y registrar votos') + (p && p.estado === 'votando' ? (faltanV ? ' (faltan ' + faltanV + ')' : ' (ya votaron todos)') : '') + ' y cerrar con día y hora', cerr,
-        { t: faltanV ? (e15 ? 'Ver los votos' : 'Registrar votos') : 'Cerrar el plan', tab: 'planes', q: faltanV ? '[data-votopid]' : '#cerrarPlan', ayuda: faltanV ? (e15 ? 'Si el motor falla, regístralos a mano.' : 'Envía /opciones en la pestaña Mensajes y registra aquí lo que cada persona votó en el chat.') : 'Pon el día y la hora del encuentro y la salida sugerida.' });
-      add(G, caido ? 'Plan caído (' + (p.causa_caida || 'sin causa') + ')' : (paso ? 'Registrar llegadas y «en casa» (' + llegaron + ' de ' + n + ')' : (e15 ? 'Revisar confirmación y hora de salida' : 'Enviar /confirmado y, 2 h antes, /salida')), caido || (paso && (llegaron >= n || ahora > he + 8 * 36e5)),
-        paso ? { t: 'Registrar llegadas', tab: 'registro', q: '.estado-sel', ayuda: 'El menú registra; no le escribe a nadie.' } : { t: e15 ? 'Ver mensajes' : 'Ir a los mensajes', tab: 'mensajes', q: '#dest', ayuda: 'Los mensajes se llenan con el plan seleccionado.' });
+      // 2.2.2 (QA N2): /opciones se marca como enviado; hasta entonces es el paso actual
+      if (!e15) add(G, 'Enviar /opciones al grupo', cerr || env(p, 'msg_opciones'), { t: 'Ir a /opciones', tab: 'mensajes', q: '[data-marca="msg_opciones"]', ayuda: 'Cópialo en el grupo de WhatsApp y márcalo como enviado.' });
+      add(G, (e15 ? 'Revisar votos' : 'Registrar votos') + (p && p.estado === 'votando' ? (faltanV ? ' (faltan ' + faltanV + ')' : ' (ya votaron todos)') : '') + ' y cerrar con día y hora', cerr,
+        { t: faltanV ? (e15 ? 'Ver los votos' : 'Registrar votos') : 'Cerrar el plan', tab: 'planes', q: faltanV ? '[data-votopid]' : '#cerrarPlan', ayuda: faltanV ? (e15 ? 'Si el motor falla, regístralos a mano.' : 'Registra aquí lo que cada persona votó en el chat.') : 'Pon el día y la hora del encuentro y la salida sugerida.' });
+      if (!e15 && !caido) add(G, 'Enviar /confirmado al grupo', env(p, 'msg_confirmado') || (paso && llegaron > 0), { t: 'Ir a /confirmado', tab: 'mensajes', q: '[data-marca="msg_confirmado"]', ayuda: 'Lugar, hora, salida y presupuesto. Márcalo como enviado; 2 h antes envía /salida.' });
+      add(G, caido ? 'Plan caído (' + (p.causa_caida || 'sin causa') + ')' : 'Registrar llegadas y «en casa» (' + llegaron + ' de ' + n + ')', caido || (paso && (llegaron >= n || ahora > he + 8 * 36e5)),
+        { t: paso ? 'Registrar llegadas' : 'Ver llegadas', tab: 'registro', q: '.estado-sel', ayuda: paso ? 'El menú registra; no le escribe a nadie.' : 'Se activa el día del plan. Antes, revisa la hora de salida (/salida, 2 h antes).' });
       add(G, 'Pulso con SEQ y SUS' + (p && cerr && !caido ? ' (faltan ' + faltanP + ')' : ''), caido || (p && cerr && faltanP === 0), { t: 'Ir a los enlaces del pulso', tab: 'planes', q: '#pulsos', ayuda: e15 ? 'Lo envía el motor; usa los enlaces solo si falla.' : 'Envíalo a cada persona después del encuentro (unos 4 minutos).' });
     });
     return L;
@@ -216,23 +225,33 @@
     var el = S.$('#siguiente'), g = grupo(sel.grupo);
     if (!g) { el.innerHTML = '<div class="s-next"><p class="s-eyebrow" style="margin:0">Lo que toca ahora</p><h3 style="margin:0">Elige un grupo</h3><p style="margin:0">O inscribe uno nuevo con el enlace de la izquierda.</p></div>'; return; }
     var L = pasosDe(g), i = L.findIndex(function (x) { return !x.hecho; }), cur = g.estado === 'excluido' || i < 0 ? null : L[i], hechos = L.filter(function (x) { return x.hecho; }).length;
-    var x = EXP[g.experimento];
+    var x = EXP[g.experimento], ses = D.sesiones_abiertas === undefined ? true : miSesion();
     var h = '<div class="s-next"><p class="s-eyebrow" style="margin:0">Lo que toca ahora · ' + e(g.tipo_grupo) + ' · ' + e(g.grupo_id.slice(-6)) + '</p>';
     if (g.estado === 'excluido') h += '<h3 style="margin:0">Este grupo quedó desestimado</h3><p style="margin:0">' + e(g.motivo || 'Retiro o consentimiento incompleto') + '. No hay nada más que hacer con él (I9).</p>';
     else if (!cur) h += '<h3 style="margin:0">Grupo completo: 2 planes y sus pulsos</h3><p style="margin:0">Si ya no vas a operar otro grupo, cierra tu sesión con «Mago off».</p>';
-    else h += '<h3 style="margin:0">' + e(cur.grupo) + ' · ' + e(cur.txt) + '</h3><p style="margin:0">' + e(cur.accion.ayuda) + '</p><div class="acciones"><button type="button" class="s-button" data-size="sm" id="irPaso">' + e(cur.accion.t) + ' →</button></div>';
+    else {
+      h += '<h3 style="margin:0">' + e(cur.grupo) + ' · ' + e(cur.txt) + '</h3><p style="margin:0">' + e(cur.accion.ayuda) + '</p>';
+      // 2.2.2 (QA D1): sin «Mago in» no se cuentan los minutos humanos (en E1.5 también: es el tiempo de revisión)
+      if (!ses) h += '<div class="s-banner" data-type="progress"><span><strong>Abre «Mago in» antes de seguir</strong>Sin sesión abierta, este trabajo no cuenta en los minutos humanos' + (g.experimento === 'E2' ? ' de la revisión del motor.' : '.') + '</span></div>';
+      h += '<div class="acciones"><button type="button" class="s-button" data-size="sm" id="irPaso">' + e(cur.accion.t) + ' →</button>' + (cur.accion.t2 ? '<button type="button" class="s-button" data-size="sm" data-style="secondary" id="irPaso2">' + e(cur.accion.t2) + ' →</button>' : '') + '</div>';
+    }
     h += '</div>';
+    // 2.2.2 (QA N5): las secciones terminadas se pliegan
+    var secciones = []; L.forEach(function (s, k) { var u = secciones[secciones.length - 1]; if (!u || u.nombre !== s.grupo) secciones.push(u = { nombre: s.grupo, pasos: [] }); u.pasos.push([s, k]); });
     h += '<div class="s-plan-list" style="margin-top:12px"' + (cur ? '' : ' data-state="done"') + '><header><span style="flex:1"><b>Recorrido del grupo</b><small>' + hechos + ' de ' + L.length + ' pasos</small></span></header>' +
-      '<div class="s-progress"><i style="--p:' + Math.round(hechos / L.length * 100) + '%"></i></div><ol>';
-    var gr = '';
-    L.forEach(function (s, k) {
-      if (s.grupo !== gr) { gr = s.grupo; h += '<li class="grupo-paso" aria-hidden="true">' + e(gr) + '</li>'; }
-      h += '<li data-st="' + (s.hecho ? 'hecho' : 'pendiente') + '"' + (cur && k === i ? ' aria-current="step"' : '') + '><span class="marca" aria-hidden="true">' + (s.hecho ? '✓' : '') + '</span><span><strong>' + e(s.txt) + '</strong></span>' + (cur && k === i ? '<em>Ahora</em>' : '') + '</li>';
+      '<div class="s-progress"><i style="--p:' + Math.round(hechos / L.length * 100) + '%"></i></div>';
+    secciones.forEach(function (sec) {
+      var lista = sec.pasos.every(function (y) { return y[0].hecho; });
+      h += '<details class="seccion"' + (lista ? '' : ' open') + '><summary class="grupo-paso">' + e(sec.nombre) + (lista ? ' · listo ✓' : '') + '</summary><ol>' +
+        sec.pasos.map(function (y) { var s = y[0], k = y[1], now = cur && k === i; return '<li data-st="' + (s.hecho ? 'hecho' : 'pendiente') + '"' + (now ? ' aria-current="step"' : '') + '><span class="marca" aria-hidden="true">' + (s.hecho ? '✓' : '') + '</span><span><strong>' + e(s.txt) + '</strong></span>' + (now ? '<em>Ahora</em>' : '') + '</li>'; }).join('') + '</ol></details>';
     });
-    h += '</ol><details class="small"><summary>Cómo funciona ' + e(x.nombre) + '</summary><p style="margin:6px 0 0"><b>Qué se prueba.</b> ' + e(x.prueba) + '</p><p style="margin:4px 0 0"><b>El mago.</b> ' + e(x.mago) + '</p><p style="margin:4px 0 0"><b>Se mide.</b> ' + e(x.mide) + '</p></details></div>';
+    h += '<details class="small"><summary>Cómo funciona ' + e(x.nombre) + '</summary><p style="margin:6px 0 0"><b>Qué se prueba.</b> ' + e(x.prueba) + '</p><p style="margin:4px 0 0"><b>El mago.</b> ' + e(x.mago) + '</p><p style="margin:4px 0 0"><b>Se mide.</b> ' + e(x.mide) + '</p></details></div>';
     el.innerHTML = h;
     var b = S.$('#irPaso', el); if (b) b.onclick = function () { irA(cur.accion.tab, cur.accion.q); };
+    var b2 = S.$('#irPaso2', el); if (b2) b2.onclick = function () { irA(cur.accion.tab2, cur.accion.q2); };
   }
+  /** 2.2.2 (QA N4): el paso pendiente de cada grupo, para mostrarlo en su fila */
+  function pendienteDe(g) { if (g.estado === 'excluido') return ''; var L = pasosDe(g), c = L.filter(function (x) { return !x.hecho; })[0]; return c ? c.grupo + ': ' + c.txt : 'Completo'; }
 
   function renderAll() {
     var todos = D.grupos || [], gs = gruposVista();
@@ -255,35 +274,38 @@
    * Si cambias de grupo o de plan con la sesión abierta, la consola la cierra y abre otra en el plan nuevo. */
   var reloj = null;
   function miSesion() { var n = S.LS.get('sintonia_mago_nombre') || ''; return (D.sesiones_abiertas || []).filter(function (x) { return x.mago === n; })[0] || null; }
-  function hm(ms) { var m = Math.max(0, Math.floor(ms / 6e4)); return Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0'); }
+  function hm(ms) { var m = Math.max(0, Math.floor(ms / 6e4)); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + String(m % 60).padStart(2, '0') + ' min'; }   // 2.2.2: «57 min» se lee mejor que «0:57»
   function renderMagobar() {
     var el = S.$('#magobar'); if (!el) return;
     clearInterval(reloj);
     var tira = S.$('#magoTira');
-    if (D.sesiones_abiertas === undefined) { if (tira) tira.hidden = true; el.innerHTML = '<div class="s-banner" data-type="error"><span><strong>Mago in / mago off no está disponible</strong>El backend en vivo es anterior a la 2.3.0. Registra los minutos a mano en la pestaña Llegadas.</span></div>'; return; }
+    if (D.sesiones_abiertas === undefined) { if (tira) tira.hidden = true; el.innerHTML = '<div class="s-banner" data-type="error"><span><strong>Mago in / mago off no está disponible</strong>El backend en vivo es anterior a la 2.3.0. Registra los minutos a mano en la pestaña Llegadas y tiempo.</span></div>'; return; }
     var ses = miSesion(), nom = S.LS.get('sintonia_mago_nombre') || '', p = plan(sel.plan);
+    var revisar = (D.sesiones_por_revisar || []).filter(function (x) { return x.mago === nom; });
+    var aviso = revisar.length ? '<div class="s-banner" data-type="error" style="margin-top:8px"><span><strong>' + revisar.length + ' sesión(es) se cerraron solas tras 4 h, sin minutos</strong>Registra los minutos reales en «Llegadas y tiempo» → Registro manual.</span></div>' : '';
     document.title = (ses ? '● En línea · ' : '') + 'Sintonía · Consola del mago';
     if (ses) {
-      var ini = new Date(ses.inicio).getTime(), ps = ses.plan_id ? plan(ses.plan_id) : null;
-      el.innerHTML = '<div class="mago-box" data-state="in" role="status" aria-live="polite">' +
-        '<div class="mago-estado"><span class="s-pilot" data-state="live">En línea</span><b id="magoMin">' + hm(Date.now() - ini) + '</b><small>' + e(nom) + ' · desde las ' + hhmmL(ses.inicio) + (ps ? ' · ' + e(rondaLabel(ps)) : ' · sin plan') + '</small></div>' +
-        '<button type="button" class="s-human" data-state="live" id="magoOff" data-busy="Cerrando…"><span class="s-grip" aria-hidden="true"></span><span><strong>■ Mago off</strong><small>Cierra tu sesión al terminar: los minutos se suman al plan.</small></span></button></div>';
-      if (tira) { tira.hidden = false; tira.innerHTML = '<span class="s-pilot" data-state="live">Mago en línea</span> <b id="tiraMin">' + hm(Date.now() - ini) + '</b> <span class="tiny">' + e(nom) + (ps ? ' · ' + e(rondaLabel(ps)) : '') + '</span> <button type="button" class="s-button" data-size="sm" data-style="danger" id="tiraOff">■ Mago off</button>'; }
+      var ini = new Date(ses.inicio).getTime(), ps = ses.plan_id ? plan(ses.plan_id) : null, largo = Date.now() - ini > 2 * 36e5;
+      el.innerHTML = '<div class="mago-ctl" data-state="in" role="status" aria-live="polite">' +
+        '<div class="mago-estado"><span class="mago-led" aria-hidden="true"></span><div><p class="mago-titulo">En línea · <b id="magoMin">' + hm(Date.now() - ini) + '</b></p><p class="mago-meta">' + e(nom) + ' · desde las ' + hhmmL(ses.inicio) + (ps ? ' · ' + e(rondaLabel(ps)) : ' · sin plan') + '</p></div></div>' +
+        '<button type="button" class="s-button" data-style="danger" id="magoOff" data-busy="Cerrando…">■ Mago off</button></div>' +
+        (largo ? '<div class="s-banner" data-type="progress" style="margin-top:8px"><span><strong>Llevas más de 2 h en línea</strong>Si ya no estás operando, cierra la sesión: a las 4 h se cierra sola sin sumar minutos.</span></div>' : '') + aviso;
+      if (tira) { tira.hidden = false; tira.innerHTML = '<span class="mago-led" aria-hidden="true"></span><span><b>Mago en línea</b> · <b id="tiraMin">' + hm(Date.now() - ini) + '</b> <span class="tiny">· ' + e(nom) + (ps ? ' · ' + e(rondaLabel(ps)) : '') + '</span></span><button type="button" class="s-button" data-size="sm" data-style="danger" id="tiraOff">■ Mago off</button>'; }
       reloj = setInterval(function () { var t = hm(Date.now() - ini), m = S.$('#magoMin'), m2 = S.$('#tiraMin'); if (m) m.textContent = t; if (m2) m2.textContent = t; }, 15000);
-      var off = function () { var b = this; act(b, { action: 'sesion_mago', accion: 'off', mago: nom, sesion_id: ses.sesion_id }, function (r) { return 'Mago off · ' + S.num(r.minutos, 1) + ' min sumados al plan'; }).then(function (r) { if (r && r.ok) { D.sesiones_abiertas = (D.sesiones_abiertas || []).filter(function (x) { return x.sesion_id !== ses.sesion_id; }); renderMagobar(); } }); };
+      var off = function () { var b = this; act(b, { action: 'sesion_mago', accion: 'off', mago: nom, sesion_id: ses.sesion_id }, function (r) { return 'Mago off · ' + S.num(r.minutos, 1) + ' min sumados al plan'; }).then(function (r) { if (r && r.ok) { D.sesiones_abiertas = (D.sesiones_abiertas || []).filter(function (x) { return x.sesion_id !== ses.sesion_id; }); renderMagobar(); renderSiguiente(); } }); };
       S.$('#magoOff', el).onclick = off; if (tira) S.$('#tiraOff', tira).onclick = off;
     } else {
       if (tira) tira.hidden = true;
-      el.innerHTML = '<div class="mago-box" data-state="off">' +
-        '<div class="mago-estado"><span class="s-pilot" data-state="off">Fuera de línea</span><input id="magoQuien" type="text" maxlength="30" value="' + e(nom) + '" placeholder="Tu nombre" aria-label="Quién opera"></div>' +
-        '<button type="button" class="s-human" id="magoIn" data-busy="Abriendo…"><span class="s-grip" aria-hidden="true"></span><span><strong>▶ Mago in</strong><small>' + (p ? 'Abre tu sesión en ' + e(rondaLabel(p)) : 'Abre tu sesión antes de operar') + '. Los minutos corren desde aquí.</small></span></button></div>';
+      el.innerHTML = '<div class="mago-ctl" data-state="off">' +
+        '<div class="mago-estado"><span class="mago-led" aria-hidden="true"></span><div><p class="mago-titulo">Fuera de línea</p><p class="mago-meta">' + (p ? 'Al abrir, los minutos van a ' + e(rondaLabel(p)) : 'Elige un grupo y abre tu sesión') + '</p></div></div>' +
+        '<input id="magoQuien" type="text" maxlength="30" value="' + e(nom) + '" placeholder="Tu nombre" aria-label="Quién opera">' +
+        '<button type="button" class="s-button" id="magoIn" data-busy="Abriendo…">▶ Mago in</button></div>' + aviso;
       S.$('#magoIn', el).onclick = function () {
         var n = S.$('#magoQuien', el).value.trim(); if (!n) { S.$('#magoQuien', el).focus(); return S.toast('Escribe tu nombre para abrir la sesión.', true); }
         S.LS.set('sintonia_mago_nombre', n);
         var b = this;
         act(b, { action: 'sesion_mago', accion: 'in', mago: n, plan_id: sel.plan, grupo_id: sel.grupo, experimento: vexp }, 'Mago in · los minutos corren').then(function (r) {
-          // 2.2.1: el estado cambia en el acto, aunque la recarga tarde o el backend aún no devuelva la sesión
-          if (r && r.ok && !miSesion()) { (D.sesiones_abiertas = D.sesiones_abiertas || []).push({ sesion_id: r.sesion_id, mago: n, plan_id: sel.plan, grupo_id: sel.grupo, experimento: vexp, inicio: r.inicio || new Date().toISOString() }); renderMagobar(); }
+          if (r && r.ok && !miSesion()) { (D.sesiones_abiertas = D.sesiones_abiertas || []).push({ sesion_id: r.sesion_id, mago: n, plan_id: sel.plan, grupo_id: sel.grupo, experimento: vexp, inicio: r.inicio || new Date().toISOString() }); renderMagobar(); renderSiguiente(); }
         });
       };
     }
@@ -361,7 +383,7 @@
     var el = S.$('#tab-planes'), gs = gruposVista(), g = grupo(sel.grupo), p = plan(sel.plan);
     if (!gs.length) { el.innerHTML = '<div class="card empty"><p class="muted">No hay grupos de ' + e(EXP[vexp].nombre) + ' en este modo.</p></div>'; return; }
     var h = '<div class="card"><div class="row"><div class="field" style="margin:0;display:none"><label for="selG">Grupo</label><select id="selG">' + opts(gs.map(function (x) { return [x.grupo_id, grupoLabel(x) + ' · ' + x.estado]; }), sel.grupo) + '</select></div>' +
-      '<div class="field" style="margin:0"><label for="selP">Plan</label><select id="selP">' + (planesDe(sel.grupo).length ? opts(planesDe(sel.grupo).map(function (x) { return [x.plan_id, rondaLabel(x) + ' · ' + x.estado]; }), sel.plan) : '<option value="">Sin planes</option>') + '</select></div></div>' +
+      '<div class="field" style="margin:0"><span class="label">Plan</span>' + (planesDe(sel.grupo).length ? '<div class="s-quick-replies" role="radiogroup" aria-label="Plan">' + planesDe(sel.grupo).map(function (x) { return '<button type="button" class="s-quick-reply" role="radio" aria-pressed="' + (x.plan_id === sel.plan) + '" aria-checked="' + (x.plan_id === sel.plan) + '" data-plan="' + e(x.plan_id) + '">' + e(rondaLabel(x)) + ' · ' + e(x.estado) + '</button>'; }).join('') + '</div>' : '<p class="small muted" style="margin:4px 0 0">Sin planes todavía.</p>') + '</div></div>' +
       '<div class="actions">' + (function () {
         var enCurso = planesDe(sel.grupo).filter(function (x) { return ['borrador', 'en_revision', 'votando'].indexOf(x.estado) >= 0; })[0];   // 2.0.7 (R7): un plan a la vez
         if (!g || g.estado !== 'activo') return '<span class="small muted">Solo se crean planes en grupos activos.</span>';
@@ -371,7 +393,7 @@
     if (p) h += planCard(g, p);
     el.innerHTML = h;
     S.$('#selG', el).onchange = function () { sel.grupo = this.value; sel.plan = ''; borrador = []; renderAll(); moverSesion(); };
-    if (S.$('#selP', el)) S.$('#selP', el).onchange = function () { sel.plan = this.value; borrador = []; renderAll(); moverSesion(); };
+    S.$$('[data-plan]', el).forEach(function (b) { b.onclick = function () { sel.plan = b.dataset.plan; borrador = []; renderAll(); moverSesion(); }; });
     if (S.$('#crearPlan', el)) S.$('#crearPlan', el).onclick = function () { act(this, { action: 'crear_plan', grupo_id: sel.grupo }, 'Plan creado').then(function (r) { if (r && r.ok) { sel.plan = r.plan_id; borrador = []; renderAll(); } }); };
     if (p) bindPlan(el, g, p);
   }
@@ -572,13 +594,15 @@
       (p && p.estado === 'cerrado' && d.noLlegan.length ? '<p class="small" style="margin:10px 0 0">Todavía no registran llegada: <b>' + d.noLlegan.map(e).join(', ') + '</b>. Elige a la persona en «Para» y usa <b>/no_llega</b>.</p>' : '') + '</div>';
     h += '<div class="grid two">' + visibles().map(function (x) {
       var t = x[0], i = x[1], txt = ajustes[i + '|' + dest] || t[4](d);
+      var mk = dest === 'grupo' && p ? MARCA[t[0]] : '', enviado = mk && (hechos(p.plan_id)[mk] || []).length;
       return '<div class="tpl" data-ti="' + i + '"><div class="actions" style="margin:0;justify-content:space-between;flex-wrap:wrap"><span><b>' + e(t[0]) + '</b> <span class="small muted">' + e(t[1]) + '</span></span>' +
         (ajustes[i + '|' + dest] ? '<span class="badge ok">ajustado con Gemini</span>' : '') + '</div>' +
         '<textarea class="tpl-text" data-txt="' + i + '" aria-label="Texto del mensaje ' + e(t[0]) + '">' + e(txt) + '</textarea>' +
         '<div class="actions" style="margin-top:6px">' +
         (d.persona ? '<a class="btn btn-primary btn-sm" data-abrir="' + i + '" target="_blank" rel="noopener" href="' + e(S.wa(d.persona.whatsapp, txt)) + '">Abrir chat con ' + e(d.persona.nombre) + '</a>' : '<button class="btn btn-primary btn-sm" data-tpl="' + i + '">Copiar</button>') +
         '<button class="btn btn-honey btn-sm" data-ia="' + i + '" data-busy="Redactando…">✨ Ajustar con Gemini</button>' +
-        (ajustes[i + '|' + dest] ? '<button class="btn btn-ghost btn-sm" data-orig="' + i + '">Volver al texto base</button>' : '') + '</div></div>';
+        (ajustes[i + '|' + dest] ? '<button class="btn btn-ghost btn-sm" data-orig="' + i + '">Volver al texto base</button>' : '') +
+        (mk ? '<button class="btn btn-sm ' + (enviado ? 'btn-ghost' : 'btn-primary') + '" data-marca="' + mk + '" data-busy="Guardando…">' + (enviado ? '✓ Enviado ' + hhmm(hechos(p.plan_id)[mk].slice(-1)[0]) : 'Marcar como enviado') + '</button>' : '') + '</div></div>';
     }).join('') + '</div>';
     el.innerHTML = h;
     var grow = function (ta) { ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 4) + 'px'; };
@@ -587,6 +611,12 @@
       ta.addEventListener('input', function () { grow(ta); var a = S.$('[data-abrir="' + ta.dataset.txt + '"]', el); if (a && d.persona) a.href = S.wa(d.persona.whatsapp, ta.value); });
     });
     S.$$('[data-tpl]', el).forEach(function (b) { b.onclick = function () { S.copy(S.$('[data-txt="' + b.dataset.tpl + '"]', el).value); }; });
+    S.$$('[data-marca]', el).forEach(function (b) {   // 2.2.2: queda en la hoja (eventos) y el recorrido avanza
+      b.onclick = function () { var tipo = b.dataset.marca; S.busy(b, function () { return S.post({ action: 'evento', key: key, plan_id: sel.plan, grupo_id: sel.grupo, pid: '', tipo: tipo, canal: (g || {}).experimento || vexp }); }).then(function (r) {
+        if (!r || !r.ok) return S.toast(r && r.error === 'tipo_invalido' ? 'El backend en vivo no reconoce este registro: despliega la 2.3.2.' : S.errMsg(r), true);
+        marcarHecho(sel.plan, tipo); var pl = plan(sel.plan); if (pl) { pl.mensajes = pl.mensajes || {}; (pl.mensajes[tipo] = pl.mensajes[tipo] || []).push(new Date().toISOString()); }
+        S.toast('Marcado como enviado'); renderMensajes(); renderSiguiente(); renderGlist(); }); };
+    });
     S.$$('[data-orig]', el).forEach(function (b) { b.onclick = function () { delete ajustes[b.dataset.orig + '|' + dest]; renderMensajes(); }; });
     S.$$('[data-ia]', el).forEach(function (b) {
       b.onclick = function () {
@@ -609,6 +639,7 @@
    * 2.0.5: el estado de cada persona se cambia con un menú; los mensajes del mago al grupo
    * quedan marcados como hechos con la hora. Los botones registran lo que ya pasó en el chat; no envían nada. */
   var ESTADOS = [['me_apunto', 'Se apuntó', 'apuntado'], ['no_puedo', 'No puede', 'nopuede'], ['checkpoint_llegada', 'Llegó', 'llego'], ['llego_casa', 'En casa', 'casa']];
+  var MARCA = { '/opciones': 'msg_opciones', '/confirmado': 'msg_confirmado', '/retro': 'msg_retro', '/ingreso': 'msg_ingreso' };   // 2.2.2
   var MSG_GRUPO = [['recordatorio', 'Recordatorio de votación'], ['salida_sugerida', 'Hora de salida'], ['mensaje_mago', 'Otro mensaje']];
   function estadoPersona(st) {
     if (st.casa) return ['casa', 'En casa'];
@@ -653,7 +684,7 @@
             '<button class="btn btn-sm ' + (ok ? 'btn-ghost' : 'btn-primary') + '" data-msg="' + t[0] + '" data-busy="Guardando…">' + (ok ? 'Marcar otra vez' : 'Marcar como enviado') + '</button></div>';
         }).join('') + '</div></div>';
     }
-    h += '<details class="card"><summary><b>Registro manual de minutos</b> · solo si olvidaste el «Mago in»</summary><p class="small muted">Con «Mago in / Mago off» los minutos se calculan solos (I3). Usa esto solo para un bloque que quedó por fuera.</p>' +
+    h += '<details class="card"' + ((D.sesiones_por_revisar || []).length ? ' open' : '') + '><summary><b>Registro manual de minutos</b> · ' + ((D.sesiones_por_revisar || []).length ? 'hay una sesión que se cerró sola: escribe sus minutos reales' : 'solo si olvidaste el «Mago in»') + '</summary><p class="small muted">Con «Mago in / Mago off» los minutos se calculan solos (I3). Usa esto solo para un bloque que quedó por fuera.</p>' +
       '<div class="row"><div class="field"><label for="minActor">Rol de quien trabajó</label><select id="minActor">' + opts([['mago', 'Mago (habla con el grupo)'], ['soporte', 'Soporte (planes e inventario)'], ['tecnico', 'Técnico (arreglar fallas)']]) + '</select></div><div class="field"><label for="minN">Minutos</label><input id="minN" type="number" inputmode="numeric" min="1" max="600"></div></div>' +
       '<div class="field"><label for="minCausa">En qué se fue el tiempo</label><select id="minCausa">' + opts(CAUSAS) + '</select></div><div class="field"><label for="minNota">Nota (opcional)</label><input id="minNota" type="text" maxlength="300"></div>' +
       '<div class="actions"><button class="btn btn-primary btn-sm" id="minGuardar" data-busy="Guardando…">Guardar minutos' + (p ? ' en este plan' : '') + '</button></div></details>' +
@@ -678,7 +709,8 @@
     });
     S.$('#minGuardar', el).onclick = function () {
       var n = parseInt(S.$('#minN', el).value, 10); if (!(n > 0)) return S.toast('Escribe los minutos.', true);
-      act(this, { action: 'operacion', plan_id: sel.plan, grupo_id: sel.grupo, experimento: (g || {}).experimento || vexp, actor: S.$('#minActor', el).value, minutos: n, causa: S.$('#minCausa', el).value, nota: S.$('#minNota', el).value }, n + ' min registrados');
+      var rv = (D.sesiones_por_revisar || []).filter(function (x) { return x.plan_id === sel.plan; })[0] || (D.sesiones_por_revisar || [])[0];   // 2.2.2: completa una sesión que se cerró sola
+      act(this, { action: 'operacion', plan_id: sel.plan, grupo_id: sel.grupo, experimento: (g || {}).experimento || vexp, actor: S.$('#minActor', el).value, minutos: n, causa: rv ? 'sesion' : S.$('#minCausa', el).value, nota: S.$('#minNota', el).value || (rv ? rv.sesion_id + ' (cierre automático)' : ''), sesion_id: rv ? rv.sesion_id : '' }, n + ' min registrados');
     };
   }
 

@@ -117,8 +117,25 @@ const pan = get({ view: 'panel', key: A });
   chk('panel ' + x + ': llegada 100 % y minutos humanos > 0', e.metrica_principal_llegaron_sobre_invitados === 1 && e.costo.minutos_humanos > 0, [e.metrica_principal_llegaron_sobre_invitados, e.costo.minutos_humanos]);
   chk('panel ' + x + ': Nivel 2 (repetirían) 6 de 6', e.todos.repetiria_si === 6 && e.todos.n === 6, e.todos);
 });
+
+// 2.3.2: mensajes marcados y cierre automático de sesiones
+const g2 = post(Object.assign({ action: 'registrar', experimento: 'E1', modo: 'piloto', tipo_grupo: 'amigos', n_invitados: 2, nombre_pila: 'Z', whatsapp: '+573009990001' }, cons));
+const z2 = post(Object.assign({ action: 'registrar', codigo_invitacion: g2.codigo_invitacion, nombre_pila: 'Y', whatsapp: '+573009990002' }, cons));
+post({ action: 'cerrar_reclutamiento', key: A, grupo_id: g2.grupo_id });
+const pz = post({ action: 'crear_plan', key: A, grupo_id: g2.grupo_id });
+const mk = post({ action: 'evento', key: A, plan_id: pz.plan_id, grupo_id: g2.grupo_id, pid: '', tipo: 'msg_opciones' });
+const vz = get({ view: 'mago', key: A }).planes.filter(x => x.plan_id === pz.plan_id)[0];
+chk('2.3.2 msg_opciones queda en mensajes del plan', mk.ok && vz.mensajes.msg_opciones && vz.mensajes.msg_opciones.length === 1, [mk, vz && vz.mensajes]);
+chk('2.3.2 participante no puede marcar mensajes', post({ action: 'evento', plan_id: pz.plan_id, pid: z2.pid, tipo: 'msg_opciones' }).error === 'no_autorizado', null);
+const sa = post({ action: 'sesion_mago', key: A, accion: 'in', mago: 'Kate', plan_id: pz.plan_id, grupo_id: g2.grupo_id });
+const srs = SHEETS.sesiones.rows, sH = srs[0]; srs.filter(r => r[sH.indexOf('sesion_id')] === sa.sesion_id)[0][sH.indexOf('inicio')] = new Date(Date.now() - 5 * 36e5);
+const opAntes = SHEETS.operacion.rows.length, vm2 = get({ view: 'mago', key: A });
+chk('2.3.2 sesión de más de 4 h se cierra sola sin minutos', !vm2.sesiones_abiertas.some(x => x.sesion_id === sa.sesion_id) && vm2.sesiones_por_revisar.some(x => x.sesion_id === sa.sesion_id) && SHEETS.operacion.rows.length === opAntes, vm2.sesiones_por_revisar);
+const om = post({ action: 'operacion', key: A, plan_id: pz.plan_id, minutos: 35, causa: 'sesion', sesion_id: sa.sesion_id });
+chk('2.3.2 minutos manuales completan la sesión cerrada sola', om.ok && !get({ view: 'mago', key: A }).sesiones_por_revisar.some(x => x.sesion_id === sa.sesion_id), om);
+
 const lim = post({ action: 'limpiar_registros', key: A, confirmar: 'EMPEZAR PILOTO' });
-console.log('LIM', JSON.stringify(lim).slice(0,300), SHEETS.sesiones.rows.length, SHEETS.usabilidad.rows.length, SHEETS.inventario.rows.length); chk('Empezar piloto real limpia (incluye sesiones y usabilidad)', lim.ok && SHEETS.sesiones.rows.length <= 2 && SHEETS.usabilidad.rows.length <= 2 && SHEETS.inventario.rows.length === 2, lim.borradas);
+chk('Empezar piloto real limpia (incluye sesiones y usabilidad)', lim.ok && SHEETS.sesiones.rows.length <= 2 && SHEETS.usabilidad.rows.length <= 2 && SHEETS.inventario.rows.length === 2, lim.borradas);
 console.log(res.map(r => r.join(' · ')).join('\n'));
 console.log('\n' + res.filter(r => r[0] === 'OK ').length + ' de ' + res.length + ' OK');
 const vmL = get({ view: 'mago', key: A }), pnL = get({ view: 'panel', key: A });

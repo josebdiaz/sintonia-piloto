@@ -16,6 +16,16 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Frontend del piloto (`piloto/`)
 
+### [2.2.2] · 2026-10-24 · Feedback del QA, radios y controles de la barra superior
+- **Mago in / off rediseñado:** un estado (luz, «Fuera de línea» o «En línea · 57 min», quién y en qué plan) y un solo botón (Button primario «▶ Mago in» o «■ Mago off»). Se quitan la empuñadura y el punto decorativo de «Presione para hablar». Aviso a las 2 h; a las 4 h la sesión se cierra sola sin minutos y la consola pide registrarlos a mano.
+- **Modo prueba:** título, estado escrito y un interruptor estándar; activo = mostaza con «SÍ» y aviso en la lista de grupos.
+- **Radios consistentes:** contenedores 16 px, controles internos 12 px, botones y fichas en píldora.
+- **Recorrido:** crear el grupo de WhatsApp, /ingreso y el plan 1 son un solo paso (con dos botones). /opciones y /confirmado se marcan como enviados en Mensajes y el recorrido avanza. Las secciones terminadas se pliegan. Aviso «Abre Mago in» si no hay sesión abierta.
+- **Lista de grupos:** cada fila muestra su paso pendiente.
+- **Pestaña Plan:** fichas «Plan 1 · Plan 2» en lugar del menú. La pestaña Llegadas pasa a «Llegadas y tiempo».
+- **Participantes:** «Ahora: …» debajo de la Luz piloto en el plan fijado; en E1 el paso del día dice que se avisa en el grupo de WhatsApp. Fichas de días y franjas con ✓.
+- Requiere el backend 2.3.2.
+
 ### [2.2.1] · 2026-10-24 · DS 3.0 en las páginas de participantes y mago in / off inequívoco
 - **Participantes** (inscripción, aceptación, plan, pulso, aviso): tema DS 3.0 y **Button** del DS (anatomía de `.s-button` sobre `.btn`).
 - **Plan:** **Luz piloto** con el estado (Esperando al parche, Buscando opciones, Votación abierta, Plan fijado, El plan no se dio) y **Lista del plan** «Así va tu plan» (5 pasos con el actual marcado). El pulso dice «unos 4 minutos».
@@ -120,6 +130,11 @@ Las fechas son de 2026 (hora de Colombia).
 - Archivado en `archivo/piloto-m1-claude/`. Tag `piloto/v1.0.0`.
 
 ## Backend (`backend/Codigo_Piloto.gs`)
+
+### [2.3.2] · 2026-10-24 · Feedback del QA
+- Eventos nuevos `msg_ingreso`, `msg_opciones`, `msg_confirmado` y `msg_retro` (solo equipo): los mensajes marcados como enviados.
+- Sesiones de mago abiertas más de 4 h: se cierran solas sin minutos (`cerrada_auto`) y `?view=mago` las lista en `sesiones_por_revisar`. Un registro manual con `sesion_id` las completa (`cerrada_a_mano`).
+- QA: 67 de 67 (`node backend/qa/qa_backend.js`).
 
 ### [2.3.1] · 2026-10-24 · QA
 - `rows_` ignora filas completamente vacías: después de «Empezar piloto real» la fila 2 vacía aparecía como un grupo y un plan fantasma en `?view=mago`.

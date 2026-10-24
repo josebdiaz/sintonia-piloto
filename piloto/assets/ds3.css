@@ -480,3 +480,58 @@ dialog.hoja::backdrop { background: rgba(31, 33, 38, .45); }
 .btn-danger:hover { background: var(--color-bg-danger-soft); }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: .6; cursor: not-allowed; }
 .s-plan-list li em { color: var(--color-text-brand); }
+
+/* ═════════ 2.2.2 · QA: radios consistentes, mago in / off y modo prueba ═════════
+ * Regla de radios: contenedores (tarjetas, cajas, listas, recorrido, banners) = radius-lg (16) ·
+ * controles internos (campos, teclas, filas, burbujas) = radius-md (12) · botones, fichas y luces = radius-full. */
+.card, .s-next, .s-plan-list, .s-list, .s-band, .s-banner, .s-empty, .s-invite, .s-display, .expbar, .tpl, .mago-ctl, .modo-ctl, .kpi, .s-kpi { border-radius: var(--radius-lg); }
+.s-band [role="radio"], input, select, textarea, .linkbox, .s-invite code, .tpl .tpl-text, .s-plan-list li { border-radius: var(--radius-md); }
+.btn, .s-button, .s-pilot, .s-quick-reply, .chip span, .badge, .st, .xp, .tag { border-radius: var(--radius-full); }
+.s-sheet { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+@media (min-width: 700px) { dialog.hoja .s-sheet { border-radius: var(--radius-lg); } }
+
+/* Mago in / off: un estado (luz + texto + tiempo) y una sola acción, sin decoraciones */
+.mago-ctl { display: flex; align-items: center; gap: var(--space-12); flex-wrap: wrap; min-height: 72px; padding: var(--space-12) var(--space-16); border: var(--stroke-1-5) solid var(--color-border-default); background: var(--color-bg-surface); }
+.mago-ctl .mago-estado { flex: 1 1 200px; display: flex; align-items: center; gap: var(--space-12); }
+.mago-ctl .mago-titulo { margin: 0; font: 700 var(--font-size-17)/1.3 var(--font-family-display); }
+.mago-ctl .mago-titulo b { font-family: var(--font-family-mono); font-variant-numeric: tabular-nums; }
+.mago-ctl .mago-meta { margin: 2px 0 0; font: 400 var(--font-size-13)/1.4 var(--font-family-sans); color: var(--color-text-secondary); }
+.mago-ctl input { flex: 0 1 150px; min-height: var(--size-control-md); }
+.mago-ctl .s-button { flex: 0 0 auto; min-width: 150px; }
+.mago-led { flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--color-border-strong); }
+.mago-ctl[data-state="off"] .mago-titulo { color: var(--color-text-secondary); }
+.mago-ctl[data-state="in"] { background: var(--color-bg-brand-deep); border-color: var(--color-bg-brand-deep); color: var(--color-text-on-deep); }
+.mago-ctl[data-state="in"] .mago-meta { color: var(--color-text-on-deep); opacity: .8; }
+.mago-ctl[data-state="in"] .mago-led, .mago-tira .mago-led { background: var(--color-signal-glow); box-shadow: 0 0 0 4px rgba(255, 255, 255, .12), 0 0 10px 2px var(--color-signal-glow); }
+.mago-ctl[data-state="in"] .s-button[data-style="danger"] { background: var(--color-bg-surface); border-color: var(--color-bg-surface); }
+.mago-tira .mago-led { width: 10px; height: 10px; }
+@media (prefers-reduced-motion: no-preference) { .mago-ctl[data-state="in"] .mago-led { animation: mago-latido 2s ease-in-out infinite; } }
+@keyframes mago-latido { 50% { opacity: .55; } }
+
+/* Modo prueba: título fuerte, estado escrito, interruptor estándar; activo = mostaza (cuidado: no cuenta) */
+.modo-ctl { display: flex; align-items: center; gap: var(--space-12); width: 100%; height: 100%; min-height: 72px; padding: var(--space-12) var(--space-16); border: var(--stroke-1-5) solid var(--color-border-default); background: var(--color-bg-surface); color: var(--color-text-primary); text-align: left; font: inherit; cursor: pointer; }
+.modo-ctl .modo-txt { flex: 1; display: grid; gap: 2px; }
+.modo-ctl .modo-txt b { font: 700 var(--font-size-17)/1.3 var(--font-family-display); }
+.modo-ctl .modo-txt small { font: 400 var(--font-size-13)/1.4 var(--font-family-sans); color: var(--color-text-secondary); }
+.modo-sw { flex: none; position: relative; width: 48px; height: 28px; border-radius: var(--radius-full); background: var(--color-border-strong); transition: background .2s ease; }
+.modo-sw i { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--color-bg-surface); box-shadow: var(--shadow-card); transition: left .2s ease; }
+.modo-val { flex: none; min-width: 24px; font: 700 var(--font-size-13)/1 var(--font-family-mono); letter-spacing: .06em; color: var(--color-text-secondary); }
+.modo-ctl[aria-checked="true"] { background: var(--color-bg-accent-soft); border-color: var(--color-border-accent); }
+.modo-ctl[aria-checked="true"] .modo-txt small, .modo-ctl[aria-checked="true"] .modo-val { color: var(--color-text-accent-strong); }
+.modo-ctl[aria-checked="true"] .modo-sw { background: var(--color-bg-accent-hover); }
+.modo-ctl[aria-checked="true"] .modo-sw i { left: 23px; }
+.modo-ctl:focus-visible, .mago-ctl .s-button:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+
+/* Selector de banda: misma altura que los otros dos controles */
+#expbar .s-band { height: 100%; min-height: 72px; padding: var(--space-6); align-items: stretch; }
+#expbar .s-band [role="radio"] { min-height: 0; align-content: center; }
+
+/* Recorrido con secciones plegables */
+.s-plan-list details.seccion > summary { list-style: none; cursor: pointer; }
+.s-plan-list details.seccion > summary::-webkit-details-marker { display: none; }
+.s-plan-list details.seccion ol { margin-top: var(--space-4); }
+
+/* Fichas de selección múltiple (días y franjas): ✓ al marcar */
+.chips[role="group"] .chip input:checked + span::before { content: "✓ "; }
+.mago-tira b { font: 700 var(--font-size-16)/1.2 var(--font-family-display); }
+.mago-tira #tiraMin { font-family: var(--font-family-mono); font-variant-numeric: tabular-nums; }

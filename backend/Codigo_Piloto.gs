@@ -1,7 +1,9 @@
 /**
- * Sintonía · Piloto v2.3.1 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.3.2 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.3.2 (24/10): eventos msg_ingreso, msg_opciones, msg_confirmado y msg_retro; las sesiones abiertas más de 4 h se cierran solas sin minutos
+ *   (cerrada_auto) y se completan con operacion + sesion_id (cerrada_a_mano).
  * Versión 2.3.1 (24/10): rows_ ignora filas completamente vacías (la fila 2 que deja «Empezar piloto real» aparecía como un grupo y un plan fantasma).
  * Versión 2.3.0 (24/10, para el frontend 2.1.0 · Sync P7c, semana de pruebas desde cero):
  *   - E1.5 · WhatsApp automatizado reemplaza a la web app. Usa el valor interno 'E2' (sin cambio de esquema); las dos condiciones corren en WhatsApp.
@@ -103,7 +105,8 @@ var SHEETS = {
 };
 
 var TIPOS_GRUPO  = ['amigos','familia','pareja','trabajo','otro'];
-var TIPOS_EVENTO = ['activacion','recordatorio','me_apunto','no_puedo','salida_sugerida','checkpoint_llegada','llego_casa','cuenta','mensaje_mago','plan_caido','salir','cambio_canal'];
+var TIPOS_EVENTO = ['activacion','recordatorio','me_apunto','no_puedo','salida_sugerida','checkpoint_llegada','llego_casa','cuenta','mensaje_mago','plan_caido','salir','cambio_canal',
+  'msg_ingreso','msg_opciones','msg_confirmado','msg_retro'];   // v2.3.2: mensajes del mago marcados como enviados (para el recorrido de la consola)
 var EVENTOS_PARTICIPANTE = ['me_apunto', 'no_puedo', 'checkpoint_llegada', 'llego_casa', 'salir'];   // v2.2.5: lo único que un participante registra por sí mismo
 var ACTORES      = ['mago','soporte','tecnico','motor'];   // v2.3.0: motor = n8n
 var CAUSAS       = ['sesion','coordinacion','redactar_mensaje','resolver_duda','cambio_plan','recordatorio','falla_tecnica','seguridad','otro'];
@@ -412,6 +415,7 @@ function operacion_(d) {
   var min = int_(d.minutos); if (min === '' || min < 0 || min > 600) return { ok: false, error: 'minutos_invalidos' };
   append_('operacion', { plan_id: p ? p.plan_id : '', grupo_id: p ? p.grupo_id : str_(d.grupo_id, 20), experimento: p ? p.experimento : str_(d.experimento, 4),
     actor: actor, minutos: min, causa: causa, nota: str_(d.nota, 300) });
+  if (d.sesion_id) rows_('sesiones').forEach(function (r) { if (r.sesion_id === d.sesion_id && r.estado === 'cerrada_auto') updateRow_('sesiones', r._row, { minutos: min, estado: 'cerrada_a_mano' }); });   // v2.3.2
   return { ok: true };
 }
 
@@ -652,9 +656,14 @@ function vistaMago_() {
   });
   var copia = function (i) { var o = {}; SHEETS.inventario.forEach(function (c) { o[c] = i[c]; }); return o; };
   var inventario = inventarioActivo_().map(copia), pendiente = inventarioPendiente_().map(copia);
-  var sesionesAbiertas = rows_('sesiones').filter(function (r) { return r.estado === 'abierta'; }).map(function (r) {   // v2.3.0
+  // v2.3.2: una sesión abierta hace más de 4 h se cierra sola SIN sumar minutos (estado cerrada_auto); la consola pide registrar los reales a mano
+  var ses = rows_('sesiones'), limite = Date.now() - 4 * 36e5;
+  ses.forEach(function (r) { if (r.estado === 'abierta' && new Date(r.inicio).getTime() < limite) { updateRow_('sesiones', r._row, { fin: new Date(), minutos: '', estado: 'cerrada_auto' }); r.estado = 'cerrada_auto'; } });
+  var sesionesAbiertas = ses.filter(function (r) { return r.estado === 'abierta'; }).map(function (r) {   // v2.3.0
     return { sesion_id: r.sesion_id, mago: r.mago, plan_id: r.plan_id, grupo_id: r.grupo_id, experimento: r.experimento, inicio: r.inicio }; });
-  return { ok: true, sesiones_abiertas: sesionesAbiertas, grupos: grupos, planes: planes, inventario: inventario, inventario_pendiente: pendiente, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }),
+  var sesionesPorRevisar = ses.filter(function (r) { return r.estado === 'cerrada_auto'; }).map(function (r) {
+    return { sesion_id: r.sesion_id, mago: r.mago, plan_id: r.plan_id, grupo_id: r.grupo_id, inicio: r.inicio }; });
+  return { ok: true, sesiones_abiertas: sesionesAbiertas, sesiones_por_revisar: sesionesPorRevisar, grupos: grupos, planes: planes, inventario: inventario, inventario_pendiente: pendiente, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }),
     registros: conteoRegistros_(), conservar_al_limpiar: CONSERVAR_AL_LIMPIAR,
     bitacora: rows_('bitacora').slice(-5).map(function (b) { return { ts: b.ts, accion: b.accion, detalle: b.detalle, respaldo_url: b.respaldo_url }; }) };
 }
@@ -813,7 +822,7 @@ function probarMontaje() {
   r.push(prop_('MOTOR_KEY', '') ? (prop_('MOTOR_KEY', '') === prop_('ADMIN_KEY', '') ? '❌ MOTOR_KEY no puede ser igual a ADMIN_KEY' : '✅ MOTOR_KEY (motor n8n)') : '⚠️ sin MOTOR_KEY: el motor de E1.5 no puede escribir');   // v2.3.0
   try { var ss = ss_(); r.push('✅ Hoja: ' + ss.getName()); } catch (x) { r.push('❌ No abre la hoja (revisa SHEET_ID): ' + x); Logger.log(r.join('\n')); return; }
   Object.keys(SHEETS).forEach(function (n) { sheet_(n); }); r.push('✅ ' + Object.keys(SHEETS).length + ' hojas listas');
-  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.3.1)');
+  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.3.2)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');
   r.push('Zona horaria del proyecto: ' + Session.getScriptTimeZone() + (Session.getScriptTimeZone() === 'America/Bogota' ? ' ✅' : ' ⚠️ cambiar a America/Bogota'));
   if (prop_('GEMINI_API_KEY', '')) {
