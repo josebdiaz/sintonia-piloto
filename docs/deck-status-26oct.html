@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sintonía · Status 26 oct</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: lienzo 16:9 de 1920×1080 centrado y escalado; una idea por diapositiva; barra inferior con slider de navegación */
+:root{
+  --papel-0:#ffffff; --papel-50:#faf9f6; --papel-100:#efede7; --papel-300:#dad6cc;
+  --papel-700:#47494d; --papel-900:#1f2226; --noche:#0e1116; --noche-kv:#0b0e13;
+  --naranja:#ff4f00; --naranja-700:#c23a00;
+  --mostaza:#ebc46a; --crema:#f3e9b8; --vitral:#2c6a86; --salvia:#a9c9b8;
+  --coral:#e8806a; --rosa:#eec0b4; --rubi:#9b2d30; --chat:#e9e2d6;
+  --tonal-crema:#e6d99a; --tonal-noche:#102029;
+  --f-s:'Climate Crisis','Arial Black',sans-serif;
+  --f-txt:'Graphik','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --dur-quick:300ms; --dur-base:700ms; --dur-slow:1000ms; --dur-pulse:2600ms;
+  --ease-standard:cubic-bezier(.3,.6,.3,1); --ease-enter:cubic-bezier(.2,.8,.2,1);
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--noche);color:var(--papel-50);font-family:var(--f-txt);overflow:hidden;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+*{box-sizing:border-box}
+.viewport{position:fixed;left:0;right:0;top:0;bottom:64px;overflow:hidden;background:var(--noche)}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;transform:translate(-50%,-50%) scale(.5)}
+.slide{position:absolute;inset:0;overflow:hidden;padding:96px 130px;display:flex;flex-direction:column;
+  visibility:hidden;opacity:0;transition:opacity var(--dur-slow) var(--ease-standard),visibility 0s linear var(--dur-slow)}
+.slide.active{visibility:visible;opacity:1;transition:opacity var(--dur-slow) var(--ease-standard)}
+.slide>.content{position:relative;z-index:2;display:flex;flex-direction:column;height:100%;
+  transform:translateX(20px);transition:transform 1400ms var(--ease-standard)}
+.slide.active>.content{transform:none}
+
+.s-noche{background:var(--noche);color:var(--papel-50)}
+.s-kv{background:var(--noche-kv);color:var(--papel-50)}
+.s-papel{background:var(--papel-50);color:var(--noche)}
+.s-crema{background:var(--crema);color:var(--noche)}
+.s-vitral{background:var(--vitral);color:var(--papel-0)}
+
+.eyebrow{font-weight:600;font-size:24px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 26px;display:flex;gap:18px;align-items:center}
+.eyebrow .sec{padding:6px 14px;border-radius:999px;border:2px solid currentColor;font-size:18px}
+.s-papel .eyebrow,.s-crema .eyebrow{color:var(--naranja-700)}
+.s-noche .eyebrow,.s-kv .eyebrow{color:var(--naranja)}
+.s-vitral .eyebrow{color:var(--crema)}
+h1,h2{font-weight:800;letter-spacing:-.03em;line-height:.98;margin:0;text-wrap:balance}
+h1{font-size:160px} h2{font-size:112px}
+.lede{font-size:36px;line-height:1.35;max-width:30ch;margin:34px 0 0;text-wrap:pretty}
+.s-noche .lede,.s-kv .lede{color:var(--papel-300)}
+.s-crema .lede{color:var(--papel-900)}
+.small{font-size:28px;line-height:1.35}
+.tag{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:22px;letter-spacing:.1em;text-transform:uppercase;padding:10px 18px;border-radius:999px;border:2px solid currentColor;white-space:nowrap}
+
+/* entradas */
+.in{opacity:0;transform:translateY(24px)}
+.active .in{animation:rise var(--dur-base) var(--ease-enter) forwards;animation-delay:calc(var(--i,0)*170ms + 350ms)}
+@keyframes rise{to{opacity:1;transform:none}}
+.trazo path{stroke-dasharray:1 1.2;stroke-dashoffset:1.1}
+.active .trazo path{animation:draw 1400ms var(--ease-enter) forwards;animation-delay:var(--td,1.4s)}
+@keyframes draw{from{stroke-dashoffset:1.1}to{stroke-dashoffset:0}}
+.u{position:relative;display:inline-block;white-space:nowrap}
+.u .trazo{position:absolute;left:0;bottom:-.16em;width:100%;height:.2em;overflow:visible}
+
+/* wordmark */
+.wm{font-weight:800;letter-spacing:-.045em;display:inline-block;line-height:1}
+.wm .i{position:relative;display:inline-block}
+.wm .i::after{content:"";position:absolute;width:.30em;height:.10em;border-radius:.05em;left:.02em;top:.2em;transform:rotate(-40deg);transform-origin:left center;background:var(--tilde,var(--naranja))}
+.s-papel .wm,.s-crema .wm{--tilde:var(--naranja-700)}
+.logo{position:absolute;right:130px;bottom:34px;font-size:36px;z-index:40;pointer-events:none;color:var(--noche);--tilde:var(--naranja-700);transition:color var(--dur-slow) var(--ease-standard)}
+.logo.on-dark{color:var(--papel-50);--tilde:var(--naranja)}
+.logo.on-vitral{color:var(--papel-0);--tilde:var(--mostaza)}
+
+/* avatar con ondas vivas */
+.avatar{position:relative;flex:none}
+.avatar svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ripple{transform-origin:100px 100px;transform-box:view-box;opacity:0}
+.active .ripple{animation:ripple 7000ms var(--ease-standard) infinite;animation-delay:calc(var(--rd,0ms) + 1800ms)}
+@keyframes ripple{0%{transform:scale(.62);opacity:0}25%{opacity:.9}72%{transform:scale(1.18);opacity:0}100%{transform:scale(1.18);opacity:0}}
+.breath{transform-origin:100px 100px;transform-box:view-box}
+.active .breath{animation:breath 9000ms ease-in-out infinite}
+@keyframes breath{50%{transform:scale(1.025)}}
+
+/* portada / cierre */
+.slide>.content.cover{flex-direction:row;align-items:center;gap:110px}
+.cover .avatar{width:540px;height:540px}
+.slide>.content.cover>div:last-child{min-width:0}
+.cover.fin .avatar{width:400px;height:400px}
+.cover.fin{gap:90px}
+.cover h1{font-size:140px}
+.cover.fin h1{font-size:118px}
+.meta-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:54px}
+.s-kv .tag{color:var(--papel-300)}
+
+/* agenda */
+.slide>.content.center{justify-content:center}
+.chips{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-top:80px}
+.center .chip{min-height:300px}
+.center .pipe{margin-top:72px}
+.center .strip{margin-top:64px}
+.center .cell .d{font-size:28px}
+.chip{border-radius:16px;padding:32px 28px;display:flex;flex-direction:column;gap:18px;min-height:260px}
+.chip b{font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.chip span{font-size:24px;line-height:1.3;font-weight:500}
+.chip .k{font-size:20px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.c-mostaza{background:var(--mostaza);color:var(--noche)} .c-salvia{background:var(--salvia);color:var(--noche)}
+.c-noche{background:var(--noche);color:var(--papel-50)} .c-noche .k{color:var(--naranja)}
+.c-coral{background:var(--coral);color:var(--noche)} .c-vitral{background:var(--vitral);color:var(--papel-0)}
+
+/* marca */
+.brand-wm{color:inherit}
+.s-noche .slogan{color:var(--papel-300)}
+.pcols{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:70px}
+.pc{border-top:8px solid var(--c);padding-top:22px;display:flex;flex-direction:column;gap:12px}
+.pc b{font-size:56px;font-weight:800;letter-spacing:-.03em}
+.pc span{font-size:30px;line-height:1.3;color:var(--papel-300)}
+.tone{display:flex;gap:40px;margin-top:56px;font-size:26px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;flex-wrap:wrap}
+.tone span{color:var(--naranja)} .tone .no{color:var(--papel-300)}
+.brand-wm{font-size:190px}
+.slogan{font-size:60px;font-weight:800;letter-spacing:-.03em;margin-top:36px;line-height:1.05}
+
+/* F · color */
+.swatches{display:grid;grid-template-columns:repeat(7,1fr);gap:18px;margin-top:44px}
+.sw{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sw i{display:block;height:104px;border-radius:14px;border:2px solid var(--papel-300);transform-origin:bottom}
+.active .sw i{animation:grow 1000ms var(--ease-enter) both;animation-delay:calc(var(--i,0)*110ms + 500ms)}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.sw b{font-size:24px;font-weight:700}
+.sw span{font-size:19px;font-weight:600;letter-spacing:.06em;color:var(--papel-700);font-variant-numeric:tabular-nums}
+.prop{display:flex;height:64px;border-radius:14px;overflow:hidden;margin-top:36px;border:2px solid var(--papel-300)}
+.prop div{display:flex;align-items:center;padding-left:18px;font-weight:700;font-size:22px;width:0;transition:width 1600ms var(--ease-enter);white-space:nowrap;overflow:hidden}
+.active .prop div{width:var(--w)}
+.prop .a{background:var(--papel-100);color:var(--noche);transition-delay:1.2s}
+.prop .b{background:var(--noche);color:var(--papel-50);transition-delay:1.6s}
+.prop .c{background:var(--naranja);color:var(--noche);transition-delay:2s}
+.prop .d{background:linear-gradient(90deg,var(--mostaza) 50%,var(--vitral) 50%);color:var(--noche);transition-delay:2.4s}
+.contrasts{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap}
+.ct{display:flex;align-items:center;gap:12px;padding:10px 18px 10px 10px;border-radius:999px;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.ct em{font-style:normal;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:20px}
+
+/* F · tipo */
+.type-grid{display:grid;grid-template-columns:560px 1fr;gap:90px;flex:1;align-items:center}
+.glyph-card{background:var(--noche);border-radius:24px;height:660px;display:grid;place-items:center;position:relative;overflow:hidden}
+.glyph-card .S{font-family:var(--f-s);font-size:470px;line-height:1;color:var(--naranja)}
+.active .glyph-card .S{animation:pop 900ms var(--ease-enter) both .6s}
+.glyph-card .cap{position:absolute;left:28px;bottom:24px;font-size:20px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--papel-300)}
+.scale{display:flex;flex-direction:column;gap:22px}
+.row{display:grid;grid-template-columns:210px 1fr;align-items:baseline;gap:28px;border-bottom:2px solid var(--papel-300);padding-bottom:16px}
+.row .meta{font-size:19px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--papel-700);font-variant-numeric:tabular-nums}
+.t-d{font-size:120px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.t-h{font-size:64px;font-weight:800;letter-spacing:-.03em}
+.t-b{font-size:36px;font-weight:400}
+.t-l{font-size:24px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+@keyframes pop{0%{transform:scale(.85) rotate(-5deg);opacity:0}60%{transform:scale(1.04) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+
+/* F · glifo */
+.glifo-grid{display:grid;grid-template-columns:640px 1fr;gap:80px;flex:1;align-items:center}
+.build{width:600px;height:600px;position:relative}
+.build svg{width:100%;height:100%;overflow:visible}
+.zl,.stone,.ring,.wave2{transform-origin:100px 100px;transform-box:view-box}
+.zl,.stone,.ring{opacity:0}
+.active .zl{animation:zjump 700ms cubic-bezier(.22,1,.36,1) forwards;animation-delay:var(--zd)}
+@keyframes zjump{0%{opacity:0;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+.active .stone{animation:stone 760ms cubic-bezier(.45,0,.3,1) forwards;animation-delay:var(--zd)}
+@keyframes stone{0%{opacity:0;transform:scale(2)}60%{opacity:1;transform:scale(.94)}100%{opacity:1;transform:scale(1)}}
+.active .ring{animation:settle 1000ms ease-out forwards;animation-delay:var(--zd)}
+@keyframes settle{0%{opacity:0;transform:scale(.985)}100%{opacity:1;transform:scale(1)}}
+.wave2{opacity:0}
+.active .wave2{animation:wave2 1900ms cubic-bezier(.25,.1,.25,1) forwards;animation-delay:var(--zd)}
+@keyframes wave2{0%{opacity:0;transform:scale(.3)}10%{opacity:.85}100%{opacity:0;transform:scale(1.45)}}
+.active .wave2.loop{animation:wave2loop 6000ms cubic-bezier(.37,0,.2,1) infinite;animation-delay:var(--zd)}
+@keyframes wave2loop{0%{opacity:0;transform:scale(.3)}4%{opacity:.6}32%{opacity:0;transform:scale(1.45)}100%{opacity:0;transform:scale(1.45)}}
+.guides line,.guides circle{stroke:var(--naranja-700);stroke-width:.6;stroke-dasharray:2 2;fill:none;opacity:0}
+.active .guides *{animation:fadeIn 900ms linear forwards 2.8s}
+@keyframes fadeIn{to{opacity:1}}
+.specs{display:flex;flex-direction:column;gap:20px}
+.spec{display:grid;grid-template-columns:64px 1fr;gap:22px;align-items:center;font-size:30px;font-weight:700}
+.spec span{font-size:22px;font-weight:500;color:var(--papel-700);display:block;margin-top:4px}
+.spec i{width:64px;height:64px;border-radius:50%;display:block}
+.variants{display:flex;gap:30px;margin-top:36px;align-items:flex-end}
+.variants .avatar{width:140px;height:140px}
+.variants .mini{width:40px;height:40px}
+.variants figcaption{font-size:18px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--papel-700);margin-top:12px;text-align:center}
+.variants figure{margin:0;display:flex;flex-direction:column;align-items:center}
+
+/* F · voz */
+.voz{display:grid;grid-template-columns:repeat(5,1fr);gap:22px;margin-top:56px;flex:1}
+.mom{display:flex;flex-direction:column;gap:20px;min-width:0}
+.mom .stk{align-self:flex-start;font-weight:800;font-size:32px;padding:16px 24px;border-radius:18px;transform:rotate(-3deg);box-shadow:0 5px 0 var(--noche)}
+.mom:nth-child(even) .stk{transform:rotate(3deg)}
+.active .mom .stk{animation:pop 700ms var(--ease-enter) both;animation-delay:calc(var(--i)*550ms + 600ms)}
+.chatbox{background:var(--chat);border-radius:18px;padding:22px;flex:1;display:flex;flex-direction:column;gap:12px;justify-content:flex-end}
+.bub{background:var(--papel-0);color:var(--noche);border-radius:16px 16px 16px 4px;padding:16px 18px;font-size:24px;line-height:1.35}
+.bub small{display:block;font-size:17px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--naranja-700);margin-bottom:4px}
+.bub.ok{background:var(--vitral);color:var(--papel-0)} .bub.ok small{color:var(--crema)}
+.bub.me{align-self:flex-end;border-radius:16px 16px 4px 16px;background:#dcefe6}
+.active .bub{animation:rise var(--dur-base) var(--ease-enter) both;animation-delay:calc(var(--i)*550ms + 1000ms)}
+.mom .k{font-size:20px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--papel-700)}
+
+/* storyboard */
+.sb{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 26px;margin-top:40px}
+.frame{display:flex;flex-direction:column;gap:10px;min-width:0}
+.frame figure{margin:0;border-radius:12px;overflow:hidden;background:var(--papel-0);aspect-ratio:16/10;border:2px solid var(--papel-300)}
+.frame img,.cell img{width:100%;height:100%;object-fit:cover;display:block}
+.active .frame img{animation:kb 16s ease-out both}
+@keyframes kb{from{transform:scale(1.08)}to{transform:scale(1)}}
+.frame .cap{display:flex;align-items:baseline;gap:12px;font-size:28px;font-weight:700}
+.frame .cap i{font-style:normal;font-size:20px;font-weight:600;color:var(--naranja-700);letter-spacing:.06em}
+.momentos{display:flex;margin-top:18px;font-size:20px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.momentos div{padding-top:10px;border-top:6px solid;transform-origin:left}
+.active .momentos div{animation:grow2 1400ms var(--ease-enter) both 2.6s}
+@keyframes grow2{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.m-a{flex:3;border-color:var(--mostaza)} .m-i{flex:4;border-color:var(--vitral);margin-left:26px} .m-c{flex:1;border-color:var(--coral);margin-left:26px}
+
+/* experimentos */
+.versus{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:60px}
+.cond{border-radius:20px;padding:46px 50px;display:flex;flex-direction:column;gap:22px}
+.cond h3{font-size:62px;font-weight:800;letter-spacing:-.03em;margin:0;line-height:1}
+.cond p{margin:0;font-size:30px;line-height:1.35}
+.cond .tag{align-self:flex-start}
+.cond.e1{background:var(--mostaza);color:var(--noche)}
+.cond.e15{background:var(--papel-900);color:var(--papel-50);border:2px solid var(--papel-700)} .cond.e15 .tag{color:var(--naranja)}
+.design-row{display:flex;gap:56px;margin-top:auto;font-size:30px;color:var(--papel-300);flex-wrap:wrap}
+.design-row b{color:var(--papel-50);font-weight:800;font-size:56px;display:block;letter-spacing:-.02em}
+
+/* instrumento */
+.strip{display:grid;grid-template-columns:repeat(8,1fr);gap:16px;margin-top:56px}
+.cell{display:flex;flex-direction:column;gap:14px;min-width:0}
+.cell figure{margin:0;aspect-ratio:4/3;border-radius:10px;overflow:hidden;border:2px solid var(--papel-300)}
+.cell .n{font-size:18px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--papel-700)}
+.cell .d{font-size:25px;font-weight:700;line-height:1.2}
+.cell.key .d{color:var(--naranja-700)}
+.cell.key figure{border-color:var(--naranja-700)}
+.pipe{margin-top:auto;display:flex;align-items:center;gap:20px;font-size:28px;font-weight:600;flex-wrap:wrap}
+.pipe span{background:var(--noche);color:var(--papel-50);padding:14px 24px;border-radius:12px}
+.pipe em{font-style:normal;color:var(--naranja-700);font-weight:800}
+
+/* n8n */
+.flows{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-top:60px;position:relative}
+.flow{border:2px solid var(--papel-700);border-radius:16px;padding:26px 24px;display:flex;flex-direction:column;gap:14px;min-width:0;background:var(--noche);position:relative;z-index:1}
+.flow .w{font-size:21px;font-weight:600;letter-spacing:.1em;color:var(--naranja)}
+.flow b{font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.flow span{font-size:22px;line-height:1.3;color:var(--papel-300)}
+.packet{position:absolute;top:-12px;left:0;width:24px;height:24px;border-radius:50%;background:var(--naranja);z-index:2}
+.active .packet{animation:travel 10s var(--ease-standard) infinite 2.5s}
+@keyframes travel{0%{left:0;opacity:0}5%{opacity:1}90%{left:calc(100% - 24px);opacity:1}100%{left:calc(100% - 24px);opacity:0}}
+.loop{margin-top:40px;display:flex;align-items:center;gap:28px;background:var(--papel-900);border-radius:16px;padding:28px 36px;flex-wrap:wrap}
+.loop .step{font-size:30px;font-weight:700}
+.loop .arrow{color:var(--naranja);font-size:34px;font-weight:800}
+.loop .human{background:var(--vitral);color:var(--papel-0);padding:10px 22px;border-radius:999px}
+.status-line{margin-top:auto;display:flex;gap:18px;flex-wrap:wrap}
+.status-line .tag{color:var(--papel-300)} .status-line .tag.ok{color:var(--salvia)}
+
+/* decisión */
+.cmp{display:grid;grid-template-columns:1fr 120px 1fr;margin-top:50px}
+.side{border-radius:20px;padding:42px 46px;display:flex;flex-direction:column;gap:20px}
+.side h3{font-size:56px;font-weight:800;letter-spacing:-.03em;margin:0;line-height:1}
+.side ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:14px}
+.side li{font-size:28px;line-height:1.3;padding-left:30px;position:relative}
+.side li::before{content:"";position:absolute;left:0;top:.55em;width:14px;height:4px;border-radius:2px;background:currentColor}
+.side.hoy{background:var(--papel-100);color:var(--noche)}
+.side.auto{background:var(--noche);color:var(--papel-50)} .side.auto .tag{color:var(--naranja)}
+.side .tag{align-self:flex-start}
+.connect{display:grid;place-items:center}
+.connect svg{width:120px;height:40px;overflow:visible}
+.impl{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:32px}
+.impl div{border-top:5px solid var(--naranja-700);padding-top:14px;font-size:24px;line-height:1.3;color:var(--papel-700)}
+.impl b{display:block;font-size:22px;letter-spacing:.1em;text-transform:uppercase;color:var(--noche);margin-bottom:6px}
+
+.routes{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:28px;margin-top:64px;align-items:stretch}
+.rt{background:var(--papel-100);border-radius:20px;padding:36px 36px 34px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.rt h3{font-size:46px;font-weight:800;letter-spacing:-.03em;margin:0;line-height:1.02}
+.rt .tag{align-self:flex-start;color:var(--naranja-700)}
+.rt .cost{font-size:40px;font-weight:800;letter-spacing:-.02em;color:var(--vitral);line-height:1.05;font-variant-numeric:tabular-nums}
+.rt .cost small{display:block;font-size:20px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--papel-700);margin-top:6px}
+.rt .pm{margin:0;font-size:28px;line-height:1.3;font-weight:600}
+.rt.b{background:var(--noche);color:var(--papel-50)}
+.rt.b .tag{color:var(--naranja)} .rt.b .cost{color:var(--mostaza)} .rt.b .cost small{color:var(--papel-300)}
+.base{display:flex;gap:18px;align-items:center;margin-top:30px;font-size:26px;font-weight:600;flex-wrap:wrap}
+.base b{font-size:22px;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja-700)}
+.base span{background:var(--papel-100);padding:12px 22px;border-radius:999px}
+.mc{display:grid;grid-template-columns:640px 1fr;gap:90px;align-items:center;margin-top:20px}
+.mc-big{font-size:340px;font-weight:800;letter-spacing:-.06em;line-height:.85;color:var(--mostaza);font-variant-numeric:tabular-nums}
+.mc-t{font-size:44px;font-weight:700;line-height:1.15;letter-spacing:-.02em;margin:20px 0 0;max-width:15ch}
+.groups{display:grid;grid-template-columns:repeat(6,56px);gap:16px;margin-top:40px}
+.groups i{width:56px;height:56px;border-radius:50%;border:4px solid var(--mostaza);display:block}
+.active .groups i{animation:fillG 500ms ease forwards;animation-delay:calc(var(--k,0)*180ms + 1600ms)}
+@keyframes fillG{to{background:var(--mostaza)}}
+.costs{display:flex;flex-direction:column;gap:22px}
+.cr{display:grid;grid-template-columns:250px 1fr 230px;gap:22px;align-items:center;font-size:26px;font-weight:600}
+.cr b{font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.cb{height:26px;border-radius:999px;background:var(--papel-900);overflow:hidden}
+.cb i{display:block;height:100%;width:0;background:var(--naranja);border-radius:999px;transition:width 1600ms var(--ease-enter) 1.4s;min-width:0}
+.active .cb i{width:var(--w)}
+.scen{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:50px}
+.scen div{border-top:5px solid var(--vitral);padding-top:16px;display:flex;flex-direction:column;gap:8px}
+.scen div:first-child{border-color:var(--mostaza)}
+.scen b{font-size:72px;font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.scen span{font-size:22px;line-height:1.3;color:var(--papel-300)}
+.mc-foot{font-size:20px;line-height:1.45;color:var(--papel-300);margin:50px 0 0;max-width:1600px}
+/* datos */
+.big{font-size:400px;font-weight:800;letter-spacing:-.06em;line-height:.85;font-variant-numeric:tabular-nums}
+.big small{font-size:.45em;letter-spacing:-.02em}
+.datarow{display:flex;align-items:flex-end;gap:80px;margin-top:20px}
+.datarow p{font-size:52px;font-weight:700;line-height:1.15;letter-spacing:-.02em;max-width:18ch;margin:0}
+.dcol{display:flex;flex-direction:column;gap:34px;padding-bottom:24px}
+.five{display:flex;gap:16px;align-items:center}
+.five i{width:120px;height:120px;border-radius:20px;border:4px dashed rgba(243,233,184,.55);position:relative;overflow:hidden;display:block}
+.five i.on{border:4px solid var(--crema);background:var(--crema)}
+.five span{font-size:30px;font-weight:800;margin-left:12px;color:var(--crema)}
+.source{margin-top:auto;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.s-vitral .tag{color:var(--papel-0)}
+.partial{display:flex;align-items:center;gap:26px;margin-top:34px;font-size:28px;font-weight:600}
+.meter{width:520px;height:22px;border-radius:999px;background:rgba(255,255,255,.18);position:relative;overflow:hidden}
+.meter i{position:absolute;inset:0 auto 0 0;background:var(--crema);border-radius:999px;width:0;transition:width 2000ms var(--ease-enter) 1.8s}
+.active .meter i{width:var(--w)}
+.meter::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 10px,rgba(255,255,255,.12) 10px 12px)}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:56px}
+.stat{display:flex;flex-direction:column;gap:16px}
+.stat .v{font-size:170px;font-weight:800;letter-spacing:-.05em;line-height:.9;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:.45em} .stat .v.o{color:var(--naranja-700)}
+.stat p{margin:0;font-size:31px;line-height:1.3;font-weight:500;max-width:20ch}
+.stat .ratio{font-size:22px;font-weight:600;letter-spacing:.08em;color:var(--papel-700)}
+.bars{margin-top:auto;display:grid;grid-template-columns:auto 1fr auto;gap:14px 24px;align-items:center;font-size:26px;font-weight:600;max-width:1200px}
+.bar{height:30px;background:var(--papel-100);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--vitral);border-radius:999px;width:0;transition:width 1600ms var(--ease-enter) 1.6s;position:relative;overflow:hidden}
+.active .bar i{width:var(--w)}
+.foot{font-size:22px;color:var(--papel-700);margin-top:20px}
+
+/* herramientas */
+.chain{display:grid;grid-template-columns:repeat(7,1fr);margin-top:90px;position:relative}
+.chain::before{content:"";position:absolute;left:3%;right:3%;top:38px;height:4px;background:var(--papel-700);transform-origin:left;transform:scaleX(0)}
+.active .chain::before{animation:grow2 2600ms var(--ease-enter) forwards .6s}
+.node{display:flex;flex-direction:column;gap:16px;padding-right:22px;min-width:0}
+.dot{width:80px;height:80px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:26px;position:relative;z-index:1}
+.node b{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.node span{font-size:23px;line-height:1.3;color:var(--papel-300)}
+.node .when{font-size:19px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja)}
+.d1{background:var(--mostaza);color:var(--noche)} .d2{background:var(--salvia);color:var(--noche)} .d3{background:var(--coral);color:var(--noche)}
+.d4{background:var(--rosa);color:var(--noche)} .d5{background:var(--vitral);color:var(--papel-0)} .d6{background:var(--crema);color:var(--noche)} .d7{background:var(--naranja);color:var(--noche)}
+
+/* pedidos */
+.asks{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:60px}
+.ask{background:var(--papel-50);border-radius:20px;padding:42px 40px;display:flex;flex-direction:column;gap:20px}
+.ask h3{font-size:48px;font-weight:800;letter-spacing:-.03em;margin:0;line-height:1.02}
+.ask p{margin:0;font-size:27px;line-height:1.35;color:var(--papel-700)}
+.ask .tag{align-self:flex-start;color:var(--naranja-700)}
+.next{margin-top:auto;display:flex;gap:44px;font-size:28px;font-weight:600;flex-wrap:wrap}
+.next span::before{content:"→ ";color:var(--naranja-700);font-weight:800}
+
+/* chrome: barra con slider */
+.navbar{position:fixed;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom,0px));padding:0 max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));
+  display:flex;align-items:center;gap:12px;background:var(--noche-kv);border-top:1px solid var(--papel-900);z-index:20}
+.navbar button{flex:none;min-width:44px;height:44px;border-radius:999px;border:1px solid var(--papel-700);background:transparent;color:var(--papel-50);font:600 16px var(--f-txt);cursor:pointer;padding:0 12px}
+.navbar button:hover{border-color:var(--naranja)}
+.navbar button:focus-visible,.range:focus-visible{outline:3px solid var(--naranja);outline-offset:2px}
+.navbar .count{flex:none;font:600 14px var(--f-txt);color:var(--papel-300);font-variant-numeric:tabular-nums;min-width:52px;text-align:center}
+.navbar .chap{flex:none;font:600 12px var(--f-txt);letter-spacing:.1em;text-transform:uppercase;color:var(--naranja);min-width:110px}
+.track{position:relative;flex:1;min-width:0;height:44px;display:flex;align-items:center}
+.ticks{position:absolute;left:9px;right:9px;top:50%;height:6px;transform:translateY(-50%);display:flex;gap:3px;pointer-events:none}
+.ticks i{flex:1;border-radius:3px;background:var(--papel-900)}
+.ticks i.on{background:var(--naranja)}
+.ticks i.ch{margin-left:6px}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;position:relative;cursor:pointer}
+.range::-webkit-slider-runnable-track{height:6px;background:transparent}
+.range::-moz-range-track{height:6px;background:transparent}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--papel-50);border:3px solid var(--naranja);margin-top:-6px}
+.range::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--papel-50);border:3px solid var(--naranja)}
+.tip{position:absolute;bottom:46px;transform:translateX(-50%);background:var(--papel-50);color:var(--noche);font:600 13px var(--f-txt);padding:6px 10px;border-radius:8px;white-space:nowrap;pointer-events:none}
+.notes{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));max-width:min(620px,calc(100vw - 32px));z-index:22;background:var(--papel-50);color:var(--noche);border-radius:14px;padding:18px 22px;font-size:16px;line-height:1.5;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.notes b{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja-700);margin-bottom:6px}
+@media (max-width:640px){.navbar .chap,.navbar .hide-sm{display:none}}
+
+@media (prefers-reduced-motion:reduce){
+  .in,.active .in{animation:fadeIn var(--dur-base) linear forwards;transform:none}
+  .trazo path,.active .trazo path{animation:none!important;stroke-dashoffset:0}
+  .slide>.content{transform:none!important;transition:none}
+  .active .frame img{animation:none}
+  .active .ripple,.active .breath,.active .packet{animation:none}
+  .ripple,.packet{opacity:0}
+  .zl,.stone,.ring,.guides *{opacity:1!important;transform:none!important;animation:none!important} .wave2{opacity:0!important;animation:none!important}
+  .active .sw i,.active .momentos div,.active .chain::before{animation:none;transform:none}
+  .chain::before{transform:none}
+  .active .mom .stk,.active .bub,.active .glyph-card .S{animation:fadeIn 200ms linear both}
+  .bar i,.prop div,.meter i,.cb i{transition:none}
+  .active .groups i{animation:none;background:var(--mostaza)}
+}
+</style>
+</head>
+<body>
+<div class="viewport" id="viewport">
+<div class="stage" id="stage">
+<div class="wm logo" id="logo" aria-label="Sintonía">sinton<span class="i">ı</span>a</div>
+
+<!-- 1 · Portada -->
+<section class="slide s-crema active" data-chap="Inicio" data-title="Portada" data-notes="Abrimos con la marca nueva. Mensaje: el fin de semana pasamos de diseñar a medir.">
+  <div class="content cover">
+    <div class="avatar in" style="--i:0" data-avatar="mostaza" role="img" aria-label="Avatar de Sintonía"></div>
+    <div>
+      <p class="eyebrow in" style="--i:1">Status · 26 oct 2026</p>
+      <h1 class="in" style="--i:2">Menos vueltas,<br><span class="u">más plan.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+      <div class="meta-row in" style="--i:3"><span class="tag">Fin de semana 24–25 oct</span><span class="tag">De diseñar a medir</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · Avances -->
+<section class="slide s-papel" data-chap="Inicio" data-title="Avances" data-notes="Cinco avances en 48 horas. Cada uno se apoya en una herramienta que ya teníamos. Cerramos con lo que necesitamos decidir.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Este fin de semana</p>
+    <h2 class="in" style="--i:1">Ya tenemos con qué medir.</h2>
+    <div class="chips">
+      <div class="chip c-mostaza in" style="--i:2"><span class="k">Marca</span><b>Sistema visual</b><span>Foundations propuestos</span></div>
+      <div class="chip c-salvia in" style="--i:3"><span class="k">Experimento</span><b>Ronda 1 andando</b><span>E1 · WhatsApp + mago</span></div>
+      <div class="chip c-noche in" style="--i:4"><span class="k">Instrumento</span><b>Mago medible</b><span>Un dato por momento</span></div>
+      <div class="chip c-coral in" style="--i:5"><span class="k">Motor</span><b>Esqueleto en n8n</b><span>Flujos del recorrido</span></div>
+      <div class="chip c-vitral in" style="--i:6"><span class="k">Evidencia</span><b>Encuesta abierta</b><span>Vista parcial, n = 76</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Marca -->
+<section class="slide s-noche" data-chap="Marca" data-title="Tenemos marca" data-notes="La marca es una decisión de diseño del equipo, sin prueba con usuarios. Aquí va su personalidad: tres pilares y un tono. Lo visual viene en los foundations.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Tenemos marca</p>
+    <div class="wm brand-wm in" style="--i:1">sinton<span class="i">ı</span>a</div>
+    <p class="slogan in" style="--i:2">El director de orquesta de los planes de tu gente.</p>
+    <div class="pcols">
+      <div class="pc in" style="--i:3;--c:var(--mostaza)"><b>Fluye</b><span>Menos vueltas en el chat.</span></div>
+      <div class="pc in" style="--i:4;--c:var(--salvia)"><b>Incluye</b><span>Toda votación trae «No puedo ese día».</span></div>
+      <div class="pc in" style="--i:5;--c:var(--coral)"><b>Cierra</b><span>Del «hay que vernos» al plan listo.</span></div>
+    </div>
+    <div class="tone in" style="--i:6"><span>Lúdica · cálida · cercana</span><span class="no">No es dating, ni clínica, ni corporativa</span></div>
+  </div>
+</section>
+
+<!-- 4 · F Color -->
+<section class="slide s-papel" data-chap="Foundations" data-title="Color" data-notes="Paleta: papel y noche como base, naranja para acción y trazo, siete colores de apoyo. Máximo dos de apoyo por pieza. Contrastes calculados con la fórmula WCAG.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0"><span class="sec">Foundations</span>Color</p>
+    <h2 class="in" style="--i:1">Papel, noche y una chispa.</h2>
+    <div class="swatches">
+      <div class="sw" style="--i:0"><i style="background:var(--papel-50)"></i><b>Papel 50</b><span>#FAF9F6</span></div>
+      <div class="sw" style="--i:1"><i style="background:var(--papel-300)"></i><b>Papel 300</b><span>#DAD6CC</span></div>
+      <div class="sw" style="--i:2"><i style="background:var(--noche)"></i><b>Noche</b><span>#0E1116</span></div>
+      <div class="sw" style="--i:3"><i style="background:var(--naranja)"></i><b>Naranja</b><span>#FF4F00</span></div>
+      <div class="sw" style="--i:4"><i style="background:var(--naranja-700)"></i><b>Naranja 700</b><span>#C23A00</span></div>
+      <div class="sw" style="--i:5"><i style="background:var(--mostaza)"></i><b>Mostaza</b><span>#EBC46A</span></div>
+      <div class="sw" style="--i:6"><i style="background:var(--vitral)"></i><b>Vitral</b><span>#2C6A86</span></div>
+      <div class="sw" style="--i:7"><i style="background:var(--crema)"></i><b>Crema</b><span>#F3E9B8</span></div>
+      <div class="sw" style="--i:8"><i style="background:var(--salvia)"></i><b>Salvia</b><span>#A9C9B8</span></div>
+      <div class="sw" style="--i:9"><i style="background:var(--coral)"></i><b>Coral</b><span>#E8806A</span></div>
+      <div class="sw" style="--i:10"><i style="background:var(--rosa)"></i><b>Rosa</b><span>#EEC0B4</span></div>
+      <div class="sw" style="--i:11"><i style="background:var(--rubi)"></i><b>Rubí</b><span>#9B2D30</span></div>
+      <div class="sw" style="--i:12"><i style="background:var(--papel-700)"></i><b>Papel 700</b><span>#47494D</span></div>
+      <div class="sw" style="--i:13"><i style="background:var(--papel-0)"></i><b>Papel 0</b><span>#FFFFFF</span></div>
+    </div>
+    <div class="prop" aria-label="Proporción de uso">
+      <div class="a" style="--w:60%">Papel 60 %</div><div class="b" style="--w:22%">Noche 22 %</div><div class="c" style="--w:8%">8 %</div><div class="d" style="--w:10%">Apoyo 10 %</div>
+    </div>
+    <div class="contrasts in" style="--i:6">
+      <span class="ct" style="background:var(--papel-100)"><em style="background:var(--noche);color:var(--papel-50)">Aa</em>Noche / papel 17,96:1</span>
+      <span class="ct" style="background:var(--papel-100)"><em style="background:var(--noche);color:var(--naranja)">Aa</em>Naranja / noche 5,74:1</span>
+      <span class="ct" style="background:var(--papel-100)"><em style="background:var(--papel-50);color:var(--naranja-700);border:2px solid var(--papel-300)">Aa</em>Naranja 700 / papel 5,12:1</span>
+      <span class="ct" style="background:var(--papel-100)"><em style="background:var(--vitral);color:var(--papel-0)">Aa</em>Papel / vitral 5,68:1</span>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · F Tipografía -->
+<section class="slide s-papel" data-chap="Foundations" data-title="Tipografía" data-notes="Dos voces: Climate Crisis solo para la S; todo el texto en Graphik (Inter como sustituto). Graphik es comercial: licencia por confirmar.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0"><span class="sec">Foundations</span>Tipografía</p>
+    <div class="type-grid">
+      <div class="glyph-card in" style="--i:1"><span class="S" aria-hidden="true">s</span><span class="cap">Climate Crisis · solo la S</span></div>
+      <div class="scale">
+        <div class="row in" style="--i:2"><span class="meta">Display · 800<br>−0,03 em</span><span class="t-d">Más plan.</span></div>
+        <div class="row in" style="--i:3"><span class="meta">Título · 800</span><span class="t-h">Menos chats, más encuentros</span></div>
+        <div class="row in" style="--i:4"><span class="meta">Cuerpo · 400</span><span class="t-b">Un amigo organizado, no un asistente corporativo.</span></div>
+        <div class="row in" style="--i:5"><span class="meta">Etiqueta · 600<br>+0,1 em</span><span class="t-l">Plan listo · Confirmaron 5 de 6</span></div>
+        <p class="small in" style="--i:6;color:var(--papel-700);margin:6px 0 0">Graphik (Inter como sustituto) · cuerpo mínimo proyectado 28 px</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · F Glifo y ondas -->
+<section class="slide s-crema" data-chap="Foundations" data-title="Glifo y ondas" data-notes="Como una piedra en el agua: cae el disco, entra la S y emite una sola onda. Las ondas del avatar aparecen cuando esa onda pasa por su radio. Por debajo de 40 px queda solo la onda gruesa y la S crece.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0"><span class="sec">Foundations</span>Glifo y ondas</p>
+    <div class="glifo-grid">
+      <div class="build" aria-label="Construcción del avatar" role="img">
+        <svg viewBox="-40 -40 280 280">
+          <g class="guides"><line x1="-30" y1="100" x2="230" y2="100"/><line x1="100" y1="-30" x2="100" y2="230"/></g>
+          <circle class="zl" style="--zd:.12s" cx="100" cy="100" r="100" fill="#ebc46a"/>
+          <circle class="ring" style="--zd:1.75s" cx="100" cy="100" r="92" fill="none" stroke="#0e1116" stroke-width="9"/>
+          <circle class="ring" style="--zd:1.55s" cx="100" cy="100" r="76" fill="none" stroke="#c23a00" stroke-width="3.5"/>
+          <circle class="wave2" style="--zd:1s" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3.5" vector-effect="non-scaling-stroke"/>
+          <circle class="wave2 loop" style="--zd:4.6s" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3" vector-effect="non-scaling-stroke"/>
+          <text class="stone" style="--zd:.55s" x="100" y="134" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="92" fill="#0e1116">s</text>
+        </svg>
+      </div>
+      <div>
+        <div class="specs">
+          <div class="spec in" style="--i:1"><i style="background:var(--mostaza)"></i><div>Disco<span>El agua · mostaza · r 100</span></div></div>
+          <div class="spec in" style="--i:2"><i style="background:var(--noche);color:var(--mostaza);display:grid;place-items:center;font-family:var(--f-s);font-size:34px">s</i><div>La S<span>La piedra · Climate Crisis · cuerpo 92</span></div></div>
+          <div class="spec in" style="--i:3"><i style="border:9px solid var(--noche)"></i><div>Onda gruesa<span>r 92 · trazo 9</span></div></div>
+          <div class="spec in" style="--i:4"><i style="border:4px solid var(--naranja-700)"></i><div>Onda fina<span>r 76 · trazo 3,5</span></div></div>
+        </div>
+        <div class="variants in" style="--i:5">
+          <figure><div class="avatar" data-avatar="mostaza"></div><figcaption>Mostaza</figcaption></figure>
+          <figure><div class="avatar" data-avatar="vitral"></div><figcaption>Vitral</figcaption></figure>
+          <figure><div class="avatar" data-avatar="noche"></div><figcaption>Noche</figcaption></figure>
+          <figure><div class="avatar" data-avatar="mini"></div><figcaption>&lt; 40 px · ampliado</figcaption></figure>
+          <figure><div class="avatar mini" data-avatar="mini"></div><figcaption>40 px</figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · F Voz -->
+<section class="slide s-papel" data-chap="Foundations" data-title="Voz en el chat" data-notes="Cinco momentos del flujo con su sticker. Toda votación incluye 'No puedo ese día' y el recordatorio da conteos, nunca el nombre de quien falta.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0"><span class="sec">Foundations</span>Voz en el chat</p>
+    <h2 class="in" style="--i:1">Un amigo organizado.</h2>
+    <div class="voz">
+      <div class="mom" style="--i:0"><span class="stk" style="background:var(--mostaza)">¿Armamos plan?</span><span class="k">Propone</span><div class="chatbox"><div class="bub" style="--i:0"><small>Sintonía</small>Sábado: 1 · Museo 2 · Cerro 3 · Ciclovía, o «No puedo ese día»</div></div></div>
+      <div class="mom" style="--i:1"><span class="stk" style="background:var(--salvia)">Muevo a las 2</span><span class="k">Concilia</span><div class="chatbox"><div class="bub me" style="--i:1">¿Y si es más tarde?</div><div class="bub" style="--i:1"><small>Sintonía</small>Muevo a las 2 p. m. para que lleguen todos.</div></div></div>
+      <div class="mom" style="--i:2"><span class="stk" style="background:var(--coral)">Cierro a las 6</span><span class="k">Cierra</span><div class="chatbox"><div class="bub" style="--i:2"><small>Sintonía</small>Van 4 votos. Cierro la votación a las 6.</div></div></div>
+      <div class="mom" style="--i:3"><span class="stk" style="background:var(--vitral);color:var(--papel-0)">Plan listo</span><span class="k">Confirma</span><div class="chatbox"><div class="bub ok" style="--i:3"><small>Sintonía</small>Ganó el Cerro. Sábado 2:00 p. m.</div></div></div>
+      <div class="mom" style="--i:4"><span class="stk" style="background:var(--rosa)">Mañana 2:00 p. m.</span><span class="k">Recuerda</span><div class="chatbox"><div class="bub" style="--i:4"><small>Sintonía</small>Mañana 2:00 p. m. Confirmaron 5 de 6.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · Storyboard -->
+<section class="slide s-papel" data-chap="Avances" data-title="Storyboard" data-notes="El storyboard M2 es el guion que siguen el mago, el instrumento y el motor. Ocho cuadros, tres momentos del modelo.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Storyboard M2</p>
+    <h2 class="in" style="--i:1;font-size:96px">Un solo guion para todo.</h2>
+    <div class="sb">
+      <div class="frame in" style="--i:2"><figure><img src="storyboard-m2/vineta-01.jpg" alt="Amigos en sitios distintos sin poder cuadrar agenda"></figure><div class="cap"><i>01</i>Intención</div></div>
+      <div class="frame in" style="--i:3"><figure><img src="storyboard-m2/vineta-02.jpg" alt="La organizadora se inscribe desde el celular"></figure><div class="cap"><i>02</i>Inscripción</div></div>
+      <div class="frame in" style="--i:4"><figure><img src="storyboard-m2/vineta-03.jpg" alt="El grupo acepta la invitación"></figure><div class="cap"><i>03</i>Aceptan</div></div>
+      <div class="frame in" style="--i:5"><figure><img src="storyboard-m2/vineta-04.jpg" alt="Una persona revisa opciones en el portátil"></figure><div class="cap"><i>04</i>Curaduría</div></div>
+      <div class="frame in" style="--i:6"><figure><img src="storyboard-m2/vineta-05.jpg" alt="El grupo vota entre tres opciones en el chat"></figure><div class="cap"><i>05</i>Votación</div></div>
+      <div class="frame in" style="--i:7"><figure><img src="storyboard-m2/vineta-06.jpg" alt="Mapa con rutas, hora y lluvia"></figure><div class="cap"><i>06</i>Logística</div></div>
+      <div class="frame in" style="--i:8"><figure><img src="storyboard-m2/vineta-07.jpg" alt="El grupo llega y se saluda"></figure><div class="cap"><i>07</i>Llegada</div></div>
+      <div class="frame in" style="--i:9"><figure><img src="storyboard-m2/vineta-08.jpg" alt="Cada quien en casa responde una encuesta corta"></figure><div class="cap"><i>08</i>En casa</div></div>
+    </div>
+    <div class="momentos"><div class="m-a">Activación</div><div class="m-i">Interacción</div><div class="m-c">Continuidad</div></div>
+  </div>
+</section>
+
+<!-- 9 · Experimentos -->
+<section class="slide s-noche" data-chap="Avances" data-title="Ronda 1" data-notes="Ronda 1 desde hoy con la data de pruebas limpia. E1 corre ya. E1.5 usa el mismo número y el mismo guion; con participantes reales espera el aviso de privacidad v2.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Experimentos · desde el 25 oct</p>
+    <h2 class="in" style="--i:1">La ronda 1 está andando.</h2>
+    <div class="versus">
+      <div class="cond e1 in" style="--i:2"><span class="tag">En curso</span><h3>E1 · WhatsApp + mago</h3><p>Una persona opera el recorrido desde la consola.</p></div>
+      <div class="cond e15 in" style="--i:3"><span class="tag">Modo prueba · espera aviso v2</span><h3>E1.5 · Automatizado</h3><p>El motor en n8n hace el recorrido. Mismo número, mismo guion.</p></div>
+    </div>
+    <div class="design-row in" style="--i:4">
+      <div><b>2 + 1</b>grupos por condición (con reserva)</div>
+      <div><b>2</b>planes por grupo</div>
+      <div><b>1</b>pregunta: ¿lo mismo con menos minutos humanos?</div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · Instrumento -->
+<section class="slide s-papel" data-chap="Avances" data-title="Instrumento" data-notes="Refinamos el Mago de Oz para que la medición no dependa de la memoria del mago. Mago in / off reemplaza el formulario de minutos. SEQ y SUS son las métricas que validamos contigo.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Instrumento del Mago de Oz</p>
+    <h2 class="in" style="--i:1">Cada cuadro deja un dato.</h2>
+    <div class="strip">
+      <div class="cell in" style="--i:2"><figure><img src="storyboard-m2/vineta-01.jpg" alt=""></figure><span class="n">01 Intención</span><span class="d">Origen del registro</span></div>
+      <div class="cell in" style="--i:3"><figure><img src="storyboard-m2/vineta-02.jpg" alt=""></figure><span class="n">02 Inscripción</span><span class="d">Línea base y disponibilidad</span></div>
+      <div class="cell in" style="--i:4"><figure><img src="storyboard-m2/vineta-03.jpg" alt=""></figure><span class="n">03 Aceptan</span><span class="d">Invitadas</span></div>
+      <div class="cell key in" style="--i:5"><figure><img src="storyboard-m2/vineta-04.jpg" alt=""></figure><span class="n">04 Curaduría</span><span class="d">Minutos humanos</span></div>
+      <div class="cell in" style="--i:6"><figure><img src="storyboard-m2/vineta-05.jpg" alt=""></figure><span class="n">05 Votación</span><span class="d">Votos / invitadas</span></div>
+      <div class="cell in" style="--i:7"><figure><img src="storyboard-m2/vineta-06.jpg" alt=""></figure><span class="n">06 Logística</span><span class="d">Cierre o causa de caída</span></div>
+      <div class="cell key in" style="--i:8"><figure><img src="storyboard-m2/vineta-07.jpg" alt=""></figure><span class="n">07 Llegada</span><span class="d">Llegaron / invitadas</span></div>
+      <div class="cell key in" style="--i:9"><figure><img src="storyboard-m2/vineta-08.jpg" alt=""></figure><span class="n">08 En casa</span><span class="d">SEQ · SUS · Nivel 2</span></div>
+    </div>
+    <div class="pipe in" style="--i:10"><span>Mago in / off</span><em>→</em><span>Consola</span><em>→</em><span>Hoja (Apps Script)</span><em>→</em><span>Panel: SEQ y SUS por condición, con su n</span></div>
+  </div>
+</section>
+
+<!-- 11 · n8n -->
+<section class="slide s-noche" data-chap="Avances" data-title="Motor n8n" data-notes="Primer esqueleto montado en n8n. Cada flujo corresponde a un cuadro del storyboard. Hoy toda salida pasa por 'Aprobar y pegar'; ese tiempo se mide con mago in.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Motor · n8n</p>
+    <h2 class="in" style="--i:1">El motor ya tiene esqueleto.</h2>
+    <div class="flows">
+      <span class="packet" aria-hidden="true"></span>
+      <div class="flow in" style="--i:2"><span class="w">W1 · CUADRO 04</span><b>Opciones</b><span>Propone 1–3 planes del inventario verificado</span></div>
+      <div class="flow in" style="--i:3"><span class="w">E15-01 + W2 · 05</span><b>Votos</b><span>Lee 1, 2, 3, TODAS, NINGUNA y recuerda una vez</span></div>
+      <div class="flow in" style="--i:4"><span class="w">W3 · CUADRO 06</span><b>Cierre y salida</b><span>Confirma el plan y sugiere hora de salida</span></div>
+      <div class="flow in" style="--i:5"><span class="w">W4 · CUADRO 07</span><b>Llegada</b><span>Checkpoint y aviso si alguien no llega</span></div>
+      <div class="flow in" style="--i:6"><span class="w">W5 · CUADRO 08</span><b>En casa</b><span>Cierre del día y pulso</span></div>
+    </div>
+    <div class="loop in" style="--i:7"><span class="step">El motor redacta</span><span class="arrow">→</span><span class="step human">Una persona aprueba y pega</span><span class="arrow">→</span><span class="step">Se registra el evento</span></div>
+    <div class="status-line in" style="--i:8"><span class="tag ok">Esqueleto montado</span><span class="tag">Por probar en modo prueba</span><span class="tag">Sin credenciales en el repo</span></div>
+  </div>
+</section>
+
+<!-- 12 · Decisión -->
+<section class="slide s-papel" data-chap="Avances" data-title="¿Autónomo?" data-notes="Punto a discutir. Se puede hacer totalmente autónomo para el prototipo, pero cambia qué estamos probando. Implicaciones según la documentación de Meta revisada el 24/10 (no son datos propios).">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Para decidir hoy</p>
+    <h2 class="in" style="--i:1">¿Lo dejamos <span class="u">volar solo?<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h2>
+    <div class="cmp">
+      <div class="side hoy in" style="--i:2"><span class="tag">Hoy · Asistido</span><h3>El motor redacta, una persona pega</h3><ul><li>Mismo número y mismos grupos que E1</li><li>Revisión humana antes de cada mensaje</li><li>Ahorra menos minutos humanos</li></ul></div>
+      <div class="connect in" style="--i:3"><svg class="trazo" viewBox="0 0 128 16" style="--td:2s"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></div>
+      <div class="side auto in" style="--i:4"><span class="tag">Propuesta · Autónomo</span><h3>El motor opera solo</h3><ul><li>Minutos humanos cerca de cero</li><li>Prueba el caso de negocio real</li><li>Se puede, con implicaciones</li></ul></div>
+    </div>
+    <div class="impl in" style="--i:5">
+      <div><b>Canal</b>Conexión directa al grupo (ver la ruta)</div>
+      <div><b>Seguridad</b>Sin revisión previa: reglas de escalamiento más estrictas</div>
+      <div><b>Privacidad</b>El aviso v2 debe cubrir el envío automático</div>
+      <div><b>Sesgo</b>E1 y E1.5 diferirían en más que el motor</div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · Rutas del canal -->
+<section class="slide s-papel" data-chap="Avances" data-title="Rutas del canal" data-notes="Ruta para llegar al motor autónomo: hoy asistido; un mes de MVP con Evolution API en un VPS de Hostinger (9,99 USD, confirmado) para desarrollar el agente; después, el proceso completo con la API oficial.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">WhatsApp + n8n · ruta</p>
+    <h2 class="in" style="--i:1">Tres pasos hacia el agente.</h2>
+    <div class="routes">
+      <div class="rt in" style="--i:2"><span class="tag">A · Hoy</span><h3>Asistido</h3><div class="cost">Sin costo de canal</div>
+        <p class="pm">n8n redacta, una persona aprueba y pega.</p></div>
+      <div class="rt b in" style="--i:3"><span class="tag">B · MVP · 1 mes</span><h3>Evolution API en VPS</h3><div class="cost">9,99 USD<small>VPS KVM 1 · Hostinger · confirmado</small></div>
+        <p class="pm">Un agente en n8n que gestiona los flujos dentro del grupo.</p></div>
+      <div class="rt in" style="--i:4"><span class="tag">C · Después</span><h3>API oficial</h3><div class="cost">Proceso completo</div>
+        <p class="pm">Llevamos el agente validado al canal oficial de WhatsApp.</p></div>
+    </div>
+    <div class="base in" style="--i:5"><b>En las tres</b><span>n8n · 24 €/mes al terminar la sesión de pruebas</span></div>
+  </div>
+</section>
+
+<!-- 14 · Masa crítica -->
+<section class="slide s-noche" data-chap="Avances" data-title="Masa crítica" data-notes="Proyección ilustrativa, solo costos de herramientas. Mes de MVP: n8n 24 € (≈ 84.960 COP) + VPS 9,99 USD (≈ 31.610 COP) = ≈ 116.570 COP. Cada grupo aporta 10.000 COP (precio fundador, hipótesis) menos ≈ 200 COP de Gemini (supuesto: 2 planes al mes, ≈ 100 COP por plan, cinco veces los 20 COP medidos en una propuesta, n = 1). Resultado: 12 grupos. Después del MVP, solo n8n: 9 grupos más el costo de la API oficial, por confirmar. Con el precio de referencia (20.000 COP): 6 grupos. No incluye tiempo humano, impuestos ni comisiones de pago. Tasas del 20 y 21 de octubre.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Proyección · costos de operación</p>
+    <div class="mc">
+      <div class="mc-l">
+        <div class="mc-big in" style="--i:1">12</div>
+        <p class="mc-t in" style="--i:2">grupos pagando cubren el mes de MVP.</p>
+        <div class="groups in" style="--i:3" aria-hidden="true"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i><i style="--k:3"></i><i style="--k:4"></i><i style="--k:5"></i><i style="--k:6"></i><i style="--k:7"></i><i style="--k:8"></i><i style="--k:9"></i><i style="--k:10"></i><i style="--k:11"></i></div>
+      </div>
+      <div class="mc-r">
+        <div class="costs in" style="--i:3">
+          <div class="cr"><span>n8n</span><div class="cb"><i style="--w:73%"></i></div><b>≈ 84.960 COP</b></div>
+          <div class="cr"><span>VPS · 1 mes</span><div class="cb"><i style="--w:27%"></i></div><b>≈ 31.610 COP</b></div>
+          <div class="cr"><span>Gemini · por grupo</span><div class="cb"><i style="--w:1%"></i></div><b>≈ 200 COP*</b></div>
+        </div>
+        <div class="scen in" style="--i:4">
+          <div><b>12</b><span>Mes de MVP<br>n8n + VPS</span></div>
+          <div><b>9</b><span>Después<br>+ API oficial, por confirmar</span></div>
+          <div><b>6</b><span>Mes de MVP con<br>precio de referencia</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="mc-foot in" style="--i:5">Supuestos: 10.000 COP/mes por organizador (precio fundador, hipótesis) · 20.000 de referencia · 2 planes por grupo · *Gemini ≈ 100 COP por plan, por confirmar (medido: 20 COP por propuesta, n = 1) · 1 € ≈ 3.540 y 1 USD ≈ 3.164 COP (20–21 oct) · Sin tiempo humano, impuestos ni comisiones.</p>
+  </div>
+</section>
+
+<!-- 15 · Dato grande -->
+<section class="slide s-vitral" data-chap="Evidencia" data-title="96 %" data-notes="Vista parcial. La encuesta sigue abierta una semana más y la meta es crecer el n antes de leerla como evidencia del giro. Corte 25/10 12:33, n = 76, conteo del equipo. Estatus: emergente.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Encuesta del giro · vista parcial</p>
+    <div class="datarow">
+      <div class="big in" style="--i:1">96<small>%</small></div>
+      <div class="dcol">
+        <p class="in" style="--i:2">dice que de cada 5 planes del chat se hacen 2 o menos.</p>
+        <div class="five in" style="--i:3" aria-label="2 de 5 planes se realizan"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span>2 de 5</span></div>
+      </div>
+    </div>
+    <div class="partial in" style="--i:4"><span>n = 76 hoy</span><div class="meter" aria-hidden="true"><i style="--w:76%"></i></div><span>Abierta 1 semana más</span></div>
+    <div class="source in" style="--i:5"><span class="tag">73 de 76</span><span class="tag">Emergente</span><span class="tag">Datos propios · corte 25 oct</span></div>
+  </div>
+</section>
+
+<!-- 16 · Tres datos -->
+<section class="slide s-papel" data-chap="Evidencia" data-title="La agenda" data-notes="Tres lecturas tempranas que apoyan la dirección. Las dos funciones más pedidas coinciden con W1 y W3 del motor. Vista parcial: se actualiza al cerrar la encuesta.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Lo que dice la data hasta hoy · n = 76</p>
+    <h2 class="in" style="--i:1">El plan muere en la agenda.</h2>
+    <div class="trio">
+      <div class="stat in" style="--i:2"><div class="v o">89<small>%</small></div><p>marca «encontrar fecha y hora» como la etapa donde muere el plan</p><span class="ratio">68 DE 76</span></div>
+      <div class="stat in" style="--i:3"><div class="v">93<small>%</small></div><p>ha dejado de proponer o prefirió salir con una sola persona</p><span class="ratio">71 DE 76</span></div>
+      <div class="stat in" style="--i:4"><div class="v">89<small>%</small></div><p>aceptaría al menos una ayuda dentro del chat; 11 % no quiere un asistente</p><span class="ratio">68 DE 76</span></div>
+    </div>
+    <div class="bars in" style="--i:5">
+      <span>Cruzar agendas y cerrar fecha</span><div class="bar"><i style="--w:53%"></i></div><span>53 %</span>
+      <span>Proponer planes según gustos y zona</span><div class="bar"><i style="--w:47%"></i></div><span>47 %</span>
+    </div>
+    <p class="foot in" style="--i:6">Funciones más elegidas (máximo 2 por persona). Vista parcial: la encuesta sigue abierta una semana. Conteo propio al 25 oct, 12:33. Muestra por conveniencia.</p>
+  </div>
+</section>
+
+<!-- 17 · Herramientas -->
+<section class="slide s-noche" data-chap="Cierre" data-title="Herramientas" data-notes="Ninguno de estos avances salió de cero. Cada herramienta alimentó a la siguiente.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Cómo llegamos aquí</p>
+    <h2 class="in" style="--i:1">Cada herramienta alimenta a la siguiente.</h2>
+    <div class="chain">
+      <div class="node in" style="--i:2"><div class="dot d1">143</div><span class="when">Calibración</span><b>Encuesta</b><span>Fricción entre intención y acción</span></div>
+      <div class="node in" style="--i:3"><div class="dot d2">8</div><span class="when">Storyboard M2</span><b>Guion</b><span>Ocho cuadros, tres momentos</span></div>
+      <div class="node in" style="--i:4"><div class="dot d3">E1</div><span class="when">Mago de Oz</span><b>Consola</b><span>Validar antes de automatizar</span></div>
+      <div class="node in" style="--i:5"><div class="dot d4">1–7</div><span class="when">En tutoría</span><b>SEQ + SUS</b><span>Usabilidad por momento</span></div>
+      <div class="node in" style="--i:6"><div class="dot d5">DS</div><span class="when">Figma DS 3.0</span><b>Marca</b><span>Foundations, avatar, voz</span></div>
+      <div class="node in" style="--i:7"><div class="dot d6">W</div><span class="when">n8n</span><b>Motor</b><span>El guion, automatizado</span></div>
+      <div class="node in" style="--i:8"><div class="dot d7">76+</div><span class="when">Encuesta del giro</span><b>Evidencia</b><span>Abierta, creciendo el n</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 · Pedidos -->
+<section class="slide s-crema" data-chap="Cierre" data-title="Lo que necesitamos" data-notes="Tres cosas para la tutoría. La más urgente es el aviso v2: sin él, E1.5 no toca datos reales. Cierre del proyecto: 26/11.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Para sacarle valor a esta dirección</p>
+    <h2 class="in" style="--i:1">Lo que necesitamos decidir.</h2>
+    <div class="asks">
+      <div class="ask in" style="--i:2"><span class="tag">Decisión</span><h3>¿Asistido o autónomo?</h3><p>Define qué demuestra el prototipo: la experiencia o la operación.</p></div>
+      <div class="ask in" style="--i:3"><span class="tag">Bloquea E1.5</span><h3>Aviso de privacidad v2</h3><p>n8n como encargado nuevo. Sin aprobación, solo modo prueba.</p></div>
+      <div class="ask in" style="--i:4"><span class="tag">Método</span><h3>Cierre de la encuesta</h3><p>¿Qué n buscamos en esta semana y qué cruces pedirías al cerrar?</p></div>
+    </div>
+    <div class="next in" style="--i:5"><span>Probar E15-01 en modo prueba</span><span>Depurar inventario</span><span>Crecer el n de la encuesta</span><span>Cierre 26 nov</span></div>
+  </div>
+</section>
+
+<!-- 19 · Cierre -->
+<section class="slide s-crema" data-chap="Cierre" data-title="Cierre" data-notes="Siguiente status: primeros planes de la ronda 1 con SEQ y SUS por condición, y la encuesta cerrada.">
+  <div class="content cover fin">
+    <div class="avatar in" style="--i:0" data-avatar="mostaza" data-ripple="1" role="img" aria-label="Avatar de Sintonía con ondas"></div>
+    <div>
+      <p class="eyebrow in" style="--i:1">Siguiente status</p>
+      <h1 class="in" style="--i:2">Menos chats,<br><span class="u">más encuentros.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+      <p class="lede in" style="--i:3">Primeros planes de la ronda 1 con SEQ y SUS, y la encuesta cerrada.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+</div>
+
+<nav class="navbar" aria-label="Navegación de la presentación">
+  <button id="prev" type="button" aria-label="Diapositiva anterior">←</button>
+  <span class="chap" id="chap">Inicio</span>
+  <div class="track">
+    <div class="ticks" id="ticks" aria-hidden="true"></div>
+    <input class="range" id="nav" type="range" min="1" max="19" step="1" value="1" aria-label="Ir a diapositiva">
+    <span class="tip" id="tip" hidden></span>
+  </div>
+  <span class="count" id="count">1 / 19</span>
+  <button id="next" type="button" aria-label="Diapositiva siguiente">→</button>
+  <button id="notesBtn" class="hide-sm" type="button" aria-label="Notas del orador (N)">N</button>
+  <button id="fsBtn" class="hide-sm" type="button" aria-label="Pantalla completa (F)">⤢</button>
+</nav>
+<div class="notes" id="notes" hidden><b>Notas del orador</b><span id="notesText"></span></div>
+
+<script>
+(function(){
+  const FONT = "'Climate Crisis','Arial Black',sans-serif";
+  const AV = {
+    vitral:  {disc:'#2c6a86', s:'#f3e9b8', w1:'#13202b', w2:'#13202b', rip:'#2c6a86'},
+    mostaza: {disc:'#ebc46a', s:'#0e1116', w1:'#0e1116', w2:'#c23a00', rip:'#0e1116'},
+    noche:   {disc:'#0e1116', s:'#ff4f00', w1:'#ff4f00', w2:'#ff4f00', rip:'#ff4f00'},
+    mini:    {disc:'#ebc46a', s:'#0e1116', w1:'#0e1116', mini:true}
+  };
+  function avatar(k, ripple){
+    const c = AV[k];
+    let r = '';
+    if(ripple){
+      r = '<circle class="ripple" style="--rd:0ms" cx="100" cy="100" r="92" fill="none" stroke="'+c.rip+'" stroke-width="9"/>'+
+          '<circle class="ripple" style="--rd:500ms" cx="100" cy="100" r="76" fill="none" stroke="'+c.rip+'" stroke-width="3.5"/>'+
+          '<circle class="ripple" style="--rd:1800ms" cx="100" cy="100" r="92" fill="none" stroke="'+c.rip+'" stroke-width="5"/>';
+    }
+    if(c.mini){
+      return '<svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="100" fill="'+c.disc+'"/><circle cx="100" cy="100" r="90" fill="none" stroke="'+c.w1+'" stroke-width="13"/><text x="100" y="147" text-anchor="middle" font-family="'+FONT+'" font-size="128" fill="'+c.s+'">s</text></svg>';
+    }
+    return '<svg viewBox="0 0 200 200" aria-hidden="true">'+ r +
+      '<g class="breath"><circle cx="100" cy="100" r="100" fill="'+c.disc+'"/>'+
+      '<circle cx="100" cy="100" r="92" fill="none" stroke="'+c.w1+'" stroke-width="9"/>'+
+      '<circle cx="100" cy="100" r="76" fill="none" stroke="'+c.w2+'" stroke-width="3.5"/>'+
+      '<text x="100" y="134" text-anchor="middle" font-family="'+FONT+'" font-size="92" fill="'+c.s+'">s</text></g></svg>';
+  }
+  document.querySelectorAll('[data-avatar]').forEach(el => {
+    const big = el.closest('.cover');
+    el.innerHTML = avatar(el.dataset.avatar, el.dataset.ripple || !!big);
+  });
+
+  // Escala del lienzo
+  const stage = document.getElementById('stage'), vp = document.getElementById('viewport');
+  function fit(){
+    const w = vp.clientWidth, h = vp.clientHeight;
+    const s = Math.min(w/1920, h/1080);
+    stage.style.transform = 'translate(-50%,-50%) scale('+s+')';
+  }
+  window.addEventListener('resize', fit); fit();
+  if(window.ResizeObserver) new ResizeObserver(fit).observe(vp);
+
+  // Navegación
+  const slides = [...document.querySelectorAll('.slide')];
+  const N = slides.length;
+  const range = document.getElementById('nav'), ticks = document.getElementById('ticks'), tip = document.getElementById('tip');
+  const count = document.getElementById('count'), chap = document.getElementById('chap');
+  const notes = document.getElementById('notes'), notesText = document.getElementById('notesText');
+  range.max = N;
+  slides.forEach((s,i) => { const t = document.createElement('i'); if(i>0 && s.dataset.chap !== slides[i-1].dataset.chap) t.className='ch'; ticks.appendChild(t); });
+  const tickEls = [...ticks.children];
+  let cur = 0;
+  function go(n){
+    n = Math.max(0, Math.min(N-1, n));
+    if(n !== cur){ slides[cur].classList.remove('active'); cur = n; slides[cur].classList.add('active'); }
+    update();
+  }
+  const logo = document.getElementById('logo');
+  function update(){
+    const sc = slides[cur].classList;
+    logo.classList.toggle('on-dark', sc.contains('s-noche') || sc.contains('s-kv'));
+    logo.classList.toggle('on-vitral', sc.contains('s-vitral'));
+    range.value = cur+1;
+    count.textContent = (cur+1)+' / '+N;
+    chap.textContent = slides[cur].dataset.chap || '';
+    range.setAttribute('aria-valuetext', (cur+1)+' de '+N+': '+(slides[cur].dataset.title||''));
+    tickEls.forEach((t,i) => t.classList.toggle('on', i <= cur));
+    notesText.textContent = slides[cur].dataset.notes || '';
+    try{ history.replaceState(null,'','#s'+(cur+1)); }catch(e){}
+  }
+  const m = /^#s(\d+)$/.exec(location.hash||'');
+  if(m){ slides[0].classList.remove('active'); cur = Math.min(N-1, Math.max(0,(+m[1]||1)-1)); slides[cur].classList.add('active'); }
+  update();
+
+  function showTip(){
+    const v = +range.value, i = v-1;
+    tip.textContent = v+' · '+(slides[i].dataset.title||'');
+    const pct = (v-1)/(N-1);
+    tip.style.left = 'calc(9px + '+pct+' * (100% - 18px))';
+    tip.hidden = false;
+  }
+  range.addEventListener('input', () => { showTip(); go(+range.value-1); });
+  range.addEventListener('pointerdown', showTip);
+  ['pointerup','pointerleave','blur','change'].forEach(ev => range.addEventListener(ev, () => { tip.hidden = true; }));
+
+  function toggleFs(){ try{ if(document.fullscreenElement){ document.exitFullscreen().catch(()=>{}); } else { document.documentElement.requestFullscreen().catch(()=>{}); } }catch(e){} }
+  document.getElementById('next').addEventListener('click', () => go(cur+1));
+  document.getElementById('prev').addEventListener('click', () => go(cur-1));
+  document.getElementById('notesBtn').addEventListener('click', () => { notes.hidden = !notes.hidden; });
+  document.getElementById('fsBtn').addEventListener('click', toggleFs);
+  vp.addEventListener('click', e => { const r = vp.getBoundingClientRect(); go((e.clientX - r.left) / r.width < .25 ? cur-1 : cur+1); });
+  document.addEventListener('keydown', e => {
+    if(e.target === range && (e.key==='ArrowLeft' || e.key==='ArrowRight')) return;
+    if(['ArrowRight','PageDown',' '].includes(e.key)){ if(e.target.tagName==='BUTTON' && e.key===' ') return; e.preventDefault(); go(cur+1); }
+    else if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); go(cur-1); }
+    else if(e.key==='Home'){ go(0); } else if(e.key==='End'){ go(N-1); }
+    else if(e.key==='n' || e.key==='N'){ notes.hidden = !notes.hidden; }
+    else if(e.key==='f' || e.key==='F'){ toggleFs(); }
+  });
+  let sx = null;
+  vp.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive:true});
+  vp.addEventListener('touchend', e => { if(sx===null) return; const dx = e.changedTouches[0].clientX - sx; if(Math.abs(dx) > 50) go(cur + (dx < 0 ? 1 : -1)); sx = null; });
+})();
+</script>
+
+</body>
+</html>
