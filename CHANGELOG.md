@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-10-24 · E1.5 · Canal y primer flujo en n8n
+- **Canal de E1.5: automatización asistida.** n8n interpreta y redacta; una persona revisa y copia y pega en el grupo, desde el mismo número y los mismos grupos que E1. La API de grupos de Meta queda como fase posterior (exige cuenta oficial verificada y un número en Cloud API; no aplica al número de la app).
+- **Nuevo:** `n8n/` con `E15-01-voto-minimo.json` (formulario → resolver → votar o evento; escala a una persona ante cualquier duda), `README.md` y `GUIA-IMPLEMENTACION.md`. Sin credenciales. Aún sin probar contra el backend desplegado.
+- Sin cambios en el frontend (2.2.2) ni en el backend (2.3.2). Detalle en `.cowork/decisiones-p7.md` §9 (local).
+
 ### 2026-10-24 · Sync P7c · Semana de pruebas desde cero
 - **Diseño nuevo:** dos condiciones en paralelo, las dos en WhatsApp: **E1 · WhatsApp + mago** y **E1.5 · WhatsApp automatizado** (n8n; valor interno `E2`). Reemplaza a E2 (web app). 2 grupos por condición más 1 de reserva, y 2 planes por grupo.
 - **Métricas principales:** SEQ por momento y SUS, validadas con Néstor. De contexto: llegaron / invitadas, minutos humanos por plan (mago in / mago off) y Nivel 2.
