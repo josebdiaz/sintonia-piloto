@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sintonía — Sistema visual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+ --papel-0:#fff;--papel-50:#faf9f6;--papel-100:#efede7;--papel-300:#dad6cc;--papel-700:#47494d;--papel-900:#1f2226;
+ --noche:#0e1116;--naranja:#ff4f00;--naranja-700:#c23a00;
+ --mostaza:#ebc46a;--crema:#f3e9b8;--vitral:#2c6a86;--salvia:#a9c9b8;--coral:#e8806a;--rosa:#eec0b4;--rubi:#9b2d30;
+ --cc:'Climate Crisis','Archivo Black',Impact,'Arial Black',sans-serif;
+ --g:'Graphik','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--papel-50);color:var(--papel-900);font:400 17px/1.55 var(--g);padding:44px 20px 96px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto}
+h1{font-weight:800;font-size:clamp(32px,5.4vw,56px);line-height:1.02;letter-spacing:-.03em;max-width:16ch;text-wrap:balance}
+h2{font-weight:700;font-size:clamp(22px,3.2vw,30px);line-height:1.12;letter-spacing:-.02em}
+p{max-width:66ch}.lead{color:var(--papel-700);margin-top:14px}
+section{margin-top:64px}.sub{color:var(--papel-700);margin:8px 0 22px}
+.cap{font-size:12.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--papel-700)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.toc a{font-size:14px;font-weight:600;color:var(--papel-900);text-decoration:none;padding:6px 14px;border:1px solid var(--papel-300);border-radius:99px;background:#fff}
+.toc a:hover{background:var(--papel-100)}
+.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px}
+.c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}.c6{grid-column:span 6}
+@media(max-width:820px){.c2,.c3,.c4{grid-column:span 6}}
+.card{border-radius:24px;padding:clamp(18px,3vw,28px);display:flex;flex-direction:column;gap:14px}
+.card.l{background:var(--papel-0);border:1px solid var(--papel-300)}
+.card.p{background:var(--papel-100)}
+.card.n{background:var(--noche);color:var(--papel-50)}
+.card.n .cap{color:#c7ced7}
+.pcard{background:var(--papel-0);border:1px solid var(--papel-300);border-radius:22px;overflow:hidden;display:flex;flex-direction:column}
+.pcard svg.sw{display:block;width:100%;height:auto}
+.pcard .t{padding:14px 18px 18px;display:grid;gap:4px}
+.pcard h3{font-size:18px;font-weight:700;letter-spacing:-.01em}
+.pcard p{font-size:14.5px;color:var(--papel-700)}
+.pcard .m{font-size:12.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--papel-700)}
+.row{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.chatbg{border-radius:16px;padding:12px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.chatbg.l{background:#E9E2D6}.chatbg.d{background:#1F2C34}
+.wm{font-weight:800;letter-spacing:-.045em;line-height:.95;white-space:nowrap}
+.wm .i{position:relative;display:inline-block}
+.wm .i::after{content:"";position:absolute;left:.04em;top:.2em;width:.3em;height:.1em;background:var(--naranja-700);border-radius:.05em;transform:rotate(-40deg);transform-origin:left center}
+.on-d .wm .i::after{background:var(--naranja)}
+.lock{display:flex;align-items:center;gap:16px}
+.lock .wm{font-size:clamp(34px,5vw,52px)}
+.stk{font-weight:800;text-transform:uppercase;font-size:18px;line-height:1.05;letter-spacing:-.01em;text-align:center;padding:20px 22px;min-width:128px;display:grid;place-items:center;border:4px solid #fff;box-shadow:0 0 0 1.5px var(--noche),0 6px 10px rgba(0,0,0,.14);transform:rotate(var(--r));border-radius:20px;position:relative;overflow:hidden}
+.stk svg{position:absolute;inset:0;width:100%;height:100%}
+.stk span{position:relative}
+.stkrow{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:10px}
+.chat{background:#E9E2D6;border-radius:20px;padding:16px;display:grid;gap:10px}
+.msg{display:flex;gap:9px;align-items:flex-end}
+.bub{background:#fff;padding:10px 14px 7px;max-width:36ch;border-radius:18px 18px 18px 5px;box-shadow:0 1px 2px rgba(0,0,0,.14);color:var(--papel-900)}
+.bub .t{font-weight:800;font-size:19px;line-height:1.1;text-transform:uppercase;display:flex;gap:8px;align-items:center}
+.bub .b{font-size:17px;line-height:1.4;margin-top:4px}
+.bub label{display:flex;gap:10px;align-items:center;font-size:17px;margin-top:3px}
+.bub label i{width:18px;height:18px;border:2px solid var(--papel-900);border-radius:5px;flex:none}
+.bub label.no{color:var(--papel-700)}.bub label.no i{border-style:dashed}
+.bub .h{font-size:12px;color:var(--papel-700);text-align:right}
+.pulse{width:150px;height:150px}
+.pulse .r{transform-origin:100px 100px;animation:rip 2.6s cubic-bezier(.3,.6,.3,1) infinite}
+.pulse .r2{animation-delay:.5s}
+@keyframes rip{0%{transform:scale(.62);opacity:0}25%{opacity:1}100%{transform:scale(1.18);opacity:0}}
+@media(prefers-reduced-motion:reduce){.pulse .r{animation:none;opacity:1;transform:scale(1)}.pulse .r2{transform:scale(.82)}}
+.post{aspect-ratio:4/5;border-radius:22px;overflow:hidden}
+.post svg{display:block;width:100%;height:100%}
+.tw{overflow-x:auto;border:1px solid var(--papel-300);border-radius:18px;background:#fff}
+table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:580px}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--papel-300);vertical-align:top}
+th{font-size:12.5px;background:var(--papel-50);color:var(--papel-700);font-weight:600}tr:last-child td{border-bottom:0}
+td.k{font-weight:700}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--papel-100);white-space:nowrap}
+.tag.r{background:#d9f0e0;color:#14532d}.tag.a{background:#fde8c8;color:#7c2d00}.tag.d{background:#f6d9d9;color:#7f1d1d}
+.prop{display:flex;height:60px;border-radius:16px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--papel-300)}
+.prop div{display:flex;align-items:flex-end;padding:8px 10px;font-size:12px;font-weight:700}
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:14px}
+.sw div{border-radius:16px;padding:10px;min-height:78px;font-size:12px;line-height:1.3;display:flex;flex-direction:column;justify-content:flex-end}
+.sw b{font-size:13px}
+ul.bl{list-style:none;padding:0;display:grid;gap:9px;max-width:74ch}
+ul.bl li{padding-left:22px;position:relative}
+ul.bl li::before{content:"";position:absolute;left:0;top:.5em;width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 2px var(--naranja-700) inset}
+.note{font-size:14px;color:var(--papel-700);margin-top:12px}
+:focus-visible{outline:2px solid var(--vitral);outline-offset:2px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="defs"></defs></svg>
+<div class="wrap">
+<header>
+<h1>Sistema visual de Sintonía</h1>
+<p class="lead">Documento unificado (v1.7, con el key visual final): la base moderna (papel, noche, naranja, trazo, wordmark), el glyph de la S con dos ondas, la paleta de apoyo y siete patrones, incluido el nuevo de mini S inclinadas. Es una exploración de diseño, sin pruebas con usuarios.</p>
+<nav class="toc" aria-label="Contenido"><a href="#s1">Qué entra</a><a href="#s2">Marca</a><a href="#s3">Ondas</a><a href="#s4">Color</a><a href="#s5">Patrones</a><a href="#s6">Mini S</a><a href="#s7">En uso</a><a href="#s7b">Key visual</a><a href="#s8">Reglas</a></nav>
+</header>
+
+<section id="s1" aria-labelledby="h1">
+<h2 id="h1">Qué entra y qué se queda fuera</h2>
+<p class="sub">Se parte de la base limpia y se añaden solo el glyph, la paleta y los patrones de la S.</p>
+<div class="tw"><table>
+<thead><tr><th scope="col">Elemento</th><th scope="col">Decisión</th><th scope="col">Cómo entra</th></tr></thead>
+<tbody>
+<tr><td class="k">S de Climate Crisis con dos ondas</td><td><span class="tag r">Entra</span></td><td>Avatar y sello de marca. Las ondas son la metáfora de «sintonizar» y se animan como pulso.</td></tr>
+<tr><td class="k">Paleta (crema, vitral, salvia, coral, rosa, rubí, mostaza)</td><td><span class="tag r">Entra</span></td><td>Colores de apoyo para stickers, fondos y estados: máximo dos por pieza.</td></tr>
+<tr><td class="k">Siete patrones de la S</td><td><span class="tag r">Entra</span></td><td>Solo en campaña, estados vacíos y fondos de stickers. Nunca en el chat.</td></tr>
+<tr><td class="k">Papel, noche, naranja, trazo, stickers directos</td><td><span class="tag r">Se queda</span></td><td>Es la base: 60 % papel, texto en noche, naranja solo en acción y trazo.</td></tr>
+<tr><td class="k">Vides, flores, vitral y marcos de lámina</td><td><span class="tag d">Sale</span></td><td>Recargaban. Quedan como material de exploración.</td></tr>
+<tr><td class="k">Graphik para texto</td><td><span class="tag a">Licencia pendiente</span></td><td>Títulos en Bold o Extra, cuerpo en Regular. En este archivo se usa Inter como sustituto.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="s2" aria-labelledby="h2">
+<h2 id="h2">La marca</h2>
+<p class="sub">El avatar es un disco con la S y dos ondas: una gruesa y una fina. Debajo de 40 px se deja solo la gruesa.</p>
+<div class="grid">
+ <div class="card l c3"><span class="cap">Avatar · tres fondos</span><div class="row" id="av3"></div></div>
+ <div class="card p c3"><span class="cap">Legibilidad 64 / 40 / 24 px</span><div class="chatbg l" id="avl"></div><div class="chatbg d" id="avd"></div></div>
+ <div class="card l c3"><span class="cap">Lockup sobre papel</span><div class="lock"><span data-av="m" data-s="72"></span><span class="wm">sinton<span class="i">ı</span>a</span></div></div>
+ <div class="card n c3 on-d"><span class="cap">Lockup sobre noche</span><div class="lock"><span data-av="m" data-s="72"></span><span class="wm">sinton<span class="i">ı</span>a</span></div></div>
+</div>
+<p class="note">La tilde naranja del wordmark está ajustada con Inter; hay que revisarla al cargar Graphik.</p>
+</section>
+
+<section id="s3" aria-labelledby="h3">
+<h2 id="h3">Las ondas como sistema</h2>
+<p class="sub">Aparecen en el avatar, en el sticker de «Plan listo», como pulso cuando el grupo queda sintonizado y como forma recortada en campaña. Siempre comparten centro con la S.</p>
+<div class="grid">
+ <div class="card l c2"><span class="cap">Pulso · grupo sintonizado</span>
+  <svg class="pulse" viewBox="0 0 200 200" role="img" aria-label="Animación: dos ondas se expanden desde la S">
+   <circle class="r" cx="100" cy="100" r="86" fill="none" stroke="#c23a00" stroke-width="7"/>
+   <circle class="r r2" cx="100" cy="100" r="86" fill="none" stroke="#c23a00" stroke-width="3"/>
+   <circle cx="100" cy="100" r="58" fill="#ebc46a" stroke="#0e1116" stroke-width="5"/>
+   <text x="100" y="128" text-anchor="middle" font-family="Climate Crisis,Archivo Black,Impact,sans-serif" font-size="78" fill="#0e1116">s</text>
+  </svg><p style="font-size:14.5px;color:var(--papel-700)">Una sola vez al confirmar el plan (2,6 s). Con «reducir movimiento», queda estática.</p></div>
+ <div class="card p c4"><span class="cap">Stickers · cinco momentos</span><div class="stkrow" id="stk"></div></div>
+</div>
+</section>
+
+<section id="s4" aria-labelledby="h4">
+<h2 id="h4">Color con proporción</h2>
+<p class="sub">La base es clara y sobria; la paleta nueva aporta calidez sin cargar la pieza.</p>
+<div class="prop" role="img" aria-label="Proporciones: 60 papel, 22 noche, 8 naranja, 10 colores de apoyo"><div style="flex:60;background:#faf9f6">Papel 60</div><div style="flex:22;background:#0e1116;color:#faf9f6">Noche 22</div><div style="flex:8;background:#ff4f00"></div><div style="flex:10;background:#ebc46a"></div></div>
+<div class="sw" id="sw"></div>
+<div class="tw" style="margin-top:18px"><table>
+<thead><tr><th scope="col">Rol</th><th scope="col">Color</th><th scope="col">Contraste</th></tr></thead>
+<tbody>
+<tr><td>Texto sobre claro</td><td>Noche sobre papel, crema, rosa, salvia, mostaza</td><td>10,6 a 18:1 <span class="tag r">Cumple</span></td></tr>
+<tr><td>«Confirmado»</td><td>Papel sobre azul vitral (reemplaza al cobalto)</td><td>5,68:1 <span class="tag r">Cumple</span></td></tr>
+<tr><td>Énfasis cálido</td><td>Noche sobre coral</td><td>6,96:1 <span class="tag r">Cumple</span></td></tr>
+<tr><td>Acento en texto sobre claro</td><td>Naranja 700 sobre papel</td><td>5,12:1 <span class="tag r">Cumple</span></td></tr>
+<tr><td>No usar</td><td>Noche, coral o naranja sobre azul vitral</td><td>3,16 / 2,20 / 1,81:1 <span class="tag d">Falla</span></td></tr>
+</tbody></table></div>
+<p class="note">Cálculos propios con la fórmula WCAG.</p>
+</section>
+
+<section id="s5" aria-labelledby="h5">
+<h2 id="h5">Seis patrones de la S</h2>
+<p class="sub">Geometría plana: la S de Climate Crisis Regular, círculos y ondas.</p>
+<div class="grid" id="pats"></div>
+<h3 style="margin:34px 0 6px;font-size:20px">Versiones tonales para detrás de texto</h3>
+<p class="sub" style="margin-top:0">La S es apenas más oscura o clara que el fondo, y el texto mantiene contraste alto.</p>
+<div class="grid" id="tonal"></div>
+</section>
+
+<section id="s6" aria-labelledby="h6">
+<h2 id="h6">Nuevo: Mini S, textura monocroma</h2>
+<p class="sub">Una S pequeña (15 px) repetida muy cerca, inclinada 10° en sentido antihorario, en un solo color. Las filas van desfasadas media posición para que el relleno sea denso y se lea como textura, no como letras.</p>
+<div class="grid" id="tex"></div>
+<div class="tw" style="margin-top:18px"><table>
+<thead><tr><th scope="col">Parámetro</th><th scope="col">Valor</th></tr></thead>
+<tbody>
+<tr><td>Tamaño de la S</td><td>15 px de cuerpo (ancho aproximado de 10 px)</td></tr>
+<tr><td>Inclinación</td><td>−10° (antihorario), rotando cada S sobre su propio centro</td></tr>
+<tr><td>Separación</td><td>14 px horizontal y 9 px vertical, filas desfasadas media celda</td></tr>
+<tr><td>Color</td><td>Una sola tinta sobre un solo fondo</td></tr>
+<tr><td>Escala mínima</td><td>No usar por debajo de 12 px de cuerpo: la S se vuelve mancha</td></tr>
+</tbody></table></div>
+<p class="note">Con la fuente de reemplazo las proporciones pueden variar un poco; conviene revisar la separación al cargar Climate Crisis.</p>
+</section>
+
+<section id="s7" aria-labelledby="h7">
+<h2 id="h7">En uso</h2>
+<p class="sub">Un mensaje de chat sin patrón y seis piezas de campaña: tres con ondas centradas en la S y tres con patrón de fondo. El titular siempre va en color liso.</p>
+<div class="grid">
+ <div class="c2" style="display:flex"><div class="chat" style="width:100%">
+   <div class="msg"><span data-av="m" data-s="40"></span><div class="bub"><div class="t">Elijan una</div><label><i></i>Almuerzo</label><label><i></i>Paseo</label><label class="no"><i></i>No puedo ese día</label><div class="h">11:24</div></div></div>
+   <div class="msg"><span data-av="m" data-s="40"></span><div class="bub"><div class="t" style="color:var(--vitral)"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#2c6a86"/><path d="M6 11.5 L9.7 15 L16 7.5" fill="none" stroke="#faf9f6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Plan listo</div><div class="b">Sábado 2:00 p. m. Confirmaron 5 de 6.</div><div class="h">18:00</div></div></div>
+ </div></div>
+ <div class="c4"><div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr))" id="posts1"></div></div>
+ <div class="c6"><div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr))" id="posts2"></div></div>
+</div>
+</section>
+
+
+<section id="s7b" aria-labelledby="h7b">
+<h2 id="h7b">Key visual final</h2>
+<p class="sub">Dos versiones del KV con el eslogan «Menos vueltas, más plan.»: oscura (avatar azul vitral, S tonal sobre noche) y clara (avatar mostaza, S tonal sobre crema). Reconstruidas en vectores a partir de las imágenes de referencia, por lo que pueden diferir levemente de los originales.</p>
+<div class="grid">
+ <div class="c6"><div class="post" style="aspect-ratio:1600/1030" id="kv1"></div></div>
+ <div class="c6"><div class="post" style="aspect-ratio:1600/1030" id="kv2"></div></div>
+</div>
+<div class="tw" style="margin-top:18px"><table>
+<thead><tr><th scope="col">Elemento</th><th scope="col">KV oscuro</th><th scope="col">KV claro</th></tr></thead>
+<tbody>
+<tr><td class="k">Fondo</td><td>Noche #0B0E13</td><td>Crema #F3E9B8</td></tr>
+<tr><td class="k">Patrón</td><td>S tonal #102029, −10°, media caída</td><td>S tonal #E6D99A, −10°, media caída</td></tr>
+<tr><td class="k">Avatar</td><td>Disco azul vitral, anillos en noche</td><td>Disco mostaza, anillo grueso noche, anillo fino naranja 700</td></tr>
+<tr><td class="k">Titular</td><td>Graphik Extra en papel (≈17:1 sobre noche)</td><td>Graphik Extra en noche (15,45:1 sobre crema)</td></tr>
+<tr><td class="k">Trazo</td><td>Naranja #FF4F00 (5,74:1 sobre noche)</td><td>Naranja 700 #C23A00</td></tr>
+<tr><td class="k">Wordmark</td><td>Papel, tilde naranja, abajo a la derecha</td><td>Noche, tilde naranja 700</td></tr>
+</tbody></table></div>
+<p class="note">Cálculos propios con la fórmula WCAG. El patrón queda detrás del titular, por eso se mantiene tonal.</p>
+</section>
+
+<section id="s8" aria-labelledby="h8">
+<h2 id="h8">Reglas, contrastes y decisiones</h2>
+<div class="tw"><table>
+<thead><tr><th scope="col">Patrón</th><th scope="col">Par principal</th><th scope="col">Contraste</th><th scope="col">Uso</th></tr></thead>
+<tbody>
+<tr><td class="k">Retícula</td><td>Noche sobre crema</td><td>15,45:1</td><td><span class="tag r">Campaña, sin texto encima</span></td></tr>
+<tr><td class="k">Eco</td><td>Noche sobre mostaza (disco)</td><td>11,38:1</td><td><span class="tag r">Marca, empaques, stories</span></td></tr>
+<tr><td class="k">Cascada</td><td>Crema sobre azul vitral</td><td>4,88:1</td><td><span class="tag r">Campaña</span></td></tr>
+<tr><td class="k">Pulso</td><td>Naranja sobre noche</td><td>5,74:1</td><td><span class="tag r">Campaña y fondos oscuros</span></td></tr>
+<tr><td class="k">Recorte</td><td>Rubí sobre rosa</td><td>4,56:1</td><td><span class="tag a">Solo decorativo</span></td></tr>
+<tr><td class="k">Radar</td><td>Crema sobre azul vitral (ondas al 40 %)</td><td>Decorativo</td><td><span class="tag a">Sin texto encima</span></td></tr>
+<tr><td class="k">Mini S · noche sobre papel</td><td>Noche sobre papel</td><td>17,96:1</td><td><span class="tag a">Decorativo, sin texto encima</span></td></tr>
+<tr><td class="k">Mini S · papel sobre vitral</td><td>Papel sobre azul vitral</td><td>5,68:1</td><td><span class="tag a">Decorativo, sin texto encima</span></td></tr>
+<tr><td class="k">Mini S · tonal crema</td><td>Noche sobre el tono más oscuro</td><td>13,29:1</td><td><span class="tag r">Texto encima permitido</span></td></tr>
+<tr><td class="k">Tonal crema / noche (S grande)</td><td>13,29:1 / 15,21:1</td><td>Texto en noche o papel</td><td><span class="tag r">Texto encima permitido</span></td></tr>
+</tbody></table></div>
+<ul class="bl" style="margin-top:22px">
+ <li><strong>La S se mantiene en Regular</strong>, sin deformar ni espejar. Solo el patrón Mini S la inclina, 10° antihorario.</li>
+ <li><strong>Un patrón por pieza</strong>, con máximo dos colores de apoyo. No se combinan dos patrones.</li>
+ <li><strong>Sin patrón en el chat de WhatsApp</strong> ni dentro de mensajes. El patrón es decorativo y se oculta a lectores de pantalla.</li>
+ <li><strong>Decisión pendiente:</strong> ¿el azul vitral reemplaza al cobalto como color de «confirmado»? Afecta los tokens del DS 3.0. Y el avatar, ¿sobre mostaza o sobre vitral?</li>
+ <li><strong>Riesgos:</strong> las ondas pueden leerse como «señal de wifi» y los patrones como «papel tapiz». Conviene probarlo con personas ajenas al proyecto.</li>
+ <li><strong>Fuentes:</strong> Climate Crisis llega por Google Fonts (abre el archivo con internet); Graphik no está cargada en este archivo y su licencia es comercial. Confirma la licencia de ambas antes de producción.</li>
+</ul>
+</section>
+</div>
+
+<script>
+const N='#0e1116',PA='#faf9f6',OR='#ff4f00',OR7='#c23a00',MO='#ebc46a',CR='#f3e9b8',VI='#2c6a86',SA='#a9c9b8',CO='#e8806a',RO='#eec0b4',RU='#9b2d30';
+const FF="Climate Crisis,Archivo Black,Impact,sans-serif";
+const GF="Graphik,Inter,system-ui,sans-serif";
+const S=(cx,cy,F,fill,rot=0)=>`<text x="${cx}" y="${cy+F*.28}" text-anchor="middle" font-family="${FF}" font-size="${F}" fill="${fill}" ${rot?`transform="rotate(${rot} ${cx} ${cy})"`:''}>s</text>`;
+const ring=(cx,cy,r,w,c,o=1)=>`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c}" stroke-width="${w}" opacity="${o}"/>`;
+
+/* ---------- avatar ---------- */
+function av(bg,fg,rc,px,small){
+ return `<svg width="${px}" height="${px}" viewBox="0 0 200 200" role="img" aria-label="Avatar de Sintonía: S con dos ondas" style="display:block;border-radius:50%"><circle cx="100" cy="100" r="100" fill="${bg}"/>`+
+ `<circle cx="100" cy="100" r="${small?90:92}" fill="none" stroke="${rc}" stroke-width="${small?13:9}"/>`+
+ (small?'':`<circle cx="100" cy="100" r="76" fill="none" stroke="${rc}" stroke-width="3.5"/>`)+
+ `<text x="100" y="${small?138:134}" text-anchor="middle" font-family="${FF}" font-size="${small?106:92}" fill="${fg}">s</text></svg>`}
+const A={m:[MO,N,N],v:[VI,CR,N],n:[N,OR,OR]};
+document.getElementById('av3').innerHTML=['m','v','n'].map(k=>av(...A[k],96,false)).join('');
+const arow=()=>[64,40,24].map(p=>av(...A.m,p,p<40)).join('');
+document.getElementById('avl').innerHTML=arow();document.getElementById('avd').innerHTML=arow();
+document.querySelectorAll('[data-av]').forEach(e=>{const p=+e.dataset.s;e.innerHTML=av(...A[e.dataset.av],p,p<40)});
+
+/* ---------- stickers ---------- */
+const waves=c=>`<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="${c}" stroke-width="6" opacity=".28"/><circle cx="50" cy="50" r="30" fill="none" stroke="${c}" stroke-width="2.5" opacity=".28"/></svg>`;
+document.getElementById('stk').innerHTML=[['¿Armamos<br>plan?','#fff',N,'-4deg',N],['Muevo<br>a las 2',RO,N,'3deg',N],['Cierro<br>a las 6',CO,N,'-3deg',N],['Plan<br>listo',VI,PA,'4deg',PA],['Mañana<br>2:00 p. m.',MO,N,'-4deg',N]].map(([t,b,c,r,w])=>`<div class="stk" style="--r:${r};background:${b};color:${c}">${waves(w)}<span>${t}</span></div>`).join('');
+
+/* ---------- paleta ---------- */
+document.getElementById('sw').innerHTML=[['Papel','#faf9f6',N,1],['Noche',N,PA],['Naranja',OR,N],['Mostaza',MO,N],['Crema',CR,N],['Azul vitral',VI,PA],['Salvia',SA,N],['Coral',CO,N],['Rosa',RO,N],['Rubí',RU,PA]].map(([n,c,t,b])=>`<div style="background:${c};color:${t};${b?'box-shadow:inset 0 0 0 1px #dad6cc':''}"><b>${n}</b>${c.toUpperCase()}</div>`).join('');
+
+/* ---------- patrones ---------- */
+const P=[
+ {id:'ret',n:'Retícula',m:'Señal de marca',d:'Cuadrícula de S en cuatro colores. Ritmo regular y claro.',w:140,h:140,bg:CR,g:()=>S(35,35,54,N)+S(105,35,54,VI)+S(35,105,54,CO)+S(105,105,54,N)},
+ {id:'eco',n:'Eco',m:'Marca y stories',d:'Cada S sobre un disco mostaza con sus dos ondas. Es el avatar repetido.',w:130,h:130,bg:PA,g:()=>ring(65,65,55,3,VI)+ring(65,65,43,7,VI)+`<circle cx="65" cy="65" r="30" fill="${MO}" stroke="${N}" stroke-width="3"/>`+S(65,65,38,N)},
+ {id:'cas',n:'Cascada',m:'Campaña',d:'Media caída: las S alternan crema y rosa sobre azul vitral.',w:110,h:110,bg:VI,g:()=>S(27,27,46,CR)+S(82,82,46,RO)},
+ {id:'pul',n:'Pulso',m:'Campaña oscura',d:'Una fila de S que crece y decrece, como una onda. Filas desfasadas.',w:300,h:176,bg:N,g:()=>{const sz=[26,38,52,66,52,38];let o='';[0,1].forEach(r=>{const y=44+r*88;let x=(r?25:0)+25;sz.forEach(f=>{o+=S(x,y,f,r?MO:OR);x+=50})});return o}},
+ {id:'rec',n:'Recorte',m:'Decorativo audaz',d:'Una S enorme recortada por su módulo, en rubí sobre rosa.',w:120,h:120,bg:RO,g:()=>`<svg x="0" y="0" width="120" height="120" viewBox="0 0 120 120" overflow="hidden">${S(52,64,190,RU)}</svg><rect x="1.5" y="1.5" width="117" height="117" fill="none" stroke="${N}" stroke-width="3"/>`},
+ {id:'rad',n:'Radar',m:'Fondo de ondas',d:'Ondas concéntricas centradas en cada S, como el pulso de la marca.',w:180,h:180,bg:VI,g:()=>[28,46,64,82].map((r,i)=>ring(90,90,r,i%2?2.5:6,CR,.4)).join('')+S(90,90,40,CR)}
+];
+const TON=[
+ {id:'tc',n:'Tonal crema',m:'Texto en noche encima',d:'S en #E6D99A sobre crema.',w:80,h:80,bg:CR,g:()=>S(40,40,46,'#e6d99a')},
+ {id:'tn',n:'Tonal noche',m:'Texto en papel encima',d:'S en #1B222C sobre noche.',w:80,h:80,bg:N,g:()=>S(40,40,46,'#1b222c')}
+];
+/* mini S: 15 px, -10°, muy cerca, filas desfasadas */
+const mini=(ink,bg)=>({w:28,h:18,bg,g:()=>{const f=15,r=-10;return S(7,4.5,f,ink,r)+S(21,4.5,f,ink,r)+S(0,13.5,f,ink,r)+S(14,13.5,f,ink,r)+S(28,13.5,f,ink,r)}});
+const TEX=[
+ {id:'t1',n:'Mini S · noche sobre papel',m:'Monocromo',d:'La versión base. Decorativa, sin texto encima.',...mini(N,PA)},
+ {id:'t2',n:'Mini S · papel sobre vitral',m:'Monocromo',d:'Fondos de campaña y tarjetas cerradas.',...mini(PA,VI)},
+ {id:'t3',n:'Mini S · tonal crema',m:'Monocromo tonal',d:'S en #E6D99A sobre crema: admite texto en noche encima.',...mini('#e6d99a',CR)}
+];
+document.getElementById('defs').innerHTML=[...P,...TON,...TEX].map(p=>`<pattern id="pt-${p.id}" width="${p.w}" height="${p.h}" patternUnits="userSpaceOnUse"><rect width="${p.w}" height="${p.h}" fill="${p.bg}"/>${p.g()}</pattern>`).join('');
+const pc=(p,c)=>`<div class="pcard ${c}"><svg class="sw" viewBox="0 0 360 240" role="img" aria-label="Patrón ${p.n}"><rect width="360" height="240" fill="url(#pt-${p.id})"/></svg><div class="t"><span class="m">${p.m}</span><h3>${p.n}</h3><p>${p.d}</p></div></div>`;
+document.getElementById('pats').innerHTML=P.map(p=>pc(p,'c2')).join('');
+document.getElementById('tex').innerHTML=TEX.map(p=>pc(p,'c2')).join('');
+document.getElementById('tonal').innerHTML=TON.map(p=>{const dk=p.id==='tn',c=dk?PA:N;return `<div class="pcard c3"><svg class="sw" viewBox="0 0 360 200" role="img" aria-label="${p.n} con texto"><rect width="360" height="200" fill="url(#pt-${p.id})"/><text x="28" y="96" font-family="${GF}" font-weight="800" font-size="40" letter-spacing="-1.5" fill="${c}">Menos vueltas,</text><text x="28" y="144" font-family="${GF}" font-weight="800" font-size="40" letter-spacing="-1.5" fill="${c}">más plan.</text><path d="M28 162 Q50 150 72 162 T116 162 T160 162" fill="none" stroke="${dk?OR:OR7}" stroke-width="6" stroke-linecap="round"/></svg><div class="t"><span class="m">${p.m}</span><h3>${p.n}</h3><p>${p.d}</p></div></div>`}).join('');
+
+/* ---------- piezas ---------- */
+function postWaves(bg,fg,rc,acc,sbg){
+ return `<div class="post"><svg viewBox="0 0 400 500" role="img" aria-label="Pieza: Menos vueltas, más plan"><rect width="400" height="500" fill="${bg}"/>`+
+ ring(200,170,152,6,rc)+ring(200,170,116,16,rc)+`<circle cx="200" cy="170" r="76" fill="${sbg}" stroke="${N}" stroke-width="5"/>`+S(200,170,104,N)+
+ `<text text-anchor="middle" font-family="${GF}" font-weight="800" font-size="50" letter-spacing="-2" fill="${fg}"><tspan x="200" y="368">Menos vueltas,</tspan><tspan x="200" y="424">más plan.</tspan></text>`+
+ `<path d="M120 448 Q140 436 160 448 T200 448 T240 448 T280 448" fill="none" stroke="${acc}" stroke-width="7" stroke-linecap="round"/></svg></div>`}
+document.getElementById('posts1').innerHTML=[postWaves(PA,N,MO,OR7,MO),postWaves(N,PA,OR,OR,MO),postWaves(VI,PA,CR,MO,MO)].join('');
+function postPat(id,card,txt,acc,disc){
+ return `<div class="post"><svg viewBox="0 0 400 500" role="img" aria-label="Pieza con patrón ${id}"><rect width="400" height="500" fill="url(#pt-${id})"/><rect x="40" y="150" width="320" height="260" rx="26" fill="${card}"/><circle cx="200" cy="150" r="52" fill="${disc}" stroke="${N}" stroke-width="5"/>`+S(200,150,62,N)+
+ `<text text-anchor="middle" font-family="${GF}" font-weight="800" font-size="40" letter-spacing="-1.5" fill="${txt}"><tspan x="200" y="262">Menos vueltas,</tspan><tspan x="200" y="312">más plan.</tspan></text><path d="M150 340 Q168 330 186 340 T222 340 T258 340" fill="none" stroke="${acc}" stroke-width="6" stroke-linecap="round"/></svg></div>`}
+document.getElementById('posts2').innerHTML=[postPat('eco',PA,N,OR7,MO),postPat('pul',N,PA,OR,MO),postPat('t2',PA,N,OR7,MO)].join('');
+
+/* ---------- KV final ---------- */
+function kv(cfg){
+ const W=1600,H=1030,F=74,tw=130,th=84,rot=-10;
+ const pid='kvp-'+cfg.id;
+ const tile=[[33,21],[98,21],[0,63],[65,63],[130,63]].map(([x,y])=>`<text x="${x}" y="${y+F*.30}" text-anchor="middle" font-family="${FF}" font-size="${F}" fill="${cfg.tone}" transform="rotate(${rot} ${x} ${y})"><tspan dx="${-F*.377+F*.377}">s</tspan></text>`).join('');
+ const R=cfg.R,cx=300,cy=515;
+ const av=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="${cfg.av}"/>`+
+  (cfg.edge?`<circle cx="${cx}" cy="${cy}" r="${R*.995}" fill="none" stroke="${cfg.edge}" stroke-width="${R*.02}"/>`:'')+
+  `<circle cx="${cx}" cy="${cy}" r="${R*.9}" fill="none" stroke="${cfg.ring1}" stroke-width="${R*.13}"/>`+
+  `<circle cx="${cx}" cy="${cy}" r="${R*.74}" fill="none" stroke="${cfg.ring2}" stroke-width="${R*.04}"/>`+
+  `<text x="${cx}" y="${cy+R*.92*.30}" text-anchor="middle" font-family="${FF}" font-size="${R*.92}" fill="${cfg.s}">s</text>`;
+ const GF2="Graphik,Inter,system-ui,sans-serif";
+ const head=`<text font-family="${GF2}" font-weight="800" font-size="128" letter-spacing="-3.5" fill="${cfg.fg}"><tspan x="586" y="440">Menos vueltas,</tspan><tspan x="586" y="602">más plan.</tspan></text>`+
+  `<path d="M594 668 Q690 640 782 662 T968 662 T1136 662" fill="none" stroke="${cfg.acc}" stroke-width="14" stroke-linecap="round"/>`;
+ const wm=`<text id="wm-${cfg.id}" x="1530" y="940" text-anchor="end" font-family="${GF2}" font-weight="800" font-size="88" letter-spacing="-4" fill="${cfg.fg}">sintonıa</text><rect id="tl-${cfg.id}" x="0" y="0" width="26" height="9" fill="${cfg.tilde}"/>`;
+ return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Key visual: Menos vueltas, más plan." style="display:block;width:100%;height:100%"><defs><pattern id="${pid}" width="${tw}" height="${th}" patternUnits="userSpaceOnUse"><rect width="${tw}" height="${th}" fill="${cfg.bg}"/>${tile}</pattern></defs><rect width="${W}" height="${H}" fill="url(#${pid})"/>${av}${head}${wm}</svg>`;
+}
+const KVS=[{id:'d',bg:'#0b0e13',tone:'#102029',av:VI,edge:'#3b7d9a',ring1:'#13202b',ring2:'#13202b',s:'#0e1116',fg:PA,acc:OR,tilde:OR,R:215},
+           {id:'l',bg:CR,tone:'#e6d99a',av:MO,edge:'#e3bf6f',ring1:N,ring2:OR7,s:N,fg:N,acc:OR7,tilde:OR7,R:215}];
+KVS.forEach(c=>{document.getElementById(c.id==='d'?'kv1':'kv2').innerHTML=kv(c)});
+function placeTilde(id){
+ const t=document.getElementById('wm-'+id),r=document.getElementById('tl-'+id);
+ try{const e=t.getExtentOfChar(6),fs=88;const x=e.x+fs*.01,y=940-fs*.69;r.setAttribute('transform',`translate(${x} ${y}) rotate(-40 0 ${4.5})`);}catch(err){r.style.display='none'}
+}
+const runTilde=()=>{KVS.forEach(c=>placeTilde(c.id))};
+runTilde();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{KVS.forEach(c=>document.getElementById('kv'+(c.id==='d'?1:2)).innerHTML=kv(c));runTilde()});
+</script>
+</body>
+</html>

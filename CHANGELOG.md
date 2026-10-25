@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-10-25 · Marca · Identidad visual v1.7
+- **Nuevo:** `marca/` con el sistema visual unificado (`sistema-visual-v1.7.html`), el registro de decisiones de diseño (`DECISIONES.md`), su propio changelog, el racional con el arranque de dirección creativa y los briefs (marca y constructor de decks con motion).
+- **Dirección:** glifo de la S de Climate Crisis con dos ondas concéntricas, paleta de apoyo, siete patrones de la S y key visual final en dos versiones. Todo es decisión de diseño del equipo, sin pruebas con usuarios.
+- **Pendiente:** azul vitral en lugar de cobalto, avatar por defecto, relación con el DS 3.0 y licencias de Graphik y Climate Crisis.
+- Sin cambios en el frontend (2.2.2), el backend (2.3.2) ni `ds-3.0/`. Detalle en `marca/DECISIONES.md`.
+
 ### 2026-10-24 · E1.5 · Canal y primer flujo en n8n
 - **Canal de E1.5: automatización asistida.** n8n interpreta y redacta; una persona revisa y copia y pega en el grupo, desde el mismo número y los mismos grupos que E1. La API de grupos de Meta queda como fase posterior (exige cuenta oficial verificada y un número en Cloud API; no aplica al número de la app).
 - **Nuevo:** `n8n/` con `E15-01-voto-minimo.json` (formulario → resolver → votar o evento; escala a una persona ante cualquier duda), `README.md` y `GUIA-IMPLEMENTACION.md`. Sin credenciales. Aún sin probar contra el backend desplegado.

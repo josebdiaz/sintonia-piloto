@@ -33,6 +33,7 @@ Sitio publicado (GitHub Pages, rama `main`): https://josebdiaz.github.io/sintoni
 │  ├─ piloto-m1-claude/  Frontend 1.0.0 («M1»)
 │  ├─ piloto-m1-gemini/  Referencia
 │  └─ piloto-m2-gemini/  Referencia
+├─ marca/                Identidad visual: sistema visual, decisiones de diseño y briefs (no toca el piloto)
 ├─ CHANGELOG.md          Historial de versiones de cada componente
 └─ README.md
 ```
