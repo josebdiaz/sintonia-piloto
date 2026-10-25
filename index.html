@@ -2,78 +2,230 @@
 <html lang="es-CO">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Sintonía · Proyecto</title>
+<title>Sintonía</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
-  :root { --bg:#F7F5EF; --card:#FFFFFF; --fg:#1B2A24; --muted:#5B6B63; --line:#E2DED3; --accent:#1F5A47; --soft:#E8F1EC; --warn:#FFF6DD; }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
-  main { max-width: 880px; margin: 0 auto; padding: 32px 16px 48px; }
-  .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.1rem; }
-  .mark { width:22px; height:22px; border-radius:50%; background:var(--accent); }
-  h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); line-height:1.15; margin: 28px 0 8px; text-wrap: balance; }
-  h2 { font-size: 1.05rem; margin: 0 0 4px; }
-  p { margin: 0 0 8px; }
-  .lead { color: var(--muted); max-width: 62ch; }
-  .grid { display:grid; gap:14px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-top: 22px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; }
-  .card.now { background: var(--soft); border-color: #CFE2D7; }
-  .tag { display:inline-block; font-size:.75rem; font-weight:650; letter-spacing:.02em; text-transform:uppercase; color:var(--accent); margin-bottom:6px; }
-  ul { list-style:none; padding:0; margin:10px 0 0; display:grid; gap:6px; }
-  a { color: var(--accent); font-weight: 600; text-underline-offset: 2px; }
-  .muted { color: var(--muted); font-size: .9rem; font-weight: 400; }
-  .note { background: var(--warn); border:1px solid #F0E2B6; border-radius: 12px; padding: 12px 14px; margin-top: 22px; font-size: .92rem; }
-  footer { margin-top: 32px; color: var(--muted); font-size: .85rem; }
-  code { font-size: .88em; }
+/* Portada de expectativa: un glifo que cae al agua y un claim. El menú vive oculto detrás de ↑↑↓↓←→←→ */
+:root{
+  --papel-0:#ffffff; --papel-50:#faf9f6; --papel-100:#efede7; --papel-300:#dad6cc; --papel-700:#47494d;
+  --noche:#0e1116; --naranja:#ff4f00; --naranja-700:#c23a00;
+  --mostaza:#ebc46a; --crema:#f3e9b8; --vitral:#2c6a86;
+  --f-s:'Climate Crisis','Arial Black',sans-serif;
+  --f-txt:'Graphik','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --ease-enter:cubic-bezier(.2,.8,.2,1);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--crema);color:var(--noche);font-family:var(--f-txt);-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* portada */
+.cover{min-height:100%;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:clamp(28px,6vw,96px);
+  max-width:1280px;margin:0 auto;padding-block:clamp(32px,8vh,96px)}
+.glyph{width:clamp(180px,30vw,420px);aspect-ratio:1;position:relative}
+.glyph svg{width:100%;height:100%;overflow:visible;display:block}
+.eyebrow{font-weight:600;font-size:clamp(12px,1.2vw,16px);letter-spacing:.12em;text-transform:uppercase;color:var(--naranja-700);margin:0 0 18px}
+h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line-height:.95;margin:0;text-wrap:balance}
+.u{position:relative;display:inline-block;white-space:nowrap}
+.u svg{position:absolute;left:0;bottom:-.14em;width:100%;height:.2em;overflow:visible}
+.lede{font-size:clamp(18px,2vw,26px);line-height:1.4;max-width:30ch;margin:28px 0 0;color:#1f2226}
+.wm{font-weight:800;letter-spacing:-.045em;display:inline-block;line-height:1}
+.wm .i{position:relative;display:inline-block}
+.wm .i::after{content:"";position:absolute;width:.30em;height:.10em;border-radius:.05em;left:.02em;top:.2em;transform:rotate(-40deg);transform-origin:left center;background:var(--naranja-700)}
+.logo{position:fixed;right:max(24px,env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));font-size:clamp(20px,2vw,28px);z-index:5}
+.foot{position:fixed;left:max(24px,env(safe-area-inset-left,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));font-size:12px;color:var(--papel-700);letter-spacing:.04em;z-index:5}
+
+/* animación: piedra en el agua */
+.zl,.stone,.ring,.wave{transform-origin:100px 100px;transform-box:view-box}
+.zl,.stone,.ring,.wave{opacity:0}
+.zl{animation:zjump 700ms cubic-bezier(.22,1,.36,1) forwards .2s}
+@keyframes zjump{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:scale(1)}}
+.stone{animation:stone 760ms cubic-bezier(.45,0,.3,1) forwards .65s}
+@keyframes stone{0%{opacity:0;transform:scale(2)}60%{opacity:1;transform:scale(.94)}100%{opacity:1;transform:scale(1)}}
+.wave{animation:wave 1900ms cubic-bezier(.25,.1,.25,1) forwards 1.1s}
+@keyframes wave{0%{opacity:0;transform:scale(.3)}10%{opacity:.85}100%{opacity:0;transform:scale(1.45)}}
+.wave.loop{animation:waveloop 6000ms cubic-bezier(.37,0,.2,1) infinite 4.6s}
+@keyframes waveloop{0%{opacity:0;transform:scale(.3)}4%{opacity:.6}32%{opacity:0;transform:scale(1.45)}100%{opacity:0;transform:scale(1.45)}}
+.ring{animation:settle 1000ms ease-out forwards}
+.ring.r1{animation-delay:1.65s} .ring.r2{animation-delay:1.85s}
+@keyframes settle{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+.in{opacity:0;transform:translateY(18px);animation:rise 800ms var(--ease-enter) forwards;animation-delay:calc(var(--i)*180ms + 1.2s)}
+@keyframes rise{to{opacity:1;transform:none}}
+.trazo{stroke-dasharray:1 1.2;stroke-dashoffset:1.1;animation:draw 1400ms var(--ease-enter) forwards 2.4s}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* menú oculto */
+.menu{position:fixed;inset:0;z-index:20;background:var(--noche);color:var(--papel-50);overflow:auto;
+  padding:calc(40px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  clip-path:circle(0 at var(--cx,50%) var(--cy,50%));transition:clip-path 900ms cubic-bezier(.65,0,.35,1);visibility:hidden}
+.menu.open{clip-path:circle(150% at var(--cx,50%) var(--cy,50%));visibility:visible}
+.menu .wrap{max-width:1080px;margin:0 auto}
+.menu .top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:40px}
+.menu .top .wm{font-size:32px;color:var(--papel-50)} .menu .wm .i::after{background:var(--naranja)}
+.menu h2{font-size:clamp(32px,5vw,64px);font-weight:800;letter-spacing:-.03em;line-height:1;margin:0 0 12px}
+.menu .sub{color:var(--papel-300);margin:0 0 36px;font-size:18px;max-width:60ch;line-height:1.45}
+.close{background:transparent;color:var(--papel-50);border:1px solid var(--papel-700);border-radius:999px;min-width:44px;height:44px;padding:0 18px;font:600 15px var(--f-txt);cursor:pointer}
+.close:hover{border-color:var(--naranja)}
+.close:focus-visible,.menu a:focus-visible{outline:3px solid var(--naranja);outline-offset:3px}
+.cards{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card.now{background:var(--mostaza);color:var(--noche)}
+.card.team{background:#1f2226;border:1px solid var(--papel-700)}
+.card.arch{background:transparent;border:1px dashed var(--papel-700)}
+.card .tag{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--naranja)}
+.card.now .tag{color:var(--naranja-700)}
+.card h3{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:0}
+.card p{margin:0;line-height:1.45;font-size:16px}
+.card ul{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:10px}
+.card a{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--naranja);text-underline-offset:4px;text-decoration-thickness:2px}
+.card.now a{text-decoration-color:var(--naranja-700)}
+.muted{color:var(--papel-300);font-size:14px;font-weight:400}
+.card.now .muted{color:#47494d}
+.note{margin-top:28px;color:var(--papel-300);font-size:14px}
+.menu .stagger > *{opacity:0;transform:translateY(16px);transition:opacity 600ms var(--ease-enter),transform 600ms var(--ease-enter)}
+.menu.open .stagger > *{opacity:1;transform:none}
+.menu.open .stagger > *:nth-child(1){transition-delay:.45s} .menu.open .stagger > *:nth-child(2){transition-delay:.6s} .menu.open .stagger > *:nth-child(3){transition-delay:.75s}
+
+/* pista de la secuencia */
+.keys{position:fixed;left:50%;bottom:calc(64px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:8px;z-index:6;pointer-events:none}
+.keys i{width:10px;height:10px;border-radius:50%;background:var(--naranja-700);opacity:0;transform:scale(.4);transition:opacity 200ms,transform 200ms}
+.keys i.on{opacity:1;transform:scale(1)}
+
+@media (max-width:720px){
+  .cover{grid-template-columns:1fr;justify-items:start;align-content:center}
+  .glyph{width:min(56vw,240px)}
+  .foot{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .zl,.stone,.ring,.in{animation:none;opacity:1;transform:none}
+  .wave{animation:none;opacity:0}
+  .trazo{animation:none;stroke-dashoffset:0}
+  .menu{transition:none}
+  .menu .stagger > *{transition:none}
+}
 </style>
 </head>
 <body>
-<main>
-  <div class="brand"><span class="mark" aria-hidden="true"></span>Sintonía</div>
-  <h1>Que las ganas se vuelvan plan.</h1>
-  <p class="lead">Piloto académico de la Maestría en Gestión de la Innovación de la Universidad Icesi. Sintonía ayuda a grupos de amigos que ya existen en Cali a pasar del «deberíamos vernos» a un plan que sí pasa.</p>
 
-  <div class="grid">
-    <section class="card now">
-      <span class="tag">Piloto en curso</span>
-      <h2>¿Te invitaron?</h2>
-      <p>Abre el enlace que te envió quien organiza tu parche o el equipo de Sintonía. Desde ahí aceptas, votas y nos cuentas cómo les fue.</p>
-      <ul>
-        <li><a href="piloto/aviso.html">Aviso de privacidad</a></li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <span class="tag">Equipo</span>
-      <h2>Operación del piloto</h2>
-      <p class="muted">Piden la clave del equipo.</p>
-      <ul>
-        <li><a href="piloto/mago.html">Consola del mago</a></li>
-        <li><a href="piloto/panel.html">Panel del piloto</a></li>
-        <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/protocolo-m2.md">Protocolo de operación</a></li>
-        <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md">Versiones (CHANGELOG)</a> <span class="muted" id="ver"></span></li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <span class="tag">Archivo · solo lectura</span>
-      <h2>Versiones anteriores</h2>
-      <ul>
-        <li><a href="archivo/p4-pre-pivote/researchers/index.html">Periodo 4 · H1–H4 e investigadores</a> <span class="muted">antes del pivote</span></li>
-        <li><a href="archivo/piloto-m1-claude/index.html">Piloto 1.0.0 («M1»)</a></li>
-        <li><a href="archivo/">Todo el archivo</a></li>
-      </ul>
-    </section>
+<main class="cover" aria-labelledby="claim">
+  <div class="glyph" role="img" aria-label="Avatar de Sintonía">
+    <svg viewBox="-40 -40 280 280" aria-hidden="true">
+      <circle class="zl" cx="100" cy="100" r="100" fill="#ebc46a"/>
+      <circle class="ring r1" cx="100" cy="100" r="76" fill="none" stroke="#c23a00" stroke-width="3.5"/>
+      <circle class="ring r2" cx="100" cy="100" r="92" fill="none" stroke="#0e1116" stroke-width="9"/>
+      <circle class="wave" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3.5" vector-effect="non-scaling-stroke"/>
+      <circle class="wave loop" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3" vector-effect="non-scaling-stroke"/>
+      <text class="stone" x="100" y="134" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="92" fill="#0e1116">s</text>
+    </svg>
   </div>
-
-  <p class="note">Las versiones archivadas del piloto no envían datos: se conservan como registro del proceso de diseño.</p>
-
-  <footer>Proyecto Sintonía · José Bolaños y Katherine Castro · Universidad Icesi</footer>
+  <div>
+    <p class="eyebrow in" style="--i:0">Muy pronto</p>
+    <h1 id="claim" class="in" style="--i:1">Algo se está<br><span class="u">armando.<svg viewBox="0 0 128 16" preserveAspectRatio="none" aria-hidden="true"><path class="trazo" d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+    <p class="lede in" style="--i:2">Tu parche está a un plan de verse. Menos vueltas, más plan.</p>
+  </div>
 </main>
+
+<div class="wm logo" aria-hidden="true">sinton<span class="i">ı</span>a</div>
+<p class="foot">Proyecto Sintonía · Universidad Icesi</p>
+<div class="keys" id="keys" aria-hidden="true"></div>
+
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-labelledby="menuTitle" hidden>
+  <div class="wrap">
+    <div class="top"><span class="wm">sinton<span class="i">ı</span>a</span><button class="close" id="close" type="button">Cerrar · Esc</button></div>
+    <h2 id="menuTitle">Detrás de escena.</h2>
+    <p class="sub">Piloto académico de la Maestría en Gestión de la Innovación de la Universidad Icesi. Grupos de amigos que ya existen, del «deberíamos vernos» a un plan que sí pasa.</p>
+    <div class="cards stagger">
+      <section class="card now">
+        <span class="tag">Piloto en curso</span>
+        <h3>¿Te invitaron?</h3>
+        <p>Abre el enlace que te envió quien organiza tu parche o el equipo de Sintonía. Desde ahí aceptas, votas y nos cuentas cómo les fue.</p>
+        <ul><li><a href="piloto/aviso.html">Aviso de privacidad</a></li></ul>
+      </section>
+      <section class="card team">
+        <span class="tag">Equipo</span>
+        <h3>Operación del piloto</h3>
+        <p class="muted">Piden la clave del equipo.</p>
+        <ul>
+          <li><a href="piloto/mago.html">Consola del mago</a></li>
+          <li><a href="piloto/panel.html">Panel del piloto</a></li>
+          <li><a href="docs/deck-status-26oct.html">Status 26 oct</a></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/protocolo-m2.md">Protocolo de operación</a></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md">Versiones (CHANGELOG)</a> <span class="muted" id="ver"></span></li>
+        </ul>
+      </section>
+      <section class="card arch">
+        <span class="tag">Archivo · solo lectura</span>
+        <h3>Versiones anteriores</h3>
+        <ul>
+          <li><a href="archivo/p4-pre-pivote/researchers/index.html">Periodo 4 · H1–H4 e investigadores</a> <span class="muted">antes del pivote</span></li>
+          <li><a href="archivo/piloto-m1-claude/index.html">Piloto 1.0.0 («M1»)</a></li>
+          <li><a href="archivo/">Todo el archivo</a></li>
+        </ul>
+      </section>
+    </div>
+    <p class="note">Las versiones archivadas del piloto no envían datos: se conservan como registro del proceso de diseño.</p>
+  </div>
+</div>
+
 <script src="piloto/assets/sintonia.js"></script>
 <script>
+(function(){
   try { if (window.CONFIG && CONFIG.FRONTEND_VERSION) document.getElementById('ver').textContent = '· frontend v' + CONFIG.FRONTEND_VERSION; } catch (e) {}
+
+  const SEQ = ['up','up','down','down','left','right','left','right'];
+  const KEY = {ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
+  const menu = document.getElementById('menu'), keys = document.getElementById('keys');
+  keys.innerHTML = '<i></i>'.repeat(SEQ.length);
+  const dots = [...keys.children];
+  let pos = 0, timer = null, lastFocus = null;
+
+  function show(n){ dots.forEach((d,i) => d.classList.toggle('on', i < n)); }
+  function reset(){ pos = 0; show(0); }
+  function step(dir){
+    if (!menu.hidden && menu.classList.contains('open')) return;
+    if (dir === SEQ[pos]) { pos++; } else { pos = (dir === SEQ[0]) ? 1 : 0; }
+    show(pos);
+    clearTimeout(timer); timer = setTimeout(reset, 2500);
+    if (pos === SEQ.length) { reset(); open(); }
+  }
+  function open(){
+    const g = document.querySelector('.glyph').getBoundingClientRect();
+    menu.style.setProperty('--cx', (g.left + g.width/2) + 'px');
+    menu.style.setProperty('--cy', (g.top + g.height/2) + 'px');
+    lastFocus = document.activeElement;
+    menu.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => menu.classList.add('open')));
+    document.getElementById('close').focus({preventScroll:true});
+  }
+  function close(){
+    menu.classList.remove('open');
+    const done = () => { menu.hidden = true; menu.removeEventListener('transitionend', done); };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) done(); else menu.addEventListener('transitionend', done);
+    if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true});
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !menu.hidden) { close(); return; }
+    const d = KEY[e.key];
+    if (d && menu.hidden) { e.preventDefault(); step(d); }
+  });
+  document.getElementById('close').addEventListener('click', close);
+
+  // En pantallas táctiles, la misma secuencia con deslizamientos
+  let sx = 0, sy = 0;
+  document.addEventListener('touchstart', e => { const t = e.touches[0]; sx = t.clientX; sy = t.clientY; }, {passive:true});
+  document.addEventListener('touchend', e => {
+    if (!menu.hidden) return;
+    const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
+    step(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+  }, {passive:true});
+})();
 </script>
 </body>
 </html>
