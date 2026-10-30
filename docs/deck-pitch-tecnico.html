@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Sintonía · Pitch técnico</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: lienzo 1920×1080 que escala; una idea por diapositiva; diagramas en cajas con flechas; slider de navegación abajo */
+:root{
+  --papel-0:#ffffff; --papel-50:#faf9f6; --papel-100:#efede7; --papel-300:#dad6cc;
+  --papel-700:#47494d; --papel-900:#1f2226; --noche:#0e1116;
+  --naranja:#ff4f00; --naranja-700:#c23a00;
+  --mostaza:#ebc46a; --crema:#f3e9b8; --vitral:#2c6a86; --salvia:#a9c9b8;
+  --coral:#e8806a; --rosa:#eec0b4; --rubi:#9b2d30;
+  --f-s:'Climate Crisis','Arial Black',sans-serif;
+  --f-txt:'Graphik','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --dur-base:700ms; --dur-slow:1000ms;
+  --ease-standard:cubic-bezier(.3,.6,.3,1); --ease-enter:cubic-bezier(.2,.8,.2,1);
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--noche);color:var(--papel-50);font-family:var(--f-txt);overflow:hidden;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+*{box-sizing:border-box}
+.viewport{position:fixed;left:0;right:0;top:0;bottom:64px;overflow:hidden;background:var(--noche)}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;transform:translate(-50%,-50%) scale(.5)}
+.slide{position:absolute;inset:0;overflow:hidden;padding:96px 130px;display:flex;flex-direction:column;
+  visibility:hidden;opacity:0;transition:opacity var(--dur-slow) var(--ease-standard),visibility 0s linear var(--dur-slow)}
+.slide.active{visibility:visible;opacity:1;transition:opacity var(--dur-slow) var(--ease-standard)}
+.slide>.content{position:relative;z-index:2;display:flex;flex-direction:column;height:100%;transform:translateX(20px);transition:transform 1400ms var(--ease-standard)}
+.slide.active>.content{transform:none}
+.slide>.content.center{justify-content:center}
+.s-noche{background:var(--noche);color:var(--papel-50)}
+.s-papel{background:var(--papel-50);color:var(--noche)}
+.s-crema{background:var(--crema);color:var(--noche)}
+.s-vitral{background:var(--vitral);color:var(--papel-0)}
+
+.eyebrow{font-weight:600;font-size:24px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 26px}
+.s-papel .eyebrow,.s-crema .eyebrow{color:var(--naranja-700)}
+.s-noche .eyebrow{color:var(--naranja)}
+.s-vitral .eyebrow{color:var(--crema)}
+h1,h2{font-weight:800;letter-spacing:-.03em;line-height:.98;margin:0;text-wrap:balance}
+h1{font-size:140px} h2{font-size:104px}
+.lede{font-size:34px;line-height:1.35;max-width:34ch;margin:30px 0 0;text-wrap:pretty}
+.s-noche .lede{color:var(--papel-300)} .s-crema .lede,.s-papel .lede{color:var(--papel-900)}
+.tag{display:inline-flex;align-items:center;font-weight:600;font-size:21px;letter-spacing:.1em;text-transform:uppercase;padding:9px 16px;border-radius:999px;border:2px solid currentColor;white-space:nowrap}
+code,.mono{font-family:var(--f-mono);font-size:.9em}
+
+.in{opacity:0;transform:translateY(24px)}
+.active .in{animation:rise var(--dur-base) var(--ease-enter) forwards;animation-delay:calc(var(--i,0)*170ms + 350ms)}
+@keyframes rise{to{opacity:1;transform:none}}
+.trazo path{stroke-dasharray:1 1.2;stroke-dashoffset:1.1}
+.active .trazo path{animation:draw 1400ms var(--ease-enter) forwards;animation-delay:var(--td,1.4s)}
+@keyframes draw{from{stroke-dashoffset:1.1}to{stroke-dashoffset:0}}
+.u{position:relative;display:inline-block;white-space:nowrap}
+.u .trazo{position:absolute;left:0;bottom:-.16em;width:100%;height:.2em;overflow:visible}
+
+.wm{font-weight:800;letter-spacing:-.045em;display:inline-block;line-height:1}
+.wm .i{position:relative;display:inline-block}
+.wm .i::after{content:"";position:absolute;width:.30em;height:.10em;border-radius:.05em;left:.02em;top:.2em;transform:rotate(-40deg);transform-origin:left center;background:var(--tilde,var(--naranja))}
+.logo{position:absolute;right:130px;bottom:34px;font-size:36px;z-index:40;pointer-events:none;color:var(--noche);--tilde:var(--naranja-700);transition:color var(--dur-slow) var(--ease-standard)}
+.logo.on-dark{color:var(--papel-50);--tilde:var(--naranja)}
+.logo.on-vitral{color:var(--papel-0);--tilde:var(--mostaza)}
+
+/* glifo: piedra en el agua */
+.glyph{width:500px;height:500px;flex:none}
+.glyph svg{width:100%;height:100%;overflow:visible}
+.zl,.stone,.ring,.wave{transform-origin:100px 100px;transform-box:view-box;opacity:0}
+.active .zl{animation:zjump 700ms cubic-bezier(.22,1,.36,1) forwards .2s}
+@keyframes zjump{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:scale(1)}}
+.active .stone{animation:stone 760ms cubic-bezier(.45,0,.3,1) forwards .65s}
+@keyframes stone{0%{opacity:0;transform:scale(2)}60%{opacity:1;transform:scale(.94)}100%{opacity:1;transform:scale(1)}}
+.active .wave{animation:wave 1900ms cubic-bezier(.25,.1,.25,1) forwards 1.1s}
+@keyframes wave{0%{opacity:0;transform:scale(.3)}10%{opacity:.85}100%{opacity:0;transform:scale(1.45)}}
+.active .wave.loop{animation:waveloop 6000ms cubic-bezier(.37,0,.2,1) infinite 4.6s}
+@keyframes waveloop{0%{opacity:0;transform:scale(.3)}4%{opacity:.6}32%{opacity:0;transform:scale(1.45)}100%{opacity:0;transform:scale(1.45)}}
+.active .ring{animation:settle 1000ms ease-out forwards}
+.active .ring.r1{animation-delay:1.65s} .active .ring.r2{animation-delay:1.85s}
+@keyframes settle{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+.cover{flex-direction:row!important;align-items:center;gap:110px}
+.cover>div:last-child{min-width:0}
+.meta-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:50px}
+
+/* problema */
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:70px}
+.stat .v{font-size:200px;font-weight:800;letter-spacing:-.05em;line-height:.9;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:.45em}
+.stat .v.o{color:var(--naranja-700)}
+.stat p{margin:16px 0 0;font-size:34px;line-height:1.3;font-weight:500;max-width:22ch}
+.src{margin-top:auto;font-size:22px;color:var(--papel-700)}
+
+/* idea */
+.idea{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:70px}
+.st{border-radius:20px;padding:34px 30px;display:flex;flex-direction:column;gap:14px}
+.st b{font-size:44px;font-weight:800;letter-spacing:-.02em}
+.st span{font-size:25px;line-height:1.35}
+.st .k{font-size:19px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+
+/* storyboard */
+.sb{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 26px;margin-top:40px}
+.frame{display:flex;flex-direction:column;gap:10px;min-width:0}
+.frame figure{margin:0;border-radius:12px;overflow:hidden;background:var(--papel-0);aspect-ratio:16/10;border:2px solid var(--papel-300);position:relative}
+.frame img{width:100%;height:100%;object-fit:cover;display:block}
+.frame .cap{display:flex;align-items:baseline;gap:12px;font-size:26px;font-weight:700}
+.frame .cap i{font-style:normal;font-size:18px;font-weight:600;color:var(--naranja-700);letter-spacing:.06em}
+.frame .cap em{font-style:normal;margin-left:auto;font-family:var(--f-mono);font-size:19px;font-weight:600;color:var(--vitral)}
+
+/* arquitectura */
+.arch{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:70px;align-items:stretch}
+.nd{position:relative;display:flex;flex-direction:column;gap:12px;padding:30px 26px;border-radius:20px;margin-right:46px;min-width:0}
+.nd:last-child{margin-right:0}
+.nd:not(:last-child)::after{content:"⇄";position:absolute;right:-42px;top:50%;transform:translateY(-50%);font-size:34px;font-weight:800;color:var(--naranja)}
+.nd .k{font-size:18px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.nd b{font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.nd span{font-size:21px;line-height:1.35}
+.n1{background:#1f2226;border:2px solid var(--papel-700)} .n1 .k{color:var(--salvia)}
+.n2{background:var(--rubi);color:var(--papel-0)} .n2 .k{color:var(--rosa)}
+.n3{background:var(--vitral);color:var(--papel-0)} .n3 .k{color:var(--crema)}
+.n4{background:var(--mostaza);color:var(--noche)} .n4 .k{color:var(--naranja-700)}
+.n5{background:#1f2226;border:2px solid var(--papel-700)} .n5 .k{color:var(--coral)}
+.under{display:grid;grid-template-columns:repeat(5,1fr);margin-top:22px}
+.under div{font-size:21px;color:var(--papel-300);padding:0 46px 0 26px;line-height:1.35}
+.under div:nth-child(4){grid-column:4}
+.rule{margin-top:auto;display:flex;gap:16px;flex-wrap:wrap}
+.rule .tag{color:var(--papel-300)}
+
+/* flujos */
+.lane{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-top:50px}
+.fl{border-radius:16px;padding:22px 20px;display:flex;flex-direction:column;gap:10px;min-width:0;background:var(--papel-100)}
+.fl .w{font-family:var(--f-mono);font-size:19px;font-weight:700;color:var(--naranja-700)}
+.fl b{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.fl span{font-size:19px;line-height:1.35;color:var(--papel-700)}
+.fl .trg{margin-top:auto;font-size:16px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--vitral)}
+.shared{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:16px;margin-top:22px}
+.sh{border-radius:16px;padding:22px 24px;background:var(--noche);color:var(--papel-50);display:flex;flex-direction:column;gap:8px}
+.sh .w{font-family:var(--f-mono);font-size:19px;font-weight:700;color:var(--naranja)}
+.sh b{font-size:26px;font-weight:800}
+.sh span{font-size:19px;line-height:1.35;color:var(--papel-300)}
+.sh.dt{background:var(--vitral)} .sh.dt .w{color:var(--crema)} .sh.dt span{color:var(--papel-0)}
+
+/* lógica de un mensaje */
+.seq{display:flex;align-items:stretch;gap:0;margin-top:60px}
+.sq{flex:1;border-radius:18px;padding:28px 24px;background:#1f2226;border:2px solid var(--papel-700);display:flex;flex-direction:column;gap:10px;min-width:0;position:relative;margin-right:44px}
+.sq:last-child{margin-right:0}
+.sq:not(:last-child)::after{content:"→";position:absolute;right:-38px;top:50%;transform:translateY(-50%);font-size:34px;font-weight:800;color:var(--naranja)}
+.sq .w{font-family:var(--f-mono);font-size:19px;color:var(--naranja);font-weight:700}
+.sq b{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.sq span{font-size:21px;line-height:1.35;color:var(--papel-300)}
+.sq.esc{background:var(--rubi);border-color:var(--rubi)} .sq.esc .w{color:var(--rosa)} .sq.esc span{color:var(--papel-0)}
+.parse{display:flex;gap:12px;flex-wrap:wrap;margin-top:44px}
+.parse code{background:#1f2226;border:1px solid var(--papel-700);padding:10px 16px;border-radius:10px;font-size:22px;color:var(--papel-50)}
+.parse .x{background:var(--rubi);border-color:var(--rubi)}
+
+/* estado */
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:60px}
+.kp{border-radius:20px;padding:30px;display:flex;flex-direction:column;gap:10px;background:var(--papel-100)}
+.kp .v{font-size:96px;font-weight:800;letter-spacing:-.04em;line-height:.95;font-variant-numeric:tabular-nums}
+.kp span{font-size:24px;line-height:1.3;color:var(--papel-700)}
+.kp.ok .v{color:var(--vitral)} .kp.warn .v{color:var(--naranja-700)}
+.todo{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.td{border-top:6px solid var(--naranja-700);padding-top:16px;font-size:24px;line-height:1.35}
+.td b{display:block;font-size:22px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+
+/* ruta */
+.path{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:28px;margin-top:64px}
+.ph{border-radius:20px;padding:36px;display:flex;flex-direction:column;gap:14px;background:var(--papel-100)}
+.ph h3{font-size:46px;font-weight:800;letter-spacing:-.03em;margin:0;line-height:1.02}
+.ph p{margin:0;font-size:26px;line-height:1.35}
+.ph .tag{align-self:flex-start;color:var(--naranja-700)}
+.ph.go{background:var(--noche);color:var(--papel-50)} .ph.go .tag{color:var(--naranja)} .ph.go p{color:var(--papel-300)}
+.ph.go .cost{font-size:38px;font-weight:800;color:var(--mostaza)}
+.ok-line{margin-top:34px;display:flex;align-items:center;gap:18px;font-size:28px;font-weight:600}
+.ok-line b{background:var(--vitral);color:var(--papel-0);padding:10px 20px;border-radius:999px;font-size:22px;letter-spacing:.1em;text-transform:uppercase}
+
+/* agente */
+.agent{display:grid;grid-template-columns:1fr 620px 1fr;gap:40px;align-items:center;margin-top:30px;flex:1}
+.tools{display:flex;flex-direction:column;gap:14px}
+.tools.r{align-items:flex-start} .tools.l{align-items:flex-end}
+.tl{font-family:var(--f-mono);font-size:24px;font-weight:600;background:#1f2226;border:2px solid var(--papel-700);padding:14px 20px;border-radius:12px;white-space:nowrap}
+.tl small{display:block;font-family:var(--f-txt);font-size:17px;font-weight:500;color:var(--papel-300);margin-top:4px;white-space:normal}
+.tl.h{border-color:var(--rubi);background:var(--rubi)} .tl.h small{color:var(--papel-0)}
+.core{position:relative;height:480px;display:grid;place-items:center}
+.core svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.core .box{position:relative;background:var(--mostaza);color:var(--noche);border-radius:50%;width:340px;height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;padding:40px}
+.core .box .k{font-size:18px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja-700)}
+.core .box b{font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1.02}
+.core .box span{font-size:19px;line-height:1.3}
+.pulse{transform-origin:310px 240px;transform-box:view-box;opacity:0}
+.active .pulse{animation:pulse 6000ms cubic-bezier(.37,0,.2,1) infinite 1.6s}
+.active .pulse.b{animation-delay:2.1s}
+@keyframes pulse{0%{opacity:0;transform:scale(.55)}5%{opacity:.7}35%{opacity:0;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+.guard{margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.guard span{font-size:21px;font-weight:600;padding:10px 18px;border-radius:999px;background:#1f2226;color:var(--papel-300)}
+.guard b{color:var(--naranja);font-weight:700}
+
+/* backend */
+.be{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:56px}
+.col{border-radius:20px;padding:36px 40px;display:flex;flex-direction:column;gap:14px}
+.col h3{font-size:40px;font-weight:800;letter-spacing:-.02em;margin:0}
+.col ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+.col li{font-size:24px;line-height:1.35;padding-left:28px;position:relative}
+.col li::before{content:"";position:absolute;left:0;top:.6em;width:13px;height:4px;border-radius:2px;background:currentColor}
+.col.hoy{background:var(--papel-100)}
+.col.opt{background:var(--noche);color:var(--papel-50)} .col.opt li{color:var(--papel-300)} .col.opt li b{color:var(--papel-50)}
+.q{margin-top:30px;font-size:34px;font-weight:700;letter-spacing:-.01em}
+.q span{color:var(--naranja-700)}
+
+/* seguridad */
+.sec{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:50px}
+.sc{border-radius:18px;padding:28px 30px;display:flex;flex-direction:column;gap:12px;background:#1f2226;border:2px solid var(--papel-700)}
+.sc .k{font-size:18px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja)}
+.sc b{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.sc ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.sc li{font-size:21px;line-height:1.35;color:var(--papel-300);padding-left:22px;position:relative}
+.sc li::before{content:"·";position:absolute;left:4px;color:var(--naranja);font-weight:800}
+.scope{margin-top:30px;font-size:24px;color:var(--papel-300)}
+.scope b{color:var(--mostaza)}
+
+/* preguntas */
+.qs{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:56px}
+.qq{background:var(--papel-50);border-radius:20px;padding:34px 36px;display:flex;flex-direction:column;gap:12px}
+.qq .n{font-size:20px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja-700)}
+.qq b{font-size:46px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.qq span{font-size:23px;line-height:1.35;color:var(--papel-700)}
+
+/* navegación */
+.navbar{position:fixed;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom,0px));padding:0 max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px;background:#0b0e13;border-top:1px solid var(--papel-900);z-index:20}
+.navbar button{flex:none;min-width:44px;height:44px;border-radius:999px;border:1px solid var(--papel-700);background:transparent;color:var(--papel-50);font:600 16px var(--f-txt);cursor:pointer;padding:0 12px}
+.navbar button:hover{border-color:var(--naranja)}
+.navbar button:focus-visible,.range:focus-visible{outline:3px solid var(--naranja);outline-offset:2px}
+.navbar .count{flex:none;font:600 14px var(--f-txt);color:var(--papel-300);font-variant-numeric:tabular-nums;min-width:52px;text-align:center}
+.navbar .chap{flex:none;font:600 12px var(--f-txt);letter-spacing:.1em;text-transform:uppercase;color:var(--naranja);min-width:110px}
+.track{position:relative;flex:1;min-width:0;height:44px;display:flex;align-items:center}
+.ticks{position:absolute;left:9px;right:9px;top:50%;height:6px;transform:translateY(-50%);display:flex;gap:3px;pointer-events:none}
+.ticks i{flex:1;border-radius:3px;background:var(--papel-900)} .ticks i.on{background:var(--naranja)} .ticks i.ch{margin-left:6px}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;position:relative;cursor:pointer}
+.range::-webkit-slider-runnable-track{height:6px;background:transparent}
+.range::-moz-range-track{height:6px;background:transparent}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--papel-50);border:3px solid var(--naranja);margin-top:-6px}
+.range::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--papel-50);border:3px solid var(--naranja)}
+.tip{position:absolute;bottom:46px;transform:translateX(-50%);background:var(--papel-50);color:var(--noche);font:600 13px var(--f-txt);padding:6px 10px;border-radius:8px;white-space:nowrap;pointer-events:none}
+.notes{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));max-width:min(620px,calc(100vw - 32px));z-index:22;background:var(--papel-50);color:var(--noche);border-radius:14px;padding:18px 22px;font-size:16px;line-height:1.5;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.notes b{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja-700);margin-bottom:6px}
+@media (max-width:640px){.navbar .chap,.navbar .hide-sm{display:none}}
+
+@media (prefers-reduced-motion:reduce){
+  .in,.active .in{animation:none;opacity:1;transform:none}
+  .trazo path,.active .trazo path{animation:none;stroke-dashoffset:0}
+  .slide>.content{transform:none!important;transition:none}
+  .zl,.stone,.ring{opacity:1!important;animation:none!important;transform:none!important}
+  .wave,.pulse{animation:none!important;opacity:0!important}
+}
+</style>
+</head>
+<body>
+<div class="viewport" id="viewport">
+<div class="stage" id="stage">
+<div class="wm logo" id="logo" aria-label="Sintonía">sinton<span class="i">ı</span>a</div>
+
+<!-- 1 · Portada -->
+<section class="slide s-crema active" data-chap="Inicio" data-title="Portada" data-notes="Objetivo: que Monk entienda en 15 minutos cómo está montado el motor, y nos ayude a decidir el camino más rápido y seguro para el agente.">
+  <div class="content cover">
+    <div class="glyph" role="img" aria-label="Avatar de Sintonía">
+      <svg viewBox="-40 -40 280 280" aria-hidden="true">
+        <circle class="zl" cx="100" cy="100" r="100" fill="#ebc46a"/>
+        <circle class="ring r1" cx="100" cy="100" r="76" fill="none" stroke="#c23a00" stroke-width="3.5"/>
+        <circle class="ring r2" cx="100" cy="100" r="92" fill="none" stroke="#0e1116" stroke-width="9"/>
+        <circle class="wave" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3.5" vector-effect="non-scaling-stroke"/>
+        <circle class="wave loop" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3" vector-effect="non-scaling-stroke"/>
+        <text class="stone" x="100" y="134" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="92" fill="#0e1116">s</text>
+      </svg>
+    </div>
+    <div>
+      <p class="eyebrow in" style="--i:1">Pitch técnico · 30 oct 2026</p>
+      <h1 class="in" style="--i:2">Un agente que<br><span class="u">cierra planes.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+      <p class="lede in" style="--i:3">Cómo está montado hoy en n8n, qué queremos construir y dónde necesitamos tu criterio.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · Problema -->
+<section class="slide s-papel" data-chap="Idea" data-title="El problema" data-notes="Datos de la encuesta del giro, vista parcial (n = 76 al 25/10, la encuesta sigue abierta). Muestra por conveniencia: hallazgos emergentes.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">El problema</p>
+    <h2 class="in" style="--i:1">Al grupo no le falta gente. Le falta cerrar.</h2>
+    <div class="pair">
+      <div class="stat in" style="--i:2"><div class="v">96<small>%</small></div><p>dice que de 5 planes del chat se hacen 2 o menos</p></div>
+      <div class="stat in" style="--i:3"><div class="v o">89<small>%</small></div><p>dice que el plan muere al buscar fecha y hora</p></div>
+    </div>
+    <p class="src in" style="--i:4">Encuesta propia · vista parcial · n = 76 al 25 oct · emergente</p>
+  </div>
+</section>
+
+<!-- 3 · Idea -->
+<section class="slide s-noche" data-chap="Idea" data-title="La idea" data-notes="Sintonía vive dentro del grupo de WhatsApp que ya existe. Propone desde un inventario verificado, el grupo vota, Sintonía cierra y acompaña hasta la llegada. Precio fundador 10.000 COP al mes por organizador (hipótesis).">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">La solución</p>
+    <h2 class="in" style="--i:1">El quinto amigo del parche, dentro del chat.</h2>
+    <div class="idea">
+      <div class="st in" style="--i:2;background:var(--mostaza);color:var(--noche)"><span class="k">Propone</span><b>1–3 planes</b><span>Solo de un inventario verificado de Cali.</span></div>
+      <div class="st in" style="--i:3;background:var(--salvia);color:var(--noche)"><span class="k">Concilia</span><b>Votación</b><span>1, 2, 3 o «No puedo ese día». Recuerda una vez.</span></div>
+      <div class="st in" style="--i:4;background:var(--vitral);color:var(--papel-0)"><span class="k">Cierra</span><b>Plan listo</b><span>Día, hora y salida sugerida.</span></div>
+      <div class="st in" style="--i:5;background:var(--coral);color:var(--noche)"><span class="k">Acompaña</span><b>Llegada y pulso</b><span>Checkpoint, «ya en casa» y encuesta corta.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · Storyboard -->
+<section class="slide s-papel" data-chap="Idea" data-title="Storyboard" data-notes="El storyboard M2 es el guion de todo: el mago, el instrumento y los flujos de n8n siguen los mismos ocho cuadros. En cada cuadro va el flujo que lo opera.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Storyboard M2 → flujos</p>
+    <h2 class="in" style="--i:1;font-size:92px">Ocho cuadros, un flujo por momento.</h2>
+    <div class="sb">
+      <div class="frame in" style="--i:2"><figure><img src="storyboard-m2/vineta-01.jpg" alt="Amigos sin poder cuadrar agenda"></figure><div class="cap"><i>01</i>Intención<em>anuncio</em></div></div>
+      <div class="frame in" style="--i:3"><figure><img src="storyboard-m2/vineta-02.jpg" alt="La organizadora se inscribe"></figure><div class="cap"><i>02</i>Inscripción<em>landing</em></div></div>
+      <div class="frame in" style="--i:4"><figure><img src="storyboard-m2/vineta-03.jpg" alt="El grupo acepta"></figure><div class="cap"><i>03</i>Aceptan<em>W0</em></div></div>
+      <div class="frame in" style="--i:5"><figure><img src="storyboard-m2/vineta-04.jpg" alt="Curaduría de opciones"></figure><div class="cap"><i>04</i>Curaduría<em>W1</em></div></div>
+      <div class="frame in" style="--i:6"><figure><img src="storyboard-m2/vineta-05.jpg" alt="El grupo vota"></figure><div class="cap"><i>05</i>Votación<em>W2</em></div></div>
+      <div class="frame in" style="--i:7"><figure><img src="storyboard-m2/vineta-06.jpg" alt="Logística de salida"></figure><div class="cap"><i>06</i>Logística<em>W3</em></div></div>
+      <div class="frame in" style="--i:8"><figure><img src="storyboard-m2/vineta-07.jpg" alt="Llegada del grupo"></figure><div class="cap"><i>07</i>Llegada<em>W4</em></div></div>
+      <div class="frame in" style="--i:9"><figure><img src="storyboard-m2/vineta-08.jpg" alt="En casa, encuesta corta"></figure><div class="cap"><i>08</i>En casa<em>W5</em></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · Arquitectura -->
+<section class="slide s-noche" data-chap="Cómo funciona" data-title="Arquitectura" data-notes="Cinco piezas. El backend es la fuente de verdad: guarda grupos, planes, votos y eventos en Google Sheets. n8n orquesta y nunca guarda nombres. Gemini solo elige del inventario verificado.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Arquitectura actual</p>
+    <h2 class="in" style="--i:1">Cinco piezas, una fuente de verdad.</h2>
+    <div class="arch">
+      <div class="nd n1 in" style="--i:2"><span class="k">Canal</span><b>WhatsApp</b><span>Grupo del parche, número Business. Hoy una persona pega los mensajes.</span></div>
+      <div class="nd n2 in" style="--i:3"><span class="k">PoC</span><b>Evolution API</b><span>Puente al grupo en un VPS. Entra con la prueba de concepto.</span></div>
+      <div class="nd n3 in" style="--i:4"><span class="k">Motor</span><b>n8n Cloud</b><span>8 flujos: decide, programa y pide aprobación.</span></div>
+      <div class="nd n4 in" style="--i:5"><span class="k">Fuente de verdad</span><b>Apps Script + Sheets</b><span>Grupos, planes, votos, eventos, SEQ/SUS y minutos humanos.</span></div>
+      <div class="nd n5 in" style="--i:6"><span class="k">IA</span><b>Gemini 2.5 Flash</b><span>Propone 1–3 opciones del inventario y redacta con el tono.</span></div>
+    </div>
+    <div class="under in" style="--i:7"><div></div><div></div><div></div><div>+ landing, consola del mago y panel en GitHub Pages</div></div>
+    <div class="rule in" style="--i:8"><span class="tag">Sin nombres fuera del backend</span><span class="tag">Solo inventario verificado</span><span class="tag">Revisión humana hoy</span></div>
+  </div>
+</section>
+
+<!-- 6 · Workflows -->
+<section class="slide s-papel" data-chap="Cómo funciona" data-title="Workflows" data-notes="Seis flujos del recorrido y dos sub-flujos compartidos. Los disparadores son formularios de n8n (hoy los llena la persona) o un horario cada 15 minutos. Leer los votos del grupo queda para el agente. El estado entre flujos vive en una Data Table de n8n (e15_planes), pendiente de verificar.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Workflows en n8n</p>
+    <h2 class="in" style="--i:1">Seis flujos y dos piezas compartidas.</h2>
+    <div class="lane">
+      <div class="fl in" style="--i:2"><span class="w">W0</span><b>Ingreso</b><span>Saludo al crear el grupo</span><span class="trg">Formulario</span></div>
+      <div class="fl in" style="--i:3"><span class="w">W1</span><b>Opciones</b><span><code>proponer_ia</code> → revisión → <code>publicar_plan</code></span><span class="trg">Formulario</span></div>
+      <div class="fl in" style="--i:4"><span class="w">W2</span><b>Recordatorio</b><span>Un solo recordatorio a las 2 h si faltan votos</span><span class="trg">Cada 15 min</span></div>
+      <div class="fl in" style="--i:5"><span class="w">W3</span><b>Cierre y salida</b><span><code>cerrar_plan</code> → confirmado → salida 2 h antes</span><span class="trg">Formulario + espera</span></div>
+      <div class="fl in" style="--i:6"><span class="w">W4</span><b>Día del plan</b><span>Checkpoint y aviso si alguien no llega</span><span class="trg">Cada 15 min</span></div>
+      <div class="fl in" style="--i:7"><span class="w">W5</span><b>En casa</b><span>«Ya en casa» y pulso al día siguiente</span><span class="trg">Horario</span></div>
+    </div>
+    <div class="shared">
+      <div class="sh in" style="--i:8"><span class="w">SW · Avisar revisor</span><b>Aprobación</b><span>Aprobar, editar o rechazar cada texto</span></div>
+      <div class="sh in" style="--i:9"><span class="w">SW · Enviar mensaje</span><b>Salida</b><span>Hoy deja el texto listo para pegar. Con la PoC, envía por Evolution</span></div>
+      <div class="sh dt in" style="--i:10"><span class="w">Data Table · e15_planes</span><b>Estado entre flujos</b><span>plan, organizador, publicado, recordatorio, hora del encuentro</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · Estado -->
+<section class="slide s-papel" data-chap="Estado" data-title="Estado actual" data-notes="Revisado en la instancia el 30/10. Los flujos existen pero nunca se ejecutaron. El backend sí está probado: 63 de 63 comprobaciones con hoja simulada en el QA del 24/10, y desplegado (2.3.2).">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Estado · 30 oct</p>
+    <h2 class="in" style="--i:1">Montado, pero sin encender.</h2>
+    <div class="board">
+      <div class="kp ok in" style="--i:2"><div class="v">2.3.2</div><span>Backend desplegado. QA de punta a punta 63 de 63 con hoja simulada</span></div>
+      <div class="kp in" style="--i:3"><div class="v">8</div><span>Flujos creados en n8n, todos inactivos</span></div>
+      <div class="kp warn in" style="--i:4"><div class="v">0</div><span>Ejecuciones contra el backend real</span></div>
+      <div class="kp warn in" style="--i:5"><div class="v">≈ 8 nov</div><span>Vence la prueba gratuita de n8n</span></div>
+    </div>
+    <div class="todo">
+      <div class="td in" style="--i:6"><b>Respaldo</b>Ninguno de los 8 flujos está exportado al repo</div>
+      <div class="td in" style="--i:7"><b>Contrato</b>Nada se ha probado contra el backend real</div>
+      <div class="td in" style="--i:8"><b>Continuidad</b>La instancia vive en una cuenta personal</div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · Ruta -->
+<section class="slide s-crema" data-chap="Plan" data-title="Luz verde" data-notes="Néstor aprobó avanzar con Evolution como prueba de concepto, con número de prueba. Para salir al mercado la ruta es la API oficial de Meta. Esto reabre la decisión C12 solo para la PoC.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Tutoría · decisión</p>
+    <h2 class="in" style="--i:1">Prueba de concepto ya. Mercado con Meta.</h2>
+    <div class="path">
+      <div class="ph in" style="--i:2"><span class="tag">Hoy</span><h3>Asistido</h3><p>n8n redacta y una persona aprueba y pega en el grupo.</p></div>
+      <div class="ph go in" style="--i:3"><span class="tag">PoC · aprobada</span><h3>Evolution API en VPS</h3><div class="cost">9,99 USD · 1 mes</div><p>Agente que opera el grupo de punta a punta con un número de prueba.</p></div>
+      <div class="ph in" style="--i:4"><span class="tag">Salida a mercado</span><h3>API oficial de Meta</h3><p>Negocio verificado, número dedicado y grupos por API.</p></div>
+    </div>
+    <div class="ok-line in" style="--i:5"><b>Condición</b>La PoC no es producto: para usuarios reales, solo la ruta oficial.</div>
+  </div>
+</section>
+
+<!-- 9 · Agente -->
+<section class="slide s-noche" data-chap="Plan" data-title="El agente" data-notes="Propuesta: un AI Agent de n8n que recibe cada mensaje de Evolution y usa los flujos existentes como herramientas. Las reglas no negociables las sigue haciendo cumplir el backend, no el prompt. Queremos tu opinión sobre si el agente decide todo o solo interpreta.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Lo que queremos construir</p>
+    <h2 class="in" style="--i:1;font-size:92px">Un agente que usa los flujos como herramientas.</h2>
+    <div class="agent">
+      <div class="tools l">
+        <span class="tl in" style="--i:2">resolver<small>número → pid</small></span>
+        <span class="tl in" style="--i:3">votar · evento<small>votos y estados</small></span>
+        <span class="tl in" style="--i:4">proponer · publicar<small>W1</small></span>
+        <span class="tl in" style="--i:5">cerrar_plan<small>W3</small></span>
+      </div>
+      <div class="core in" style="--i:2">
+        <svg viewBox="0 0 620 480" aria-hidden="true">
+          <circle class="pulse" cx="310" cy="240" r="235" fill="none" stroke="#ff4f00" stroke-width="3"/>
+          <circle class="pulse b" cx="310" cy="240" r="235" fill="none" stroke="#2c6a86" stroke-width="3"/>
+        </svg>
+        <div class="box"><span class="k">n8n · AI Agent</span><b>Orquestador</b><span>Escucha el grupo por Evolution y decide qué flujo llamar</span></div>
+      </div>
+      <div class="tools r">
+        <span class="tl in" style="--i:6">redactar_ia<small>tono Sintonía</small></span>
+        <span class="tl in" style="--i:7">programar<small>W2 · W4 · W5</small></span>
+        <span class="tl in" style="--i:8">enviar<small>Evolution → grupo</small></span>
+        <span class="tl h in" style="--i:9">escalar<small>a una persona del equipo</small></span>
+      </div>
+    </div>
+    <div class="guard in" style="--i:10"><span><b>Backend</b> valida cada acción</span><span><b>Inventario</b> verificado, nada inventado</span><span><b>Sin nombres</b> en el agente</span><span><b>Kill switch</b> «Pasar al mago»</span></div>
+  </div>
+</section>
+
+<!-- 10 · Backend -->
+<section class="slide s-papel" data-chap="Plan" data-title="Backend" data-notes="El backend funciona y está probado, pero se diseñó para una persona con consola. La pregunta para Monk: cuál es el camino más rápido para que aguante a un agente sin rehacer todo.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Backend</p>
+    <h2 class="in" style="--i:1">Funciona. ¿Aguanta a un agente?</h2>
+    <div class="be">
+      <div class="col hoy in" style="--i:2"><h3>Hoy</h3>
+        <ul>
+          <li>Web app de Apps Script con Google Sheets como base</li>
+          <li>Un solo <code>doPost</code> con acciones y bloqueo de script</li>
+          <li><code>MOTOR_KEY</code> limitada a 6 acciones; <code>ADMIN_KEY</code> para el equipo</li>
+          <li>Vistas <code>resolver</code> y <code>plan</code> sin datos de contacto</li>
+          <li>Cada llamada pasa por una redirección de Google</li>
+        </ul></div>
+      <div class="col opt in" style="--i:3"><h3>Opciones que vemos</h3>
+        <ul>
+          <li><b>A · Mantener</b> Apps Script como fuente de verdad y llamarlo desde el agente</li>
+          <li><b>B · Mover el estado vivo</b> a n8n (Data Tables) y sincronizar a Sheets</li>
+          <li><b>C · Migrar</b> a una base gestionada (p. ej. Postgres) y dejar Sheets como reporte</li>
+        </ul></div>
+    </div>
+    <p class="q in" style="--i:4">¿Cuál es <span>la más rápida</span> que no rompa lo que ya funciona?</p>
+  </div>
+</section>
+
+<!-- 11 · Seguridad -->
+<section class="slide s-noche" data-chap="Plan" data-title="Seguridad" data-notes="Lista mínima que proponemos para la PoC, sin inflar el alcance. Queremos que Monk la recorte o la complete: qué es imprescindible y qué puede esperar a la ruta oficial.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Seguridad · mínimo viable</p>
+    <h2 class="in" style="--i:1">Lo justo para una PoC seria.</h2>
+    <div class="sec">
+      <div class="sc in" style="--i:2"><span class="k">VPS</span><b>Servidor cerrado</b><ul><li>Solo 443 y SSH con llave</li><li>TLS con proxy inverso</li><li>Actualizaciones automáticas</li></ul></div>
+      <div class="sc in" style="--i:3"><span class="k">Evolution</span><b>Puente blindado</b><ul><li>API key fuerte y webhook con secreto</li><li>Número de prueba aparte</li><li>Solo grupos en lista permitida</li></ul></div>
+      <div class="sc in" style="--i:4"><span class="k">Claves</span><b>Secretos en su sitio</b><ul><li>Credenciales de n8n y Propiedades del script</li><li>Nada en el repo ni en el chat</li><li>Rotar al cerrar la PoC</li></ul></div>
+      <div class="sc in" style="--i:5"><span class="k">Agente</span><b>Inyección de prompts</b><ul><li>Solo herramientas, sin texto libre al backend</li><li>Backend valida rol, plan y estado</li><li>Escala lo sensible</li></ul></div>
+      <div class="sc in" style="--i:6"><span class="k">Datos</span><b>Minimización</b><ul><li>Sin guardar ejecuciones ni texto completo</li><li>Sin nombres fuera del backend</li><li>Aviso de privacidad v2</li></ul></div>
+      <div class="sc in" style="--i:7"><span class="k">Operación</span><b>Freno de mano</b><ul><li>Límite de mensajes por grupo</li><li>«Pasar al mago» si algo falla</li><li>Alerta si el motor se cae</li></ul></div>
+    </div>
+    <p class="scope in" style="--i:8"><b>Propuesta del equipo.</b> Queremos tu ayuda para recortarla a lo imprescindible.</p>
+  </div>
+</section>
+
+<!-- 12 · Preguntas -->
+<section class="slide s-crema" data-chap="Cierre" data-title="Preguntas" data-notes="Dos preguntas para salir de la reunión con decisiones. Seguridad y hosting ya están acordados.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Para conversar</p>
+    <h2 class="in" style="--i:1">Dos decisiones contigo.</h2>
+    <div class="qs">
+      <div class="qq in" style="--i:2"><span class="n">Agente</span><b>¿Qué tan realista es que el agente lo orqueste todo?</b><span>Agente con herramientas de punta a punta, o flujos fijos con IA solo para leer los mensajes.</span></div>
+      <div class="qq in" style="--i:3"><span class="n">Backend</span><b>¿Qué camino tomamos con el backend?</b><span>Mantener Apps Script, mover el estado vivo a n8n o migrar a una base gestionada.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · Cierre -->
+<section class="slide s-noche" data-chap="Cierre" data-title="Cierre" data-notes="Siguiente paso inmediato: exportar los 8 flujos y correr el ensayo en modo prueba.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Siguiente paso</p>
+    <h1 class="in" style="--i:1">Menos vueltas,<br><span class="u">más plan.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#ff4f00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+    <p class="lede in" style="--i:2">Exportar los flujos, encender el ensayo en modo prueba y conectar Evolution.</p>
+  </div>
+</section>
+
+</div>
+</div>
+
+<nav class="navbar" aria-label="Navegación de la presentación">
+  <button id="prev" type="button" aria-label="Diapositiva anterior">←</button>
+  <span class="chap" id="chap">Inicio</span>
+  <div class="track">
+    <div class="ticks" id="ticks" aria-hidden="true"></div>
+    <input class="range" id="nav" type="range" min="1" max="13" step="1" value="1" aria-label="Ir a diapositiva">
+    <span class="tip" id="tip" hidden></span>
+  </div>
+  <span class="count" id="count">1 / 13</span>
+  <button id="next" type="button" aria-label="Diapositiva siguiente">→</button>
+  <button id="notesBtn" class="hide-sm" type="button" aria-label="Notas del orador (N)">N</button>
+  <button id="fsBtn" class="hide-sm" type="button" aria-label="Pantalla completa (F)">⤢</button>
+</nav>
+<div class="notes" id="notes" hidden><b>Notas del orador</b><span id="notesText"></span></div>
+
+<script>
+(function(){
+  const stage = document.getElementById('stage'), vp = document.getElementById('viewport');
+  function fit(){ const s = Math.min(vp.clientWidth/1920, vp.clientHeight/1080); stage.style.transform = 'translate(-50%,-50%) scale('+s+')'; }
+  window.addEventListener('resize', fit); fit();
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(vp);
+
+  const slides = [...document.querySelectorAll('.slide')], N = slides.length;
+  const range = document.getElementById('nav'), ticks = document.getElementById('ticks'), tip = document.getElementById('tip');
+  const count = document.getElementById('count'), chap = document.getElementById('chap'), logo = document.getElementById('logo');
+  const notes = document.getElementById('notes'), notesText = document.getElementById('notesText');
+  range.max = N;
+  slides.forEach((s,i) => { const t = document.createElement('i'); if (i>0 && s.dataset.chap !== slides[i-1].dataset.chap) t.className='ch'; ticks.appendChild(t); });
+  const tickEls = [...ticks.children];
+  let cur = 0;
+  function go(n){ n = Math.max(0, Math.min(N-1, n)); if (n !== cur){ slides[cur].classList.remove('active'); cur = n; slides[cur].classList.add('active'); } update(); }
+  function update(){
+    const sc = slides[cur].classList;
+    logo.classList.toggle('on-dark', sc.contains('s-noche'));
+    logo.classList.toggle('on-vitral', sc.contains('s-vitral'));
+    range.value = cur+1; count.textContent = (cur+1)+' / '+N; chap.textContent = slides[cur].dataset.chap || '';
+    range.setAttribute('aria-valuetext', (cur+1)+' de '+N+': '+(slides[cur].dataset.title||''));
+    tickEls.forEach((t,i) => t.classList.toggle('on', i <= cur));
+    notesText.textContent = slides[cur].dataset.notes || '';
+    try { history.replaceState(null,'','#s'+(cur+1)); } catch(e) {}
+  }
+  const m = /^#s(\d+)$/.exec(location.hash||'');
+  if (m){ slides[0].classList.remove('active'); cur = Math.min(N-1, Math.max(0,(+m[1]||1)-1)); slides[cur].classList.add('active'); }
+  update();
+  function showTip(){ const v = +range.value; tip.textContent = v+' · '+(slides[v-1].dataset.title||''); tip.style.left = 'calc(9px + '+((v-1)/(N-1))+' * (100% - 18px))'; tip.hidden = false; }
+  range.addEventListener('input', () => { showTip(); go(+range.value-1); });
+  range.addEventListener('pointerdown', showTip);
+  ['pointerup','pointerleave','blur','change'].forEach(ev => range.addEventListener(ev, () => { tip.hidden = true; }));
+  function toggleFs(){ try { if (document.fullscreenElement) document.exitFullscreen().catch(()=>{}); else document.documentElement.requestFullscreen().catch(()=>{}); } catch(e) {} }
+  document.getElementById('next').addEventListener('click', () => go(cur+1));
+  document.getElementById('prev').addEventListener('click', () => go(cur-1));
+  document.getElementById('notesBtn').addEventListener('click', () => { notes.hidden = !notes.hidden; });
+  document.getElementById('fsBtn').addEventListener('click', toggleFs);
+  vp.addEventListener('click', e => { const r = vp.getBoundingClientRect(); go((e.clientX - r.left)/r.width < .25 ? cur-1 : cur+1); });
+  document.addEventListener('keydown', e => {
+    if (e.target === range && (e.key==='ArrowLeft' || e.key==='ArrowRight')) return;
+    if (['ArrowRight','PageDown',' '].includes(e.key)){ if (e.target.tagName==='BUTTON' && e.key===' ') return; e.preventDefault(); go(cur+1); }
+    else if (['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); go(cur-1); }
+    else if (e.key==='Home') go(0); else if (e.key==='End') go(N-1);
+    else if (e.key==='n' || e.key==='N') notes.hidden = !notes.hidden;
+    else if (e.key==='f' || e.key==='F') toggleFs();
+  });
+  let sx = null;
+  vp.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive:true});
+  vp.addEventListener('touchend', e => { if (sx===null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) go(cur + (dx < 0 ? 1 : -1)); sx = null; });
+})();
+</script>
+
+</body>
+</html>
