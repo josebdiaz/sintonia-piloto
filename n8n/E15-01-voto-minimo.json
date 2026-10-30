@@ -76,7 +76,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Interpreta el texto pegado desde el grupo. No guarda ni devuelve el texto original.\nconst f = $input.first().json;\nconst norm = String(f.texto || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\\s]/g, ' ').replace(/\\s+/g, ' ').trim();\n\nconst SENSIBLE = /\\b(emergencia|urgente|accidente|hospital|ambulancia|policia|peligro|socorro|ayuda|enfermo|enferma|dolor|me siento mal|salud|ubicacion|donde estoy)\\b/;\nlet r;\nif (!norm) r = { accion: 'escalar', motivo: 'vacio' };\nelse if (SENSIBLE.test(norm)) r = { accion: 'escalar', motivo: 'sensible' };\nelse if (/^humano$/.test(norm)) r = { accion: 'escalar', motivo: 'pidio_humano' };\nelse {\n  let m;\n  if ((m = norm.match(/^(?:opcion |la |el |voto |voto por la |voy con la )?([123])$/))) r = { accion: 'voto', opcion: Number(m[1]) - 1, veto: false, etiqueta: 'opción ' + m[1] };\n  else if (/^todas$/.test(norm)) r = { accion: 'voto', opcion: -1, veto: false, etiqueta: 'TODAS' };\n  else if (/^ninguna$/.test(norm)) r = { accion: 'voto', opcion: -1, veto: true, etiqueta: 'NINGUNA (veto)' };\n  else if (/^me apunto$/.test(norm)) r = { accion: 'evento', tipo: 'me_apunto', etiqueta: 'ME APUNTO' };\n  else if (/^no puedo$/.test(norm)) r = { accion: 'evento', tipo: 'no_puedo', etiqueta: 'NO PUEDO' };\n  else if (/^llegue$/.test(norm)) r = { accion: 'evento', tipo: 'checkpoint_llegada', etiqueta: 'LLEGUÉ' };\n  else if (/^(ya en casa|llegue a casa)$/.test(norm)) r = { accion: 'evento', tipo: 'llego_casa', etiqueta: 'YA EN CASA' };\n  else if (/^salir$/.test(norm)) r = { accion: 'evento', tipo: 'salir', etiqueta: 'SALIR', aviso_equipo: true };\n  else r = { accion: 'escalar', motivo: 'no_entendido' };\n}\nreturn [{ json: { grupo_id: String(f.grupo_id).trim(), plan_id: String(f.plan_id).trim(), wa: String(f.wa).trim(), ...r } }];\n"
+        "jsCode": "// Interpreta el texto pegado desde el grupo. No guarda ni devuelve el texto original.\nconst f = Object.assign({}, $input.first().json, $('Mensaje del grupo').first().json);\nconst rawTexto = f.texto ?? f['Texto del mensaje'] ?? '';\nconst rawWa = f.wa ?? f['Número de WhatsApp de quien escribió (con +57)'] ?? '';\nconst rawGrupo = f.grupo_id ?? f['grupo_id'] ?? '';\nconst rawPlan = f.plan_id ?? f['plan_id'] ?? '';\nconst norm = String(rawTexto).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\\s]/g, ' ').replace(/\\s+/g, ' ').trim();\n\nconst SENSIBLE = /\\b(emergencia|urgente|accidente|hospital|ambulancia|policia|peligro|socorro|ayuda|enfermo|enferma|dolor|me siento mal|salud|ubicacion|donde estoy)\\b/;\nlet r;\nif (!norm) r = { accion: 'escalar', motivo: 'vacio' };\nelse if (SENSIBLE.test(norm)) r = { accion: 'escalar', motivo: 'sensible' };\nelse if (/^humano$/.test(norm)) r = { accion: 'escalar', motivo: 'pidio_humano' };\nelse {\n  let m;\n  if ((m = norm.match(/^(?:opcion |la |el |voto |voto por la |voy con la )?([123])$/))) r = { accion: 'voto', opcion: Number(m[1]) - 1, veto: false, etiqueta: 'opción ' + m[1] };\n  else if (/^todas$/.test(norm)) r = { accion: 'voto', opcion: -1, veto: false, etiqueta: 'TODAS' };\n  else if (/^ninguna$/.test(norm)) r = { accion: 'voto', opcion: -1, veto: true, etiqueta: 'NINGUNA (veto)' };\n  else if (/^me apunto$/.test(norm)) r = { accion: 'evento', tipo: 'me_apunto', etiqueta: 'ME APUNTO' };\n  else if (/^no puedo$/.test(norm)) r = { accion: 'evento', tipo: 'no_puedo', etiqueta: 'NO PUEDO' };\n  else if (/^llegue$/.test(norm)) r = { accion: 'evento', tipo: 'checkpoint_llegada', etiqueta: 'LLEGUÉ' };\n  else if (/^(ya en casa|llegue a casa)$/.test(norm)) r = { accion: 'evento', tipo: 'llego_casa', etiqueta: 'YA EN CASA' };\n  else if (/^salir$/.test(norm)) r = { accion: 'evento', tipo: 'salir', etiqueta: 'SALIR', aviso_equipo: true };\n  else r = { accion: 'escalar', motivo: 'no_entendido' };\n}\nreturn [{ json: { grupo_id: String(rawGrupo).trim(), plan_id: String(rawPlan).trim(), wa: String(rawWa).trim(), ...r } }];\n"
       },
       "id": "518822ed-b30b-48fb-87da-6bbe2cc9b03e",
       "name": "Interpretar texto",
@@ -295,8 +295,30 @@
         "authentication": "genericCredentialType",
         "genericAuthType": "httpCustomAuth",
         "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ action: 'evento', plan_id: $('Interpretar texto').item.json.plan_id, pid: $('Resolver pid').item.json.pid, tipo: $('Interpretar texto').item.json.tipo, nota: '' }) }}",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "evento"
+            },
+            {
+              "name": "plan_id",
+              "value": "={{ $('Interpretar texto').item.json.plan_id }}"
+            },
+            {
+              "name": "pid",
+              "value": "={{ $('Resolver pid').item.json.pid }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $('Interpretar texto').item.json.tipo }}"
+            },
+            {
+              "name": "nota",
+              "value": ""
+            }
+          ]
+        },
         "options": {
           "redirect": {
             "redirect": {

@@ -5,6 +5,13 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-10-30 · E1.5 · Flujos en n8n revisados
+- **En la instancia de n8n:** 9 flujos (E1.5-01, `SW · Avisar revisor`, `SW · Enviar mensaje` y W0–W5). Todos inactivos y sin ejecuciones de producción. Los W0–W5 aún no están exportados al repo.
+- **Bloqueantes encontrados:** los sub-flujos envían por Evolution API sin aprobación humana (contradice la automatización asistida), `view=plan` sin `pid` en W2–W5, plantillas sin llenar en W1–W5, texto equivocado en W0, y W1 envía `/opciones` antes de `publicar_plan`.
+- **Nuevo:** `n8n/GUIA-CONTINUACION.md` (arreglos y 12 pruebas), `n8n/PROMPT-n8n-builder.md` (recorrido del storyboard M2 para el constructor de IA de n8n) y `n8n/CHANGELOG.md`.
+- **Actualizado:** `n8n/E15-01-voto-minimo.json` (lee los campos del formulario por etiqueta; cuerpo de `evento` por parámetros) y `n8n/README.md`.
+- Sin cambios en el frontend (2.2.2) ni en el backend (2.3.2). Estado detallado en `.cowork/estado-e15-n8n.md` (local).
+
 ### 2026-10-24 · E1.5 · Canal y primer flujo en n8n
 - **Canal de E1.5: automatización asistida.** n8n interpreta y redacta; una persona revisa y copia y pega en el grupo, desde el mismo número y los mismos grupos que E1. La API de grupos de Meta queda como fase posterior (exige cuenta oficial verificada y un número en Cloud API; no aplica al número de la app).
 - **Nuevo:** `n8n/` con `E15-01-voto-minimo.json` (formulario → resolver → votar o evento; escala a una persona ante cualquier duda), `README.md` y `GUIA-IMPLEMENTACION.md`. Sin credenciales. Aún sin probar contra el backend desplegado.

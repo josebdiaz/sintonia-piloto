@@ -4,7 +4,9 @@ Flujos del motor de E1.5. Canal: **opción C** (una persona copia y pega en el g
 
 **Nunca se exportan credenciales a esta carpeta.** El JSON solo referencia credenciales por nombre.
 
-Para ponerlo a andar paso a paso, empieza por [`GUIA-IMPLEMENTACION.md`](GUIA-IMPLEMENTACION.md).
+Historial: [`CHANGELOG.md`](CHANGELOG.md). Arreglos y pruebas pendientes de los flujos W0–W5: [`GUIA-CONTINUACION.md`](GUIA-CONTINUACION.md). Estado y riesgos: `.cowork/estado-e15-n8n.md` (local).
+
+Para ponerlo a andar paso a paso, empieza por [`GUIA-IMPLEMENTACION.md`](GUIA-IMPLEMENTACION.md). Para generar el recorrido completo del storyboard con el constructor de IA de n8n, usa [`PROMPT-n8n-builder.md`](PROMPT-n8n-builder.md).
 
 ## E15-01 · Voto mínimo
 
