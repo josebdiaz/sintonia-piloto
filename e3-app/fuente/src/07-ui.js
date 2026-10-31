@@ -126,7 +126,7 @@ const UI = {
     if (!p) { this.put('head', P.head({ grupo: true, titulo: 'Parche no encontrado', sub: '' })); this.thread([{ k: 'nf', h: P.ai('No encuentro este parche. Puede que lo hayan borrado.', horaMsg(Date.now()), 'estatica') }]); this.compositor([], '', true); return; }
     const n = G.activos.length, N = G.N, yo = G.yo;
     const vr = G.votosRonda();
-    const station = { reclutando: { state: 'searching', text: `Buscando señal · ${n}/${N}` }, sinquorum: { state: 'searching', text: `Sin quórum · ${n}/${N}` }, votacion: { state: 'live', text: `Votación abierta · ${vr.length}/${n}` }, fijado: p.plan ? { state: 'fixed', text: `Plan fijado · ${fechaCorta(p.plan.fecha)}, ${hora12(p.plan.h, p.plan.m)}` } : null, encurso: { state: 'fixed', text: 'Plan en curso · hoy' } }[p.stage] || null;
+    const station = { reclutando: { state: 'searching', text: `Buscando señal · ${n}/${N}` }, sinquorum: { state: 'searching', text: `Grupo incompleto · ${n}/${N}` }, votacion: { state: 'live', text: `Votación abierta · ${vr.length}/${n}` }, fijado: p.plan ? { state: 'fixed', text: `Plan fijado · ${fechaCorta(p.plan.fecha)}, ${hora12(p.plan.h, p.plan.m)}` } : null, encurso: { state: 'fixed', text: 'Plan en curso · hoy' } }[p.stage] || null;
     const typing = G.pendIA || p.stage === 'resolviendo' ? 'Sintonía' : (Live.escribiendo(Me.uid)[0] || null);
     const offline = Store.falla.offline || !navigator.onLine;
     this.put('head', P.head({ grupo: true, titulo: p.nombre, sub: `${n} persona${n === 1 ? '' : 's'} · Sintonía (IA)`, station: offline ? { state: 'searching', text: 'Sin señal · reintentando' } : station, escribiendo: typing }));
@@ -172,7 +172,7 @@ const UI = {
     const err = G.errorEnvio ? [['Reintentar', true, 'reintentar']] : [];
     const org = p.org === Me.uid;
     const by = {
-      reclutando: org ? [['Copiar enlace', true], '¿Quién falta?'] : ['¿Quién falta?'],
+      reclutando: org ? [['Copiar enlace', true], '¿Cuántos van?'] : ['¿Cuántos van?'],
       sinquorum: [['Dar 24 h más', true], 'Seguir con los que estamos', 'Cancelar el plan'],
       votacion: (() => { const mv = G.miVoto; if (mv && mv.opcion === 'ninguna' && !mv.motivo) return ['Muy lejos', 'Muy caro', 'No me llama']; return mv ? ['¿Y si llueve?', 'Ver mapa', 'Cambiar mi voto'] : ['¿Y si llueve?', 'Ver mapa']; })(),
       resolviendo: [],

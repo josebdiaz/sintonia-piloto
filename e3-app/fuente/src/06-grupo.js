@@ -1,7 +1,7 @@
 /* ── 06 · Chat del grupo: datos compartidos y lógica de Sintonía (idempotente) ── */
 let ARTIFACT_URL = '';
 const linkParche = pid => ARTIFACT_URL ? `${ARTIFACT_URL}#p-${pid}` : `Código ${pid}`;
-const ETAPA_TXT = { reclutando: 'Buscando señal', sinquorum: 'Sin quórum', votacion: 'Votación abierta', resolviendo: 'Resolviendo', fijado: 'Plan fijado', encurso: 'Plan en curso', sobremesa: 'Sobremesa', cancelado: 'Cancelado' };
+const ETAPA_TXT = { reclutando: 'Buscando señal', sinquorum: 'Grupo incompleto', votacion: 'Votación abierta', resolviendo: 'Resolviendo', fijado: 'Plan fijado', encurso: 'Plan en curso', sobremesa: 'Sobremesa', cancelado: 'Cancelado' };
 
 const Grupo = {
   pid: null, p: null, miembros: [], mensajes: [], votos: [], unsubs: [], cargado: { p: false, mi: false, me: false, vo: false },
@@ -24,7 +24,7 @@ const Grupo = {
     if (!Yo.doc.parches.includes(pid)) { Yo.doc.parches.push(pid); await Yo.guardar(); }
     const p = await Store.get(this.base(pid)); const ms = await Store.list(`${this.base(pid)}/miembros`);
     const n = ms.filter(m => m.consent && !m.salio).length, N = (p && p.quorum) || 4;
-    await this.msgAI(pid, 'join-' + Me.uid, `¡${rol === 'organiza' ? 'Arrancamos' : 'Ya está dentro ' + (yo.muestra ? yo.nombre : 'alguien nuevo')}! ${n >= N ? 'Ya están todos.' : `Falta${N - n > 1 ? 'n' : ''} ${N - n} persona${N - n > 1 ? 's' : ''} para que les proponga planes.`}`, 'quinto', { type: 'quorum', n, N });
+    await this.msgAI(pid, 'join-' + Me.uid, `¡${rol === 'organiza' ? 'Arrancamos' : 'Ya está dentro ' + (yo.muestra ? yo.nombre : 'alguien nuevo')}! ${n >= N ? 'Ya están todos.' : `Van ${n} de ${N}; cuando estén todos, les propongo planes.`}`, 'quinto', { type: 'quorum', n, N });
   },
   async msgAI(pid, id, t, voz, att = null, solo = null) {
     const m = { id, a: 'ai', t, voz, at: Date.now() }; if (att) m.att = att; if (solo) m.solo = solo;
@@ -67,10 +67,10 @@ const Grupo = {
         const restr = [...new Set(this.activos.flatMap(m => m.restr || []))];
         const ops = elegirOpciones(p.antojos, restr, p.franja, 1);
         await Store.update(b, { stage: 'votacion', ronda: 1, opciones: ops, votoAbre: now });
-        await this.msgAI(pid, 'opciones-r1', 'Tengo 3 opciones cerca, cortas y posibles. Compárenlas y voten:', 'mago', { type: 'vote', ronda: 1, opciones: ops });
+        await this.msgAI(pid, 'opciones-r1', 'LES TRAIGO OPCIONES · Tres planes cerca, cortos y posibles. Compárenlas y voten:', 'mago', { type: 'vote', ronda: 1, opciones: ops });
         return;
       }
-      if (p.stage === 'reclutando' && p.plazo && now > p.plazo) { await Store.update(b, { stage: 'sinquorum' }); await this.msgAI(pid, 'sinquorum-' + p.plazo, 'No se completó el quórum a tiempo. Puede pasar. ¿Qué hacemos?', 'estatica', { type: 'quorum', n, N }); return; }
+      if (p.stage === 'reclutando' && p.plazo && now > p.plazo) { await Store.update(b, { stage: 'sinquorum' }); await this.msgAI(pid, 'sinquorum-' + p.plazo, 'El grupo no se completó a tiempo. Puede pasar. ¿Qué hacemos?', 'estatica', { type: 'quorum', n, N }); return; }
       if (p.stage === 'votacion') {
         const vr = this.votosRonda();
         if (vr.some(v => v.opcion === 'ninguna') && !this.mensajes.some(m => m._id === 'veto-r' + p.ronda)) await this.msgAI(pid, 'veto-r' + p.ronda, 'Alguien prefiere otra opción. Si la mayoría tampoco quiere ninguna, les propongo otras.', 'resonador');
@@ -92,8 +92,24 @@ const Grupo = {
         const o = (p.opciones || [])[k]; if (!o) return;
         const plan = { ...o, fecha: proximoDomingo(o.h, o.m), votos: cuenta[k], de: vr.length };
         await Store.update(b, { stage: 'fijado', plan, fijadoAt: now });
-        await this.msgAI(pid, 'plan', `¡Plan fijado! Ganó «${o.titulo}» con ${cuenta[k]} de ${vr.length} votos. Les aviso un día antes y una hora antes.`, 'antena', { type: 'plan', plan, n, N });
+        await this.msgAI(pid, 'plan', `¡QUEDÓ! · Ganó «${o.titulo}» con ${cuenta[k]} de ${vr.length} votos. ¿Van? Toquen Me apunto o No puedo antes del ${fechaCorta(plan.fecha - 24 * 3600e3)}.`, 'antena', { type: 'plan', plan, n, N });
         return;
+      }
+      /* UX Writing v1 (R16): una sola regla de cierre. En la fecha límite (24 h antes) o cuando ya respondieron todos:
+         2 o más «Me apunto» → PLAN LISTO; si no → QUEDA PARA OTRA. El silencio no bloquea. */
+      if (p.stage === 'fijado' && p.plan && !p.cierre) {
+        const lim = p.plan.fecha - 24 * 3600e3, act = this.activos;
+        const si = act.filter(m => m.asistencia === 'si').length, resp = act.filter(m => m.asistencia === 'si' || m.asistencia === 'no').length;
+        if (now >= lim || (act.length > 0 && resp >= act.length)) {
+          if (si >= 2) {
+            await Store.update(b, { cierre: 'listo', cierreFinAt: now });
+            await this.msgAI(pid, 'plan-listo', `PLAN LISTO · ${fechaCorta(p.plan.fecha)}, ${hora12(p.plan.h, p.plan.m)} en ${p.plan.zona}. Van ${si}. A quienes no pueden: nos vemos en la próxima. ¡Sintonizamos!`, 'antena');   // el sticker EN SINTONÍA se agrega cuando exista el archivo
+          } else {
+            await Store.update(b, { stage: 'cancelado', cierre: 'queda' });
+            await this.msgAI(pid, 'queda', 'QUEDA PARA OTRA · Esta vez no se armó. Cuando quieran, armamos otro.', 'estatica');
+          }
+          return;
+        }
       }
       if (p.stage === 'sobremesa' && !Yo.doc.sobremesa[pid] && S1.st.flow !== 'D') {
         await S1.iniciar('D', 'D1', { pid, parche: { titulo: p.plan ? p.plan.titulo : p.nombre } });
@@ -139,7 +155,7 @@ const Grupo = {
     const ai = (t, voz = 'quinto', solo = null) => this.msgAI(pid, 'r' + Date.now().toString(36) + rid(2), t, voz, null, solo);
     switch (v) {
       case 'Copiar enlace': UI.copiar(linkParche(pid)); return;
-      case '¿Quién falta?': await this.enviar(v); return ai(n >= N ? 'Ya están todos. ¡Parche en sintonía!' : `Van ${n} de ${N}. Falta${N - n > 1 ? 'n' : ''} ${N - n}. Compartan el código ${pid}.`);
+      case '¿Cuántos van?': await this.enviar(v); return ai(n >= N ? 'Ya está el grupo completo.' : `Van ${n} de ${N}. Compartan el código ${pid}.`);
       case 'Cambiar mi voto': return this.cambiarVoto();
       case 'Muy lejos': case 'Muy caro': case 'No me llama':
         await Store.update(`${this.base(pid)}/votos/${Me.uid}`, { motivo: v }).catch(() => {});
@@ -154,7 +170,7 @@ const Grupo = {
       case 'Otra idea': await this.enviar('¿Y si armamos otra?'); return ai('Cuando quieran, armo otro plan con este mismo grupo.', 'gramola');
       case 'Dar 24 h más': await Store.update(this.base(pid), { stage: 'reclutando', plazo: Date.now() + 24 * 3600e3 }); return ai('Listo, 24 horas más para que se unan.', 'estatica');
       case 'Seguir con los que estamos': if (n < 2) { await Store.update(this.base(pid), { stage: 'reclutando', plazo: Date.now() + 24 * 3600e3 }); return ai('Para un plan hacen falta al menos 2 personas. Les doy 24 horas más.', 'estatica'); } await Store.update(this.base(pid), { stage: 'reclutando', quorum: n, plazo: Date.now() + 24 * 3600e3 }); return ai(`Seguimos con ${n}. Ya les propongo planes.`, 'estatica');
-      case 'Cancelar el plan': await Store.update(this.base(pid), { stage: 'cancelado' }); return ai('Plan cancelado. Cuando quieran, lo intentamos de nuevo.', 'estatica');
+      case 'Cancelar el plan': await Store.update(this.base(pid), { stage: 'cancelado' }); return ai('QUEDA PARA OTRA · Cuando quieran, armamos otro.', 'estatica');
       case 'Armar otro plan': UI.ir('sintonia'); return S1.iniciar('organiza', 'A1');
       case '¿Y si llueve?': case 'Ver mapa': default: return this.libre(v, true);
     }

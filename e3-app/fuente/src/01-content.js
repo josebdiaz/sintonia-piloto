@@ -1,8 +1,10 @@
 /* ── 01 · Contenido: voces, guion y catálogo de planes de ejemplo ─────────── */
+/* UX Writing v1 (R16): una sola voz. Todas las claves apuntan al mismo avatar mientras llega el del glifo S;
+   cuando exista, basta con cambiar el id de SINTONIA_AV (p. ej. 'sintonia-s'). */
+const SINTONIA_AV = ['el-quinto', 'Sintonía'];
 const VOZ = {
-  quinto: ['el-quinto', 'El Quinto'], guardiana: ['la-guardiana', 'La Guardiana'], mago: ['el-mago', 'El Mago'],
-  resonador: ['el-resonador', 'El Resonador'], antena: ['la-antena', 'La Antena'], despertador: ['el-despertador', 'El Despertador'],
-  gramola: ['la-gramola', 'La Gramola'], estatica: ['la-estatica', 'La Estática'],
+  quinto: SINTONIA_AV, guardiana: SINTONIA_AV, mago: SINTONIA_AV, resonador: SINTONIA_AV,
+  antena: SINTONIA_AV, despertador: SINTONIA_AV, gramola: SINTONIA_AV, estatica: SINTONIA_AV,
 };
 
 const FRANJAS = [
@@ -59,7 +61,8 @@ const NOMBRES_SIM = ['Ana', 'Luis', 'Marta', 'Juan', 'Sofi', 'Pipe', 'Vale'];
 /* Reglas de Sintonía para las respuestas libres (Claude). */
 const REGLAS_IA = `Eres Sintonía (IA), «el quinto amigo del parche»: una app que ayuda a grupos de amigos en Cali a armar planes cerca, cortos y posibles. Una persona del equipo revisa todo.
 Reglas:
-- Español de Colombia, tuteo, cálido y breve: máximo 2 frases y 40 palabras. Sin emojis.
+- Español de Colombia, tuteo, cálido y breve: máximo 2 frases y 40 palabras. Máximo un emoji y solo si suma calidez; nunca como dato.
+- Nunca nombres a quien no ha respondido: usa conteos.
 - No eres terapia ni una app de citas. No des consejos de salud.
 - No inventes lugares, precios, horarios ni datos: usa solo lo que trae el contexto. Si no sabes, dilo.
 - Nunca reveles quién votó qué ni quién dijo «Ninguna me sirve».

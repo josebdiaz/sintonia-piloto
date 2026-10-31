@@ -544,37 +544,45 @@
     var p = plan(sel.plan), ops = []; if (p) { try { ops = JSON.parse(p.opciones_json || '[]'); } catch (x) {} }
     var w = p && p.estado === 'cerrado' ? ops[Number(p.elegida)] || {} : {};
     var g = p ? grupo(p.grupo_id) : grupo(sel.grupo);
-    var faltan = p && g ? g.miembros.filter(function (m) { return (p.votos_por_pid || {})[m.pid] === undefined; }).map(function (m) { return m.nombre; }) : [];
+    var faltan = p && g ? g.miembros.filter(function (m) { return (p.votos_por_pid || {})[m.pid] === undefined; }) : [];   // 2.3.0: solo conteo; ninguna plantilla de grupo recibe nombres (R16)
+    var he = p && p.hora_encuentro ? new Date(p.hora_encuentro).getTime() : NaN;   // fecha límite por defecto: 24 h antes del encuentro (R6)
     var est = (p && p.estado_por_pid) || {};
     var noLlegan = g ? g.miembros.filter(function (m) { return !(est[m.pid] || {}).llego && (est[m.pid] || {}).apuntado !== false; }).map(function (m) { return m.nombre; }) : [];
     var dir = (w.paradas || []).map(function (s) { var i = invById(s.id); return i && i.direccion ? i.direccion : ''; }).filter(Boolean).join(' → ');
     var persona = dest !== 'grupo' && g ? g.miembros.filter(function (m) { return m.pid === dest; })[0] : null;
     return {
-      faltan: faltan.length ? faltan.join(', ') : '[nombres]', noLlegan: noLlegan, salida: w.hora_salida || '[hora de salida]', dir: dir || '[dirección]', presupuesto: w.presupuesto_aprox || '[presupuesto]',
+      faltan: faltan.length, votos: g ? g.miembros.length - faltan.length : '[n]', total: g ? g.miembros.length : '[total]', nVoy: p && p.n_apuntados != null ? p.n_apuntados : '[n]',
+      limite: isNaN(he) ? '[fecha límite]' : S.fecha(he - 24 * 3600e3), noLlegan: noLlegan, salida: w.hora_salida || '[hora de salida]', dir: dir || '[dirección]', presupuesto: w.presupuesto_aprox || '[presupuesto]',
       aviso: S.link('aviso.html', {}), humano: S.LS.get('sintonia_mago_nombre') || '[tu nombre]',
-      lista: ops.length ? ops.map(function (o, i) { return (i + 1) + '️⃣ ' + o.titulo + ' — ' + (o.paradas || []).map(function (s) { return s.nombre; }).join(' → ') + (o.hora_salida ? ' · salida ' + o.hora_salida : '') + (o.presupuesto_aprox ? ' · ' + o.presupuesto_aprox : ''); }).join('\n') : '[opciones del plan]',
+      lista: ops.length ? ops.map(function (o, i) { return (i + 1) + '. ' + o.titulo + ' — ' + (o.paradas || []).map(function (s) { return s.nombre; }).join(' → ') + (o.hora_salida ? ' · salida ' + o.hora_salida : '') + (o.presupuesto_aprox ? ' · ' + o.presupuesto_aprox : ''); }).join('\n') : '[opciones del plan]',
       n: ops.length || '[n]', plan: w.titulo || '[plan elegido]', lugar: (w.paradas || []).map(function (s) { return s.nombre + (s.zona ? ' (' + s.zona + ')' : ''); }).join(' → ') || '[lugar]',
       hora: p && p.hora_encuentro ? S.fecha(p.hora_encuentro) : '[día y hora]', retro: persona && p ? linkRetro(persona.pid, p.plan_id) : S.link('retro.html', {}),
       p: p, g: g, persona: persona, nom: persona ? persona.nombre : ''
     };
   }
   // [comando, título, a quién (grupo | persona | ambos), objetivo para Gemini, texto]
+  // 2.3.0 (UX Writing v1, R16): título en mayúsculas de hasta 3 palabras · una acción por mensaje · máximo un emoji, opcional ·
+  // conteos, nunca nombres · se piden ME APUNTO / NO PUEDO (el parser acepta sinónimos) · el agente insiste al grupo, nunca a una persona.
   var TPL = [
-    ['/ingreso', 'Bienvenida y transparencia (primer mensaje del grupo)', 'grupo', 'dar la bienvenida al grupo del plan y explicar con transparencia que una persona del equipo revisa todo', function (d) { return '¡Hola, parche! 👋 Soy Sintonía, el quinto amigo que ayuda a que el plan sí se dé: menos vueltas y opciones reales en Cali.\nLes propongo opciones, ustedes votan y yo me encargo de cuadrar la logística.\nTodas las personas de este grupo dieron su autorización. En este piloto una persona del equipo revisa todo lo que propongo.\n👤 Si necesitan hablar con alguien del equipo, escriban HUMANO.\n🚪 Si alguien quiere salir, escribe SALIR o sale del grupo, sin problema.\n🔒 Aviso de privacidad: ' + d.aviso; }],
-    ['/opciones', 'Opciones para votar', 'grupo', 'presentar las opciones del plan para que voten con el número', function (d) { return 'Les traigo ' + d.n + ' opciones:\n' + d.lista + '\n\nVoten con el número. Si les sirve cualquiera, escriban TODAS. Si ninguna les sirve, escriban NINGUNA y busco otra cosa. Cerca, corto y posible.'; }],
-    ['/recordatorio', 'Recordatorio de votación', 'ambos', 'recordar que falta votar, sin presión', function (d) { return d.persona ? d.nom + ', ¿cuál te suena más del plan: 1, 2 o 3? Si te sirve cualquiera, escribe TODAS; si ninguna te sirve, también vale decirlo. Con tu voto cerramos los detalles.' : '⏳ Para cerrar los detalles con tiempo nos falta el voto de ' + d.faltan + '. ¿Cuál les suena más: 1, 2 o 3? Si les sirve cualquiera, escriban TODAS; si ninguna sirve, también vale decirlo.'; }],
-    ['/confirmado', 'Plan cerrado', 'grupo', 'confirmar el plan elegido con lugar, hora, salida sugerida y presupuesto, y pedir ME APUNTO o NO PUEDO', function (d) { return '¡Quedó! Ruta clara, ganas intactas:\n📍 ' + d.plan + ' — ' + d.lugar + '\n📌 Dirección: ' + d.dir + '\n🕒 Encuentro: ' + d.hora + '\n🚗 Salida sugerida: ' + d.salida + '. En Cali la hora pico y la lluvia cambian los tiempos; mejor salir con margen.\n💰 Presupuesto aprox.: ' + d.presupuesto + ' por persona\nRespondan ME APUNTO si van o NO PUEDO si no alcanzan.'; }],
-    ['/salida', 'Hora de salida (2 h antes)', 'ambos', 'avisar la hora de salida sugerida según el tráfico, dos horas antes del encuentro', function (d) { return (d.persona ? d.nom + ', ' : '') + '🚗 Para llegar a ' + d.lugar + ' a la hora (' + d.hora + '), salgan a las ' + d.salida + ' (si llueve o hay trancón, mejor un poco antes).'; }],
-    ['/checkpoint', 'Día del plan · llegada (a todo el grupo)', 'grupo', 'preguntar al grupo si ya llegaron al sitio, sin pedir ubicación', function () { return '¿Ya llegaron? Cuando estén en el sitio respondan LLEGUÉ. No usamos su ubicación. Y al volver, un "ya en casa" nos deja tranquilos.'; }],
-    ['/no_llega', 'Checkpoint · alguien no ha llegado', 'persona', 'preguntar con cuidado a una persona que todavía no llega cómo va y si está bien, sin culpa ni presión', function (d) { return d.nom + ', ¿cómo vas? El parche ya está en ' + d.lugar + '. ¿Todo bien? Si se te complicó llegar, cuéntanos y lo ajustamos. 🙌'; }],
-    ['/llegaron', 'Ya llegaron todos', 'grupo', 'celebrar breve que ya llegó todo el parche y desear buen plan', function () { return '¡Ya está todo el parche! 🙌 Disfruten. Al volver, un "ya en casa" nos deja tranquilos.'; }],
-    ['/en_casa', '¿Ya en casa?', 'ambos', 'preguntar si ya llegaron bien a la casa después del plan', function (d) { return (d.persona ? d.nom + ', ¿ya' : '¿Ya todos') + ' en casa? Cuando lleguen, un "ya en casa" basta. Gracias por sintonizar hoy.'; }],
-    ['/retro', 'Cierre y pulso', 'ambos', 'invitar a responder el pulso de 2 minutos después del plan', function (d) { return (d.persona ? d.nom + ', ¿c' : '¿C') + 'ómo les fue? Si hubo sintonía, sigan 🙌\nCuéntennos en 4 minutos (ábranlo en el mismo celular con el que se registraron): ' + d.retro + '\nSus respuestas son privadas.'; }],
-    ['/guardrail', 'Fuera de alcance (política de IA de WhatsApp)', 'ambos', 'decir con amabilidad que solo ayudamos a armar planes y volver al plan', function () { return 'Mi tarea es ayudarles a armar y coordinar planes en Cali, así que en eso no les puedo ayudar. ¿Volvemos al plan?'; }],
-    ['/humano', 'Escalar a una persona', 'ambos', 'presentarse como persona del equipo que toma la conversación', function (d) { return 'Hola' + (d.persona ? ' ' + d.nom : '') + ', soy ' + d.humano + ', del equipo de investigación de Sintonía. Tomo la conversación para ayudarles con lo que necesiten. Si es una emergencia, llamen al 123.'; }]
+    ['/ingreso', 'Bienvenida y transparencia (primer mensaje del grupo)', 'grupo', 'dar la bienvenida al grupo del plan y explicar con transparencia que una persona del equipo revisa todo', function (d) { return '¡HOLA, PARCHE! 👋 · Soy Sintonía, el quinto amigo que ayuda a que el plan sí se dé. Les propongo opciones, ustedes votan y yo cuadro la logística.\nEn este piloto, una persona del equipo revisa todo lo que propongo. Para hablar con alguien, escriban HUMANO; para salir, SALIR.\nPrivacidad: ' + d.aviso; }],
+    ['/opciones', 'Opciones para votar (antes: sticker ¿ARMAMOS PLAN?)', 'grupo', 'presentar las opciones del plan para que voten con el número antes de la fecha límite', function (d) { return 'LES TRAIGO OPCIONES · ' + d.lista + '\n\nVoten con el número antes de ' + d.limite + '. Si les sirve cualquiera, TODAS; si ninguna, NINGUNA y busco otra cosa. Cerca, corto y posible.'; }],
+    ['/recordatorio', 'Recordatorio de votación (solo al grupo, con conteos)', 'grupo', 'recordar al grupo que falta votar, con conteos y sin nombres ni presión', function (d) { return 'PLAN EN CAMINO · Van ' + d.votos + ' de ' + d.total + ' votos. ¿Cuál les suena más: 1, 2 o 3? Si ninguna sirve, también vale decirlo.'; }],
+    ['/expres', 'Plan para hoy (modo exprés, sin recordatorios)', 'grupo', 'invitar a un plan para hoy, avisando que no habrá recordatorios', function (d) { return '¿QUIÉN SE ANIMA? · Hoy ' + d.hora + ' en ' + d.lugar + '. Plan exprés, sin recordatorios. Respondan ME APUNTO o NO PUEDO.'; }],
+    ['/confirmado', 'Ganó una opción: pedir ME APUNTO o NO PUEDO', 'grupo', 'confirmar la opción elegida con lugar, hora, salida sugerida y presupuesto, y pedir ME APUNTO o NO PUEDO antes de la fecha límite', function (d) { return '¡QUEDÓ! · Ruta clara, ganas intactas: ' + d.plan + ' en ' + d.lugar + ', ' + d.hora + '.\nDirección: ' + d.dir + '\nSalida sugerida: ' + d.salida + '. En Cali la hora pico y la lluvia cambian los tiempos.\nAprox. ' + d.presupuesto + ' por persona.\n¿Van? Respondan ME APUNTO o NO PUEDO antes de ' + d.limite + '.'; }],
+    ['/cierre', 'Plan listo (2 o más ME APUNTO en la fecha límite) · después: sticker EN SINTONÍA', 'grupo', 'anunciar que el plan quedó, con el conteo de quienes van, y despedir con cariño a quienes no pueden', function (d) { return 'PLAN LISTO · ' + d.hora + ' en ' + d.lugar + '. Van ' + d.nVoy + '. A quienes no pueden: nos vemos en la próxima. ¡Sintonizamos!'; }],
+    ['/queda', 'No se armó (menos de 2 ME APUNTO) · solo texto, sin sticker', 'grupo', 'decir con calma que esta vez el plan no se armó y dejar la puerta abierta', function () { return 'QUEDA PARA OTRA · Esta vez no se armó. Cuando quieran, armamos otro.'; }],
+    ['/salida', 'Hora de salida (2 h antes)', 'ambos', 'avisar la hora de salida sugerida según el tráfico, dos horas antes del encuentro', function (d) { return (d.persona ? d.nom + ', ' : 'HORA DE SALIR · ') + 'Para llegar a ' + d.lugar + ' a la hora (' + d.hora + '), salgan a las ' + d.salida + '. Si llueve o hay trancón, mejor un poco antes.'; }],
+    ['/checkpoint', 'Día del plan · llegada (a todo el grupo)', 'grupo', 'preguntar al grupo si ya llegaron al sitio, sin pedir ubicación', function () { return '¿YA LLEGARON? · Cuando estén en el sitio, escriban LLEGUÉ. No usamos su ubicación.'; }],
+    ['/no_llega', 'Checkpoint · alguien no ha llegado (excepción: es cuidado, no insistencia)', 'persona', 'preguntar con cuidado a una persona que todavía no llega cómo va y si está bien, sin culpa ni presión', function (d) { return d.nom + ', ¿cómo vas? El parche ya está en ' + d.lugar + '. ¿Todo bien? Si se te complicó llegar, cuéntanos y lo ajustamos. 🙌'; }],
+    ['/llegaron', 'Ya llegaron todos', 'grupo', 'celebrar breve que ya llegó todo el parche y desear buen plan', function () { return '¡YA ESTÁN TODOS! 🙌 · Disfruten.'; }],
+    ['/en_casa', '¿Ya en casa?', 'ambos', 'preguntar si ya llegaron bien a la casa después del plan', function (d) { return (d.persona ? d.nom + ', ¿ya en casa?' : '¿YA EN CASA?') + ' · Cuando lleguen, un «ya en casa» basta. Gracias por sintonizar hoy.'; }],
+    ['/retro', 'Cierre · ¿Cómo les fue?', 'ambos', 'invitar a responder la encuesta de 4 minutos después del plan', function (d) { return (d.persona ? d.nom + ', ¿cómo les fue?' : '¿CÓMO LES FUE?') + ' · Si hubo sintonía, sigan 🙌\nCuéntennos en 4 minutos, desde el celular con el que se registraron: ' + d.retro + '\nSus respuestas son privadas.'; }],
+    ['/guardrail', 'Fuera de alcance (política de IA de WhatsApp)', 'ambos', 'decir con amabilidad que solo ayudamos a armar planes y volver al plan', function () { return 'SOLO PLANES · Mi tarea es ayudarles a armar planes, así que en eso no les puedo ayudar. ¿Volvemos al plan?'; }],
+    ['/humano', 'Escalar a una persona', 'ambos', 'presentarse como persona del equipo que toma la conversación', function (d) { return 'Hola' + (d.persona ? ' ' + d.nom : '') + ', soy ' + d.humano + ', del equipo de investigación de Sintonía. Tomo la conversación para ayudarles con lo que necesiten. Si es una emergencia, llamen al 123.'; }],
+    ['/humano_fin', 'La persona del equipo devuelve la conversación', 'ambos', 'avisar que la persona del equipo terminó y Sintonía retoma el plan', function () { return 'Listo, vuelvo a organizar el plan.'; }]
   ];
   // Orden según el momento del plan: primero lo que toca enviar ahora.
-  var ORDEN = { votando: ['/opciones', '/recordatorio'], cerrado: ['/confirmado', '/salida', '/no_llega', '/checkpoint', '/llegaron', '/en_casa', '/retro'] };
+  var ORDEN = { votando: ['/opciones', '/recordatorio', '/expres'], cerrado: ['/confirmado', '/cierre', '/salida', '/no_llega', '/checkpoint', '/llegaron', '/en_casa', '/retro'], caido: ['/queda'] };
   function visibles() {
     var p = plan(sel.plan), pri = (p && ORDEN[p.estado]) || [];
     var rank = function (t) { var k = pri.indexOf(t[0]); return k < 0 ? 100 : k; };
@@ -584,7 +592,7 @@
   function renderMensajes() {
     var el = S.$('#tab-mensajes'), d = tplData(), p = d.p, g = d.g;
     if (dest !== 'grupo' && !d.persona) { dest = 'grupo'; d = tplData(); }
-    var h = '<div class="card warn small"><b>Borrador.</b> Textos del sistema verbal (Wording_verificado_v2.md) y el guion del Mago de Oz. ' +
+    var h = '<div class="card warn small"><b>Borrador.</b> Textos de la biblioteca convergida (Implementacion_UX_Writing_v1.md) y el guion del Mago de Oz. Los stickers se adjuntan a mano. ' +
       (p ? 'Se llenan con el plan seleccionado (plan ' + e(p.ronda) + ' · ' + e(grupoLabel(grupo(p.grupo_id))) + ').' : 'Selecciona un plan en la pestaña 2 para llenar los datos.') + '</div>' +
       (g && g.experimento === 'E2' ? '<div class="card soft small"><b>Grupo E1.5.</b> Estos mensajes los envía el motor. Úsalos aquí solo para revisar lo que manda o si pasaste el plan al mago (contingencia).</div>' : '');
     h += '<div class="card"><div class="row" style="align-items:flex-end;flex-wrap:wrap">' +
@@ -639,7 +647,7 @@
    * 2.0.5: el estado de cada persona se cambia con un menú; los mensajes del mago al grupo
    * quedan marcados como hechos con la hora. Los botones registran lo que ya pasó en el chat; no envían nada. */
   var ESTADOS = [['me_apunto', 'Se apuntó', 'apuntado'], ['no_puedo', 'No puede', 'nopuede'], ['checkpoint_llegada', 'Llegó', 'llego'], ['llego_casa', 'En casa', 'casa']];
-  var MARCA = { '/opciones': 'msg_opciones', '/confirmado': 'msg_confirmado', '/retro': 'msg_retro', '/ingreso': 'msg_ingreso' };   // 2.2.2
+  var MARCA = { '/opciones': 'msg_opciones', '/confirmado': 'msg_confirmado', '/retro': 'msg_retro', '/ingreso': 'msg_ingreso' };   // /cierre, /queda y /expres no tienen tipo de evento en el backend todavía   // 2.2.2
   var MSG_GRUPO = [['recordatorio', 'Recordatorio de votación'], ['salida_sugerida', 'Hora de salida'], ['mensaje_mago', 'Otro mensaje']];
   function estadoPersona(st) {
     if (st.casa) return ['casa', 'En casa'];

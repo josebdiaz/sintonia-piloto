@@ -5,6 +5,16 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-10-31 · UX Writing v1 · Biblioteca convergida
+- **Origen:** auditoría de UX Writing y ronda 16 del playbook de marca (`docs/Implementacion_UX_Writing_v1.md`).
+- **Consola (`piloto/mago.html`):** plantillas con título de hasta tres palabras, una acción por mensaje y máximo un emoji. `/recordatorio` solo al grupo y con conteos (sin nombres; se retira la versión personal). Nuevas `/cierre`, `/queda`, `/expres` y `/humano_fin`. Fecha límite por defecto: 24 h antes del encuentro. Los stickers se adjuntan a mano (archivos pendientes).
+- **Parser (`n8n/E15-01-voto-minimo.json`):** acepta sinónimos de ME APUNTO, NO PUEDO y LLEGUÉ; «ayuda» cuenta como pedido de persona salvo con palabras sensibles; nuevo motivo `solo_emoji`.
+- **Motor (`n8n/PROMPT-n8n-builder.md`):** mismos textos que la consola; nuevo W3b con la regla de cierre (2 o más ME APUNTO en la fecha límite → `/cierre`; si no → `/queda`); un plan caído avisa al grupo con `/queda`.
+- **App E3:** una sola voz (todas las voces usan el mismo avatar mientras llega el del glifo S), «grupo completo» en vez de «quórum», nueva regla de cierre y textos ajustados. `e3-app/index.html` regenerado.
+- **Encuesta (`piloto/retro.html`):** deja de llamarse «pulso» en los textos visibles (los campos de datos no cambian).
+- **Backend:** solo el prompt de `redactar_ia` (requiere redesplegar para que aplique).
+- **Pendiente:** avatar del glifo S, stickers, verificar `n_apuntados` en `view=plan`, tipos de evento para `/cierre`, `/queda` y `/expres`, y correr `autotest.js` y las pruebas en `modo=prueba`.
+
 ### 2026-10-30 · E1.5 · Flujos en n8n revisados
 - **En la instancia de n8n:** 9 flujos (E1.5-01, `SW · Avisar revisor`, `SW · Enviar mensaje` y W0–W5). Todos inactivos y sin ejecuciones de producción. Los W0–W5 aún no están exportados al repo.
 - **Bloqueantes encontrados:** los sub-flujos envían por Evolution API sin aprobación humana (contradice la automatización asistida), `view=plan` sin `pid` en W2–W5, plantillas sin llenar en W1–W5, texto equivocado en W0, y W1 envía `/opciones` antes de `publicar_plan`.
