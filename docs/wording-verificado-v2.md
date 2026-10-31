@@ -1,5 +1,7 @@
 # Wording verificado — Sintonía v2
 
+> **Histórico, anterior al pivote.** Superado por la biblioteca convergida de UX Writing v1 (`docs/Implementacion_UX_Writing_v1.md`, 31 oct. 2026). «Pulso» aquí nombra la encuesta privada del prototipo anterior.
+
 Textos exactos aplicados al prototipo, alineados al sistema verbal (*Verbatum Sintonía*).
 Criterio de uso: nombrar el progreso real del mecanismo; evitar promesas clínicas, amistad
 garantizada, lenguaje de citas o capacidades no validadas.

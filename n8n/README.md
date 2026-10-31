@@ -13,7 +13,8 @@ Para ponerlo a andar paso a paso, empieza por [`GUIA-IMPLEMENTACION.md`](GUIA-IM
 Formulario donde se pega el mensaje del grupo → `resolver` (número → `pid`) → interpreta el texto → `votar` o `evento`.
 
 Entiende: `1` `2` `3` (también «opción 2», «la 2»), `TODAS`, `NINGUNA`, `ME APUNTO`, `NO PUEDO`, `LLEGUÉ`, `YA EN CASA`, `SALIR`.
-**Escala sin llamar al backend** si el texto es `HUMANO`, está vacío, no se entiende o menciona salud, ubicación o emergencia (123).
+Sinónimos aceptados (frase completa, sin tildes ni mayúsculas): para `ME APUNTO`, «voy», «sí voy», «yo voy», «me sumo», «cuenta conmigo», «cuenten conmigo», «ahí estaré», «allá estaré», «apúntame», «listo, voy»; para `NO PUEDO`, «no puedo ese día», «no puedo ir», «no voy», «esta vez no», «no alcanzo», «no me queda», «paso»; para `LLEGUÉ`, «ya llegué», «ya estoy», «ya estoy aquí», «aquí estoy». Lo ambiguo («voy tarde», «no sé si pueda») se escala.
+**Escala sin llamar al backend** si el texto pide una persona (`HUMANO`, «ayuda», «necesito ayuda…»: motivo `pidio_humano`), está vacío, es solo un emoji (motivo `solo_emoji`; un emoji nunca cuenta como respuesta), no se entiende o menciona salud, ubicación o emergencia (123; motivo `sensible`, que tiene prioridad sobre «ayuda»).
 
 ### Importar y configurar
 

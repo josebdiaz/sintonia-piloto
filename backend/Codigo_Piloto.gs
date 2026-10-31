@@ -435,7 +435,7 @@ function redactarIA_(d) {
   var p = d.plan_id ? findOne_('planes', 'plan_id', d.plan_id) : null;
   var prompt =
     'Eres Sintonía, el "quinto amigo" de un grupo en Cali. Redacta UN mensaje de WhatsApp (máx. 60 palabras) para el paso: ' + str_(d.paso, 40) + '.\n' +
-    'Tono: ' + str_(d.tono || 'plan tranqui', 40) + '. Español de Colombia, cercano, sin culpa ni presión, máximo un emoji.\n' +
+    'Tono: ' + str_(d.tono || 'plan tranqui', 40) + '. Español de Colombia, cercano, sin culpa ni presión, máximo un emoji y solo si suma calidez. Nunca nombres a quien no ha respondido: usa conteos. Una acción por mensaje.\n' +   // UX Writing v1 (R16)
     'Datos del plan: ' + str_(d.datos || (p ? p.opciones_json : ''), 900) + '\n' +
     'Usa solo los lugares y horarios de los datos; no inventes nada ni pidas datos personales. Responde solo con el texto.';
   var r = gemini_(prompt, false, p ? p.plan_id : '', p ? p.grupo_id : '', 'mensaje:' + str_(d.paso, 30));

@@ -2,6 +2,11 @@
 
 Formato: lo más reciente arriba. Fechas en hora de Bogotá.
 
+## 31 oct 2026 · UX Writing v1
+
+- E1.5-01: sinónimos de ME APUNTO, NO PUEDO y LLEGUÉ; «ayuda» como pedido de persona (salvo palabras sensibles); motivo `solo_emoji`. Probado con 17 casos fuera de n8n; falta probar en la instancia.
+- PROMPT: textos de la biblioteca convergida, W3b (regla de cierre) y `/queda` para planes caídos.
+
 ## 30 oct 2026 (tarde) · Revisión nodo por nodo
 
 - Revisados los 9 flujos. Bien: deduplicación con `e15_planes`, ramas de error, zona horaria, sin IA, sin claves en el JSON, credenciales del motor enlazadas.

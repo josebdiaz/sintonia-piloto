@@ -17,7 +17,7 @@ const Team = {
     h += `<section><h3>Identidad</h3><p>Eres <b>${esc(Yo.doc ? Yo.doc.nombre || '(sin nombre)' : '…')}</b> · <span class="mono">${esc(Me.uid.slice(-10))}</span></p><form class="row" data-team-form="alias"><input type="text" name="alias" placeholder="Otra identidad en esta pestaña (p. ej. luis)" value="${esc(Me.alias)}" aria-label="Identidad de prueba"><button class="tb">Usar</button></form><p>Para probar el grupo solo, abre otra pestaña con otra identidad o agrega miembros simulados.</p></section>`;
     if (p) {
       const n = G.activos.length;
-      h += `<section><h3>Parche ${esc(p.id)}</h3><p><b>${esc(p.nombre)}</b> · etapa <b>${esc(ETAPA_TXT[p.stage] || p.stage)}</b> · ronda ${p.ronda || 0} · quórum ${n} de ${G.N}</p>
+      h += `<section><h3>Parche ${esc(p.id)}</h3><p><b>${esc(p.nombre)}</b> · etapa <b>${esc(ETAPA_TXT[p.stage] || p.stage)}</b> · ronda ${p.ronda || 0} · grupo ${n} de ${G.N}</p>
       <div class="row">${tb('Quórum −', 'quorum', '-1')}${tb('Quórum +', 'quorum', '1')}${tb('+ Miembro simulado', 'bot')}${tb('Votan los simulados', 'botsvotan')}${tb('Un simulado: «Ninguna»', 'botninguna')}</div>
       <div class="row">${tb('Cerrar votación', 'cerrar-voto')}${tb('Vencer plazo (F3)', 'plazo')}${tb('Recordatorio (C6)', 'c6')}${tb('Día del plan (C7)', 'c7')}${tb('Terminar → sobremesa (D)', 'd')}</div>
       <div class="row">${tb('Volver a reclutar', 'reset', '', 'danger')}${tb('Borrar parche', 'borrar', '', 'danger')}</div>
@@ -45,7 +45,7 @@ const Team = {
         case 'quorum': await Store.update(b, { quorum: Math.max(2, G.N + (+v)) }); break;
         case 'bot': { const used = new Set(G.miembros.map(m => m.nombre)); const nom = NOMBRES_SIM.find(x => !used.has(x)) || ('Sim' + rid(2)); const uid = 'bot-' + rid(4);
           await Store.set(`${b}/miembros/${uid}`, { id: uid, uid, nombre: nom, muestra: true, consent: { wa: true, nom: true, mej: true }, rol: 'invitado', bot: true, restr: [], franja: p.franja || 'tarde', unido: Date.now() });
-          const ms = await Store.list(`${b}/miembros`); const n = ms.filter(m => m.consent && !m.salio).length; await G.msgAI(p.id, 'join-' + uid, `¡Ya está dentro ${nom}! ${n >= G.N ? 'Ya están todos.' : `Falta${G.N - n > 1 ? 'n' : ''} ${G.N - n} persona${G.N - n > 1 ? 's' : ''} para que les proponga planes.`}`, 'quinto', { type: 'quorum', n, N: G.N }); break; }
+          const ms = await Store.list(`${b}/miembros`); const n = ms.filter(m => m.consent && !m.salio).length; await G.msgAI(p.id, 'join-' + uid, `¡Ya está dentro ${nom}! ${n >= G.N ? 'Ya están todos.' : `Van ${n} de ${G.N}; cuando estén todos, les propongo planes.`}`, 'quinto', { type: 'quorum', n, N: G.N }); break; }
         case 'botsvotan': case 'botninguna': {
           if (p.stage !== 'votacion') { UI.aviso('La votación no está abierta.'); break; }
           const ya = new Set(G.votosRonda().map(x => x.uid)); const bots = G.activos.filter(m => m.bot && !ya.has(m.uid));
@@ -56,7 +56,7 @@ const Team = {
             if (a === 'botninguna') break;
           } break; }
         case 'cerrar-voto': if (p.stage === 'votacion') { await Store.update(b, { stage: 'resolviendo', cierreAt: Date.now() }); await G.msgAI(p.id, 'cierre-r' + p.ronda, 'Cerró la votación. Estoy revisando con el equipo.', 'mago', { type: 'valves' }); } break;
-        case 'plazo': if (p.stage === 'reclutando') await Store.update(b, { plazo: Date.now() - 1000 }); else UI.aviso('Solo aplica mientras se busca quórum.'); break;
+        case 'plazo': if (p.stage === 'reclutando') await Store.update(b, { plazo: Date.now() - 1000 }); else UI.aviso('Solo aplica mientras se completa el grupo.'); break;
         case 'c6': if (p.plan) { await Store.update(b, { recordatorio: true }); await G.msgAI(p.id, 'recordatorio', 'Mañana es el plan. ¿Sigue en pie para ti?', 'despertador', { type: 'countdown' }); } else UI.aviso('Primero fija un plan.'); break;
         case 'c7': if (p.plan) { await Store.update(b, { stage: 'encurso' }); await G.msgAI(p.id, 'dia', `¡Es hoy, es hoy! Salida a las ${hora12(p.plan.h, p.plan.m)} desde ${p.plan.paradas[0][0]}.`, 'antena', { type: 'time' }); } else UI.aviso('Primero fija un plan.'); break;
         case 'd': if (p.plan) { await Store.update(b, { stage: 'sobremesa' }); await G.msgAI(p.id, 'cierre-plan', `¡Gracias por venir a «${p.plan.titulo}»! Les escribo en privado para saber cómo les fue.`, 'gramola', { type: 'cierre' }); } else UI.aviso('Primero fija un plan.'); break;
