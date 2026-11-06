@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Sintonía · Onboarding del monitor</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: lienzo 1920×1080 que escala; una idea por diapositiva; tablas y pasos legibles para una sesión de inducción */
+:root{
+  --papel-0:#ffffff; --papel-50:#faf9f6; --papel-100:#efede7; --papel-300:#dad6cc;
+  --papel-700:#47494d; --papel-900:#1f2226; --noche:#0e1116;
+  --naranja:#ff4f00; --naranja-700:#c23a00;
+  --mostaza:#ebc46a; --crema:#f3e9b8; --vitral:#2c6a86; --salvia:#a9c9b8;
+  --coral:#e8806a; --rosa:#eec0b4; --rubi:#9b2d30;
+  --f-txt:'Graphik','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --ease-standard:cubic-bezier(.3,.6,.3,1); --ease-enter:cubic-bezier(.2,.8,.2,1);
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--noche);color:var(--papel-50);font-family:var(--f-txt);overflow:hidden;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+*{box-sizing:border-box}
+.viewport{position:fixed;left:0;right:0;top:0;bottom:64px;overflow:hidden;background:var(--noche)}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;transform:translate(-50%,-50%) scale(.5)}
+.slide{position:absolute;inset:0;overflow:hidden;padding:90px 130px 100px;display:flex;flex-direction:column;visibility:hidden;opacity:0;transition:opacity 800ms var(--ease-standard),visibility 0s linear 800ms}
+.slide.active{visibility:visible;opacity:1;transition:opacity 800ms var(--ease-standard)}
+.slide>.content{position:relative;z-index:2;display:flex;flex-direction:column;height:100%}
+.slide>.content.center{justify-content:center}
+.s-noche{background:var(--noche);color:var(--papel-50)}
+.s-papel{background:var(--papel-50);color:var(--noche)}
+.s-crema{background:var(--crema);color:var(--noche)}
+.s-vitral{background:var(--vitral);color:var(--papel-0)}
+.eyebrow{font-weight:600;font-size:24px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 20px}
+.s-papel .eyebrow,.s-crema .eyebrow{color:var(--naranja-700)} .s-noche .eyebrow{color:var(--naranja)} .s-vitral .eyebrow{color:var(--crema)}
+h1,h2{font-weight:800;letter-spacing:-.035em;line-height:.98;margin:0;text-wrap:balance}
+h1{font-size:120px} h2{font-size:84px}
+.lead{font-size:46px;line-height:1.2;margin:28px 0 0;letter-spacing:-.02em}
+.body{font-size:32px;line-height:1.4;margin:24px 0 0;max-width:40ch}
+.s-papel .body,.s-crema .body{color:var(--papel-900)}
+.src{font-size:22px;color:var(--papel-700);margin-top:auto}
+.note{font-size:26px;line-height:1.4;color:var(--papel-700);margin-top:auto;max-width:70ch}
+.pend{display:inline-flex;border:3px dashed var(--naranja-700);color:var(--naranja-700);border-radius:10px;padding:2px 10px;font-weight:700}
+b{font-weight:800}
+code{font-family:var(--f-mono);font-size:.9em}
+.in{opacity:0;transform:translateY(22px)}
+.active .in{animation:rise 700ms var(--ease-enter) forwards;animation-delay:calc(var(--i,0)*110ms + 250ms)}
+@keyframes rise{to{opacity:1;transform:none}}
+.trazo path{stroke-dasharray:1 1.2;stroke-dashoffset:1.1}
+.active .trazo path{animation:draw 1300ms var(--ease-enter) forwards 1s}
+@keyframes draw{from{stroke-dashoffset:1.1}to{stroke-dashoffset:0}}
+.u{position:relative;display:inline-block;white-space:nowrap}
+.u .trazo{position:absolute;left:0;bottom:-.16em;width:100%;height:.2em;overflow:visible}
+.wm{font-weight:800;letter-spacing:-.045em;display:inline-block;line-height:1}
+.wm .i{position:relative;display:inline-block}
+.wm .i::after{content:"";position:absolute;width:.30em;height:.10em;border-radius:.05em;left:.02em;top:.2em;transform:rotate(-40deg);transform-origin:left center;background:var(--tilde,var(--naranja))}
+.logo{position:absolute;right:130px;bottom:34px;font-size:34px;z-index:40;pointer-events:none;color:var(--noche);--tilde:var(--naranja-700);transition:color 800ms}
+.logo.on-dark{color:var(--papel-50);--tilde:var(--naranja)} .logo.on-vitral{color:var(--papel-0);--tilde:var(--mostaza)}
+
+/* glifo */
+.glyph{flex:none} .glyph svg{width:100%;height:100%;overflow:visible;display:block}
+.zl,.stone,.gring,.wave{transform-origin:100px 100px;transform-box:view-box;opacity:0}
+.active .zl{animation:zj 700ms cubic-bezier(.22,1,.36,1) forwards .2s}
+@keyframes zj{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:scale(1)}}
+.active .stone{animation:stn 760ms cubic-bezier(.45,0,.3,1) forwards .65s}
+@keyframes stn{0%{opacity:0;transform:scale(2)}60%{opacity:1;transform:scale(.94)}100%{opacity:1;transform:scale(1)}}
+.active .wave{animation:wv 1900ms cubic-bezier(.25,.1,.25,1) forwards 1.1s}
+@keyframes wv{0%{opacity:0;transform:scale(.3)}10%{opacity:.85}100%{opacity:0;transform:scale(1.45)}}
+.active .wave.loop{animation:wvl 6000ms cubic-bezier(.37,0,.2,1) infinite 4.6s}
+@keyframes wvl{0%{opacity:0;transform:scale(.3)}4%{opacity:.6}32%{opacity:0;transform:scale(1.45)}100%{opacity:0;transform:scale(1.45)}}
+.active .gring{animation:st 1000ms ease-out forwards} .active .gring.r1{animation-delay:1.65s} .active .gring.r2{animation-delay:1.85s}
+@keyframes st{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+
+/* portada */
+.slide>.content.cover{flex-direction:row;align-items:center;gap:100px}
+.cover>div:last-child{min-width:0}
+.pills{display:flex;gap:14px;flex-wrap:wrap;margin-top:40px}
+.pills span{font-size:24px;font-weight:700;padding:12px 22px;border-radius:999px;border:2px solid currentColor}
+.pills.light span{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.5)}
+
+/* 30 s */
+.verbs{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:64px}
+.vb{background:var(--c);color:var(--t,var(--noche));border-radius:26px;padding:40px 34px;display:flex;flex-direction:column;gap:16px;min-height:360px}
+.vb i{font-style:normal;font-size:28px;font-weight:800;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:rgba(14,17,22,.12)}
+.vb b{font-size:54px;letter-spacing:-.03em}
+.vb span{font-size:28px;line-height:1.3;font-weight:500}
+
+/* problema */
+.twonum{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:70px}
+.twonum b{display:block;font-size:240px;letter-spacing:-.06em;line-height:.85;font-variant-numeric:tabular-nums}
+.twonum b.o{color:var(--naranja-700)}
+.twonum span{display:block;font-size:38px;line-height:1.25;font-weight:600;margin-top:20px;max-width:18ch}
+
+/* idea */
+.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:60px}
+.cd{background:var(--c);color:var(--t,var(--noche));border-radius:24px;padding:40px 32px;display:flex;flex-direction:column;gap:16px;min-height:320px}
+.cd b{font-size:48px;letter-spacing:-.03em}
+.cd span{font-size:28px;line-height:1.3}
+
+/* tablas */
+.tb{border-collapse:separate;border-spacing:0;width:100%;font-size:28px;margin-top:40px}
+.tb th,.tb td{padding:20px 24px;text-align:left;vertical-align:top;border-bottom:2px solid var(--papel-300);line-height:1.3}
+.tb th{font-size:22px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--papel-700)}
+.tb .hl{background:var(--vitral);color:var(--papel-0)}
+.tb th.hl{color:var(--papel-0);border-radius:18px 18px 0 0}
+.tb th em{display:block;font-style:normal;margin-top:6px;font-size:18px;color:var(--mostaza)}
+.tb.dark th{color:var(--papel-300);border-color:#2a2e34} .tb.dark td{border-color:#2a2e34}
+.tb.dark code{color:var(--mostaza);font-size:24px}
+.cmp2{display:grid;grid-template-columns:1.6fr 1fr;gap:60px;align-items:start}
+.measure{margin-top:40px}
+.measure h3{font-size:40px;margin:10px 0 14px;letter-spacing:-.02em}
+.measure p{font-size:28px;line-height:1.35;margin:0 0 14px}
+.measure .mini{font-size:24px;color:var(--papel-700)}
+
+/* listas */
+.bl{list-style:none;padding:0;margin:30px 0 0;display:flex;flex-direction:column;gap:14px}
+.bl li{font-size:32px;line-height:1.3;padding-left:34px;position:relative}
+.bl li::before{content:"";position:absolute;left:0;top:.55em;width:16px;height:5px;border-radius:3px;background:currentColor}
+.bl.dark li{font-size:28px}
+
+/* 20 h */
+.stack{display:flex;height:120px;border-radius:20px;overflow:hidden;margin-top:60px}
+.stack i{display:grid;place-items:center;width:var(--w);background:var(--c);transform:scaleX(0);transform-origin:left;font-style:normal}
+.active .stack i{animation:sx 800ms var(--ease-enter) forwards;animation-delay:calc(var(--k)*180ms + .6s)}
+@keyframes sx{to{transform:scaleX(1)}}
+.stack b{font-size:34px;color:var(--noche)}
+.legend{list-style:none;padding:0;margin:34px 0 0;display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+.legend li{border-top:8px solid var(--c);padding-top:12px;display:flex;flex-direction:column;gap:6px}
+.legend span{font-size:24px;line-height:1.25;font-weight:600}
+.legend b{font-size:30px}
+
+/* checklist */
+.check{list-style:none;padding:0;margin:40px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:22px 50px}
+.check li{display:flex;gap:22px;align-items:flex-start}
+.check i{width:44px;height:44px;border-radius:10px;border:4px solid var(--mostaza);flex:none;margin-top:4px}
+.check b{display:block;font-size:32px;margin-bottom:6px}
+.check span,.check code{font-size:24px;line-height:1.35;color:var(--papel-300)}
+.check code{color:var(--mostaza)}
+
+/* consola */
+.tabs{display:grid;grid-template-columns:repeat(7,1fr);gap:16px;margin-top:56px;flex:1;align-content:start}
+.tab{border-radius:20px;padding:30px 22px;display:flex;flex-direction:column;gap:14px;min-height:600px;background:var(--papel-100);border:3px solid transparent}
+.tab b{font-size:32px;letter-spacing:-.01em;line-height:1.1}
+.tab span{font-size:25px;line-height:1.35;color:var(--papel-700)}
+.tab em{margin-top:auto;font-style:normal;font-size:20px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:8px 12px;border-radius:999px;align-self:flex-start}
+.tab.use{background:var(--noche);color:var(--papel-50)} .tab.use span{color:var(--papel-300)} .tab.use em{background:var(--mostaza);color:var(--noche)}
+.tab.look em{background:var(--papel-300)}
+.tab.no{border-style:dashed;border-color:var(--papel-300)} .tab.no em{border:2px solid var(--papel-700)}
+.tab.never{background:var(--rosa)} .tab.never em{background:var(--rubi);color:var(--papel-0)}
+
+/* turno */
+.flow5{list-style:none;padding:0;margin:70px 0 0;display:grid;grid-template-columns:repeat(5,1fr);gap:40px;position:relative}
+.flow5 li{position:relative;background:#1f2226;border:2px solid #2a2e34;border-radius:24px;padding:34px 28px;display:flex;flex-direction:column;gap:12px;min-height:300px}
+.flow5 li:not(:last-child)::after{content:"→";position:absolute;right:-34px;top:50%;transform:translateY(-50%);font-size:36px;font-weight:800;color:var(--naranja)}
+.flow5 i{font-style:normal;font-size:24px;font-weight:800;color:var(--papel-300)}
+.flow5 b{font-size:38px;letter-spacing:-.02em}
+.flow5 span{font-size:26px;line-height:1.3;color:var(--papel-300)}
+.flow5 li.hot{background:var(--naranja);border-color:var(--naranja);color:var(--noche)} .flow5 li.hot i,.flow5 li.hot span{color:var(--noche)}
+.warn{margin-top:auto;font-size:28px;line-height:1.4;padding:24px 30px;border-radius:20px;background:#1f2226;border-left:8px solid var(--mostaza)}
+.warn.dark{background:var(--papel-100);border-left-color:var(--naranja-700);color:var(--noche)}
+
+/* pasos */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:36px;margin-top:70px}
+.st{position:relative;background:#1f2226;border:2px solid #2a2e34;border-radius:24px;padding:30px 26px;display:flex;flex-direction:column;gap:14px;min-height:440px}
+.st:not(:last-child)::after{content:"→";position:absolute;right:-31px;top:60px;font-size:32px;font-weight:800;color:var(--naranja)}
+.st i{font-style:normal;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--mostaza);color:var(--noche);font-size:30px;font-weight:800}
+.st small{font-size:20px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja)}
+.st span{font-size:27px;line-height:1.35}
+.st span b{color:var(--mostaza)}
+.st.last{background:var(--rubi);border-color:var(--rubi)} .st.last small{color:var(--rosa)} .st.last span b{color:var(--papel-0)} .st.last i{background:var(--papel-0)}
+
+/* palabras */
+.words{margin-top:40px;border-radius:24px;overflow:hidden;display:flex;flex-direction:column}
+.wh,.wr{display:grid;grid-template-columns:1fr 1.4fr}
+.wh span{font-size:20px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:16px 28px;color:var(--papel-700);background:var(--papel-100)}
+.wh span+span{background:var(--noche);color:var(--papel-300)}
+.wr b{font-size:30px;padding:16px 28px;background:var(--papel-100);border-top:2px solid var(--papel-50)}
+.wr span{font-size:27px;padding:18px 28px;background:var(--noche);color:var(--papel-50);border-top:2px solid #1f2226;line-height:1.3}
+.words .warn{display:none}
+
+/* voz */
+.voice{display:grid;grid-template-columns:1.2fr 1fr;gap:70px;margin-top:20px;align-items:center;flex:1}
+.examples{display:flex;flex-direction:column;gap:30px}
+.ex{background:#e9e2d6;border-radius:28px;padding:30px;display:flex;flex-direction:column;gap:14px}
+.ex small{font-size:22px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.ex.yes small{color:var(--vitral)} .ex.no small{color:var(--rubi)}
+.ex .bub{align-self:flex-start;background:var(--papel-0);border-radius:20px 20px 20px 4px;padding:18px 22px;font-size:30px;line-height:1.3}
+.ex.no .bub{text-decoration:line-through;text-decoration-color:var(--rubi);text-decoration-thickness:3px;opacity:.75}
+
+/* reglas */
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px}
+.rule{background:var(--papel-100);border-radius:24px;padding:34px 32px;display:flex;flex-direction:column;gap:12px;min-height:220px}
+.rule b{font-size:46px;color:var(--naranja-700);letter-spacing:-.03em}
+.rule span{font-size:28px;line-height:1.3}
+
+/* entregas */
+.deliver{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:34px}
+.deliver div{border-top:8px solid var(--naranja-700);padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.deliver b{font-size:42px;letter-spacing:-.02em}
+.deliver span{font-size:28px;line-height:1.3;color:var(--papel-900)}
+.quote{margin-top:auto;font-size:38px;line-height:1.3;font-weight:500;padding:30px 36px;background:var(--crema);border-radius:24px}
+
+/* faq */
+.faq{display:flex;flex-direction:column;gap:22px;margin-top:44px}
+.fq{display:grid;grid-template-columns:720px 1fr;gap:40px;border-bottom:2px solid var(--papel-300);padding-bottom:20px}
+.fq b{font-size:32px;line-height:1.25;letter-spacing:-.01em}
+.fq span{font-size:28px;line-height:1.35;color:var(--papel-900)}
+
+/* cierre */
+.names{font-size:28px;font-weight:700;margin-top:40px;color:var(--papel-300)}
+
+/* mago de oz */
+.oz{display:grid;grid-template-columns:1fr 200px 1fr;gap:30px;align-items:center;flex:1;margin-top:20px}
+.ozside{display:flex;flex-direction:column;gap:16px;align-items:center}
+.ozside small{font-size:22px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--crema)}
+.ozphone{width:380px;height:440px;border-radius:36px;background:#e9e2d6;border:12px solid var(--noche);padding:24px 18px;display:flex;flex-direction:column;gap:14px;justify-content:flex-end}
+.ozh{font-size:16px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--papel-700);text-align:center;margin-bottom:auto}
+.ozb{font-size:24px;line-height:1.3;border-radius:18px;padding:12px 16px;color:var(--noche);background:var(--papel-0);max-width:90%}
+.ozb.me{align-self:flex-end;background:#dcefe6;border-radius:18px 18px 4px 18px}
+.ozb.sin{align-self:flex-start;background:var(--naranja-700);color:var(--papel-0);font-weight:700;border-radius:18px 18px 18px 4px}
+.ozb.sin em{display:block;font-style:normal;font-size:14px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.ozlink svg{width:200px;height:40px}
+.ozstage{position:relative;width:440px;height:440px;border-radius:32px;background:var(--mostaza);overflow:hidden;display:grid;place-items:center}
+.ozyou{display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--noche)}
+.ozyou svg{width:200px;height:150px}
+.ozyou b{font-size:64px;letter-spacing:-.03em}
+.ozyou span{font-size:28px;font-weight:600}
+.curtain{position:absolute;top:0;bottom:0;width:51%;background:repeating-linear-gradient(90deg,#9b2d30 0 34px,#7d2427 34px 40px);transition:transform 1400ms cubic-bezier(.65,0,.35,1)}
+.curtain.l{left:0;transform-origin:left} .curtain.r{right:0;transform-origin:right}
+.active .curtain.l{animation:cl 1400ms cubic-bezier(.65,0,.35,1) forwards 1.4s}
+.active .curtain.r{animation:cr 1400ms cubic-bezier(.65,0,.35,1) forwards 1.4s}
+@keyframes cl{to{transform:translateX(-86%)}} @keyframes cr{to{transform:translateX(86%)}}
+.s-vitral .pills{justify-content:center}
+
+/* navegación */
+.navbar{position:fixed;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom,0px));padding:0 max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px;background:#0b0e13;border-top:1px solid var(--papel-900);z-index:20}
+.navbar button{flex:none;min-width:44px;height:44px;border-radius:999px;border:1px solid var(--papel-700);background:transparent;color:var(--papel-50);font:600 16px var(--f-txt);cursor:pointer;padding:0 12px}
+.navbar button:hover{border-color:var(--naranja)}
+.navbar button:focus-visible,.range:focus-visible{outline:3px solid var(--naranja);outline-offset:2px}
+.navbar .count{flex:none;font:600 14px var(--f-txt);color:var(--papel-300);font-variant-numeric:tabular-nums;min-width:52px;text-align:center}
+.navbar .chap{flex:none;font:600 12px var(--f-txt);letter-spacing:.1em;text-transform:uppercase;color:var(--naranja);min-width:110px}
+.track{position:relative;flex:1;min-width:0;height:44px;display:flex;align-items:center}
+.ticks{position:absolute;left:9px;right:9px;top:50%;height:6px;transform:translateY(-50%);display:flex;gap:3px;pointer-events:none}
+.ticks i{flex:1;border-radius:3px;background:var(--papel-900)} .ticks i.on{background:var(--naranja)} .ticks i.ch{margin-left:6px}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;position:relative;cursor:pointer}
+.range::-webkit-slider-runnable-track{height:6px;background:transparent}
+.range::-moz-range-track{height:6px;background:transparent}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--papel-50);border:3px solid var(--naranja);margin-top:-6px}
+.range::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--papel-50);border:3px solid var(--naranja)}
+.tip{position:absolute;bottom:46px;transform:translateX(-50%);background:var(--papel-50);color:var(--noche);font:600 13px var(--f-txt);padding:6px 10px;border-radius:8px;white-space:nowrap;pointer-events:none}
+.notes{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));max-width:min(640px,calc(100vw - 32px));z-index:22;background:var(--papel-50);color:var(--noche);border-radius:14px;padding:18px 22px;font-size:16px;line-height:1.5;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.notes b{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja-700);margin-bottom:6px}
+/* ---------- Walkthrough de la consola ---------- */
+.wth{display:flex;justify-content:space-between;align-items:flex-start;gap:40px}
+.wth h2{font-size:64px}
+.wtp{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:820px;margin-top:4px}
+.wtp span{font-size:17px;font-weight:700;padding:7px 12px;border-radius:999px;background:#1f2226;color:var(--papel-700);white-space:nowrap}
+.wtp span.ok{color:var(--papel-300)} .wtp span.ok::before{content:"✓ ";color:var(--salvia)}
+.wtp span.cur{background:var(--naranja);color:var(--noche)}
+.s-papel .wtp span{background:var(--papel-100)}
+.wt{display:grid;grid-template-columns:1fr 600px;gap:56px;margin-top:34px;flex:1;min-height:0}
+.wt.map{grid-template-columns:1fr 560px}
+/* ventana de la consola */
+.cw{position:relative;background:var(--papel-50);color:var(--noche);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;font-size:20px;line-height:1.3;box-shadow:0 30px 80px rgba(0,0,0,.45);align-self:start}
+.s-papel .cw{box-shadow:0 20px 60px rgba(14,17,22,.18);border:2px solid var(--papel-300)}
+.cw-bar{height:42px;background:var(--papel-100);display:flex;align-items:center;gap:8px;padding:0 18px;border-bottom:2px solid var(--papel-300)}
+.cw-bar i{width:13px;height:13px;border-radius:50%;background:var(--papel-300)}
+.cw-bar code{margin-left:14px;font-size:16px;color:var(--papel-700);background:var(--papel-0);padding:4px 14px;border-radius:8px}
+.cw-hd{display:flex;align-items:center;gap:12px;padding:12px 20px 0;font-weight:800;font-size:20px}
+.cw-hd em{font-style:normal;font-size:14px;font-weight:700;background:var(--papel-100);padding:3px 8px;border-radius:6px}
+.cw-hd .r{margin-left:auto;display:flex;gap:8px}
+.cw-top{display:flex;align-items:center;gap:14px;padding:12px 20px}
+.band{display:flex;border:2px solid var(--noche);border-radius:12px;overflow:hidden}
+.band span{padding:6px 14px;font-weight:800;font-size:18px;display:flex;flex-direction:column;line-height:1.05}
+.band span small{font-size:12px;font-weight:600;opacity:.75}
+.band span.on{background:var(--noche);color:var(--papel-50)}
+.swc{display:flex;align-items:center;gap:10px;border:2px solid var(--papel-300);border-radius:12px;padding:6px 12px}
+.swc b{font-size:17px} .swc small{display:block;font-size:12px;color:var(--papel-700)}
+.swc .k{width:44px;height:24px;border-radius:12px;background:var(--papel-300);position:relative}
+.swc .k::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff}
+.swc.on .k{background:var(--mostaza)} .swc.on .k::after{left:23px}
+.swc .v{font-weight:800;font-size:15px}
+.mg{margin-left:auto;display:flex;align-items:center;gap:10px;border-radius:12px;padding:6px 8px 6px 12px;background:var(--papel-100)}
+.mg .led{width:14px;height:14px;border-radius:50%;background:var(--papel-300)}
+.mg.in{background:#e3efe8} .mg.in .led{background:#2e9c62;box-shadow:0 0 0 4px rgba(46,156,98,.2)}
+.mg p{margin:0;font-size:16px;font-weight:700} .mg p small{display:block;font-weight:500;font-size:13px;color:var(--papel-700)}
+.cw-tabs{display:flex;gap:4px;padding:0 20px;border-bottom:2px solid var(--papel-300)}
+.cw-tabs span{padding:10px 16px;font-weight:700;font-size:18px;color:var(--papel-700);border-bottom:4px solid transparent;margin-bottom:-2px}
+.cw-tabs span.on{color:var(--noche);border-color:var(--naranja)}
+.cw-tabs span.aj{margin-left:auto}
+.cw-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:12px;background:var(--papel-100)}
+.cw-split{display:grid;grid-template-columns:330px 1fr;gap:14px}
+/* piezas */
+.cc{background:var(--papel-0);border:2px solid var(--papel-300);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+.cc h4{margin:0;font-size:19px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cc.soft{background:#f6f1dc;border-color:#eadfae}
+.cc.warn{background:#fbe6df;border-color:var(--rosa)}
+.cc.next{background:var(--crema);border-color:#e4d48e}
+.mut{color:var(--papel-700);font-size:16px}
+.ey{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja-700)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:16px;font-weight:700;padding:7px 13px;border-radius:10px;background:var(--noche);color:var(--papel-50);white-space:nowrap}
+.btn.gh{background:transparent;color:var(--noche);border:2px solid var(--papel-300)}
+.btn.hn{background:var(--mostaza);color:var(--noche)}
+.btn.or{background:var(--naranja);color:var(--noche)}
+.btn.dg{background:var(--rubi);color:#fff}
+.btn.ok{background:transparent;color:#1f7a49;border:2px solid #a9d6bc}
+.fld{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.fld label{font-size:14px;font-weight:700;color:var(--papel-700)}
+.inp{background:var(--papel-0);border:2px solid var(--papel-300);border-radius:9px;padding:7px 10px;font-size:16px;min-height:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inp.sel::after{content:" ▾";float:right;color:var(--papel-700)}
+.inp.ta{white-space:pre-line;min-height:62px;font-size:15px;line-height:1.35;color:var(--papel-900)}
+.inp.ph{color:var(--papel-700);font-style:italic}
+.bar{height:8px;border-radius:4px;background:var(--papel-300);overflow:hidden} .bar i{display:block;height:100%;background:var(--salvia)}
+.gl{display:flex;flex-direction:column;gap:8px}
+.gr{display:flex;align-items:center;gap:10px;background:var(--papel-0);border:2px solid var(--papel-300);border-radius:12px;padding:9px 12px}
+.gr.on{border-color:var(--noche)}
+.gr b{font-size:16px;display:block} .gr small{font-size:13px;color:var(--papel-700);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.pl{margin-left:auto;font-size:12px;font-weight:800;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.pl.live{background:#dff0e6;color:#1f7a49} .pl.srch{background:#f6ecc9;color:#7a5b00} .pl.fix{background:#dbe8ef;color:#1d5670} .pl.off{background:#f3d9d3;color:#8d2a2c}
+.mem{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--papel-100)}
+.mem:last-child{border-bottom:0}
+.mem b{font-size:16px;min-width:64px} .mem .mut{flex:1;font-size:14px}
+.stt{font-size:13px;font-weight:800;padding:3px 9px;border-radius:999px;background:var(--papel-100)}
+.stt.ap{background:#f6ecc9} .stt.ll{background:#dff0e6;color:#1f7a49} .stt.ca{background:#dbe8ef;color:#1d5670}
+.menu{position:absolute;z-index:3;background:var(--papel-0);border:2px solid var(--noche);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:4px 0;font-size:15px;min-width:200px}
+.menu span{display:block;padding:6px 14px} .menu span.on{background:var(--crema);font-weight:700}
+.sheet{position:absolute;z-index:4;right:22px;bottom:22px;width:400px;background:var(--papel-0);border-radius:18px;box-shadow:0 16px 50px rgba(0,0,0,.3);padding:18px 20px;display:flex;flex-direction:column;gap:8px;border-top:6px solid var(--naranja)}
+.sheet small{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--papel-700)}
+.sheet b{font-size:19px} .sheet p{margin:0;font-size:15px;color:var(--papel-900)}
+.toast{position:absolute;z-index:4;left:50%;bottom:20px;transform:translateX(-50%);background:var(--noche);color:var(--papel-50);font-size:15px;font-weight:700;padding:9px 16px;border-radius:10px;white-space:nowrap}
+/* marcadores numerados */
+.hs{position:relative;border-radius:12px;outline:0 solid transparent;outline-offset:3px;transition:outline-color .3s,box-shadow .3s}
+.hs::after{content:attr(data-n);position:absolute;top:-16px;right:-14px;z-index:5;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--mostaza);color:var(--noche);font:800 18px var(--f-txt);box-shadow:0 0 0 3px var(--noche);opacity:0;transform:scale(.3)}
+.s-papel .hs::after{box-shadow:0 0 0 3px var(--papel-50)}
+.active .hs::after{animation:pin 500ms var(--ease-enter) forwards;animation-delay:calc(var(--n,1)*160ms + 500ms)}
+.hs.now{outline:4px solid var(--naranja)}
+.hs.now::after{background:var(--naranja)}
+@keyframes pin{to{opacity:1;transform:scale(1)}}
+/* pasos de la derecha */
+.ws{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.ws li{display:grid;grid-template-columns:50px 1fr;gap:16px;align-items:start;padding:14px 18px;border-radius:18px;border:2px solid transparent;transition:background .3s,border-color .3s}
+.ws li i{font-style:normal;width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:var(--mostaza);color:var(--noche);font-size:24px;font-weight:800}
+.ws li b{display:block;font-size:28px;line-height:1.2}
+.ws li span{display:block;font-size:22px;line-height:1.35;color:var(--papel-300);margin-top:4px}
+.s-papel .ws li span{color:var(--papel-700)}
+.ws li code{font-size:24px;color:var(--mostaza)} .s-papel .ws li code{color:var(--naranja-700)}
+.ws li .wa{display:inline-block;font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--salvia);color:var(--noche);padding:3px 10px;border-radius:999px;margin-left:8px;vertical-align:4px}
+.ws li.now{background:#1f2226;border-color:var(--naranja)} .ws li.now i{background:var(--naranja)}
+.s-papel .ws li.now{background:var(--papel-0)}
+.wtip{margin-top:auto;font-size:22px;line-height:1.4;padding:16px 20px;border-radius:16px;background:#1f2226;border-left:6px solid var(--mostaza);color:var(--papel-100)}
+.wtip b{color:var(--mostaza)}
+.s-papel .wtip{background:var(--papel-100);color:var(--noche);border-left-color:var(--naranja-700)} .s-papel .wtip b{color:var(--naranja-700)}
+.wsc{display:flex;flex-direction:column;min-height:0}
+.ws li span b{display:inline;font-size:inherit;line-height:inherit;color:var(--papel-50)} .s-papel .ws li span b{color:var(--noche)}
+.ws.tight{gap:6px} .ws.tight li{padding:9px 16px;grid-template-columns:44px 1fr} .ws.tight li i{width:44px;height:44px;font-size:21px} .ws.tight li b{font-size:25px} .ws.tight li span{font-size:20px;margin-top:2px}
+
+
+/* ---------- Estandarización de diagramación ---------- */
+h2{font-size:76px}
+.slide .content>h2+*:not(.body){margin-top:56px!important}
+.tb th,.tb td{padding:16px 24px} table{color:inherit;font-family:inherit}
+.slide .content>h2+.body{margin-top:32px!important}
+.wth+h2{margin-top:18px}
+.warn,.wtip,.sheet{border-radius:0!important}
+.hs,.inp.hs{overflow:visible}
+
+@media (max-width:640px){.navbar .chap,.navbar .hide-sm{display:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:1ms!important;animation-delay:0s!important;animation-iteration-count:1!important} .wave{display:none}}
+</style>
+</head>
+<body>
+
+<div class="viewport" id="viewport">
+<div class="stage" id="stage">
+<div class="wm logo" id="logo" aria-label="Sintonía">sinton<span class="i">ı</span>a</div>
+
+<!-- 1 · Bienvenida -->
+<section class="slide s-crema active" data-chap="Contexto" data-title="Bienvenida" data-notes="Bienvenido al piloto de Sintonía. Esta sesión dura unos 40 minutos: qué es Sintonía, en qué va el piloto y cómo llevar un grupo de WhatsApp desde el primer mensaje hasta la encuesta de cierre. Al terminar, el monitor debe poder operar un grupo de E1 sin depender del equipo y dejar los datos limpios para el análisis.">
+  <div class="content cover">
+    <div class="glyph" style="width:460px;height:460px" role="img" aria-label="Logo de Sintonía">
+      <svg viewBox="-40 -40 280 280" aria-hidden="true">
+        <circle class="zl" cx="100" cy="100" r="100" fill="#ebc46a"/>
+        <circle class="gring r1" cx="100" cy="100" r="81.3" fill="none" stroke="#c23a00" stroke-width="5.1"/>
+        <circle class="gring r2" cx="100" cy="100" r="92" fill="none" stroke="#0e1116" stroke-width="9"/>
+        <circle class="wave" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3.5" vector-effect="non-scaling-stroke"/>
+        <circle class="wave loop" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3" vector-effect="non-scaling-stroke"/>
+        <g class="stone"><path d="M 195.66 406.73 C 195.66 376.47 204.28 350.20 221.53 327.91 C 238.78 305.61 262.27 286.90 291.99 271.78 C 321.72 256.65 355.42 245.37 393.10 237.94 C 430.79 230.51 470.07 226.79 510.94 226.79 C 561.36 226.79 608.20 231.31 651.46 240.33 C 694.71 249.35 733.86 261.29 768.89 276.16 L 768.89 460.86 C 754.03 449.72 734.52 440.16 710.37 432.20 C 686.22 424.24 660.74 418.14 633.94 413.89 C 607.14 409.64 581.79 407.52 557.91 407.52 C 541.98 407.52 527.52 408.45 514.52 410.31 C 501.51 412.17 491.16 414.95 483.47 418.67 C 475.77 422.38 471.92 427.16 471.92 433.00 C 471.92 436.18 473.12 438.57 475.51 440.16 C 477.89 441.76 481.48 442.82 486.25 443.35 C 491.03 443.88 497.13 444.15 504.57 444.15 C 516.77 444.15 527.65 444.15 537.21 444.15 C 546.76 444.15 557.38 444.15 569.05 444.15 C 595.59 444.15 622.26 445.87 649.07 449.32 C 675.87 452.77 700.29 459.54 722.31 469.62 C 744.34 479.71 761.99 494.17 775.26 513.01 C 788.53 531.85 795.16 556.67 795.16 587.45 C 795.16 619.83 786.27 647.30 768.49 669.85 C 750.71 692.41 726.56 710.72 696.04 724.79 C 665.52 738.85 631.29 749.07 593.34 755.44 C 555.39 761.81 515.98 765 475.11 765 C 426.81 765 379.17 760.48 332.20 751.46 C 285.23 742.44 245.02 729.17 211.58 711.65 L 211.58 517.39 C 224.85 531.72 243.83 543.53 268.51 552.82 C 293.19 562.11 319.99 569.01 348.92 573.52 C 377.84 578.03 405.05 580.29 430.52 580.29 C 446.98 580.29 461.84 579.36 475.11 577.50 C 488.38 575.64 498.86 572.72 506.56 568.74 C 514.25 564.76 518.10 559.59 518.10 553.22 C 518.10 550.56 517.30 548.71 515.71 547.65 C 514.12 546.58 511.60 545.79 508.15 545.26 C 504.70 544.73 500.05 544.46 494.22 544.46 C 486.25 544.46 478.03 544.46 469.53 544.46 C 461.04 544.46 453.35 544.46 446.45 544.46 C 427.87 544.46 407.30 543.80 384.74 542.47 C 362.19 541.14 339.76 538.22 317.47 533.71 C 295.18 529.20 274.88 522.04 256.56 512.22 C 238.25 502.40 223.52 488.86 212.38 471.61 C 201.23 454.36 195.66 432.73 195.66 406.73 Z" fill="#0e1116" transform="translate(0.00 -0.41) scale(0.20346)"/></g>
+      </svg>
+    </div>
+    <div>
+      <p class="eyebrow in" style="--i:1">Onboarding del monitor · noviembre 2026</p>
+      <h1 class="in" style="--i:2">Tu guía para operar el <span class="u">mago.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+      <div class="pills in" style="--i:3"><span>E1 · WhatsApp + mago</span><span>20 h · 2 semanas</span><span>Universidad Icesi</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · En 30 segundos -->
+<section class="slide s-papel" data-chap="Contexto" data-title="En 30 segundos" data-notes="Si el monitor recuerda solo una diapositiva, que sea esta. Todo lo demás es el detalle de estos cuatro verbos.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Lo esencial</p>
+    <h2 class="in" style="--i:1">En 30 segundos.</h2>
+    <div class="verbs">
+      <div class="vb in" style="--i:2;--c:var(--mostaza)"><i>1</i><b>Operas</b><span>un grupo de WhatsApp desde el número de Sintonía.</span></div>
+      <div class="vb in" style="--i:3;--c:var(--salvia)"><i>2</i><b>Registras</b><span>en la consola todo lo que pasa en el chat.</span></div>
+      <div class="vb in" style="--i:4;--c:var(--vitral);--t:var(--papel-0)"><i>3</i><b>Mides</b><span>tu tiempo con «Mago in» y «Mago off».</span></div>
+      <div class="vb in" style="--i:5;--c:var(--coral)"><i>4</i><b>Escalas</b><span>cuando algo no está claro. No improvisas.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · El problema -->
+<section class="slide s-papel" data-chap="Contexto" data-title="El problema" data-notes="Todos conocemos el «hay que vernos» que nunca se concreta. Sintonía no crea grupos nuevos: trabaja con parches que ya existen y no logran cerrar el plan.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">El problema</p>
+    <h2 class="in" style="--i:1">Al grupo no le falta gente. Le falta cerrar.</h2>
+    <div class="twonum">
+      <div class="in" style="--i:2"><b class="o">96 %</b><span>dice que de 5 planes del chat se hacen 2 o menos.</span></div>
+      <div class="in" style="--i:3"><b>89 %</b><span>dice que el plan muere al buscar fecha y hora.</span></div>
+    </div>
+    <p class="src in" style="--i:4">Fuente: encuesta propia de Sintonía · vista parcial · n = 76 al 25 oct · hallazgo emergente.</p>
+  </div>
+</section>
+
+<!-- 4 · La idea -->
+<section class="slide s-noche" data-chap="Contexto" data-title="La idea" data-notes="En este piloto, el «quinto amigo» eres tú. La gente sabe que una persona del equipo revisa todo; lo dice el primer mensaje del grupo.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">La idea</p>
+    <h2 class="in" style="--i:1">El quinto amigo del parche, dentro del chat.</h2>
+    <div class="cards4">
+      <div class="cd in" style="--i:2;--c:var(--mostaza)"><b>Propone</b><span>1 a 3 planes, solo del inventario verificado de Cali</span></div>
+      <div class="cd in" style="--i:3;--c:var(--salvia)"><b>Concilia</b><span>Votación con 1, 2, 3, TODAS o NINGUNA</span></div>
+      <div class="cd in" style="--i:4;--c:var(--vitral);--t:var(--papel-0)"><b>Cierra</b><span>Día, hora, dirección y salida sugerida</span></div>
+      <div class="cd in" style="--i:5;--c:var(--coral)"><b>Acompaña</b><span>Llegada, «ya en casa» y encuesta corta</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · En qué va el piloto -->
+<section class="slide s-papel" data-chap="Contexto" data-title="En qué va el piloto" data-notes="La pregunta del experimento es si E1.5 logra lo mismo que E1 con menos minutos humanos. Por eso tus minutos importan tanto como los votos.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">En qué va el piloto</p>
+    <h2 class="in" style="--i:1">Dos condiciones, un mismo chat.</h2>
+    <div class="cmp2">
+      <table class="tb in" style="--i:2">
+        <tr><th></th><th class="hl">E1 · WhatsApp + mago <em>Aquí entras tú</em></th><th>E1.5 · WhatsApp automatizado</th></tr>
+        <tr><td>Quién opera</td><td class="hl"><b>Tú</b>, desde la consola</td><td>Un motor en n8n; una persona aprueba</td></tr>
+        <tr><td>Grupos</td><td class="hl">2</td><td>2</td></tr>
+        <tr><td>Planes por grupo</td><td class="hl">2</td><td>2</td></tr>
+      </table>
+      <div class="measure in" style="--i:3">
+        <p class="mini">Más 1 grupo de reserva.</p>
+        <h3>Qué medimos</h3>
+        <p><b>Principal:</b> facilidad por momento (SEQ, 1 a 7) y usabilidad (SUS, 0 a 100).</p>
+        <p><b>De contexto:</b> llegaron / invitadas, minutos humanos por plan y «¿Repetimos con este parche?».</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · Tu rol -->
+<section class="slide s-vitral" data-chap="Contexto" data-title="Tu rol" data-notes="Esto se llama Mago de Oz: una persona hace lo que después hará un sistema, para aprender antes de automatizar. Escribes desde el número de Sintonía, usas los textos que te da la consola, registras cada respuesta del grupo y mides tu tiempo. No hay engaño: el grupo sabe que una persona del equipo revisa todo. Si alguien pregunta «¿eres un bot?», la respuesta honesta es que una persona del equipo opera Sintonía en este piloto. Si quiere hablar con alguien, se usa /humano.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Tu rol · Mago de Oz</p>
+    <h2 class="in" style="--i:1">Haces a mano lo que mañana hará el sistema.</h2>
+    <div class="oz">
+      <div class="ozside in" style="--i:2">
+        <small>Lo que ve el grupo</small>
+        <div class="ozphone">
+          <span class="ozh">Los del colegio</span>
+          <span class="ozb me">¿Armamos plan el sábado?</span>
+          <span class="ozb sin"><em>Sintonía</em>1 · Café  2 · Asado  3 · Cine</span>
+        </div>
+      </div>
+      <div class="ozlink" aria-hidden="true"><svg viewBox="0 0 200 40"><path d="M0 20 Q25 0 50 20 T100 20 T150 20 T200 20" fill="none" stroke="#f3e9b8" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 12"/></svg></div>
+      <div class="ozside in" style="--i:3">
+        <small>Lo que pasa detrás</small>
+        <div class="ozstage">
+          <div class="ozyou"><svg viewBox="0 0 120 90" aria-hidden="true"><rect x="10" y="8" width="100" height="62" rx="8" fill="none" stroke="#0e1116" stroke-width="6"/><path d="M2 80h116" stroke="#0e1116" stroke-width="6" stroke-linecap="round"/><path d="M28 30h40M28 44h60M28 58h24" stroke="#c23a00" stroke-width="5" stroke-linecap="round"/></svg><b>Tú</b><span>desde la consola</span></div>
+          <i class="curtain l"></i><i class="curtain r"></i>
+        </div>
+      </div>
+    </div>
+    <div class="pills light in" style="--i:4"><span>Opera</span><span>Registra</span><span>Mide</span><span>Escala</span></div>
+  </div>
+</section>
+
+<!-- 7 · Tus 20 horas -->
+<section class="slide s-papel" data-chap="Operación" data-title="Tus 20 horas" data-notes="Acordar en esta sesión las ventanas de atención (por ejemplo, 8:00–10:00 y 18:00–21:00) y quién cubre fuera de ellas.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Cómo se reparte tu tiempo (estimación)</p>
+    <h2 class="in" style="--i:1">Tus 20 horas.</h2>
+    <div class="stack in" style="--i:2"><i style="--w:15%;--c:var(--salvia);--k:0"><b>3 h</b></i><i style="--w:35%;--c:var(--mostaza);--k:1"><b>7 h</b></i><i style="--w:35%;--c:var(--naranja);--k:2"><b>7 h</b></i><i style="--w:10%;--c:var(--vitral);--k:3"><b>2 h</b></i><i style="--w:5%;--c:var(--papel-300);--k:4"><b>1 h</b></i></div>
+    <ul class="legend in" style="--i:3"><li style="--c:var(--salvia)"><span>Inducción y ensayo en modo prueba</span><b>3 h</b></li><li style="--c:var(--mostaza)"><span>Plan 1 en 2 grupos</span><b>7 h</b></li><li style="--c:var(--naranja)"><span>Plan 2 en los mismos 2 grupos</span><b>7 h</b></li><li style="--c:var(--vitral)"><span>Revisión de datos y nota por plan</span><b>2 h</b></li><li style="--c:var(--papel-300)"><span>Margen para imprevistos</span><b>1 h</b></li></ul>
+    <p class="note in" style="--i:4">Es una estimación del equipo para planear tu tiempo, incluidas las esperas. No es la medida de minutos por plan: esa sale de Mago in / off. Los mensajes llegan a cualquier hora: acordamos contigo ventanas de atención.</p>
+  </div>
+</section>
+
+<!-- 8 · Antes de tu primer turno -->
+<section class="slide s-noche" data-chap="Operación" data-title="Antes de tu primer turno" data-notes="Firmar o aceptar el acuerdo de confidencialidad antes de entregar la clave. Nada de capturas de pantalla con datos de participantes.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Accesos y acuerdo</p>
+    <h2 class="in" style="--i:1">Antes de tu primer turno.</h2>
+    <ul class="check">
+      <li class="in" style="--i:2"><i></i><div><b>Consola</b><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div></li>
+      <li class="in" style="--i:3"><i></i><div><b>Clave de la consola</b><span>Te la entregamos en persona. Se guarda solo en esa pestaña y se borra al cerrarla. La cambiamos al terminar tus dos semanas.</span></div></li>
+      <li class="in" style="--i:4"><i></i><div><b>WhatsApp</b><span>Acceso al número de Sintonía (WhatsApp Business del equipo). Nunca uses tu número personal.</span></div></li>
+      <li class="in" style="--i:5"><i></i><div><b>Tu nombre</b><span>En «Quién atiende hoy»: es la firma de /humano.</span></div></li>
+      <li class="in" style="--i:6"><i></i><div><b>Filtro de la consola</b><span>Ensayos en «Prueba», grupos reales en «Piloto».</span></div></li>
+      <li class="in" style="--i:7"><i></i><div><b>Confidencialidad</b><span>Verás nombres y números. No salen de la consola ni del chat del grupo.</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 9 · Un turno -->
+<section class="slide s-noche" data-chap="Operación" data-title="Un turno" data-notes="Sin «Mago in» tu trabajo no cuenta en los minutos humanos, que es la métrica que compara E1 con E1.5. Mejor una sesión de más que una de menos.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Ritmo de trabajo</p>
+    <h2 class="in" style="--i:1">Un turno, de principio a fin.</h2>
+    <ol class="flow5">
+      <li class="hot in" style="--i:2"><i>1</i><b>▶ Mago in</b><span>antes de tocar nada</span></li>
+      <li class="in" style="--i:3"><i>2</i><b>Abre</b><span>el grupo y el plan en la consola</span></li>
+      <li class="in" style="--i:4"><i>3</i><b>Haz el paso</b><span>que la consola marca como siguiente</span></li>
+      <li class="in" style="--i:5"><i>4</i><b>Registra</b><span>lo que respondió el grupo</span></li>
+      <li class="hot in" style="--i:6"><i>5</i><b>■ Mago off</b><span>al terminar</span></li>
+    </ol>
+    <p class="warn in" style="--i:7">A las 2 h la consola te avisa. A las 4 h cierra la sesión sola y <b>sin minutos</b>: si pasa, anota los reales en «Llegadas y tiempo» → Registro manual.</p>
+  </div>
+</section>
+
+<!-- 10 · Mapa de la consola -->
+<section class="slide s-papel" data-chap="Walkthrough" data-title="Mapa de la consola" data-notes="Este es el mapa. La única regla para no perderse: mirar «Lo que toca ahora» y usar su botón. Te lleva a la pestaña correcta y resalta el campo. Debajo está el recorrido del grupo con los pasos hechos y el que sigue.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Walkthrough · la consola por dentro</p>
+    <h2 class="in" style="--i:1">Así se ve la consola.</h2>
+    <div class="wt map">
+      <div class="in" style="--i:2"><div class="cw">
+      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
+      <div class="cw-top"><div class="hs" data-n="1" style="--n:1"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div></div><div class="hs" data-n="2" style="--n:2"><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div></div><div class="hs" style="margin-left:auto;--n:3" data-n="3" style="--n:3"><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div></div>
+      <div class="cw-tabs"><span class="on">Grupo</span><span class="">Plan</span><span class="hs" data-n="6" style="--n:6;padding:0"><span class="">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
+      <div class="cw-body"><div class="cw-split">
+  <div class="hs" data-n="4" style="--n:4"><div class="gl">
+  <div class="gr on"><span><b>amigos · a3f91c</b><small>Grupo: Cerrar el reclutamiento</small></span><span class="pl srch">Reclutando</span></div>
+  <div class="gr"><span><b>familia · 7be20d</b><small>Plan 1: Registrar votos (faltan 2)</small></span><span class="pl live">Votación</span></div>
+  <div class="gr"><span><b>trabajo · c41a88</b><small>Plan 1: Enviar /confirmado</small></span><span class="pl fix">Fijado</span></div>
+</div></div>
+  <div class="cc next hs" data-n="5" style="--n:5"><span class="ey">Lo que toca ahora · amigos · a3f91c</span><h4>Grupo · Cerrar el reclutamiento</h4><span class="mut">Aceptaron todos: cierra el reclutamiento para activar el grupo.</span><div class="row"><span class="btn">Ir a cerrar el reclutamiento →</span></div>
+    <div class="bar" style="margin-top:6px"><i style="width:8%"></i></div><span class="mut">Recorrido del grupo · 1 de 14 pasos</span></div>
+</div></div>
+    </div></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Condición</b><span>Siempre <b>E1</b>.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Modo prueba</b><span><b>SÍ</b> en ensayos · <b>NO</b> con grupos reales.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Mago in / Mago off</b><span>Verde: tus minutos cuentan.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Lista de grupos</b><span>Cada fila dice qué le falta.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Lo que toca ahora</b><span>Su botón → te lleva al sitio exacto.</span></div></li><li class="in" data-n="6" style="--i:8"><i>6</i><div><b>Pestañas</b><span>Usas cuatro. «Ajustes» no se toca.</span></div></li></ol></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · Walkthrough 1 · Entrar -->
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 1 · Entrar" data-notes="La clave se entrega en persona y nunca se escribe en un chat. Si «Mago in» no aparece, el backend es anterior a la 2.3.0: avisa al equipo y registra los minutos a mano en Llegadas y tiempo. El ritmo de cada turno: Mago in, abrir el grupo, hacer el paso que marca la consola, registrar, Mago off.">
+  <div class="content">
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 1 de 7</p><div class="wtp"><span class="cur">1 · Entrar</span><span class="">2 · Grupo e /ingreso</span><span class="">3 · Opciones</span><span class="">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Entra y abre tu sesión.</h2>
+    <div class="wt">
+      <div class="in" style="--i:2"><div class="cw">
+      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
+      <div class="cw-top"><div class="hs" data-n="2" style="--n:2"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div></div><div class="hs" data-n="3" style="--n:3"><div class="swc on"><div><b>Modo prueba</b><small>Activo: no cuenta en el panel</small></div><span class="k"></span><span class="v">SÍ</span></div></div><div class="hs" style="margin-left:auto;--n:4" data-n="4" style="--n:4"><div class="mg"><span class="led"></span><span class="inp" style="min-width:150px">Katherine</span><span class="btn or">▶ Mago in</span></div></div></div>
+      <div class="cw-tabs"><span class="on">Grupo</span><span class="">Plan</span><span class="">Mensajes</span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
+      <div class="cw-body"><div class="cw-split">
+  <div class="cc hs" data-n="1" style="--n:1"><h4>Entrar a la consola</h4><span class="mut">La clave se guarda en esta pestaña y se borra al cerrarla.</span><div class="fld"><label>ADMIN_KEY</label><span class="inp">●●●●●●●●●●</span></div><span class="btn" style="justify-content:center">Entrar</span></div>
+  <div class="cc next hs" data-n="5" style="--n:5"><span class="ey">Lo que toca ahora · amigos · a3f91c</span><h4>Grupo · Cerrar el reclutamiento</h4><span class="mut">Aceptaron todos: cierra el reclutamiento para activar el grupo.</span>
+    <div class="cc warn" style="padding:10px 12px"><b style="font-size:15px">Abre «Mago in» antes de seguir</b><span class="mut" style="font-size:14px">Sin sesión abierta, este trabajo no cuenta en los minutos humanos.</span></div>
+    <div class="row"><span class="btn">Ir a cerrar el reclutamiento →</span></div></div>
+</div></div>
+    </div></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Entra con la clave</b><span>Pega la ADMIN_KEY → <b>Entrar</b>.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Elige E1</b><span>Arriba a la izquierda.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Modo prueba</b><span>Ensayo: <b>SÍ</b>. Grupos reales: <b>NO</b>.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>▶ Mago in</b><span>Tu nombre y abrir. Se pone verde.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Sigue el recuadro</b><span>«Lo que toca ahora» dice qué sigue.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Si te pierdes:</b> usa el botón de «Lo que toca ahora».</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · Walkthrough 2 · Grupo e /ingreso -->
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 2 · Grupo e /ingreso" data-notes="Si el quórum no está completo (por ejemplo 4 de 5) y cierras, el grupo queda excluido por la regla I9. Si a las 24 h falta alguien, «Abrir chat con mensaje» le escribe al organizador. WhatsApp no deja crear el grupo automáticamente: se hace a mano. En Mensajes, escribe tu nombre en «Quién atiende hoy»: firma el /humano.">
+  <div class="content">
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 2 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="cur">2 · Grupo e /ingreso</span><span class="">3 · Opciones</span><span class="">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Activa el grupo y da la bienvenida.</h2>
+    <div class="wt">
+      <div class="in" style="--i:2"><div class="cw">
+      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
+      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
+      <div class="cw-tabs"><span class="on">Grupo</span><span class="">Plan</span><span class="hs" data-n="4" style="--n:4;--n:4;padding:0"><span class="">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
+      <div class="cw-body"><div class="cw-split">
+  <div class="hs" data-n="1" style="--n:1"><div class="gl">
+  <div class="gr on"><span><b>amigos · a3f91c</b><small>Grupo: Cerrar el reclutamiento</small></span><span class="pl srch">Reclutando</span></div>
+  <div class="gr"><span><b>familia · 7be20d</b><small>Plan 1: Registrar votos (faltan 2)</small></span><span class="pl live">Votación</span></div>
+  <div class="gr"><span><b>trabajo · c41a88</b><small>Plan 1: Enviar /confirmado</small></span><span class="pl fix">Fijado</span></div>
+</div></div>
+  <div class="cc"><h4>amigos · a3f91c <span class="pl srch" style="margin:0">reclutando</span></h4>
+    <span class="hs" data-n="1" style="--n:1;display:block;padding:2px 4px"><span style="font-size:16px">Quórum: <b>5 / 5</b> consintieron</span><div class="bar" style="margin-top:6px"><i style="width:100%"></i></div></span>
+    <div class="row"><span class="btn gh">Copiar invitación</span><span class="btn hs" data-n="2" style="--n:2">Cerrar reclutamiento</span></div>
+    <div class="mem"><b>Ana</b><span class="mut">organizador · +57 3•• ••• ••12</span><span class="btn gh">Abrir chat con mensaje</span></div>
+    <div class="cc soft" style="padding:10px 12px"><b style="font-size:15px">Crear el grupo del plan en WhatsApp</b><span class="mut" style="font-size:14px">Créalo a mano desde el número Sintonía con estas 5 personas.</span><span class="btn gh hs" data-n="3" style="--n:3;align-self:flex-start">Copiar nombres y números</span></div>
+  </div>
+</div></div><div class="sheet"><small>Confirmar</small><b>Cerrar reclutamiento</b><p>Consintieron 5 de 5. El grupo pasa a ACTIVO. ¿Cerrar reclutamiento?</p><div class="row" style="justify-content:flex-end"><span class="btn gh">Cancelar</span><span class="btn">Sí, confirmar</span></div></div>
+    </div></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Elige el grupo y mira el quórum</b><span>Debe decir <b>5 / 5</b>.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Cerrar reclutamiento</b><span>Y en la hoja: <b>Sí, confirmar</b>.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Copia nombres y crea el grupo<em class="wa">En WhatsApp</em></b><span>A mano, desde el número Sintonía.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Mensajes → /ingreso</b><span>Para: Todo el grupo → <b>Copiar</b>.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Pega y marca como enviado<em class="wa">En WhatsApp</em></b><span>Queda «✓ Enviado» con la hora.</span></div></li></ol><p class="wtip in" style="--i:9"><b>¿4 de 5?</b> No cierres. Avisa al equipo.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · Walkthrough 3 · Opciones -->
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 3 · Opciones" data-notes="Gemini ya recibe lo que el parche contó al inscribirse. Si trae un lugar cerrado o un horario dudoso, quítalo y usa «+ Opción manual» con un lugar del inventario activo. Cada opción necesita título y al menos una parada.">
+  <div class="content">
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 3 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="ok">2 · Grupo e /ingreso</span><span class="cur">3 · Opciones</span><span class="">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Pide opciones y publica.</h2>
+    <div class="wt">
+      <div class="in" style="--i:2"><div class="cw">
+      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
+      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
+      <div class="cw-tabs"><span class="">Grupo</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="on">Plan</span></span><span class="">Mensajes</span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
+      <div class="cw-body"><div class="cc"><h4>Plan 1 <span class="pl srch" style="margin:0">borrador</span></h4>
+  <div class="cc soft" style="padding:8px 12px"><b style="font-size:15px">Lo que contó el parche al inscribirse</b><span class="mut" style="font-size:14px">Gemini ya lo recibe; no hace falta copiarlo.</span></div>
+  <div class="fld hs" data-n="2" style="--n:2"><label>Lo de este plan para Gemini (día, hora, zona, presupuesto)</label><span class="inp">sábado en la tarde, máx. $40.000, sur u oeste</span></div>
+  <div class="row"><span class="btn hn hs" data-n="3" style="--n:3">✨ Pedir opciones a Gemini</span><span class="btn gh">+ Opción manual</span></div>
+  <div class="cc hs" data-n="4" style="--n:4;padding:10px 12px;gap:6px"><div class="row" style="justify-content:space-between"><b style="font-size:16px">Opción 1</b><span class="btn gh">Quitar</span></div>
+    <div class="row"><div class="fld"><label>Título</label><span class="inp">Café y caminata</span></div><div class="fld"><label>Parada 1</label><span class="inp sel">L07 · Café de barrio (Oeste)</span></div></div>
+</div>
+  <div class="row"><span class="btn hs" data-n="5" style="--n:5">Publicar plan al grupo</span><span class="mut">+ 2 opciones más abajo</span></div></div></div>
+    </div></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Plan → + Crear plan</b><span>Un plan a la vez por grupo.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Escribe lo de este plan</b><span>Día, hora, zona y presupuesto.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>✨ Pedir opciones a Gemini</b><span>Hasta 3, solo del inventario.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Revisa cada opción</b><span>¿Abierto, horario y costo bien?</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Publicar plan al grupo</b><span>Y <b>Sí, confirmar</b>.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Publicar no escribe en el chat.</b> Eso viene después.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 · Walkthrough 4 · Votos y cierre -->
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 4 · Votos y cierre" data-notes="Si alguien cambia su voto, se registra otra vez: el último reemplaza al anterior. «Voy tarde» o «no sé» no es un voto: se pregunta con calma. Sin día y hora la consola no deja cerrar. Causas de caída: tráfico, lluvia, agenda, costo, desinterés, imprevisto u otro.">
+  <div class="content">
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 4 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="cur">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Registra votos y cierra el plan.</h2>
+    <div class="wt">
+      <div class="in" style="--i:2"><div class="cw">
+      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
+      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
+      <div class="cw-tabs"><span class="">Grupo</span><span class="on">Plan</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
+      <div class="cw-body"><div class="cc"><h4>Plan 1 <span class="pl live" style="margin:0">votando</span></h4>
+  <div class="cc warn hs" data-n="3" style="--n:3;display:block;padding:8px 12px;font-size:16px">Publicado hace <b>2,1 h</b> · faltan <b>2</b> voto(s): Caro, Pipe</div>
+  <b style="font-size:17px">Votos por persona</b>
+  <div class="mem"><b>Ana</b><span class="mut">opción 2</span><span class="inp sel" style="min-width:200px">Registrar voto…</span></div>
+  <div class="mem"><b>Caro</b><span class="mut">sin voto</span><span class="inp sel hs" data-n="2" style="--n:2;min-width:200px">Registrar voto…</span></div>
+  <div class="cc soft" style="gap:8px;padding:10px 12px"><b style="font-size:16px">Cerrar votación</b>
+    <div class="row"><div class="fld"><label>Opción ganadora</label><span class="inp sel">2. Asado en el parque</span></div><div class="fld"><label>Encuentro (día y hora)</label><span class="inp">sáb 14/11 · 4:00 p. m.</span></div><div class="fld"><label>Salida sugerida</label><span class="inp">3:15 p. m.</span></div></div>
+    <div class="row"><span class="btn hs" data-n="4" style="--n:4">Cerrar plan</span><span class="inp sel" style="margin-left:auto;min-width:140px">Causa…</span><span class="btn dg hs" data-n="5" style="--n:5">Marcar como caído</span></div></div>
+</div></div>
+    </div></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Mensajes → /opciones<em class="wa">En WhatsApp</em></b><span>Copiar, pegar y marcar como enviado.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Registrar voto…</b><span>Por cada voto: 1, 2, 3, TODAS o NINGUNA.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>¿2 h y faltan votos?</b><span>Un solo <code>/recordatorio</code>.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Cerrar votación</b><span>Ganadora, día, hora y salida → <b>Cerrar plan</b>.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>¿No se dio?</b><span>Causa → <b>Marcar como caído</b>.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Cerrar no avisa al grupo.</b> El aviso es /confirmado.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 · Walkthrough 5 · Confirmar -->
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 5 · Confirmar" data-notes="Si un texto muestra algo entre corchetes, falta un dato: revisa que el plan esté cerrado y seleccionado. Si el grupo cambia la hora: Plan → «Corregir hora del encuentro» (no cambia las métricas). La /salida también se marca en Llegadas y tiempo → Mensajes del mago al grupo.">
+  <div class="content">
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 5 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="ok">4 · Votos y cierre</span><span class="cur">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Confirma y avisa la salida.</h2>
+    <div class="wt">
+      <div class="in" style="--i:2"><div class="cw">
+      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
+      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
+      <div class="cw-tabs"><span class="">Grupo</span><span class="">Plan</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="on">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
+      <div class="cw-body"><div class="cc"><div class="row"><div class="fld"><label>Para</label><span class="inp sel">Todo el grupo (pegar en el grupo del plan)</span></div></div></div>
+<div class="cc"><h4>/confirmado <span class="mut" style="font-weight:500">Plan cerrado</span></h4>
+  <span class="inp ta hs" data-n="2" style="--n:2">¡Quedó! Ruta clara, ganas intactas:
+📍 Asado en el parque — Parque del barrio (Oeste)
+🕒 Encuentro: sáb 14/11 · 4:00 p. m. · 🚗 Salida sugerida: 3:15 p. m.
+Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
+  <div class="row"><span class="btn hs" data-n="3" style="--n:3">Copiar</span><span class="btn hn">✨ Ajustar con Gemini</span><span class="btn ok">✓ Enviado 18:42</span></div></div>
+<div class="cc"><h4>/salida <span class="mut" style="font-weight:500">Hora de salida (2 h antes)</span></h4><div class="row"><span class="btn hs" data-n="4" style="--n:4">Copiar</span></div></div></div>
+    </div></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Mensajes → /confirmado</b><span>Sale de primero en la lista.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Revisa el texto</b><span>Sin <code>[corchetes]</code> vacíos.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Copiar, pegar y marcar<em class="wa">En WhatsApp</em></b><span><b>Marcar como enviado</b>.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>2 h antes: /salida<em class="wa">En WhatsApp</em></b><span>Copiar y pegar en el grupo.</span></div></li></ol><p class="wtip in" style="--i:9"><b>ME APUNTO o NO PUEDO</b> se registra en Llegadas y tiempo.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 16 · Walkthrough 6 · Día del plan -->
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 6 · Día del plan" data-notes="No se pide ubicación. Una marca por persona. Si alguien no responde después del plan, se deja como está; no se inventa.">
+  <div class="content">
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 6 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="ok">4 · Votos y cierre</span><span class="ok">5 · Confirmar</span><span class="cur">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">El día del plan.</h2>
+    <div class="wt">
+      <div class="in" style="--i:2"><div class="cw">
+      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
+      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
+      <div class="cw-tabs"><span class="">Grupo</span><span class="">Plan</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="">Mensajes</span></span><span class="on">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
+      <div class="cw-body"><div class="cc"><h4>Estado de cada persona <span class="mut" style="font-weight:500">· Plan 1 · cerrado</span></h4>
+  <span class="mut">El menú <b>registra</b>; no le envía nada a nadie.</span>
+  <div class="mem"><b>Ana</b><span class="mut"><span class="stt ca">En casa</span></span><span class="inp sel" style="min-width:180px">Cambiar a…</span></div>
+  <div class="mem"><b>Luis</b><span class="mut"><span class="stt ll">Llegó</span></span><span class="inp sel" style="min-width:180px">Cambiar a…</span></div>
+  <div class="mem" style="position:relative"><b>Sofi</b><span class="mut"><span class="stt ap">Se apuntó</span></span><span class="inp sel hs" data-n="2" style="--n:2;min-width:180px">Cambiar a…</span>
+    <div class="menu" style="right:0;top:42px"><span>Se apuntó (actual)</span><span>No puede</span><span class="on">Llegó</span><span>En casa</span></div></div>
+  <div class="mem"><b>Caro</b><span class="mut"><span class="stt ap">Se apuntó</span></span><span class="inp sel" style="min-width:180px">Cambiar a…</span></div>
+  <div class="mem"><b>Pipe</b><span class="mut"><span class="stt">No puede</span></span><span class="inp sel" style="min-width:180px">Cambiar a…</span></div>
+</div>
+<div class="cc soft hs" data-n="3" style="--n:3;padding:10px 12px"><span style="font-size:15px">Todavía no registran llegada: <b>Caro</b>. Elige a la persona en «Para» y usa <b>/no_llega</b> → <b>Abrir chat con Caro</b>.</span></div></div>
+    </div></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>/checkpoint al grupo<em class="wa">En WhatsApp</em></b><span>«¿Ya llegaron?»</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Registra cada «LLEGUÉ»</b><span>Cambiar a… → <b>Llegó</b>.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>¿Alguien no llega?<em class="wa">En WhatsApp</em></b><span>Para: esa persona → <code>/no_llega</code>.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Registra cada «ya en casa»</b><span>Cambiar a… → <b>En casa</b>.</span></div></li></ol><p class="wtip in" style="--i:9"><b>El menú registra; no le escribe a nadie.</b></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 17 · Walkthrough 7 · Pulso y plan 2 -->
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 7 · Pulso y plan 2" data-notes="El pulso trae SEQ y SUS y dura unos 4 minutos; se abre en el mismo celular del registro. Sin pulso, el plan se queda sin su métrica principal. Después del plan 2 la consola muestra «Grupo completo».">
+  <div class="content">
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 7 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="ok">4 · Votos y cierre</span><span class="ok">5 · Confirmar</span><span class="ok">6 · Día del plan</span><span class="cur">7 · Pulso y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Pulso, plan 2 y Mago off.</h2>
+    <div class="wt">
+      <div class="in" style="--i:2"><div class="cw">
+      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
+      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="hs" style="margin-left:auto;--n:5" data-n="5" style="--n:5"><div class="mg in"><span class="led"></span><p>En línea · 38 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div></div>
+      <div class="cw-tabs"><span class="">Grupo</span><span class="on">Plan</span><span class="">Mensajes</span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
+      <div class="cw-body"><div class="cc"><h4>Plan 1 <span class="pl fix" style="margin:0">cerrado</span> <span class="mut" style="font-weight:500">· llegaron 4 de 5</span></h4>
+  <b style="font-size:17px" class="hs" data-n="1" style="--n:1">Enlaces personales al pulso</b>
+  <div class="mem"><b>Ana</b><span class="mut">llegó · en casa · pulso ✓ · usabilidad ✓</span><span class="btn gh">Copiar</span><span class="btn gh">Enviar por WhatsApp</span></div>
+  <div class="mem"><b>Luis</b><span class="mut">llegó · en casa</span><span class="btn gh">Copiar</span><span class="btn gh hs" data-n="2" style="--n:2">Enviar por WhatsApp</span></div>
+  <div class="mem"><b>Sofi</b><span class="mut">llegó · pulso ✓ · usabilidad pendiente</span><span class="btn gh hs" data-n="3" style="--n:3">Enviar complemento</span></div>
+  <div class="cc soft" style="padding:10px 12px"><span style="font-size:15px"><b>¿El plan ya pasó?</b> Cada grupo hace 2 planes: crea el plan 2 en <b>el mismo grupo de WhatsApp</b>.</span><span class="btn hs" data-n="4" style="--n:4;align-self:flex-start">+ Crear plan 2 para este grupo</span></div>
+</div></div><div class="toast">Mago off · 38 min sumados al plan</div>
+    </div></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Plan → Enlaces al pulso</b><span>Uno personal por persona.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Enviar por WhatsApp<em class="wa">En WhatsApp</em></b><span>Abre su chat con el texto listo.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Revisa «pulso ✓»</b><span>¿Falta usabilidad? Enviar complemento.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>+ Crear plan 2</b><span>Mismo grupo. Vuelves a la etapa 3.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>■ Mago off</b><span>Tus minutos se suman solos al plan.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Sin pulso no hay métrica.</b></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 · Lo que escribe el grupo -->
+<section class="slide s-papel" data-chap="Paso a paso" data-title="Lo que escribe el grupo" data-notes="«voy tarde» o «no sé si pueda» no son ME APUNTO ni NO PUEDO. Se pregunta con calma o se deja sin marcar.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Lo que escribe el grupo</p>
+    <h2 class="in" style="--i:1">Cada palabra tiene un registro.</h2>
+    <div class="words"><div class="wh"><span>Si escriben…</span><span>Tú registras…</span></div><div class="wr in" style="--i:2"><b>1, 2 o 3</b><span>El voto de esa persona (si cambia, se reemplaza)</span></div><div class="wr in" style="--i:3"><b>TODAS</b><span>Le sirve cualquiera</span></div><div class="wr in" style="--i:4"><b>NINGUNA</b><span>Veto: propones otra ronda de opciones</span></div><div class="wr in" style="--i:5"><b>ME APUNTO / NO PUEDO</b><span>Asistencia en «Llegadas y tiempo»</span></div><div class="wr in" style="--i:6"><b>LLEGUÉ · «ya en casa»</b><span>Llegada · en casa</span></div><div class="wr in" style="--i:7"><b>HUMANO</b><span>Envías /humano y te presentas con tu nombre</span></div><div class="wr in" style="--i:8"><b>SALIR</b><span>Avisas al equipo de inmediato</span></div></div>
+    <p class="warn dark in" style="--i:9">Si un mensaje no encaja en la tabla, <b>no lo interpretes</b>: pregunta o escala.</p>
+  </div>
+</section>
+
+<!-- 19 · Voz de Sintonía -->
+<section class="slide s-papel" data-chap="Paso a paso" data-title="Voz de Sintonía" data-notes="Ejemplo «Así sí»: «Van 3 de 5 votos. ¿Cuál les suena más: 1, 2 o 3?». Ejemplo «Así no»: «Ana y Luis, ¡faltan ustedes! 😅🙏⏰».">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Voz de Sintonía</p>
+    <h2 class="in" style="--i:1">Cuando escribes con tus palabras.</h2>
+    <div class="voice">
+      <div>
+        <p class="body in" style="--i:2">La consola trae casi todos los textos. Cuando tengas que escribir algo propio:</p>
+        <ul class="bl dark in" style="--i:3">
+          <li><b>Una idea por mensaje.</b> Corto y claro.</li>
+          <li><b>Conteos, nunca nombres:</b> «Van 3 de 5 votos», no «Faltan Ana y Luis».</li>
+          <li><b>Máximo un emoji</b>, y solo si suma.</li>
+          <li><b>Al grupo, no a una persona</b>, salvo /no_llega y /humano.</li>
+          <li><b>Nada inventado:</b> ni lugares, ni precios, ni horarios.</li>
+          <li><b>Tono de quinto amigo:</b> cercano, sin presión. No es app de citas ni terapia.</li>
+        </ul>
+      </div>
+      <div class="examples">
+        <div class="ex yes in" style="--i:4"><small>Así sí</small><span class="bub">Van 3 de 5 votos. ¿Cuál les suena más: 1, 2 o 3?</span></div>
+        <div class="ex no in" style="--i:5"><small>Así no</small><span class="bub">Ana y Luis, ¡faltan ustedes! 😅🙏⏰</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 20 · Contingencias -->
+<section class="slide s-noche" data-chap="Paso a paso" data-title="Contingencias" data-notes="La regla es una sola: no improvisar. «Pasar a la web» saca el plan de la comparación, así que solo se usa si el equipo lo decide.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Contingencias</p>
+    <h2 class="in" style="--i:1">Si algo falla, anota y avisa.</h2>
+    <table class="tb dark">
+      <tr><th>Situación</th><th>Qué haces</th><th>Qué queda registrado</th></tr><tr class="in" style="--i:2"><td><b>Alguien escribe SALIR</b></td><td>Avisas al equipo ya: «Revocar y purgar» en menos de 15 min y salida del grupo</td><td><code>Grupo desestimado</code></td></tr><tr class="in" style="--i:3"><td><b>Un lugar cerró o cambió de horario</b></td><td>Avisas al equipo. Si el plan ya cerró: «Marcar como caído»</td><td><code>Causa de la caída</code></td></tr><tr class="in" style="--i:4"><td><b>Lluvia, trancón o agenda tumban el plan</b></td><td>Cierras como caído, con su causa</td><td><code>trafico · lluvia · agenda · costo…</code></td></tr><tr class="in" style="--i:5"><td><b>Gemini no responde</b></td><td>«+ Opción manual» con lugares del inventario activo</td><td><code>falla_tecnica</code></td></tr><tr class="in" style="--i:6"><td><b>WhatsApp o la consola no funcionan</b></td><td>Avisas al equipo. No registras en otro lado</td><td><code>falla_tecnica</code></td></tr><tr class="in" style="--i:7"><td><b>Riesgo para la seguridad de alguien</b></td><td>/humano. Si es grave, llamas al 123</td><td><code>seguridad</code></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 21 · Reglas -->
+<section class="slide s-papel" data-chap="Reglas" data-title="Reglas" data-notes="Si dudas entre hacer algo o escalar, escala. Un dato de menos se puede explicar; un dato inventado invalida el plan.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Reglas</p>
+    <h2 class="in" style="--i:1">Lo que nunca haces.</h2>
+    <div class="rules"><div class="rule in" style="--i:2"><b>Inventar</b><span>un plan. Solo opciones del inventario activo.</span></div><div class="rule in" style="--i:3"><b>Sacar</b><span>datos del chat. Nada de capturas, listas o copias en tu celular.</span></div><div class="rule in" style="--i:4"><b>Escribir</b><span>la clave en un chat, un correo o una nota.</span></div><div class="rule in" style="--i:5"><b>Tocar</b><span>«Empezar piloto real». Borra los registros del piloto.</span></div><div class="rule in" style="--i:6"><b>Insistir</b><span>más de una vez. Un solo recordatorio por plan.</span></div><div class="rule in" style="--i:7"><b>Presentar</b><span>Sintonía como app de citas o terapia.</span></div></div>
+  </div>
+</section>
+
+<!-- 22 · Qué entregas -->
+<section class="slide s-papel" data-chap="Reglas" data-title="Qué entregas" data-notes="La nota por plan es insumo de diseño, no evaluación del monitor. Lo que más nos sirve es lo que te sorprendió.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Qué entregas</p>
+    <h2 class="in" style="--i:1">Datos limpios, plan por plan.</h2>
+    <p class="body in" style="--i:2">Al cerrar cada plan, revisa que tenga:</p>
+    <div class="deliver">
+      <div class="in" style="--i:3"><b>Embudo</b><span>invitadas, me apunto y llegaron, por persona.</span></div>
+      <div class="in" style="--i:4"><b>Minutos</b><span>sesiones de Mago in / off con tu nombre.</span></div>
+      <div class="in" style="--i:5"><b>Mensajes</b><span>cada paso marcado como enviado, en orden.</span></div>
+      <div class="in" style="--i:6"><b>Encuesta</b><span>enlace enviado a cada persona.</span></div>
+    </div>
+    <p class="quote in" style="--i:7">Y una <b>nota corta por plan:</b> qué fue difícil, qué preguntó la gente y qué harías distinto.</p>
+  </div>
+</section>
+
+<!-- 23 · Preguntas frecuentes -->
+<section class="slide s-papel" data-chap="Reglas" data-title="Preguntas frecuentes" data-notes="Cerrar con el primer turno: un ensayo completo en modo prueba con el equipo, antes de tocar un grupo real.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Antes de empezar</p>
+    <h2 class="in" style="--i:1">Preguntas frecuentes.</h2>
+    <div class="faq"><div class="fq in" style="--i:2"><b>¿Y si nadie vota?</b><span>Un solo /recordatorio a las 2 h. Si no avanza, avisas al equipo.</span></div><div class="fq in" style="--i:3"><b>¿Y si votan por WhatsApp algo que no es 1, 2 o 3?</b><span>Preguntas con calma o escalas. No adivinas.</span></div><div class="fq in" style="--i:4"><b>¿Puedo cambiar un texto de la consola?</b><span>Solo para llenar un dato entre corchetes. El resto va igual en todos los grupos.</span></div><div class="fq in" style="--i:5"><b>¿Qué pasa si me equivoco al registrar?</b><span>Avisas al equipo; se corrige con nota. No borres nada.</span></div><div class="fq in" style="--i:6"><b>¿A quién escribo?</b><span>Escribes al grupo del proyecto, donde están Jose y Katherine.</span></div></div>
+  </div>
+</section>
+
+<!-- 24 · Gracias -->
+<section class="slide s-noche" data-chap="Cierre" data-title="Gracias" data-notes="Confirmar fecha y hora del ensayo antes de terminar la sesión.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Gracias</p>
+    <h1 class="in" style="--i:1">Menos vueltas,<br><span class="u">más plan.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#ff4f00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+    <p class="body in" style="--i:2;color:var(--papel-300);max-width:40ch;margin-top:40px">Tu primer turno es un <b style="color:var(--papel-50)">ensayo en modo prueba</b> con el equipo. Después, los grupos reales.</p>
+    <p class="names in" style="--i:3">Jose Bolaños Díaz · Katherine Castro</p>
+  </div>
+</section>
+
+</div>
+</div>
+
+<nav class="navbar" aria-label="Navegación de la presentación">
+  <button id="prev" type="button" aria-label="Diapositiva anterior">←</button>
+  <span class="chap" id="chap">Contexto</span>
+  <div class="track">
+    <div class="ticks" id="ticks" aria-hidden="true"></div>
+    <input class="range" id="nav" type="range" min="1" max="24" step="1" value="1" aria-label="Ir a diapositiva">
+    <span class="tip" id="tip" hidden></span>
+  </div>
+  <span class="count" id="count">1 / 24</span>
+  <button id="next" type="button" aria-label="Diapositiva siguiente">→</button>
+  <button id="notesBtn" class="hide-sm" type="button" aria-label="Notas del orador (N)">N</button>
+  <button id="fsBtn" class="hide-sm" type="button" aria-label="Pantalla completa (F)">⤢</button>
+</nav>
+<div class="notes" id="notes" hidden><b>Notas del orador</b><span id="notesText"></span></div>
+
+<script>
+(function(){
+  const stage = document.getElementById('stage'), vp = document.getElementById('viewport');
+  function fit(){ const s = Math.min(vp.clientWidth/1920, vp.clientHeight/1080); stage.style.transform = 'translate(-50%,-50%) scale('+s+')'; }
+  window.addEventListener('resize', fit); fit();
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(vp);
+  const slides = [...document.querySelectorAll('.slide')], N = slides.length;
+  const range = document.getElementById('nav'), ticks = document.getElementById('ticks'), tip = document.getElementById('tip');
+  const count = document.getElementById('count'), chap = document.getElementById('chap'), logo = document.getElementById('logo');
+  const notes = document.getElementById('notes'), notesText = document.getElementById('notesText');
+  range.max = N;
+  slides.forEach((s,i) => { const t = document.createElement('i'); if (i>0 && s.dataset.chap !== slides[i-1].dataset.chap) t.className='ch'; ticks.appendChild(t); });
+  const tickEls = [...ticks.children];
+  let cur = 0;
+  function go(n){ n = Math.max(0, Math.min(N-1, n)); if (n !== cur){ slides[cur].classList.remove('active'); cur = n; slides[cur].classList.add('active'); } update(); }
+  function update(){
+    const sc = slides[cur].classList;
+    logo.classList.toggle('on-dark', sc.contains('s-noche'));
+    logo.classList.toggle('on-vitral', sc.contains('s-vitral'));
+    range.value = cur+1; count.textContent = (cur+1)+' / '+N; chap.textContent = slides[cur].dataset.chap || '';
+    range.setAttribute('aria-valuetext', (cur+1)+' de '+N+': '+(slides[cur].dataset.title||''));
+    tickEls.forEach((el,i) => el.classList.toggle('on', i <= cur));
+    notesText.textContent = slides[cur].dataset.notes || '';
+    try { history.replaceState(null,'','#s'+(cur+1)); } catch(e) {}
+  }
+  const m = /^#s(\d+)$/.exec(location.hash||'');
+  if (m){ slides[0].classList.remove('active'); cur = Math.min(N-1, Math.max(0,(+m[1]||1)-1)); slides[cur].classList.add('active'); }
+  update();
+  function showTip(){ const v = +range.value; tip.textContent = v+' · '+(slides[v-1].dataset.title||''); tip.style.left = 'calc(9px + '+((v-1)/(N-1))+' * (100% - 18px))'; tip.hidden = false; }
+  range.addEventListener('input', () => { showTip(); go(+range.value-1); });
+  range.addEventListener('pointerdown', showTip);
+  ['pointerup','pointerleave','blur','change'].forEach(ev => range.addEventListener(ev, () => { tip.hidden = true; }));
+  function toggleFs(){ try { if (document.fullscreenElement) document.exitFullscreen().catch(()=>{}); else document.documentElement.requestFullscreen().catch(()=>{}); } catch(e) {} }
+  document.getElementById('next').addEventListener('click', () => go(cur+1));
+  document.getElementById('prev').addEventListener('click', () => go(cur-1));
+  document.getElementById('notesBtn').addEventListener('click', () => { notes.hidden = !notes.hidden; });
+  document.getElementById('fsBtn').addEventListener('click', toggleFs);
+  vp.addEventListener('click', e => { const r = vp.getBoundingClientRect(); go((e.clientX - r.left)/r.width < .25 ? cur-1 : cur+1); });
+  document.addEventListener('keydown', e => {
+    if (e.target === range && (e.key==='ArrowLeft' || e.key==='ArrowRight')) return;
+    if (['ArrowRight','PageDown',' '].includes(e.key)){ if (e.target.tagName==='BUTTON' && e.key===' ') return; e.preventDefault(); go(cur+1); }
+    else if (['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); go(cur-1); }
+    else if (e.key==='Home') go(0); else if (e.key==='End') go(N-1);
+    else if (e.key==='n' || e.key==='N') notes.hidden = !notes.hidden;
+    else if (e.key==='f' || e.key==='F') toggleFs();
+  });
+  let sx = null;
+  vp.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive:true});
+  vp.addEventListener('touchend', e => { if (sx===null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) go(cur + (dx < 0 ? 1 : -1)); sx = null; });
+})();
+</script>
+<script>
+/* Walkthrough: resalta en orden cada paso y su marcador en la consola */
+(function(){
+  let t=null,k=0,box=null;
+  function tick(){
+    const s=document.querySelector('.slide.active');
+    const w=s&&s.querySelector('.wt');
+    if(!w){ if(box){ box.querySelectorAll('.now').forEach(x=>x.classList.remove('now')); box=null; } return; }
+    if(w!==box){ if(box) box.querySelectorAll('.now').forEach(x=>x.classList.remove('now')); box=w; k=0; return; }
+    const lis=[...w.querySelectorAll('.ws li[data-n]')]; if(!lis.length) return;
+    k=k%lis.length+1;
+    w.querySelectorAll('.now').forEach(x=>x.classList.remove('now'));
+    w.querySelectorAll('[data-n="'+k+'"]').forEach(x=>x.classList.add('now'));
+  }
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches) t=setInterval(tick,2200);
+})();
+</script>
+<script>
+/* Ajusta la maqueta de la consola al alto disponible de cada diapositiva */
+(function(){function fit(){document.querySelectorAll('.wt').forEach(function(w){var c=w.querySelector('.cw');if(!c)return;c.style.zoom='';var a=w.clientHeight,h=c.offsetHeight;if(h>a&&a>0)c.style.zoom=(a/h).toFixed(3);});}
+if(document.readyState!=='loading')fit();else document.addEventListener('DOMContentLoaded',fit);window.addEventListener('load',fit);if(document.fonts)document.fonts.ready.then(fit);})();
+</script>
+
+
+
+</body>
+</html>
