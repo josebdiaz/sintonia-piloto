@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-06 · Favicon
+- **Nuevo** en la raíz: `favicon.svg` y `favicon.ico` (16, 32 y 48 px; disco mostaza con la «s» del logo final, sin anillos para que se lea en la pestaña), `apple-touch-icon.png` (180 px), `icon-192.png` e `icon-512.png` (glifo completo con anillos) y `site.webmanifest`.
+- Etiquetas `<link rel="icon">`, `apple-touch-icon` y `manifest` en el `<head>` de las páginas del portal, el piloto, los decks y las guías. `archivo/` y `e3-app/` no se tocan: reciben `/favicon.ico` desde la raíz.
+
 ### 2026-11-06 (tarde) · Onboarding y plan de pruebas alineados
 - **Deck de onboarding del monitor** (`docs/deck-onboarding-monitor.html`): la consola aparece como `sintonia.my`; el ejemplo de `/confirmado` incluye dirección y presupuesto; la etapa 7 menciona las preguntas de precio para quien organiza.
 - **Orden de lectura:** el mapa de la consola se numera de arriba abajo y de izquierda a derecha, y en la etapa 4 el aviso de «faltan votos» pasa a ser el paso 2. En las etapas 1, 2 y 7, donde el orden de las acciones no sigue el de la pantalla, una ruta punteada une los marcadores 1 → 2 → 3. Capítulos en secuencia: Contexto · Operación · Walkthrough · En el chat · Reglas · Cierre.
