@@ -2,6 +2,24 @@
 
 Formato: lo más reciente arriba. Fechas en hora de Bogotá.
 
+## 6 nov 2026 · Aviso de privacidad v2 aprobado
+
+- Néstor aprobó el aviso v2 (R6 del estado del 30/10). Falta publicarlo en `piloto/aviso.html` y subir `AVISO_VERSION` antes de usar datos reales en E1.5.
+
+## 3 nov 2026 (noche) · Arreglos sin depender del canal
+
+Hechos directamente en la instancia, sin tocar la lógica de los flujos:
+
+- **E1.5-01 (I2, I3):** no guarda ejecuciones (éxito, error y manuales), zona `America/Bogota`, y se quitaron los datos fijados del nodo `Interpretar texto`.
+- **Textos (B3, B4):** plantillas de W0–W5 con los textos de la consola. W0 ya no lleva la pregunta del constructor. Ajustes para que encajen con el código: en `/confirmado` y `/salida`, `{dir}` → `{direccion}` y `{salida}` → `{hora_salida}`.
+- **W1:** `/opciones` usa `{n}` y la lista sale en el formato de la consola (`1️⃣ título — paradas · salida · presupuesto`). Se cambiaron `Normalizar opciones` y `Armar texto /opciones`.
+- **W3:** `/confirmado` llena `{presupuesto}` con la opción ganadora (`Analizar cierre` y `Armar textos`); la hora de salida usa la de la opción si el formulario no la trae. `Ver plan antes de salida` envía `pid`.
+- **`view=plan` con `pid` (B2):** W2, W4 y W5 envían `pid = pid_organizador`. W5 `Toca paso` ahora pasa `pid_organizador`. Follow Redirects activado en esos nodos (M1).
+- **Eventos (I1):** `evento_msg` vacío en W4 `/llegaron` y W5 `/en_casa`.
+
+Siguen abiertos: **B1** (canal; depende de C14), **B5** (orden de W1; depende de `SW · Aprobar`), **I5** (W3 `Ver plan` todavía sin `pid`: hay que mover `Buscar plan en tabla` antes).
+Respaldo previo a estos cambios: `sintonia-n8n-flujos-2026-11-03.json` (9 flujos, sin credenciales ni datos fijados), en la carpeta de descargas de Jose. Falta pasarlo a `n8n/` y separarlo por flujo.
+
 ## 30 oct 2026 (tarde) · Revisión nodo por nodo
 
 - Revisados los 9 flujos. Bien: deduplicación con `e15_planes`, ramas de error, zona horaria, sin IA, sin claves en el JSON, credenciales del motor enlazadas.

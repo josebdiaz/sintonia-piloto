@@ -5,6 +5,14 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-06 · Monitor, plan de pruebas y aviso v2
+- **Aviso de privacidad v2 aprobado por Néstor.** Falta publicar el texto en `piloto/aviso.html` y subir `AVISO_VERSION` (frontend y Propiedades del script) antes del primer grupo real de E1.5.
+- **Nuevo:** `docs/deck-induccion-monitor.html` (14 diapositivas) y `docs/guias/onboarding-monitor.md` (19 diapositivas en Markdown, fuente para el motor de presentaciones). El monitor opera E1 como mago con acceso a la consola; la clave se entrega en persona y se rota al terminar.
+- **Nuevo:** `docs/plan-pruebas-usuario.html`, one-sheet imprimible (carta) con preguntas, pruebas, métricas, participantes, roles, calendario propuesto y lo que falta antes de arrancar.
+- **n8n:** arreglos del 3/11 en la instancia (privacidad de E1.5-01, plantillas W0–W5, `pid` en `view=plan`, eventos). Siguen abiertos B1, B5 e I5. Nuevo `n8n/separar_respaldo.py` para pasar el respaldo de los flujos al repo. Detalle en `n8n/CHANGELOG.md`.
+- Menú del portal: enlaces a la inducción y al plan de pruebas.
+- Sin cambios en el frontend (2.2.2) ni en el backend (2.3.2).
+
 ### 2026-10-30 · E1.5 · Flujos en n8n revisados
 - **En la instancia de n8n:** 9 flujos (E1.5-01, `SW · Avisar revisor`, `SW · Enviar mensaje` y W0–W5). Todos inactivos y sin ejecuciones de producción. Los W0–W5 aún no están exportados al repo.
 - **Bloqueantes encontrados:** los sub-flujos envían por Evolution API sin aprobación humana (contradice la automatización asistida), `view=plan` sin `pid` en W2–W5, plantillas sin llenar en W1–W5, texto equivocado en W0, y W1 envía `/opciones` antes de `publicar_plan`.
