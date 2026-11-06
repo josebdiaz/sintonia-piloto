@@ -530,24 +530,10 @@ h1{font-size:160px} h2{font-size:104px}
 .sr .tx b{display:block;font-size:42px;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin-top:6px}
 .sr .tx span{display:block;font-size:22px;line-height:1.3;color:var(--papel-300);margin-top:8px}
 
-/* cierres */
-.spat{position:absolute;inset:-160px;z-index:1;pointer-events:none}
-.spat span{position:absolute;font-family:var(--f-s);font-size:160px;line-height:1;color:#e6d99a;transform:rotate(-10deg)}
-.active .spat{animation:spdrift 30s linear infinite alternate}
-@keyframes spdrift{to{transform:translate(40px,-30px)}}
-.slide>.content.cA{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:30px}
-.cA .gA{width:340px;height:340px}
-.cA h1{font-size:150px}
+/* cierre */
 .bb.sint{background:var(--vitral);color:var(--papel-0)}
 .bb.sint small{display:block;font-size:16px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--crema);margin-bottom:4px}
 .seen.ok{color:var(--vitral)}
-.bigwaves{position:absolute;inset:0;z-index:1;display:grid;place-items:center;pointer-events:none;overflow:hidden}
-.bigwaves i{position:absolute;left:50%;top:31%;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;border:4px solid var(--c);opacity:0}
-.active .bigwaves i{animation:bw 6400ms cubic-bezier(.16,1,.3,1) infinite;animation-delay:calc(var(--w) + 1.2s)}
-@keyframes bw{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(8)}}
-.slide>.content.cC{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:30px}
-.cC .gC{width:340px;height:340px}
-.cC h1{font-size:150px}
 
 /* navegación */
 .navbar{position:fixed;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom,0px));padding:0 max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px;background:#0b0e13;border-top:1px solid var(--papel-900);z-index:20;transition:transform 400ms,opacity 400ms}
@@ -935,27 +921,8 @@ h1{font-size:160px} h2{font-size:104px}
   </div>
 </section>
 
-<!-- 18 · Cierre A · Paso 13 -->
-<section class="slide s-crema" data-chap="Desenlace" data-title="Cierre A · Patrón" data-dur="15" data-notes="Katherine · 0:15 · Paso 13 · Cierre. «Llegamos al final de nuestra presentación…» Gracias por su tiempo. Sintonía: que las ganas se vuelvan plan. ¿Preguntas? (Alternativa A · patrón: elegir una y borrar las otras dos.)">
-  <div class="spat" aria-hidden="true"></div>
-  <div class="content cA">
-    <div class="glyph gA" role="img" aria-label="Avatar de Sintonía">
-      <svg viewBox="-40 -40 280 280" aria-hidden="true">
-        <circle class="zl" cx="100" cy="100" r="100" fill="#ebc46a"/>
-        <circle class="ring r1" cx="100" cy="100" r="76" fill="none" stroke="#c23a00" stroke-width="3.5"/>
-        <circle class="ring r2" cx="100" cy="100" r="92" fill="none" stroke="#0e1116" stroke-width="9"/>
-        <circle class="wave" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3.5" vector-effect="non-scaling-stroke"/>
-        <circle class="wave loop" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3" vector-effect="non-scaling-stroke"/>
-        <text class="stone" x="100" y="147" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="128" fill="#0e1116">s</text>
-      </svg>
-    </div>
-    <h1 class="in" style="--i:1">Que las ganas<br><span class="u">se vuelvan plan.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
-    <p class="sub in" style="--i:2;margin:0;color:var(--papel-900)">Gracias. ¿Preguntas?</p>
-  </div>
-</section>
-
-<!-- 19 · Cierre B · Paso 13 -->
-<section class="slide s-noche" data-chap="Desenlace" data-title="Cierre B · Chat" data-dur="15" data-notes="Katherine · 0:15 · Paso 13 · Cierre. «Llegamos al final de nuestra presentación…» Gracias por su tiempo. Sintonía: que las ganas se vuelvan plan. ¿Preguntas? (Alternativa B · el chat del inicio, resuelto.)">
+<!-- 18 · Cierre · Paso 13 -->
+<section class="slide s-noche" data-chap="Desenlace" data-title="Cierre" data-dur="15" data-notes="Katherine · 0:15 · Paso 13 · Cierre. «Llegamos al final de nuestra presentación…» y volvemos al chat del inicio: el mismo sábado, ahora con plan listo y cinco de seis confirmados. Gracias por su tiempo. Sintonía: que las ganas se vuelvan plan. ¿Preguntas?">
   <div class="content bridge">
     <div>
       <h1 class="in" style="--i:0;font-size:132px">Que las ganas<br><span class="u">se vuelvan plan.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#ff4f00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
@@ -972,24 +939,6 @@ h1{font-size:160px} h2{font-size:104px}
   </div>
 </section>
 
-<!-- 20 · Cierre C · Paso 13 -->
-<section class="slide s-noche" data-chap="Desenlace" data-title="Cierre C · Ondas" data-dur="15" data-notes="Katherine · 0:15 · Paso 13 · Cierre. «Llegamos al final de nuestra presentación…» Gracias por su tiempo. Sintonía: que las ganas se vuelvan plan. ¿Preguntas? (Alternativa C · ondas a pantalla completa.)">
-  <div class="bigwaves" aria-hidden="true"><i style="--w:0s;--c:#ff4f00"></i><i style="--w:1.6s;--c:#ebc46a"></i><i style="--w:3.2s;--c:#2c6a86"></i><i style="--w:4.8s;--c:#ff4f00"></i></div>
-  <div class="content cC">
-    <div class="glyph gC" role="img" aria-label="Avatar de Sintonía">
-      <svg viewBox="-40 -40 280 280" aria-hidden="true">
-        <circle class="zl" cx="100" cy="100" r="100" fill="#ebc46a"/>
-        <circle class="ring r1" cx="100" cy="100" r="76" fill="none" stroke="#c23a00" stroke-width="3.5"/>
-        <circle class="ring r2" cx="100" cy="100" r="92" fill="none" stroke="#0e1116" stroke-width="9"/>
-        <circle class="wave" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3.5" vector-effect="non-scaling-stroke"/>
-        <circle class="wave loop" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3" vector-effect="non-scaling-stroke"/>
-        <text class="stone" x="100" y="147" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="128" fill="#0e1116">s</text>
-      </svg>
-    </div>
-    <h1 class="in" style="--i:1">Que las ganas<br><span class="u">se vuelvan plan.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#ff4f00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
-    <p class="sub in" style="--i:2;margin:0">Gracias. ¿Preguntas?</p>
-  </div>
-</section>
 
 </div>
 </div>
@@ -999,10 +948,10 @@ h1{font-size:160px} h2{font-size:104px}
   <span class="chap" id="chap">Inicio</span>
   <div class="track">
     <div class="ticks" id="ticks" aria-hidden="true"></div>
-    <input class="range" id="nav" type="range" min="1" max="20" step="1" value="1" aria-label="Ir a diapositiva">
+    <input class="range" id="nav" type="range" min="1" max="18" step="1" value="1" aria-label="Ir a diapositiva">
     <span class="tip" id="tip" hidden></span>
   </div>
-  <span class="count" id="count">1 / 20</span>
+  <span class="count" id="count">1 / 18</span>
   <span class="timer hide-sm" id="timer" title="Tiempo acumulado sugerido">0:08</span>
   <button id="next" type="button" aria-label="Diapositiva siguiente">→</button>
   <button id="autoBtn" type="button" aria-pressed="false" aria-label="Modo stand: avance automático en bucle (A)">▶ Stand</button>
@@ -1013,8 +962,6 @@ h1{font-size:160px} h2{font-size:104px}
 
 <script>
 (function(){
-  // Patrón de S de la referencia (tono sobre tono, -10°, filas escalonadas)
-  document.querySelectorAll('.spat').forEach(el => { let h=''; for (let r=0, y=-20; y<1420; r++, y+=96) for (let x=-60; x<2320; x+=152) h += '<span style="left:'+(x+(r%2?76:0))+'px;top:'+y+'px">s</span>'; el.innerHTML = h; });
   const stage = document.getElementById('stage'), vp = document.getElementById('viewport');
   function fit(){ const s = Math.min(vp.clientWidth/1920, vp.clientHeight/1080); stage.style.transform = 'translate(-50%,-50%) scale('+s+')'; }
   window.addEventListener('resize', fit); fit();
