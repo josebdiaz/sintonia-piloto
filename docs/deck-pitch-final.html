@@ -14,6 +14,7 @@
   --naranja:#ff4f00; --naranja-700:#c23a00;
   --mostaza:#ebc46a; --crema:#f3e9b8; --vitral:#2c6a86; --salvia:#a9c9b8;
   --coral:#e8806a; --rosa:#eec0b4; --rubi:#9b2d30;
+  --f-s:'Climate Crisis','Arial Black',sans-serif;
   --f-txt:'Graphik','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
   --ease-standard:cubic-bezier(.3,.6,.3,1); --ease-enter:cubic-bezier(.2,.8,.2,1); --ease-io:cubic-bezier(.65,0,.35,1);
   color-scheme:dark;
@@ -238,12 +239,12 @@ h1{font-size:160px} h2{font-size:104px}
 .des{display:grid;grid-template-columns:auto 1fr;gap:100px;align-items:center;flex:1}
 .bigdonut{position:relative;width:520px;height:520px}
 .bigdonut svg{width:100%;height:100%;transform:rotate(-90deg)}
-.bigdonut .bg{fill:none;stroke:#1f2226;stroke-width:44}
-.bigdonut .fg{fill:none;stroke:var(--mostaza);stroke-width:44;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100}
+.bigdonut .bg{fill:none;stroke:#1f2226;stroke-width:20}
+.bigdonut .fg{fill:none;stroke:var(--mostaza);stroke-width:20;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100}
 .active .bigdonut .fg{animation:fill 2000ms var(--ease-enter) forwards .8s}
 .bigdonut .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.bigdonut .c b{font-size:150px;font-weight:800;letter-spacing:-.05em;line-height:.9}
-.bigdonut .c span{font-size:28px;font-weight:600;color:var(--papel-300);max-width:11ch;margin-top:10px}
+.bigdonut .c b{font-size:124px;font-weight:800;letter-spacing:-.05em;line-height:.9}
+.bigdonut .c span{font-size:26px;font-weight:600;color:var(--papel-300);max-width:10ch;margin-top:12px;line-height:1.2}
 .bars{display:flex;flex-direction:column;gap:40px}
 .br .l{display:flex;justify-content:space-between;align-items:baseline;font-size:36px;font-weight:700;margin-bottom:14px}
 .br .l b{font-size:64px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
@@ -353,6 +354,201 @@ h1{font-size:160px} h2{font-size:104px}
 .tagline h1{font-size:150px}
 .tagline .wmbig{font-size:64px}
 
+/* equipo y solicitud */
+.team2{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;flex:1}
+.people{display:flex;flex-direction:column;gap:30px}
+.pp{display:flex;align-items:center;gap:30px}
+.pp i{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:52px;font-weight:800;color:var(--noche);flex:none}
+.pp b{font-size:56px;font-weight:800;letter-spacing:-.03em}
+.skills{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+.skills span{font-size:26px;font-weight:700;background:var(--papel-100);border-radius:999px;padding:12px 24px}
+.cali .count{line-height:.85}
+.asks3{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:80px;flex:1;align-content:center}
+.ak{border-radius:28px;padding:44px 40px;background:#1f2226;border:3px solid var(--papel-700);display:flex;flex-direction:column;gap:18px;min-height:380px;justify-content:center}
+.ak:first-child{background:var(--mostaza);color:var(--noche);border-color:var(--mostaza)}
+.ak b{font-size:96px;font-weight:800;letter-spacing:-.04em;line-height:.95;font-variant-numeric:tabular-nums}
+.ak span{font-size:32px;line-height:1.25;font-weight:600}
+.ak:not(:first-child) span{color:var(--papel-300)}
+
+/* flujo de la solución */
+.stepper{list-style:none;display:flex;gap:18px;padding:0;margin:34px 0 10px}
+.stepper li{display:flex;align-items:center;gap:12px;font-size:28px;font-weight:700;color:var(--papel-700);padding:8px 22px 8px 8px;border-radius:999px;border:2px solid #1f2226}
+.stepper i{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;background:#1f2226;color:var(--papel-300)}
+.active .stepper li{animation:stepon 500ms ease forwards;animation-delay:var(--sd)}
+.active .stepper li i{animation:stepi 500ms ease forwards;animation-delay:var(--sd)}
+@keyframes stepon{to{color:var(--papel-50);border-color:var(--mostaza)}}
+@keyframes stepi{to{background:var(--mostaza);color:var(--noche)}}
+.flow{width:100%;height:600px;overflow:visible;margin-top:6px}
+.flow .fh{font:700 22px var(--f-txt);fill:var(--papel-300);letter-spacing:.1em;text-transform:uppercase}
+.mdot{fill:var(--papel-300);transform-box:fill-box;transform-origin:center;opacity:0}
+.active .mdot{animation:popc 450ms var(--ease-enter) forwards;animation-delay:calc(var(--k)*80ms + .6s)}
+@keyframes popc{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+.mline,.oline,.wline{fill:none;stroke-linecap:round;stroke-dasharray:1 1.2;stroke-dashoffset:1.1}
+.mline{stroke:var(--papel-700);stroke-width:3}
+.active .mline{animation:draw 900ms var(--ease-io) forwards;animation-delay:calc(var(--k)*60ms + 1.2s)}
+.hub{transform-box:fill-box;transform-origin:center;opacity:0}
+.active .hub{animation:popc 600ms var(--ease-enter) forwards 2.3s}
+.hubwave{transform-box:fill-box;transform-origin:center;opacity:0}
+.active .hubwave{animation:hw 1600ms ease-out forwards 2.6s}
+@keyframes hw{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.2)}}
+.oline{stroke:var(--mostaza);stroke-width:8}
+.active .oline{animation:draw 800ms var(--ease-io) forwards;animation-delay:calc(var(--k)*150ms + 3s)}
+.ocard rect{fill:#1f2226;stroke:var(--papel-700);stroke-width:2}
+.ocard .ot{font:800 34px var(--f-txt);fill:var(--papel-50)}
+.ocard .os{font:600 22px var(--f-txt);fill:var(--papel-300)}
+.ocard{opacity:0}
+.active .ocard{animation:fadeIn 500ms ease forwards;animation-delay:calc(var(--k)*150ms + 3.3s)}
+.active .ocard.win rect{animation:winr 600ms ease forwards 6s}
+@keyframes winr{to{fill:var(--mostaza);stroke:var(--mostaza)}}
+.active .ocard.win .ot,.active .ocard.win .os{animation:wint 600ms ease forwards 6s}
+@keyframes wint{to{fill:var(--noche)}}
+.vbg{fill:#1f2226}
+.vbar{fill:var(--naranja);transform-box:fill-box;transform-origin:left center;transform:scaleX(0)}
+.active .vbar{animation:vb 1000ms var(--ease-enter) forwards;animation-delay:calc(var(--k)*250ms + 4.2s)}
+@keyframes vb{to{transform:scaleX(1)}}
+.np .vbar{fill:var(--papel-700)}
+.vn{font:800 26px var(--f-txt);fill:var(--papel-50);opacity:0}
+.active .vn{animation:fadeIn 400ms ease forwards;animation-delay:calc(var(--k)*250ms + 5s)}
+.active .ocard.lose,.active .ocard.np{animation:fadeIn 500ms ease forwards, dim 600ms ease forwards;animation-delay:calc(var(--k)*150ms + 3.3s), 6s}
+.active .oline.lose{animation:draw 800ms var(--ease-io) forwards, dim 600ms ease forwards;animation-delay:calc(var(--k)*150ms + 3s), 6s}
+.active .vrow.lose,.active .vrow.np{animation:dim 600ms ease forwards 6s}
+@keyframes dim{to{opacity:.32}}
+.wline{stroke:var(--vitral);stroke-width:10}
+.active .wline{animation:draw 700ms var(--ease-io) forwards 6.1s}
+.active .wline.w2{animation-delay:7s}
+.plan{opacity:0;transform-box:fill-box;transform-origin:center}
+.plan rect{fill:var(--vitral)}
+.plan .pt1{font:800 34px var(--f-txt);fill:var(--papel-0)}
+.plan .pt2{font:600 24px var(--f-txt);fill:var(--crema)}
+.active .plan{animation:popc 600ms var(--ease-enter) forwards 6.6s}
+.arr{opacity:0} .active .arr{animation:fadeIn 400ms ease forwards 7.1s}
+.abg{fill:none;stroke:#1f2226;stroke-width:14}
+.afg{fill:none;stroke:var(--mostaza);stroke-width:14;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;transform:rotate(-90deg);transform-box:fill-box;transform-origin:center}
+.active .afg{animation:fill 1400ms var(--ease-enter) forwards 7.3s}
+.afg{--off:16.7}
+.an{font:800 34px var(--f-txt);fill:var(--papel-50)}
+
+/* relevo del mensaje */
+.relay{position:relative;height:470px;margin-top:40px}
+.rtrack{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.rt-base{stroke:var(--papel-300);stroke-width:10;stroke-linecap:round;fill:none}
+.rt-go{stroke:var(--naranja);stroke-width:10;stroke-linecap:round;fill:none;stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset 1300ms var(--ease-io)}
+.rt-back{stroke:var(--vitral);stroke-width:10;stroke-linecap:round;fill:none;stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset 1600ms var(--ease-io)}
+.relay[data-s="2"] .rt-go{stroke-dashoffset:.667}
+.relay[data-s="3"] .rt-go{stroke-dashoffset:.333}
+.relay[data-s="4"] .rt-go,.relay[data-s="5"] .rt-go{stroke-dashoffset:0}
+.relay[data-s="5"] .rt-back{stroke-dashoffset:0}
+.st{position:absolute;top:150px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:16px;width:260px}
+.st i{width:210px;height:210px;border-radius:50%;display:grid;place-items:center;background:var(--papel-100);color:var(--papel-700);border:6px solid var(--papel-300);transition:background 500ms,color 500ms,border-color 500ms,transform 500ms var(--ease-enter)}
+.st i svg{width:100px;height:100px}
+.st b{font-size:36px;font-weight:800;letter-spacing:-.02em;color:var(--papel-700);transition:color 500ms}
+.st.on i{background:var(--bg);color:var(--fg);border-color:var(--bg);transform:scale(1.1);box-shadow:0 0 0 18px rgba(255,79,0,.16)}
+.st.on b{color:var(--noche)}
+.st.done i{background:var(--bg);color:var(--fg);border-color:var(--bg)}
+.st.done b{color:var(--noche)}
+.capsule{position:absolute;top:30px;left:200px;transform:translateX(-50%);background:var(--noche);color:var(--papel-50);font-size:30px;font-weight:700;padding:18px 28px;border-radius:26px 26px 26px 6px;white-space:nowrap;box-shadow:0 10px 30px rgba(14,17,22,.18);transition:left 1300ms var(--ease-io),background 400ms;opacity:0}
+.capsule::after{content:"";position:absolute;left:50%;bottom:-14px;width:4px;height:14px;background:var(--noche);transform:translateX(-50%)}
+.active .capsule{opacity:1;transition:left 1300ms var(--ease-io),background 400ms,opacity 400ms}
+.relay[data-s="5"] .capsule{background:var(--naranja-700)}
+.relay[data-s="5"] .capsule::after{background:var(--naranja-700)}
+.capsule.pop{animation:cap 500ms var(--ease-enter)}
+@keyframes cap{0%{transform:translateX(-50%) scale(.9)}60%{transform:translateX(-50%) scale(1.05)}100%{transform:translateX(-50%) scale(1)}}
+.relay.reset .capsule,.relay.reset .rt-go,.relay.reset .rt-back{transition:none}
+.narr{list-style:none;margin:auto 0 0;padding:0;position:relative;height:120px}
+.narr li{position:absolute;inset:0;display:flex;align-items:center;gap:30px;opacity:0;transform:translateY(14px);transition:opacity 500ms,transform 500ms var(--ease-enter)}
+.narr li.on{opacity:1;transform:none}
+.narr b{width:96px;height:96px;border-radius:50%;background:var(--naranja-700);color:var(--papel-0);display:grid;place-items:center;font-size:48px;font-weight:800;flex:none}
+.narr p{margin:0;font-size:48px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.narr span{display:block;margin-top:8px;font-size:24px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--papel-700)}
+
+/* circuito */
+.orbitwrap{display:grid;grid-template-columns:640px 1fr;gap:90px;align-items:center;flex:1;margin-top:0}
+.orbitwrap .orbit{transform:scale(.82);transform-origin:left center;margin-top:40px}
+.orbit{position:relative;width:760px;height:790px}
+.osvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ring{fill:none;stroke:var(--papel-300);stroke-width:10}
+.arc{fill:none;stroke:var(--naranja);stroke-width:10;stroke-linecap:round;stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset 1400ms var(--ease-io)}
+.arc.back{stroke:var(--vitral)}
+.arc.on{stroke-dashoffset:0}
+.orb{transform-box:view-box;transform-origin:380px 385px;transform:rotate(180deg);transition:transform 1400ms var(--ease-io)}
+.oglow{fill:var(--naranja);opacity:.22} .odot{fill:var(--naranja)}
+.orbitwrap.reset .arc,.orbitwrap.reset .orb{transition:none}
+.sc{fill:var(--papel-100);stroke:var(--papel-300);stroke-width:6;transition:fill 500ms,stroke 500ms}
+.si{color:var(--papel-700);transition:color 500ms}
+.sl{font:800 34px var(--f-txt);fill:var(--papel-700);transition:fill 500ms;paint-order:stroke;stroke:var(--papel-50);stroke-width:14px;stroke-linejoin:round}
+.stn.on .sc,.stn.done .sc{fill:var(--bg);stroke:var(--bg)}
+.stn.on .si,.stn.done .si{color:var(--fg)}
+.stn.on .sl,.stn.done .sl{fill:var(--noche)}
+.stn.on .sc{stroke:var(--naranja);stroke-width:10}
+.phone2{position:absolute;left:265px;top:190px;width:230px;height:390px;border-radius:34px;background:#e9e2d6;border:10px solid #1f2226;padding:18px 14px;display:flex;flex-direction:column;gap:10px;justify-content:flex-end}
+.phone2 .ph-h{font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--papel-700);text-align:center;margin-bottom:auto}
+.phone2 span.m1,.phone2 span.m3{font-size:19px;line-height:1.3;border-radius:16px;padding:10px 12px}
+.phone2 .m1{align-self:flex-end;background:#dcefe6;color:var(--noche);border-radius:16px 16px 4px 16px;max-width:90%}
+.phone2 .m2{align-self:flex-start;background:var(--papel-0);border-radius:16px;padding:12px 14px;display:none;gap:6px}
+.phone2 .m2 i{width:9px;height:9px;border-radius:50%;background:var(--papel-300);animation:bob 900ms ease-in-out infinite}
+.phone2 .m2 i:nth-child(2){animation-delay:.15s} .phone2 .m2 i:nth-child(3){animation-delay:.3s}
+.phone2 .m3{align-self:flex-start;background:var(--naranja-700);color:var(--papel-0);font-weight:700;display:none;border-radius:16px 16px 16px 4px}
+.phone2 .m3 small{display:block;font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.orbitwrap[data-s="2"] .m2,.orbitwrap[data-s="3"] .m2,.orbitwrap[data-s="4"] .m2{display:flex}
+.orbitwrap[data-s="5"] .m3{display:block;animation:rise 500ms var(--ease-enter) both}
+.olist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:18px}
+.olist li{display:flex;align-items:center;gap:24px;padding:16px 20px;border-radius:22px;opacity:.38;transition:opacity 500ms,background 500ms}
+.olist li.on{opacity:1;background:var(--papel-100)}
+.olist li.done{opacity:.75}
+.olist b{width:64px;height:64px;border-radius:50%;background:var(--papel-300);color:var(--noche);display:grid;place-items:center;font-size:32px;font-weight:800;flex:none;transition:background 500ms,color 500ms}
+.olist li.on b{background:var(--naranja-700);color:var(--papel-0)}
+.olist p{margin:0;font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.olist span{display:block;margin-top:6px;font-size:19px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--papel-700)}
+
+/* ruta en ondas */
+.ripplemap{display:grid;grid-template-columns:760px 1fr;gap:60px;align-items:center;flex:1}
+.rpsvg{width:760px;height:650px;overflow:visible}
+.rc,.re{fill:none;transform-box:view-box;transform-origin:380px 325px;opacity:0}
+.rc{stroke-width:12}
+.re{stroke-width:6}
+.active .rc{animation:emerge 1500ms cubic-bezier(.16,1,.3,1) forwards, breathe 5200ms ease-in-out infinite;animation-delay:var(--d), calc(var(--d) + 3s)}
+@keyframes emerge{0%{opacity:0;transform:scale(.22);stroke-width:26}25%{opacity:1}100%{opacity:1;transform:scale(1);stroke-width:12}}
+@keyframes breathe{0%,100%{transform:scale(1)}12%{transform:scale(1.018)}30%{transform:scale(1)}}
+.active .re{animation:echo 1800ms cubic-bezier(.16,1,.3,1) forwards;animation-delay:calc(var(--d) + .9s)}
+@keyframes echo{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(1.22)}}
+.rl{opacity:0;transform-box:fill-box;transform-origin:center}
+.active .rl{animation:popc 500ms var(--ease-enter) forwards;animation-delay:calc(var(--d) + .8s)}
+.rn{font:800 34px var(--f-txt);letter-spacing:-.02em}
+.ru{font:700 15px var(--f-txt);letter-spacing:.1em;text-transform:uppercase}
+.rglyph{transform-box:fill-box;transform-origin:center;opacity:0}
+.active .rglyph{animation:popc 600ms var(--ease-enter) forwards .3s}
+.rwave{transform-box:view-box;transform-origin:380px 325px;opacity:0}
+.active .rwave{animation:rw 5200ms cubic-bezier(.16,1,.3,1) infinite 6.4s}
+@keyframes rw{0%{opacity:.8;transform:scale(1)}40%{opacity:0;transform:scale(4.4)}100%{opacity:0;transform:scale(4.4)}}
+.stages{display:flex;flex-direction:column;gap:22px}
+.sr{display:grid;grid-template-columns:300px 1fr;gap:28px;align-items:center;opacity:.25;transition:opacity 600ms}
+.active .sr{animation:srOn 600ms ease forwards;animation-delay:var(--d)}
+@keyframes srOn{to{opacity:1}}
+.ph{height:190px;border-radius:20px;border:3px dashed var(--papel-700);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px 18px;text-align:center;color:var(--papel-300);background:#151a21}
+.ph span{font-size:15px;line-height:1.35;font-weight:500}
+.sr .tx small{display:block;font-size:20px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--naranja)}
+.sr .tx b{display:block;font-size:42px;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin-top:6px}
+.sr .tx span{display:block;font-size:22px;line-height:1.3;color:var(--papel-300);margin-top:8px}
+
+/* cierres */
+.spat{position:absolute;inset:-160px;z-index:1;pointer-events:none}
+.spat span{position:absolute;font-family:var(--f-s);font-size:160px;line-height:1;color:#e6d99a;transform:rotate(-10deg)}
+.active .spat{animation:spdrift 30s linear infinite alternate}
+@keyframes spdrift{to{transform:translate(40px,-30px)}}
+.slide>.content.cA{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:30px}
+.cA .gA{width:340px;height:340px}
+.cA h1{font-size:150px}
+.bb.sint{background:var(--vitral);color:var(--papel-0)}
+.bb.sint small{display:block;font-size:16px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--crema);margin-bottom:4px}
+.seen.ok{color:var(--vitral)}
+.bigwaves{position:absolute;inset:0;z-index:1;display:grid;place-items:center;pointer-events:none;overflow:hidden}
+.bigwaves i{position:absolute;left:50%;top:31%;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;border:4px solid var(--c);opacity:0}
+.active .bigwaves i{animation:bw 6400ms cubic-bezier(.16,1,.3,1) infinite;animation-delay:calc(var(--w) + 1.2s)}
+@keyframes bw{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(8)}}
+.slide>.content.cC{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:30px}
+.cC .gC{width:340px;height:340px}
+.cC h1{font-size:150px}
+
 /* navegación */
 .navbar{position:fixed;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom,0px));padding:0 max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px;background:#0b0e13;border-top:1px solid var(--papel-900);z-index:20;transition:transform 400ms,opacity 400ms}
 .navbar button{flex:none;min-width:44px;height:44px;border-radius:999px;border:1px solid var(--papel-700);background:transparent;color:var(--papel-50);font:600 16px var(--f-txt);cursor:pointer;padding:0 12px}
@@ -374,6 +570,7 @@ h1{font-size:160px} h2{font-size:104px}
 .notes b{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja-700);margin-bottom:6px}
 @media (max-width:640px){.navbar .chap,.navbar .hide-sm{display:none}}
 @media (prefers-reduced-motion:reduce){
+  .rc{opacity:1!important} .re{display:none}
   *,*::before,*::after{animation-duration:1ms!important;animation-delay:0s!important;animation-iteration-count:1!important}
   .active .reel{animation:none!important}
   .wave,.runglow,.msg{display:none}
@@ -385,8 +582,8 @@ h1{font-size:160px} h2{font-size:104px}
 <div class="stage" id="stage">
 <div class="wm logo" id="logo" aria-label="Sintonía">sinton<span class="i">ı</span>a</div>
 
-<!-- 1 · Portada -->
-<section class="slide s-crema active" data-chap="Contexto" data-title="Portada" data-dur="15" data-notes="José · 0:15. «Somos Sintonía». Pausa mientras cae la S.">
+<!-- 1 · Portada · Paso 1 -->
+<section class="slide s-crema active" data-chap="Inicio" data-title="Portada" data-dur="8" data-notes="Jose · 0:08 · Paso 1 · Exordio. Sin conector. Hola, somos Sintonía.">
   <div class="content cover">
     <div class="glyph" role="img" aria-label="Avatar de Sintonía">
       <svg viewBox="-40 -40 280 280" aria-hidden="true">
@@ -395,19 +592,19 @@ h1{font-size:160px} h2{font-size:104px}
         <circle class="ring r2" cx="100" cy="100" r="92" fill="none" stroke="#0e1116" stroke-width="9"/>
         <circle class="wave" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3.5" vector-effect="non-scaling-stroke"/>
         <circle class="wave loop" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3" vector-effect="non-scaling-stroke"/>
-        <text class="stone" x="100" y="134" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="92" fill="#0e1116">s</text>
+        <text class="stone" x="100" y="147" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="128" fill="#0e1116">s</text>
       </svg>
     </div>
     <div>
       <p class="eyebrow in" style="--i:1">Maestría en Gestión de la Innovación · Icesi</p>
       <h1 class="in" style="--i:2">Menos vueltas,<br><span class="u">más plan.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
-      <div class="meta in" style="--i:3"><span><small>Equipo</small>José Bolaños · Katherine Castro</span><span><small>Fecha</small>12 dic 2026</span></div>
+      <div class="meta in" style="--i:3"><span><small>Equipo</small>Jose Bolaños Díaz · Katherine Castro</span><span><small>Fecha</small>12 dic 2026</span></div>
     </div>
   </div>
 </section>
 
-<!-- 2 · El chat -->
-<section class="slide s-noche" data-chap="Contexto" data-title="El chat" data-dur="30" data-notes="José · 0:30. Dejar que el chat se lea solo. Preguntar: «¿Quién tiene un chat así?». Esperar la risa. «Ese es el problema que resolvemos».">
+<!-- 2 · El chat · Paso 1 -->
+<section class="slide s-noche" data-chap="Inicio" data-title="El chat" data-dur="20" data-notes="Jose · 0:20 · Paso 1 · Enganche. Sin conector. ¿Quién tiene un chat así? «¿Nos vemos el sábado?», «yo puedo después de las 4», «hay que vernos»… y visto por siete. Las ganas están; el plan nunca llega. Venimos a cambiar eso: menos vueltas, más plan.">
   <div class="content bridge">
     <div>
       <h2 class="in" style="--i:0">Todos tenemos <span class="u">este chat.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#ff4f00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h2>
@@ -426,8 +623,27 @@ h1{font-size:160px} h2{font-size:104px}
   </div>
 </section>
 
-<!-- 3 · Problema -->
-<section class="slide s-papel" data-chap="Contexto" data-title="Problema" data-dur="45" data-notes="José · 0:45. Cinco planes caen al chat; tres mueren. Eso dice el 96 %. El plan muere al cruzar agendas, y quien organiza termina cansándose. Datos: encuesta propia, n = 76 (vista parcial; actualizar con el n final).">
+<!-- 3 · Equipo · Paso 2 -->
+<section class="slide s-papel" data-chap="Inicio" data-title="Equipo" data-dur="25" data-notes="Jose · 0:25 · Paso 2 · Contextualización. «Para liderar este proyecto tenemos un equipo…» de dos: Katherine Castro y yo, Jose Bolaños Díaz, de la Maestría en Gestión de la Innovación de Icesi. Juntamos diseño estratégico, innovación, tecnología y datos. Y lo hacemos para Cali: aquí hay cerca de 1,35 millones de adultos en WhatsApp, y casi todos están en un parche que quiere verse.">
+  <div class="content">
+    <h2 class="in" style="--i:0">Un equipo para que el plan pase.</h2>
+    <div class="team2">
+      <div class="people">
+        <div class="pp in" style="--i:1"><i style="background:var(--mostaza)">JB</i><b>Jose Bolaños Díaz</b></div>
+        <div class="pp in" style="--i:2"><i style="background:var(--vitral);color:var(--papel-0)">KC</i><b>Katherine Castro</b></div>
+        <div class="skills in" style="--i:3"><span>Diseño estratégico</span><span>Innovación</span><span>Tecnología</span><span>Datos</span></div>
+      </div>
+      <div class="cali in" style="--i:4">
+        <div class="count" data-to="135" data-fmt="m" style="font-size:250px;color:var(--vitral)">0</div>
+        <p class="cap" style="max-width:18ch">millones de adultos en WhatsApp en Cali</p>
+      </div>
+    </div>
+    <p class="src in" style="--i:5">Cali · proyección DANE 2026 (por verificar) × 75 % de alcance de WhatsApp (Infobip 2026)</p>
+  </div>
+</section>
+
+<!-- 4 · Problema · Paso 3 -->
+<section class="slide s-papel" data-chap="Inicio" data-title="Problema" data-dur="30" data-notes="Jose · 0:30 · Paso 3 · Dolores. «En este contexto, los mayores problemas y dolores que identificamos son…» tres. Uno: los planes mueren; el 96 % nos dijo que de cinco planes pasan dos o menos. Dos: mueren en la agenda; el 89 % dice que el plan se cae buscando fecha y hora. Y tres: quien organiza se cansa; uno de cada cuatro ya dejó de hacerlo (18 de 76).">
   <div class="content">
     <h2 class="in" style="--i:0">Cada semana, un plan muere en el chat.</h2>
     <div class="tickets" aria-hidden="true">
@@ -446,8 +662,46 @@ h1{font-size:160px} h2{font-size:104px}
   </div>
 </section>
 
-<!-- 4 · Teoría -->
-<section class="slide s-noche" data-chap="Contexto" data-title="Teoría" data-dur="45" data-notes="Katherine · 0:45. Modelo de Fogg (2009): la conducta ocurre cuando motivación y facilidad cruzan la línea de acción, con un disparador. Quien organiza tiene ganas pero coordinar es difícil. Sintonía no sube la motivación: sube la facilidad y es el disparador. Olson (1965): nadie quiere cargar el costo de organizar. Iyengar y Lepper (2000): pocas opciones deciden mejor. Baumeister y Leary (1995): pertenecer exige encuentros frecuentes.">
+<!-- 5 · Diferenciación · Paso 4 -->
+<section class="slide s-papel" data-chap="Inicio" data-title="Diferenciación" data-dur="25" data-notes="Jose · 0:25 · Paso 4 · Soluciones existentes. «Para enfrentar estos problemas, hoy en día se usan las siguientes soluciones parciales…» las encuestas de WhatsApp, que viven en el chat pero no cierran el plan; y Doodle, que cuadra la fecha, pero fuera del chat y sin proponer nada. Cada una resuelve un pedazo; ninguna lleva al grupo del «hay que vernos» al encuentro.">
+  <div class="content">
+    <h2 class="in" style="--i:0">Hoy hay pedazos de solución.</h2>
+    <div class="map">
+      <div class="plane in" style="--i:1">
+        <span class="axy">↑ Cierra el plan</span>
+        <span class="axx">Dentro del chat →</span>
+        <div class="pt" style="left:14%;bottom:62%;--pd:1.2s"><i></i><span>Doodle</span></div>
+        <div class="pt" style="left:16%;bottom:22%;--pd:1.5s"><i></i><span>Meetup</span></div>
+        <div class="pt" style="left:34%;bottom:10%;--pd:1.8s"><i></i><span>Splitwise</span></div>
+        <div class="pt" style="left:70%;bottom:32%;--pd:2.1s"><i></i><span>Encuestas de WhatsApp</span></div>
+        <div class="pt us" style="left:72%;bottom:82%;--pd:2.8s"><i></i><span>Sintonía</span></div>
+      </div>
+      <div class="types">
+        <div class="in" style="--i:3;--c:var(--mostaza)"><b>Proceso</b><span>de la idea a la llegada</span></div>
+        <div class="in" style="--i:4;--c:var(--coral)"><b>Emocional</b><span>sin «rogarle a la gente»</span></div>
+        <div class="in" style="--i:5;--c:var(--vitral)"><b>Técnica</b><span>IA solo sobre lugares verificados</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · Deseabilidad · Paso 5 -->
+<section class="slide s-noche" data-chap="Inicio" data-title="Deseabilidad" data-dur="30" data-notes="Katherine · 0:30 · Paso 5 · JTBD y valor. «Vemos entonces que lo que está tratando de lograr este grupo de personas es…» verse, sin que una sola persona cargue con organizar. El 89 % aceptaría ayuda dentro del mismo chat, y lo que más pide es cruzar agendas (53 %) y que le propongan planes (47 %). JTBD (formulación del equipo, por validar): cuando el grupo dice «hay que vernos» y nadie concreta, quiero que alguien proponga, cuadre la fecha y cierre, para vernos sin cargar yo con todo.">
+  <div class="content">
+    <h2 class="in" style="--i:0">Quieren verse, sin cargar con organizar.</h2>
+    <div class="des">
+      <div class="bigdonut in" style="--i:1"><svg viewBox="0 0 200 200"><circle class="bg" cx="100" cy="100" r="88" pathLength="100"/><circle class="fg" cx="100" cy="100" r="88" pathLength="100" style="--off:11"/></svg><div class="c"><b>89 %</b><span>quiere ayuda en el chat</span></div></div>
+      <div class="bars">
+        <div class="br in" style="--i:2"><div class="l">Cruzar agendas<b>53 %</b></div><div class="t"><i style="--w:.53;--bd:1.6s"></i></div></div>
+        <div class="br in" style="--i:3"><div class="l">Proponer planes<b>47 %</b></div><div class="t"><i style="--w:.47;--bd:2s"></i></div></div>
+      </div>
+    </div>
+    <p class="src in" style="--i:4">Encuesta propia · n = 76 · vista parcial</p>
+  </div>
+</section>
+
+<!-- 7 · Teoría · Paso 6 -->
+<section class="slide s-noche" data-chap="Nudo" data-title="Teoría" data-dur="30" data-notes="Katherine · 0:30 · Paso 6 · Enfoque de solución. «Para lograr generar este valor, nos dimos cuenta…» de que no faltan ganas: falta facilidad. Fogg lo explica: una conducta ocurre cuando hay motivación, facilidad y un disparador. Olson y di Leonardo muestran que nadie quiere cargar solo con el trabajo de organizar. E Iyengar y Lepper, que menos opciones destraban la decisión; por eso Sintonía propone de una a tres.">
   <div class="content">
     <h2 class="in" style="--i:0">No faltan ganas. <span style="color:var(--mostaza)">Falta facilidad.</span></h2>
     <div class="fogg">
@@ -464,7 +718,7 @@ h1{font-size:160px} h2{font-size:104px}
       </svg>
       <div class="refs">
         <div class="ref in" style="--i:2;--c:var(--naranja)"><b>Un disparador</b><span>Fogg, 2009</span></div>
-        <div class="ref in" style="--i:3;--c:var(--mostaza)"><b>Nadie quiere organizar</b><span>Olson, 1965</span></div>
+        <div class="ref in" style="--i:3;--c:var(--mostaza)"><b>Nadie quiere organizar solo</b><span>Olson, 1965 · di Leonardo, 1987</span></div>
         <div class="ref in" style="--i:4;--c:var(--salvia)"><b>Pocas opciones, más decisión</b><span>Iyengar y Lepper, 2000</span></div>
         <div class="ref in" style="--i:5;--c:var(--coral)"><b>Pertenecer es encontrarse</b><span>Baumeister y Leary, 1995</span></div>
       </div>
@@ -472,8 +726,8 @@ h1{font-size:160px} h2{font-size:104px}
   </div>
 </section>
 
-<!-- 5 · Metodología -->
-<section class="slide s-papel" data-chap="Contexto" data-title="Metodología" data-dur="45" data-notes="Katherine · 0:45. Doble diamante. Abrimos y cerramos dos veces. En el centro, el pivote: de conectar desconocidos a hacer que el plan del grupo pase. Cada fase con sus herramientas.">
+<!-- 8 · Metodología · Paso 6 -->
+<section class="slide s-papel" data-chap="Nudo" data-title="Metodología" data-dur="25" data-notes="Katherine · 0:25 · Paso 6 · Enfoque (método y pivote). Llegamos ahí con el doble diamante: descubrimos con una encuesta de calibración y proto-personas, definimos con JTBD y una matriz de oportunidades, y en el centro pivotamos: de conectar desconocidos a hacer que el plan del grupo pase.">
   <div class="content">
     <h2 class="in" style="--i:0">Descubrir antes de diseñar.</h2>
     <div class="dd">
@@ -500,95 +754,65 @@ h1{font-size:160px} h2{font-size:104px}
   </div>
 </section>
 
-<!-- 6 · 219 -->
-<section class="slide s-vitral" data-chap="Ejecución" data-title="219" data-dur="15" data-notes="Katherine · 0:15. No es una ocurrencia: 219 respuestas en dos encuestas propias (143 de calibración y 76 del giro), y un Mago de Oz antes de construir el motor.">
+<!-- 9 · 219 · Paso 6 -->
+<section class="slide s-vitral" data-chap="Nudo" data-title="219" data-dur="10" data-notes="Katherine · 0:10 · Paso 6 · Descubrimientos. En total, 219 respuestas en dos encuestas propias nos dijeron cómo muere un plan.">
   <div class="content center">
     <div class="count in" style="--i:0" data-to="219">0</div>
     <h2 class="in" style="--i:1;font-size:84px;max-width:20ch">respuestas nos dijeron cómo muere un plan.</h2>
   </div>
 </section>
 
-<!-- 7 · Recorrido -->
-<section class="slide s-papel" data-chap="Ejecución" data-title="La solución" data-dur="35" data-notes="José · 0:35. Sintonía es el quinto amigo del parche. Vive en el chat que ya usan. Propone de 1 a 3 planes de un inventario verificado, el grupo vota, Sintonía cierra día y hora y acompaña hasta que llegan.">
+<!-- 10 · La solución · Paso 7 -->
+<section class="slide s-noche" data-chap="Nudo" data-title="La solución" data-dur="30" data-notes="Jose · 0:30 · Paso 7 · Características y diferenciadores. «Nuestra solución, que hemos llamado Sintonía, funciona de la siguiente manera…» vive en el chat que el grupo ya usa. Uno: escucha al parche. Dos: propone de una a tres opciones de lugares verificados. Tres: el grupo vota ahí mismo, con la opción «No puedo ese día». Cuatro: cierra día y hora. Y cinco: acompaña hasta que llegan. Nadie descarga nada.">
   <div class="content">
-    <h2 class="in" style="--i:0">El quinto amigo del parche.</h2>
-    <p class="sub in" style="--i:1;color:var(--papel-700)">Dentro del chat que ya usan.</p>
-    <div class="journey">
-      <svg class="track" viewBox="0 0 1660 80" preserveAspectRatio="none" aria-hidden="true">
-        <path class="jpath" d="M149 40 Q 330 0 602 40 T 1057 40 T 1511 40"/>
-        <path class="jdraw" d="M149 40 Q 330 0 602 40 T 1057 40 T 1511 40" pathLength="1"/>
-      </svg>
-      <div class="stop" style="left:9%;--sd:1s"><i>1–3</i><b>Propone</b><span>planes verificados</span></div>
-      <div class="stop" style="left:36.3%;--sd:2.7s"><i>1·2·3</i><b>Votan</b><span>en el mismo chat</span></div>
-      <div class="stop" style="left:63.7%;--sd:4.4s"><i>Sáb 4</i><b>Cierra</b><span>día y hora</span></div>
-      <div class="stop" style="left:91%;--sd:6s"><i>5 de 6</i><b>Llegan</b><span>y vuelven a casa</span></div>
-      <div class="traveler glyph" aria-hidden="true"><svg viewBox="-10 -10 220 220"><circle cx="100" cy="100" r="100" fill="#ebc46a"/><circle cx="100" cy="100" r="92" fill="none" stroke="#0e1116" stroke-width="9"/><circle cx="100" cy="100" r="76" fill="none" stroke="#c23a00" stroke-width="3.5"/><text x="100" y="134" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="92" fill="#0e1116">s</text></svg></div>
+    <h2 class="in" style="--i:0;font-size:88px">Sintonía convierte el chat en <span class="u">un plan.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#ff4f00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h2>
+    <ol class="stepper" aria-label="Pasos de Sintonía">
+      <li style="--sd:1.2s"><i>1</i>Escucha</li><li style="--sd:3s"><i>2</i>Propone</li><li style="--sd:4.2s"><i>3</i>Votan</li><li style="--sd:6s"><i>4</i>Cierra</li><li style="--sd:7.2s"><i>5</i>Llegan</li>
+    </ol>
+    <svg class="flow" viewBox="0 0 1660 600" aria-label="Flujo: el parche escribe, Sintonía propone tres opciones, el grupo vota, se cierra el plan y llegan 5 de 6">
+      <text class="fh" x="80" y="24" text-anchor="middle">El parche</text>
+      <text class="fh" x="765" y="40" text-anchor="middle">1 a 3 opciones</text>
+      <text class="fh" x="1040" y="40" text-anchor="middle">Votos</text>
+      <path class="mline" d="M98 60 C 250 60, 280 300, 356 300" pathLength="1" style="--k:0"/><path class="mline" d="M98 126 C 250 126, 280 300, 356 300" pathLength="1" style="--k:1"/><path class="mline" d="M98 192 C 250 192, 280 300, 356 300" pathLength="1" style="--k:2"/><path class="mline" d="M98 258 C 250 258, 280 300, 356 300" pathLength="1" style="--k:3"/><path class="mline" d="M98 324 C 250 324, 280 300, 356 300" pathLength="1" style="--k:4"/><path class="mline" d="M98 390 C 250 390, 280 300, 356 300" pathLength="1" style="--k:5"/><path class="mline" d="M98 456 C 250 456, 280 300, 356 300" pathLength="1" style="--k:6"/><path class="mline" d="M98 522 C 250 522, 280 300, 356 300" pathLength="1" style="--k:7"/><circle class="mdot" cx="80" cy="60" r="18" style="--k:0"/><circle class="mdot" cx="80" cy="126" r="18" style="--k:1"/><circle class="mdot" cx="80" cy="192" r="18" style="--k:2"/><circle class="mdot" cx="80" cy="258" r="18" style="--k:3"/><circle class="mdot" cx="80" cy="324" r="18" style="--k:4"/><circle class="mdot" cx="80" cy="390" r="18" style="--k:5"/><circle class="mdot" cx="80" cy="456" r="18" style="--k:6"/><circle class="mdot" cx="80" cy="522" r="18" style="--k:7"/>
+      <g class="hub"><circle cx="420" cy="300" r="64" fill="#ebc46a"/><circle cx="420" cy="300" r="58" fill="none" stroke="#0e1116" stroke-width="6"/><circle cx="420" cy="300" r="48" fill="none" stroke="#c23a00" stroke-width="2.5"/><text x="420" y="330" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="82" fill="#0e1116">s</text></g>
+      <circle class="hubwave" cx="420" cy="300" r="64" fill="none" stroke="#ff4f00" stroke-width="3"/>
+      <text class="fh" x="420" y="404" text-anchor="middle">Sintonía</text>
+      <path class="oline lose" d="M484 300 C 560 300, 570 110, 640 110" pathLength="1" style="--k:0"/><path class="oline win" d="M484 300 C 560 300, 570 250, 640 250" pathLength="1" style="--k:1"/><path class="oline lose" d="M484 300 C 560 300, 570 390, 640 390" pathLength="1" style="--k:2"/><g class="ocard lose" style="--k:0"><rect x="640" y="64" width="250" height="92" rx="20"/><text class="ot" x="668" y="112">Café</text><text class="os" x="668" y="142">Jueves</text></g><g class="ocard win" style="--k:1"><rect x="640" y="204" width="250" height="92" rx="20"/><text class="ot" x="668" y="252">Asado</text><text class="os" x="668" y="282">Sábado</text></g><g class="ocard lose" style="--k:2"><rect x="640" y="344" width="250" height="92" rx="20"/><text class="ot" x="668" y="392">Cine</text><text class="os" x="668" y="422">Viernes</text></g><g class="ocard np" style="--k:3"><rect x="640" y="490" width="250" height="64" rx="18"/><text class="os" x="668" y="531">No puedo ese día</text></g><g class="vrow lose" style="--k:0"><rect class="vbg" x="920" y="96" width="240" height="28" rx="14"/><rect class="vbar" x="920" y="96" width="30" height="28" rx="14"/><text class="vn" x="970" y="120">1</text></g><g class="vrow win" style="--k:1"><rect class="vbg" x="920" y="236" width="240" height="28" rx="14"/><rect class="vbar" x="920" y="236" width="180" height="28" rx="14"/><text class="vn" x="1120" y="260">6</text></g><g class="vrow lose" style="--k:2"><rect class="vbg" x="920" y="376" width="240" height="28" rx="14"/><rect class="vbar" x="920" y="376" width="0.003" height="28" rx="14"/><text class="vn" x="932" y="400">0</text></g><g class="vrow np" style="--k:3"><rect class="vbg" x="920" y="508" width="240" height="28" rx="14"/><rect class="vbar" x="920" y="508" width="30" height="28" rx="14"/><text class="vn" x="970" y="532">1</text></g>
+      <path class="wline" d="M1170 250 C 1210 250, 1200 300, 1240 300" pathLength="1"/>
+      <g class="plan"><rect x="1240" y="225" width="220" height="150" rx="24"/><text class="pt1" x="1350" y="290" text-anchor="middle">Plan listo</text><text class="pt2" x="1350" y="330" text-anchor="middle">Sáb · 4:00 p. m.</text></g>
+      <path class="wline w2" d="M1460 300 L1512 300" pathLength="1"/>
+      <g class="arr"><circle class="abg" cx="1576" cy="300" r="58" pathLength="100"/><circle class="afg" cx="1576" cy="300" r="58" pathLength="100"/><text class="an" x="1576" y="312" text-anchor="middle">5/6</text><text class="fh" x="1576" y="404" text-anchor="middle">Llegaron</text></g>
+    </svg>
+  </div>
+</section>
+
+<!-- 11 · Factibilidad · Paso 8 -->
+<section class="slide s-papel" data-chap="Nudo" data-title="Factibilidad" data-dur="25" data-notes="Jose · 0:25 · Paso 8 · Factibilidad. «Creemos que es posible llevarla a la realidad porque hemos considerado los siguientes aspectos técnicos y de sostenibilidad…» lo técnico ya está construido, y es un circuito que empieza y termina en el chat. Uno, el grupo escribe. Dos, Sintonía recibe el mensaje en n8n y decide qué hacer. Tres, revisa el grupo en el backend, sin datos de contacto. Cuatro, la IA elige tres lugares, solo de una lista verificada, por unos 20 pesos. Y cinco, las opciones vuelven al chat para votar. Hoy en prueba de concepto con Evolution API; para el mercado, la API oficial de Meta.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0;margin-bottom:12px">Ya está construido</p>
+    <h2 class="in" style="--i:1;font-size:84px">Un circuito que <span class="u">vuelve al chat.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h2>
+    <div class="orbitwrap" data-s="1">
+      <div class="orbit" aria-label="Circuito: WhatsApp, n8n, backend, Gemini y de vuelta a WhatsApp">
+        <svg class="osvg" viewBox="0 0 760 790" aria-hidden="true">
+          <circle class="ring" cx="380" cy="385" r="280"/>
+          <path class="arc" data-i="0" d="M100 385 A280 280 0 0 1 380 105" pathLength="1"/><path class="arc" data-i="1" d="M380 105 A280 280 0 0 1 660 385" pathLength="1"/><path class="arc" data-i="2" d="M660 385 A280 280 0 0 1 380 665" pathLength="1"/><path class="arc back" data-i="3" d="M380 665 A280 280 0 0 1 100 385" pathLength="1"/>
+          <g class="orb"><circle cx="660" cy="385" r="22" class="oglow"/><circle cx="660" cy="385" r="12" class="odot"/></g>
+          <g class="stn" data-i="0" style="--bg:#1f2226;--fg:#faf9f6"><circle class="sc" cx="100" cy="385" r="72"/><svg x="68" y="353" width="64" height="64" viewBox="0 0 720 720" class="si" aria-label="WhatsApp"><path d="M360,0C161.18,0,0,161.18,0,360c0,65.41,17.45,126.75,47.94,179.61L0,720l187.02-44.21c51.34,28.18,110.28,44.21,172.98,44.21,198.82,0,360-161.18,360-360S558.82,0,360,0ZM360,655.52c-60.17,0-116.13-17.98-162.82-48.87l-110.49,28.14,30.99-105.61c-33.53-47.93-53.2-106.26-53.2-169.19,0-163.21,132.31-295.52,295.52-295.52s295.52,132.31,295.52,295.52-132.31,295.52-295.52,295.52Z" fill="currentColor"/><path d="M444.35,407.52l87.1,41.06c4,1.88,6.56,5.94,6.2,10.34-.94,11.46-5.54,34.43-26.13,55.02-58.12,58.12-162.49-7.64-166.74-10.18-25.67-13.79-50.06-32.24-73.19-55.36s-41.58-47.52-55.37-73.19c-2.55-4.24-68.31-108.61-10.18-166.74,20.59-20.59,43.56-25.19,55.02-26.13,4.41-.36,8.46,2.2,10.34,6.2l41.07,87.1c1.94,4.12,1.09,9.02-2.13,12.24l-30.61,30.61c-6.62,6.62-8.56,16.93-4,25.11,11.17,20.03,26.19,39.32,43.59,57.07,17.75,17.4,37.04,32.43,57.07,43.59,8.18,4.56,18.48,2.62,25.11-4l30.61-30.61c3.22-3.22,8.12-4.08,12.24-2.13Z" fill="currentColor"/></svg><text class="sl" x="100" y="500" text-anchor="middle">WhatsApp</text></g><g class="stn" data-i="1" style="--bg:#2c6a86;--fg:#ffffff"><circle class="sc" cx="380" cy="105" r="72"/><svg x="342" y="67" width="76" height="76" viewBox="0 0 80 80" class="si"><path d="M18 40h18M44 40l14-14M44 40l14 14" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="16" cy="40" r="9" fill="currentColor"/><circle cx="40" cy="40" r="9" fill="currentColor"/><circle cx="62" cy="24" r="9" fill="currentColor"/><circle cx="62" cy="56" r="9" fill="currentColor"/></svg><text class="sl" x="468" y="96" text-anchor="start">n8n</text></g><g class="stn" data-i="2" style="--bg:#9b2d30;--fg:#ffffff"><circle class="sc" cx="660" cy="385" r="72"/><svg x="622" y="347" width="76" height="76" viewBox="0 0 80 80" class="si"><rect x="12" y="14" width="56" height="52" rx="6" fill="none" stroke="currentColor" stroke-width="5"/><path d="M12 31h56M12 48h56M31 14v52M50 14v52" stroke="currentColor" stroke-width="4"/></svg><text class="sl" x="660" y="500" text-anchor="middle">Backend</text></g><g class="stn" data-i="3" style="--bg:#ebc46a;--fg:#0e1116"><circle class="sc" cx="380" cy="665" r="72"/><svg x="342" y="627" width="76" height="76" viewBox="0 0 80 80" class="si"><path d="M40 8c3 18 10 25 28 32-18 7-25 14-28 32-3-18-10-25-28-32 18-7 25-14 28-32z" fill="currentColor"/></svg><text class="sl" x="380" y="764" text-anchor="middle">Gemini</text></g>
+        </svg>
+        <div class="phone2" aria-hidden="true">
+          <span class="ph-h">Los del colegio</span>
+          <span class="m1">¿Armamos plan el sábado?</span>
+          <span class="m2"><i></i><i></i><i></i></span>
+          <span class="m3"><small>Sintonía</small>1 · Café<br>2 · Asado<br>3 · Cine</span>
+        </div>
+      </div>
+      <ol class="olist" aria-live="polite"><li><b>1</b><div><p>El grupo escribe en su chat.</p><span>WhatsApp · Evolution API (prueba de concepto)</span></div></li><li><b>2</b><div><p>Sintonía recibe el mensaje y decide qué hacer.</p><span>n8n · 8 flujos automatizados</span></div></li><li><b>3</b><div><p>Revisa el grupo, sin datos de contacto.</p><span>Backend · Apps Script + Google Sheets</span></div></li><li><b>4</b><div><p>La IA elige 3 lugares, solo de una lista verificada.</p><span>Gemini · ≈ 20 COP por propuesta</span></div></li><li><b>5</b><div><p>Las opciones vuelven al chat para votar.</p><span>De regreso a WhatsApp</span></div></li></ol>
     </div>
   </div>
 </section>
 
-<!-- 8 · Mapa -->
-<section class="slide s-papel" data-chap="Ejecución" data-title="Diferenciación" data-dur="35" data-notes="José · 0:35. Mapa de posicionamiento, lectura del equipo sobre funciones públicas. Las encuestas de WhatsApp están en el chat pero no cierran. Doodle cierra fecha, pero fuera del chat. Nadie hace las dos cosas. Innovación de proceso, emocional y técnica.">
-  <div class="content">
-    <h2 class="in" style="--i:0">Nadie más cierra el plan dentro del chat.</h2>
-    <div class="map">
-      <div class="plane in" style="--i:1">
-        <span class="axy">↑ Cierra el plan</span>
-        <span class="axx">Dentro del chat →</span>
-        <div class="pt" style="left:14%;bottom:62%;--pd:1.2s"><i></i><span>Doodle</span></div>
-        <div class="pt" style="left:16%;bottom:22%;--pd:1.5s"><i></i><span>Meetup</span></div>
-        <div class="pt" style="left:34%;bottom:10%;--pd:1.8s"><i></i><span>Splitwise</span></div>
-        <div class="pt" style="left:70%;bottom:32%;--pd:2.1s"><i></i><span>Encuestas de WhatsApp</span></div>
-        <div class="pt us" style="left:72%;bottom:82%;--pd:2.8s"><i></i><span>Sintonía</span></div>
-      </div>
-      <div class="types">
-        <div class="in" style="--i:3;--c:var(--mostaza)"><b>Proceso</b><span>de la idea a la llegada</span></div>
-        <div class="in" style="--i:4;--c:var(--coral)"><b>Emocional</b><span>sin «rogarle a la gente»</span></div>
-        <div class="in" style="--i:5;--c:var(--vitral)"><b>Técnica</b><span>IA solo sobre lugares verificados</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 9 · Deseabilidad -->
-<section class="slide s-noche" data-chap="Ejecución" data-title="Deseabilidad" data-dur="30" data-notes="Katherine · 0:30. 9 de cada 10 aceptarían ayuda dentro del chat. Lo más pedido: cruzar agendas y proponer planes. Exactamente lo que hace Sintonía. Encuesta propia, n = 76, vista parcial.">
-  <div class="content">
-    <h2 class="in" style="--i:0">Lo piden.</h2>
-    <div class="des">
-      <div class="bigdonut in" style="--i:1"><svg viewBox="0 0 200 200"><circle class="bg" cx="100" cy="100" r="76" pathLength="100"/><circle class="fg" cx="100" cy="100" r="76" pathLength="100" style="--off:11"/></svg><div class="c"><b>89 %</b><span>quiere ayuda en el chat</span></div></div>
-      <div class="bars">
-        <div class="br in" style="--i:2"><div class="l">Cruzar agendas<b>53 %</b></div><div class="t"><i style="--w:.53;--bd:1.6s"></i></div></div>
-        <div class="br in" style="--i:3"><div class="l">Proponer planes<b>47 %</b></div><div class="t"><i style="--w:.47;--bd:2s"></i></div></div>
-      </div>
-    </div>
-    <p class="src in" style="--i:4">Encuesta propia · n = 76 · vista parcial</p>
-  </div>
-</section>
-
-<!-- 10 · Factibilidad -->
-<section class="slide s-papel" data-chap="Ejecución" data-title="Factibilidad" data-dur="35" data-notes="José · 0:35. El mensaje sale del grupo, n8n decide qué hacer, el backend guarda todo sin datos de más y Gemini solo propone lugares verificados. Prueba de concepto con Evolution API; para salir al mercado, la API oficial de Meta.">
-  <div class="content">
-    <h2 class="in" style="--i:0">Y ya lo construimos.</h2>
-    <div class="pipe">
-      <div class="line"></div>
-      <div class="msg" aria-hidden="true"></div>
-      <div class="nodes">
-        <div class="node in" style="--i:1"><i style="background:#1f2226;color:var(--papel-50)">WhatsApp</i><span>el grupo</span></div>
-        <div class="node in" style="--i:2"><i style="background:var(--vitral);color:var(--papel-0)">n8n</i><span>8 flujos</span></div>
-        <div class="node in" style="--i:3"><i style="background:var(--rubi);color:var(--papel-0)">Backend</i><span>Apps Script + Sheets</span></div>
-        <div class="node in" style="--i:4"><i style="background:var(--mostaza);color:var(--noche)">Gemini</i><span>solo lugares verificados</span></div>
-      </div>
-    </div>
-    <div class="chips">
-      <span class="in" style="--i:5"><b>≈ 20 COP</b> por propuesta</span>
-      <span class="in" style="--i:6">PoC · <b>Evolution API</b></span>
-      <span class="in" style="--i:7">Mercado · <b>API oficial de Meta</b></span>
-    </div>
-  </div>
-</section>
-
-<!-- 11 · Mercado -->
-<section class="slide s-noche" data-chap="Ejecución" data-title="Viabilidad" data-dur="40" data-notes="Katherine · 0:40. Solo Cali. TAM: adultos en WhatsApp, ≈ 1,35 M (1.805.538 de 18+ × 75 %). SAM: quienes organizan, ≈ 374 mil (27,6 % según la encuesta), unos 44.900 M COP al año a 10.000 COP al mes. SOM: 1 % en el año 1, ≈ 3.700 organizadores, unos 449 M COP. Paga el organizador; 12 grupos cubren las herramientas en el mes de MVP. Fuentes: proyección DANE (vía Telencuestas, por verificar), Infobip 2026, encuesta propia. SOM y precio: hipótesis.">
+<!-- 12 · Viabilidad · Paso 8 -->
+<section class="slide s-noche" data-chap="Nudo" data-title="Viabilidad" data-dur="25" data-notes="Katherine · 0:25 · Paso 8 · Viabilidad. Y lo de negocio: paga solo quien organiza, unos 10.000 pesos al mes. En Cali son unos 374 mil organizadores; la meta del primer año es el 1 %, unos 3.700. Con 12 grupos ya cubrimos las herramientas. (Precio y SOM: hipótesis.)">
   <div class="content">
     <h2 class="in" style="--i:0">Paga quien organiza.</h2>
     <div class="mkt">
@@ -609,15 +833,25 @@ h1{font-size:160px} h2{font-size:104px}
   </div>
 </section>
 
-<!-- 12 · La prueba -->
-<section class="slide s-crema" data-chap="Resultados" data-title="La prueba" data-dur="12" data-notes="José · 0:12. Pasamos de la promesa a la medición.">
-  <div class="content center">
-    <h2 class="in" style="--i:0;font-size:160px">Ahora, <span class="u">la prueba.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h2>
+<!-- 13 · Ruta · Paso 9 -->
+<section class="slide s-noche" data-chap="Nudo" data-title="Ruta" data-dur="20" data-notes="Jose · 0:20 · Paso 9 · Plan de implementación. «Para hacerlo realidad hemos considerado un plan de implementación que se despliega así…» como ondas que crecen. Hoy, el piloto: dos grupos con mago y dos automatizados. El próximo mes, el agente en n8n como prueba de concepto con Evolution API, con la meta de 12 grupos. Y para salir al mercado, la API oficial de Meta y el cobro al organizador, con la meta de 3.700 organizadores el primer año. (Metas del equipo.)">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0;margin-bottom:12px">Plan de implementación</p>
+    <h2 class="in" style="--i:1;font-size:88px">Cada onda llega a <span class="u">más parches.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#ff4f00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h2>
+    <div class="ripplemap">
+      <svg class="rpsvg" viewBox="0 0 760 650" aria-label="Tres ondas: piloto con 4 grupos, agente con 12 grupos y mercado con 3.700 organizadores">
+        <g class="rp" style="--d:1s"><circle class="re" cx="380" cy="325" r="110" style="stroke:#ebc46a"/><circle class="rc" cx="380" cy="325" r="110" style="stroke:#ebc46a"/><g class="rl"><rect x="353" y="199" width="180" height="72" rx="36" fill="#ebc46a"/><text x="443" y="239" text-anchor="middle" class="rn" fill="#0e1116">4</text><text x="443" y="261" text-anchor="middle" class="ru" fill="#0e1116">grupos</text></g></g><g class="rp" style="--d:2.8s"><circle class="re" cx="380" cy="325" r="210" style="stroke:#a9c9b8"/><circle class="rc" cx="380" cy="325" r="210" style="stroke:#a9c9b8"/><g class="rl"><rect x="500" y="289" width="180" height="72" rx="36" fill="#a9c9b8"/><text x="590" y="329" text-anchor="middle" class="rn" fill="#0e1116">12</text><text x="590" y="351" text-anchor="middle" class="ru" fill="#0e1116">grupos</text></g></g><g class="rp" style="--d:4.6s"><circle class="re" cx="380" cy="325" r="310" style="stroke:#2c6a86"/><circle class="rc" cx="380" cy="325" r="310" style="stroke:#2c6a86"/><g class="rl"><rect x="534" y="480" width="180" height="72" rx="36" fill="#2c6a86"/><text x="624" y="520" text-anchor="middle" class="rn" fill="#ffffff">3.700</text><text x="624" y="542" text-anchor="middle" class="ru" fill="#ffffff">organizadores</text></g></g>
+        <circle class="rwave" cx="380" cy="325" r="72" fill="none" stroke="#ff4f00" stroke-width="3" vector-effect="non-scaling-stroke"/>
+        <g class="rglyph"><circle cx="380" cy="325" r="64" fill="#ebc46a"/><circle cx="380" cy="325" r="58" fill="none" stroke="#0e1116" stroke-width="6"/><circle cx="380" cy="325" r="48" fill="none" stroke="#c23a00" stroke-width="2.5"/><text x="380" y="355" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="82" fill="#0e1116">s</text></g>
+      </svg>
+      <div class="stages"><div class="sr" style="--d:1s"><div class="ph"><svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><rect x="5" y="13" width="38" height="27" rx="5" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="24" cy="26.5" r="7.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M17 13l3-5h8l3 5" fill="none" stroke="currentColor" stroke-width="3"/></svg><span>Foto real del piloto: la mesa del parche con el celular mostrando el chat de Sintonía. Sin caras reconocibles.</span></div><div class="tx"><small>Hoy</small><b>Piloto con mago y con motor</b><span>2 + 2 grupos, 2 planes cada uno</span></div></div><div class="sr" style="--d:2.8s"><div class="ph"><svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><rect x="5" y="13" width="38" height="27" rx="5" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="24" cy="26.5" r="7.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M17 13l3-5h8l3 5" fill="none" stroke="currentColor" stroke-width="3"/></svg><span>Captura del lienzo de n8n con el agente orquestador y sus herramientas conectadas.</span></div><div class="tx"><small>Próximo mes</small><b>Agente en n8n</b><span>Prueba de concepto con Evolution API · meta: 12 grupos</span></div></div><div class="sr" style="--d:4.6s"><div class="ph"><svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><rect x="5" y="13" width="38" height="27" rx="5" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="24" cy="26.5" r="7.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M17 13l3-5h8l3 5" fill="none" stroke="currentColor" stroke-width="3"/></svg><span>Mockup ilustrativo del perfil de Sintonía en WhatsApp Business.</span></div><div class="tx"><small>Mercado</small><b>API oficial de Meta</b><span>Cobro al organizador · meta año 1: 3.700</span></div></div></div>
+    </div>
+    <p class="src in" style="--i:6">Grupos y organizadores: metas del equipo · las fotos son marcadores para reemplazar</p>
   </div>
 </section>
 
-<!-- 13 · Prototipo -->
-<section class="slide s-papel" data-chap="Resultados" data-title="Prototipo" data-dur="35" data-notes="José · 0:35. El prototipo sigue el storyboard de ocho cuadros. Empezamos con un Mago de Oz: una persona opera para validar antes de automatizar. Costo de infraestructura casi cero. Pendiente: sumar capturas reales de la consola y del chat.">
+<!-- 14 · Prototipo · Paso 10 -->
+<section class="slide s-papel" data-chap="Desenlace" data-title="Prototipo" data-dur="20" data-notes="Katherine · 0:20 · Paso 10 · Validación 1 (realizada). «Para validar que es una solución deseable, viable y factible, hemos realizado las siguientes pruebas…» primero, un prototipo que sigue este storyboard de ocho momentos, operado con un Mago de Oz: una persona detrás, para validar antes de automatizar.">
   <div class="content">
     <h2 class="in" style="--i:0">Primero un mago, después un motor.</h2>
     <div class="film in" style="--i:1" aria-label="Storyboard del recorrido">
@@ -648,8 +882,8 @@ h1{font-size:160px} h2{font-size:104px}
   </div>
 </section>
 
-<!-- 14 · Validación -->
-<section class="slide s-noche" data-chap="Resultados" data-title="Validación" data-dur="35" data-notes="Katherine · 0:35. Dos condiciones en paralelo: con mago y automatizado, 2 grupos cada una y 2 planes por grupo. Cinco métricas. Los valores se cargan al cierre del piloto.">
+<!-- 15 · Validación · Paso 10 -->
+<section class="slide s-noche" data-chap="Desenlace" data-title="Validación" data-dur="25" data-notes="Katherine · 0:25 · Paso 10 · Validación 2 (en curso). Y segundo, un experimento en curso: dos condiciones en paralelo, con mago y automatizado, dos grupos en cada una y dos planes por grupo. Medimos facilidad con SEQ, usabilidad con SUS, cuántas invitadas llegan, los minutos humanos y cuántos grupos repiten. [Dato pendiente / Por validar en piloto]">
   <div class="content">
     <h2 class="in" style="--i:0">¿Lo mismo, con menos esfuerzo humano?</h2>
     <div class="lanes">
@@ -667,8 +901,8 @@ h1{font-size:160px} h2{font-size:104px}
   </div>
 </section>
 
-<!-- 15 · Impacto -->
-<section class="slide s-papel" data-chap="Resultados" data-title="Impacto" data-dur="35" data-notes="José · 0:35. Hoy pasan 2 de cada 5 planes. Las metas del piloto son preliminares: que llegue el 60 % de las invitadas, que la mitad de los grupos repita y bajar un punto la carga de quien organiza. A largo plazo: grupos que se ven más y una ciudad que se encuentra.">
+<!-- 16 · Impacto · Paso 11 -->
+<section class="slide s-papel" data-chap="Desenlace" data-title="Impacto" data-dur="25" data-notes="Jose · 0:25 · Paso 11 · Impacto sobre el dolor. «Por lo tanto, podemos decir que…» el impacto que buscamos y estamos midiendo es este: sobre los planes que mueren, que llegue el 60 % de las invitadas; sobre la continuidad, que la mitad de los grupos repita; y sobre el desgaste, bajar al menos un punto la carga de quien organiza. Hoy son metas; el dato real sale del piloto. [Dato pendiente / Por validar en piloto]">
   <div class="content">
     <h2 class="in" style="--i:0">Del «hay que vernos» al plan que pasa.</h2>
     <div class="imp">
@@ -688,35 +922,72 @@ h1{font-size:160px} h2{font-size:104px}
   </div>
 </section>
 
-<!-- 16 · Ruta -->
-<section class="slide s-noche" data-chap="Cierre" data-title="Ruta" data-dur="30" data-notes="Katherine · 0:30. Hoy, el piloto. El próximo mes, el agente en n8n como prueba de concepto. Para salir al mercado, la API oficial de Meta, cobro al organizador y alianzas con lugares.">
+<!-- 17 · Solicitud · Paso 12 -->
+<section class="slide s-noche" data-chap="Desenlace" data-title="Solicitud" data-dur="20" data-notes="Jose y Katherine · 0:20 · Paso 12 · O1 Solicitud. «Con esto en mente, vinimos a solicitar…» tres cosas: doce grupos organizadores para probar el agente, mentoría técnica para la ruta con la API oficial de Meta y aliados en Cali para ampliar el inventario de lugares verificados. (Propuesta del equipo, por confirmar.)">
   <div class="content">
-    <h2 class="in" style="--i:0">De piloto a producto.</h2>
-    <div class="route">
-      <svg viewBox="0 0 1660 60" preserveAspectRatio="none" aria-hidden="true"><path class="rline" d="M276 30 Q 553 0 830 30 T 1384 30" pathLength="1"/></svg>
-      <div class="rstops">
-        <div class="rs now" style="--rd:.5s"><i></i><small>Hoy</small><b>Piloto</b></div>
-        <div class="rs" style="--rd:2s"><i></i><small>Próximo mes</small><b>Agente en n8n</b></div>
-        <div class="rs" style="--rd:3.4s"><i></i><small>Mercado</small><b>API oficial de Meta</b></div>
-      </div>
+    <h2 class="in" style="--i:0">Vinimos a solicitar.</h2>
+    <div class="asks3">
+      <div class="ak in" style="--i:1"><b class="ct" data-to="12">0</b><span>grupos organizadores para probar el agente</span></div>
+      <div class="ak in" style="--i:2"><b>Mentoría</b><span>técnica para la ruta con la API oficial de Meta</span></div>
+      <div class="ak in" style="--i:3"><b>Aliados</b><span>en Cali para el inventario de lugares verificados</span></div>
     </div>
+    <p class="src in" style="--i:4">Propuesta del equipo · por confirmar antes de la presentación</p>
   </div>
 </section>
 
-<!-- 17 · Tagline -->
-<section class="slide s-crema" data-chap="Cierre" data-title="Tagline" data-dur="15" data-notes="José y Katherine · 0:15. Decir el tagline juntos. Agradecer y abrir preguntas.">
-  <div class="content tagline">
-    <div class="glyph" role="img" aria-label="Avatar de Sintonía">
+<!-- 18 · Cierre A · Paso 13 -->
+<section class="slide s-crema" data-chap="Desenlace" data-title="Cierre A · Patrón" data-dur="15" data-notes="Katherine · 0:15 · Paso 13 · Cierre. «Llegamos al final de nuestra presentación…» Gracias por su tiempo. Sintonía: que las ganas se vuelvan plan. ¿Preguntas? (Alternativa A · patrón: elegir una y borrar las otras dos.)">
+  <div class="spat" aria-hidden="true"></div>
+  <div class="content cA">
+    <div class="glyph gA" role="img" aria-label="Avatar de Sintonía">
       <svg viewBox="-40 -40 280 280" aria-hidden="true">
         <circle class="zl" cx="100" cy="100" r="100" fill="#ebc46a"/>
         <circle class="ring r1" cx="100" cy="100" r="76" fill="none" stroke="#c23a00" stroke-width="3.5"/>
         <circle class="ring r2" cx="100" cy="100" r="92" fill="none" stroke="#0e1116" stroke-width="9"/>
         <circle class="wave" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3.5" vector-effect="non-scaling-stroke"/>
         <circle class="wave loop" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3" vector-effect="non-scaling-stroke"/>
-        <text class="stone" x="100" y="134" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="92" fill="#0e1116">s</text>
+        <text class="stone" x="100" y="147" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="128" fill="#0e1116">s</text>
       </svg>
     </div>
     <h1 class="in" style="--i:1">Que las ganas<br><span class="u">se vuelvan plan.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+    <p class="sub in" style="--i:2;margin:0;color:var(--papel-900)">Gracias. ¿Preguntas?</p>
+  </div>
+</section>
+
+<!-- 19 · Cierre B · Paso 13 -->
+<section class="slide s-noche" data-chap="Desenlace" data-title="Cierre B · Chat" data-dur="15" data-notes="Katherine · 0:15 · Paso 13 · Cierre. «Llegamos al final de nuestra presentación…» Gracias por su tiempo. Sintonía: que las ganas se vuelvan plan. ¿Preguntas? (Alternativa B · el chat del inicio, resuelto.)">
+  <div class="content bridge">
+    <div>
+      <h1 class="in" style="--i:0;font-size:132px">Que las ganas<br><span class="u">se vuelvan plan.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#ff4f00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+      <p class="sub in" style="--i:1">Gracias. ¿Preguntas?</p>
+    </div>
+    <div class="phone in" style="--i:1" aria-label="El mismo chat del inicio, ahora con el plan cerrado">
+      <span class="hd">Los del colegio · 8</span>
+      <span class="bb me" style="--k:0">¿Nos vemos este sábado?</span>
+      <span class="bb sint" style="--k:1"><small>Sintonía</small>Plan listo · Asado<br>Sábado 4:00 p. m.</span>
+      <span class="bb" style="--k:2">Confirmaron 5 de 6</span>
+      <span class="bb me" style="--k:3">¡Nos vemos!</span>
+      <span class="seen ok">Plan cerrado · sin vueltas</span>
+    </div>
+  </div>
+</section>
+
+<!-- 20 · Cierre C · Paso 13 -->
+<section class="slide s-noche" data-chap="Desenlace" data-title="Cierre C · Ondas" data-dur="15" data-notes="Katherine · 0:15 · Paso 13 · Cierre. «Llegamos al final de nuestra presentación…» Gracias por su tiempo. Sintonía: que las ganas se vuelvan plan. ¿Preguntas? (Alternativa C · ondas a pantalla completa.)">
+  <div class="bigwaves" aria-hidden="true"><i style="--w:0s;--c:#ff4f00"></i><i style="--w:1.6s;--c:#ebc46a"></i><i style="--w:3.2s;--c:#2c6a86"></i><i style="--w:4.8s;--c:#ff4f00"></i></div>
+  <div class="content cC">
+    <div class="glyph gC" role="img" aria-label="Avatar de Sintonía">
+      <svg viewBox="-40 -40 280 280" aria-hidden="true">
+        <circle class="zl" cx="100" cy="100" r="100" fill="#ebc46a"/>
+        <circle class="ring r1" cx="100" cy="100" r="76" fill="none" stroke="#c23a00" stroke-width="3.5"/>
+        <circle class="ring r2" cx="100" cy="100" r="92" fill="none" stroke="#0e1116" stroke-width="9"/>
+        <circle class="wave" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3.5" vector-effect="non-scaling-stroke"/>
+        <circle class="wave loop" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3" vector-effect="non-scaling-stroke"/>
+        <text class="stone" x="100" y="147" text-anchor="middle" font-family="'Climate Crisis','Arial Black',sans-serif" font-size="128" fill="#0e1116">s</text>
+      </svg>
+    </div>
+    <h1 class="in" style="--i:1">Que las ganas<br><span class="u">se vuelvan plan.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#ff4f00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+    <p class="sub in" style="--i:2;margin:0">Gracias. ¿Preguntas?</p>
   </div>
 </section>
 
@@ -725,14 +996,14 @@ h1{font-size:160px} h2{font-size:104px}
 
 <nav class="navbar" aria-label="Navegación de la presentación">
   <button id="prev" type="button" aria-label="Diapositiva anterior">←</button>
-  <span class="chap" id="chap">Contexto</span>
+  <span class="chap" id="chap">Inicio</span>
   <div class="track">
     <div class="ticks" id="ticks" aria-hidden="true"></div>
-    <input class="range" id="nav" type="range" min="1" max="17" step="1" value="1" aria-label="Ir a diapositiva">
+    <input class="range" id="nav" type="range" min="1" max="20" step="1" value="1" aria-label="Ir a diapositiva">
     <span class="tip" id="tip" hidden></span>
   </div>
-  <span class="count" id="count">1 / 17</span>
-  <span class="timer hide-sm" id="timer" title="Tiempo acumulado sugerido">0:15</span>
+  <span class="count" id="count">1 / 20</span>
+  <span class="timer hide-sm" id="timer" title="Tiempo acumulado sugerido">0:08</span>
   <button id="next" type="button" aria-label="Diapositiva siguiente">→</button>
   <button id="autoBtn" type="button" aria-pressed="false" aria-label="Modo stand: avance automático en bucle (A)">▶ Stand</button>
   <button id="notesBtn" class="hide-sm" type="button" aria-label="Notas del orador (N)">N</button>
@@ -742,6 +1013,8 @@ h1{font-size:160px} h2{font-size:104px}
 
 <script>
 (function(){
+  // Patrón de S de la referencia (tono sobre tono, -10°, filas escalonadas)
+  document.querySelectorAll('.spat').forEach(el => { let h=''; for (let r=0, y=-20; y<1420; r++, y+=96) for (let x=-60; x<2320; x+=152) h += '<span style="left:'+(x+(r%2?76:0))+'px;top:'+y+'px">s</span>'; el.innerHTML = h; });
   const stage = document.getElementById('stage'), vp = document.getElementById('viewport');
   function fit(){ const s = Math.min(vp.clientWidth/1920, vp.clientHeight/1080); stage.style.transform = 'translate(-50%,-50%) scale('+s+')'; }
   window.addEventListener('resize', fit); fit();
@@ -762,12 +1035,55 @@ h1{font-size:160px} h2{font-size:104px}
     cancelAnimationFrame(counterRAF);
     slide.querySelectorAll('[data-to]').forEach(el => {
       const to = +el.dataset.to;
-      if (reduce){ el.textContent = to; return; }
+      if (reduce){ el.textContent = el.dataset.fmt==='m' ? (to/100).toFixed(2).replace('.',',') : to; return; }
       el.textContent = '0';
       const t0 = performance.now() + 500, dur = 1800;
-      const step = now => { const p = Math.min(1, Math.max(0, (now - t0)/dur)); const e = 1 - Math.pow(1-p, 3); el.textContent = Math.round(to*e); if (p < 1) counterRAF = requestAnimationFrame(step); };
+      const fm = v => el.dataset.fmt==='m' ? (v/100).toFixed(2).replace('.',',') : String(Math.round(v));
+      const step = now => { const p = Math.min(1, Math.max(0, (now - t0)/dur)); const e = 1 - Math.pow(1-p, 3); el.textContent = fm(to*e); if (p < 1) counterRAF = requestAnimationFrame(step); };
       counterRAF = requestAnimationFrame(step);
     });
+  }
+
+  // Relevo del mensaje: 5 pasos de 3,4 s, pausa de 3 s y vuelve a empezar
+  let relayTimer = null;
+  function runRelay(slide){
+    clearTimeout(relayTimer);
+    const r = slide.querySelector('.relay'); if (!r) return;
+    const items = [...slide.querySelectorAll('.narr li')], sts = [...r.querySelectorAll('.st')], cap = r.querySelector('.capsule');
+    const stIdx = [0,1,2,3,0];
+    function setStep(n, instant){
+      if (instant){ r.classList.add('reset'); }
+      r.dataset.s = n;
+      items.forEach((li,i) => li.classList.toggle('on', i === n-1));
+      const li = items[n-1]; cap.style.left = li.dataset.x + 'px'; cap.textContent = li.dataset.cap;
+      cap.classList.remove('pop'); void cap.offsetWidth; cap.classList.add('pop');
+      sts.forEach((el,i) => { el.classList.toggle('on', i === stIdx[n-1]); el.classList.toggle('done', n < 5 ? i < stIdx[n-1] : i > 0); });
+      if (instant){ void r.offsetWidth; r.classList.remove('reset'); }
+    }
+    let n = 1; setStep(1, true);
+    const tick = () => { n = n < 5 ? n+1 : 1; setStep(n, n === 1); relayTimer = setTimeout(tick, n === 5 ? 6400 : 3400); };
+    relayTimer = setTimeout(tick, 3400);
+  }
+
+  // Circuito: 5 pasos de 3,6 s, pausa de 6 s y vuelve a empezar
+  let orbitTimer = null;
+  function runOrbit(slide){
+    clearTimeout(orbitTimer);
+    const w = slide.querySelector('.orbitwrap'); if (!w) return;
+    const lis = [...w.querySelectorAll('.olist li')], sts = [...w.querySelectorAll('.stn')], arcs = [...w.querySelectorAll('.arc')], orb = w.querySelector('.orb');
+    const stI = [0,1,2,3,0], ang = [180,270,360,450,540];
+    function set(n, instant){
+      if (instant) w.classList.add('reset');
+      w.dataset.s = n;
+      lis.forEach((li,i) => { li.classList.toggle('on', i === n-1); li.classList.toggle('done', i < n-1); });
+      sts.forEach((g,i) => { g.classList.toggle('on', i === stI[n-1]); g.classList.toggle('done', n === 5 ? i > 0 : i < stI[n-1]); });
+      arcs.forEach((a,i) => a.classList.toggle('on', i < n-1));
+      orb.style.transform = 'rotate(' + ang[n-1] + 'deg)';
+      if (instant){ void w.offsetWidth; w.classList.remove('reset'); }
+    }
+    let n = 1; set(1, true);
+    const tick = () => { n = n < 5 ? n+1 : 1; set(n, n === 1); orbitTimer = setTimeout(tick, n === 5 ? 6000 : 3600); };
+    orbitTimer = setTimeout(tick, 3600);
   }
   function go(n){ n = (n + N) % N; if (n !== cur){ slides[cur].classList.remove('active'); cur = n; slides[cur].classList.add('active'); } update(); }
   function update(){
@@ -780,6 +1096,8 @@ h1{font-size:160px} h2{font-size:104px}
     tickEls.forEach((el,i) => el.classList.toggle('on', i <= cur));
     notesText.textContent = slides[cur].dataset.notes || '';
     runCounters(slides[cur]);
+    runRelay(slides[cur]);
+    runOrbit(slides[cur]);
     if (auto) schedule();
     try { history.replaceState(null,'','#s'+(cur+1)); } catch(e) {}
   }
