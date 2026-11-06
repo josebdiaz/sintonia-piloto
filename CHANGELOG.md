@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-06 (tarde) · Onboarding y plan de pruebas alineados
+- **Deck de onboarding del monitor** (`docs/deck-onboarding-monitor.html`): la consola aparece como `sintonia.my`; el ejemplo de `/confirmado` incluye dirección y presupuesto; la etapa 7 menciona las preguntas de precio para quien organiza.
+- **Orden de lectura:** el mapa de la consola se numera de arriba abajo y de izquierda a derecha, y en la etapa 4 el aviso de «faltan votos» pasa a ser el paso 2. En las etapas 1, 2 y 7, donde el orden de las acciones no sigue el de la pantalla, una ruta punteada une los marcadores 1 → 2 → 3. Capítulos en secuencia: Contexto · Operación · Walkthrough · En el chat · Reglas · Cierre.
+- **One-pager** (`docs/plan-pruebas-usuario.html` + PDF): bloques en orden de lectura 1 → 8 sin saltos entre columnas; la tabla de métricas sigue el orden de las preguntas; «pulso» como en la consola; ensayo del monitor en el calendario.
+- `docs/guias/onboarding-monitor.md` v1.1 con el mismo vocabulario. El portal enlaza al deck de onboarding.
+
 ### 2026-11-06 · Monitor, plan de pruebas y aviso v2
 - **Aviso de privacidad v2 aprobado por Néstor.** Falta publicar el texto en `piloto/aviso.html` y subir `AVISO_VERSION` (frontend y Propiedades del script) antes del primer grupo real de E1.5.
 - **Nuevo:** `docs/deck-induccion-monitor.html` (14 diapositivas) y `docs/guias/onboarding-monitor.md` (19 diapositivas en Markdown, fuente para el motor de presentaciones). El monitor opera E1 como mago con acceso a la consola; la clave se entrega en persona y se rota al terminar.

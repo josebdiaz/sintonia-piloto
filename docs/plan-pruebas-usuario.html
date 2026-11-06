@@ -16,7 +16,7 @@
 *{box-sizing:border-box}
 html{background:#d9d5cb}
 body{margin:0;font-family:var(--f);color:var(--noche);-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.sheet{width:8.5in;min-height:11in;margin:24px auto;background:var(--papel-50);padding:.34in .42in .3in;display:flex;flex-direction:column;gap:10px;box-shadow:0 8px 40px rgba(0,0,0,.18)}
+.sheet{width:8.5in;min-height:11in;margin:24px auto;background:var(--papel-50);padding:.32in .42in .28in;display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 40px rgba(0,0,0,.18)}
 @media print{html{background:none}.sheet{margin:0;box-shadow:none;height:11in;overflow:hidden}}
 @media screen and (max-width:860px){.sheet{width:auto;min-height:0;margin:0;padding:24px 16px}.grid,.tests,.two{grid-template-columns:1fr!important}.tl{grid-template-columns:repeat(2,1fr)!important}}
 
@@ -30,6 +30,7 @@ h1{font-size:28px;line-height:1;letter-spacing:-.03em;font-weight:800;margin:0}
 .meta{font-size:9.5px;color:var(--papel-700);text-align:right;margin-top:4px;line-height:1.35}
 
 h2{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px;display:flex;align-items:center;gap:8px}
+h2 .sub{font-weight:600;letter-spacing:.04em;text-transform:none;color:var(--papel-700)}
 h2 b{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--noche);color:var(--papel-50);font-size:9.5px;letter-spacing:0}
 p,li,td{font-size:10.2px;line-height:1.34}
 ul{margin:0;padding-left:14px}
@@ -52,12 +53,13 @@ li{margin:0 0 2px}
 .t3{background:var(--mostaza)} .t3 .k,.t3 .who{color:var(--naranja-700)}
 .t4{background:var(--papel-0);border:1.5px dashed var(--papel-700)} .t4 .k,.t4 .who{color:var(--papel-700)}
 
-.two{display:grid;grid-template-columns:1.25fr 1fr;gap:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 table{width:100%;border-collapse:collapse}
 th{font-size:8.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-align:left;color:var(--papel-700);padding:0 6px 4px 0;border-bottom:1.5px solid var(--noche)}
 td{padding:3px 6px 3px 0;border-bottom:1px solid var(--papel-300);vertical-align:top}
 td:first-child{font-weight:700}
-td .s{display:block;font-weight:400;font-size:9px;color:var(--papel-700)}
+td .s{font-weight:400;font-size:9px;color:var(--papel-700)}
+td .s::before{content:" · "}
 .goal{font-weight:700;color:var(--naranja-700)}
 .rule{margin-top:6px;font-size:9.5px;background:var(--crema);border-radius:8px;padding:6px 8px;line-height:1.35}
 
@@ -76,6 +78,7 @@ td .s{display:block;font-weight:400;font-size:9px;color:var(--papel-700)}
 .check li.done{color:var(--papel-700)}
 .check li.done::before{content:"✓";border:0;top:-1px;left:0;width:auto;height:auto;font-weight:800;color:var(--vitral);font-size:10px}
 .roles td:first-child{white-space:nowrap}
+footer span:last-child{white-space:nowrap}
 footer{margin-top:auto;display:flex;justify-content:space-between;gap:12px;font-size:8.5px;color:var(--papel-700);border-top:1px solid var(--papel-300);padding-top:6px}
 </style>
 </head>
@@ -86,7 +89,7 @@ footer{margin-top:auto;display:flex;justify-content:space-between;gap:12px;font-
   <div>
     <p class="eyebrow">Plan de pruebas de usuario · noviembre 2026</p>
     <h1>¿El plan sí pasa?</h1>
-    <p class="lede">Probamos con parches reales de Cali si Sintonía ayuda a que un plan pase de «hay que vernos» a «ya llegamos», y si puede lograrlo con menos trabajo humano.</p>
+    <p class="lede">Probamos con parches reales de Cali si Sintonía lleva un plan de «hay que vernos» a «ya llegamos», con menos trabajo humano.</p>
   </div>
   <div>
     <div class="wm" aria-label="Sintonía">sinton<span class="i">ı</span>a</div>
@@ -99,7 +102,7 @@ footer{margin-top:auto;display:flex;justify-content:space-between;gap:12px;font-
   <div class="qs">
     <div class="q"><span class="k">Facilidad</span><b>¿Es fácil usarlo?</b><span>Unirse, votar, coordinar el día y volver a armar plan.</span></div>
     <div class="q"><span class="k">Efecto</span><b>¿El plan sí pasa?</b><span>Cuántas de las personas invitadas llegan.</span></div>
-    <div class="q"><span class="k">Eficiencia</span><b>¿Cuesta menos con el motor?</b><span>Minutos humanos por plan: mago contra motor asistido.</span></div>
+    <div class="q"><span class="k">Eficiencia</span><b>¿Ahorra trabajo?</b><span>Minutos humanos por plan: mago contra motor asistido.</span></div>
     <div class="q"><span class="k">Continuidad</span><b>¿Quieren repetir?</b><span>«¿Repetimos con este parche?» y cuánto pagaría quien organiza.</span></div>
   </div>
 </section>
@@ -107,40 +110,42 @@ footer{margin-top:auto;display:flex;justify-content:space-between;gap:12px;font-
 <section>
   <h2><b>2</b>Cuatro pruebas, cada una con su propósito</h2>
   <div class="tests">
-    <div class="t t1"><span class="k">0 · ENSAYO</span><b>Ensayo interno</b><p>Recorrido completo en modo prueba, con el equipo. No cuenta en el análisis.</p><span class="who">Equipo · 8 nov</span></div>
-    <div class="t t2"><span class="k">E1 · MAGO</span><b>WhatsApp + mago</b><p>Una persona opera el chat desde la consola. 2 grupos, 2 planes por grupo.</p><span class="who">Monitor</span></div>
-    <div class="t t3"><span class="k">E1.5 · MOTOR</span><b>WhatsApp automatizado</b><p>n8n propone y redacta; una persona aprueba y pega. 2 grupos, 2 planes por grupo.</p><span class="who">Jose y Katherine</span></div>
-    <div class="t t4"><span class="k">WEB · APARTE</span><b>Validación del flujo</b><p>La web app con otras personas, en un backend separado. Solo cualitativa.</p><span class="who">Equipo</span></div>
+    <div class="t t1"><span class="k">0 · ENSAYO</span><b>Ensayo interno</b><p>Recorrido completo en modo prueba. No cuenta en el análisis.</p><span class="who">Equipo · 8 nov</span></div>
+    <div class="t t2"><span class="k">E1 · MAGO</span><b>WhatsApp + mago</b><p>Una persona opera el chat desde la consola. 2 grupos × 2 planes.</p><span class="who">Monitor</span></div>
+    <div class="t t3"><span class="k">E1.5 · MOTOR</span><b>WhatsApp automatizado</b><p>n8n propone y redacta; una persona aprueba y pega. 2 grupos × 2 planes.</p><span class="who">Jose y Katherine</span></div>
+    <div class="t t4"><span class="k">WEB · APARTE</span><b>Validación del flujo</b><p>La web app con otras personas y backend aparte. Solo cualitativa.</p><span class="who">Equipo</span></div>
   </div>
+</section>
+
+<section>
+  <h2><b>3</b>Cómo medimos <span class="sub">· en el mismo orden de las preguntas</span></h2>
+  <table>
+    <colgroup><col style="width:34%"><col style="width:11%"><col style="width:22%"><col style="width:15%"><col style="width:18%"></colgroup>
+    <thead><tr><th>Qué</th><th>Pregunta</th><th>Con qué</th><th>Cuándo</th><th>Meta</th></tr></thead>
+    <tbody>
+      <tr><td>Facilidad por momento<span class="s">activar, coordinar, repetir</span></td><td>Facilidad</td><td>SEQ, 1 a 7</td><td>Pulso de cada plan</td><td>Línea base</td></tr>
+      <tr><td>Usabilidad</td><td>Facilidad</td><td>SUS, 0 a 100</td><td>Pulso de cada plan</td><td>Línea base</td></tr>
+      <tr><td>El plan pasa</td><td>Efecto</td><td>Llegaron / invitadas</td><td>Día del plan</td><td class="goal">60 %</td></tr>
+      <tr><td>Trabajo humano</td><td>Eficiencia</td><td>Mago in / Mago off</td><td>Cada sesión</td><td>E1.5 &lt; E1</td></tr>
+      <tr><td>Quieren repetir<span class="s">conexión Nivel 2</span></td><td>Continuidad</td><td>«¿Repetimos?»</td><td>Pulso de cada plan</td><td class="goal">Mitad de los grupos</td></tr>
+      <tr><td>Disposición a pagar<span class="s">solo quien organiza</span></td><td>Continuidad</td><td>4 preguntas de precio</td><td>Pulso de cada plan</td><td>Exploratoria</td></tr>
+    </tbody>
+  </table>
+  <p class="rule"><b>Cómo leerlo.</b> El pulso es la encuesta corta después de cada plan. Las metas son del equipo y no se mueven al ver los datos. Con 4 grupos, todo es descriptivo y emergente.</p>
 </section>
 
 <div class="two">
   <section>
-    <h2><b>3</b>Cómo medimos</h2>
-    <table>
-      <colgroup><col style="width:31%"><col style="width:27%"><col style="width:24%"><col style="width:18%"></colgroup><thead><tr><th>Qué</th><th>Con qué</th><th>Cuándo</th><th>Meta</th></tr></thead>
-      <tbody>
-        <tr><td>Facilidad por momento<span class="s">activar · coordinar · repetir</span></td><td>SEQ, 1 a 7</td><td>Encuesta de cierre</td><td>Línea base</td></tr>
-        <tr><td>Usabilidad</td><td>SUS, 0 a 100</td><td>Encuesta de cierre</td><td>Línea base</td></tr>
-        <tr><td>El plan pasa</td><td>Llegaron / invitadas</td><td>Día del plan</td><td class="goal">60 %</td></tr>
-        <tr><td>Quieren repetir<span class="s">conexión Nivel 2</span></td><td>«¿Repetimos con este parche?»</td><td>Encuesta de cierre</td><td class="goal">La mitad</td></tr>
-        <tr><td>Trabajo humano</td><td>Mago in / Mago off</td><td>Cada sesión</td><td>E1.5 &lt; E1</td></tr>
-        <tr><td>Disposición a pagar<span class="s">solo quien organiza</span></td><td>4 preguntas</td><td>Encuesta de cierre</td><td>Exploratoria</td></tr>
-      </tbody>
-    </table>
-    <p class="rule"><b>Reglas de lectura.</b> Las metas son del equipo y no se mueven después de ver los datos. Con 4 grupos, todo es descriptivo: muestra pequeña, hallazgos emergentes. La continuidad solo se mide en el plan 2.</p>
-  </section>
-
-  <section>
     <h2><b>4</b>Quién participa</h2>
     <ul>
-      <li><b>Parches que ya existen</b> y salen juntos en Cali: amigos, familia o pareja.</li>
-      <li><b>De 4 a 6 personas</b> por grupo, todas mayores de 18 y con WhatsApp propio.</li>
-      <li>Cada persona acepta <b>por sí misma</b> las 4 autorizaciones.</li>
-      <li>Nadie del equipo dentro del grupo.</li>
+      <li><b>Parches que ya existen</b> en Cali: amigos, familia o pareja.</li>
+      <li><b>De 4 a 6 personas,</b> mayores de 18, con WhatsApp propio.</li>
+      <li>Cada persona acepta <b>por sí misma</b>. Nadie del equipo adentro.</li>
     </ul>
-    <p style="margin:6px 0 0"><b>Meta de reclutamiento:</b> 5 grupos (4 + 1 de reserva), unas 25 personas. Para lograrlo, contactar a 10 organizadores <span style="color:var(--papel-700)">(supuesto: la mitad completa su grupo)</span>.</p>
-    <h2 style="margin-top:10px"><b>5</b>Quién hace qué <span style="font-weight:600;letter-spacing:.04em;text-transform:none;color:var(--papel-700)">· propuesta</span></h2>
+    <p style="margin:5px 0 0"><b>Meta:</b> 5 grupos (4 + 1 de reserva), unas 25 personas. Contactar a 10 organizadores <span style="color:var(--papel-700)">(supuesto)</span>.</p>
+  </section>
+  <section>
+    <h2><b>5</b>Quién hace qué <span class="sub">· propuesta</span></h2>
     <table class="roles">
       <tbody>
         <tr><td>Jose</td><td>Reclutamiento, consola, backend y motor n8n</td></tr>
@@ -153,28 +158,28 @@ footer{margin-top:auto;display:flex;justify-content:space-between;gap:12px;font-
 </div>
 
 <section>
-  <h2><b>6</b>Calendario <span style="font-weight:600;letter-spacing:.04em;text-transform:none;color:var(--papel-700)">· propuesta, sujeta a la confirmación del monitor</span></h2>
+  <h2><b>6</b>Calendario <span class="sub">· propuesta, sujeta a la confirmación del monitor</span></h2>
   <div class="tl">
     <div class="d on"><div class="f">6–7 nov</div><b>Reclutar</b><span>Organizadores e inscripciones.</span></div>
     <div class="d on"><div class="f">8 nov</div><b>Ensayar</b><span>Prueba completa. Luego, «Empezar piloto real».</span></div>
-    <div class="d"><div class="f">9–10 nov</div><b>Preparar</b><span>Inducción del monitor y grupos de WhatsApp.</span></div>
-    <div class="d"><div class="f">11–15 nov</div><b>Plan 1</b><span>Votar, cerrar, encontrarse y responder.</span></div>
+    <div class="d"><div class="f">9–10 nov</div><b>Preparar</b><span>Inducción y ensayo del monitor. Grupos de WhatsApp.</span></div>
+    <div class="d"><div class="f">11–15 nov</div><b>Plan 1</b><span>Votar, cerrar, encontrarse y responder el pulso.</span></div>
     <div class="d"><div class="f">16–22 nov</div><b>Plan 2</b><span>Mismo grupo. Se mide la continuidad.</span></div>
     <div class="d"><div class="f">23–25 nov</div><b>Analizar</b><span>Lectura descriptiva por condición.</span></div>
     <div class="d"><div class="f">26 nov</div><b>Cerrar</b><span>Resultados al cierre del periodo.</span></div>
   </div>
 </section>
 
-<div class="two" style="grid-template-columns:1.25fr 1fr">
+<div class="two">
   <section class="box">
     <h2><b>7</b>Antes de arrancar</h2>
     <ul class="check">
-      <li class="hot"><b>Pagar n8n</b> antes de que venza la prueba gratuita (≈ 8 nov).</li>
+      <li class="hot"><b>Pagar n8n</b> antes de que venza la prueba (≈ 8 nov).</li>
       <li class="done"><b>Aviso de privacidad v2</b> aprobado por Néstor (6 nov).</li>
-      <li class="hot"><b>Publicar el aviso v2</b> en la web y en el backend, antes del primer grupo real.</li>
-      <li><b>Canal de E1.5 decidido</b> (C14) y flujos de n8n sin bloqueantes (B1, B5, I5).</li>
+      <li class="hot"><b>Publicar el aviso v2</b> antes del primer grupo real.</li>
+      <li><b>Canal de E1.5</b> (C14) y n8n sin bloqueantes (B1, B5, I5).</li>
       <li><b>Inventario depurado:</b> solo lugares verificados en «activo».</li>
-      <li><b>Mismos textos en todos los grupos:</b> UX Writing v1 sale antes del plan 1 o después del piloto.</li>
+      <li><b>Mismos textos:</b> decidir cuándo entra UX Writing v1.</li>
           </ul>
   </section>
   <section>
@@ -182,7 +187,7 @@ footer{margin-top:auto;display:flex;justify-content:space-between;gap:12px;font-
     <ul>
       <li><b>Datos mínimos.</b> Nombres y números solo en la consola.</li>
       <li><b>Salir es fácil.</b> Con SALIR, fuera en menos de 15 min.</li>
-      <li><b>Lugares seguros.</b> Solo del inventario verificado. Ante una emergencia, 123.</li>
+      <li><b>Lugares seguros.</b> Inventario verificado. Emergencia: 123.</li>
       <li><b>Sin presión.</b> Un solo recordatorio por plan.</li>
       <li><b>Claridad.</b> No es app de citas ni terapia.</li>
     </ul>
@@ -190,8 +195,8 @@ footer{margin-top:auto;display:flex;justify-content:space-between;gap:12px;font-
 </div>
 
 <footer>
-  <span>Fuentes: <code>docs/protocolo-m2.md</code> · <code>docs/guias/onboarding-monitor.md</code> · consola 2.2.2 · backend 2.3.2. Metas del equipo, por validar en el piloto.</span>
-  <span>Jose Bolaños · Katherine Castro</span>
+  <span>Fuentes: deck de onboarding del monitor · protocolo M2 · consola 2.2.2 · backend 2.3.2. Metas del equipo, por validar.</span>
+  <span>Jose Bolaños Díaz · Katherine Castro</span>
 </footer>
 
 </main>

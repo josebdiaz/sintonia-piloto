@@ -358,6 +358,15 @@ code{font-family:var(--f-mono);font-size:.9em}
 .ws.tight{gap:6px} .ws.tight li{padding:9px 16px;grid-template-columns:44px 1fr} .ws.tight li i{width:44px;height:44px;font-size:21px} .ws.tight li b{font-size:25px} .ws.tight li span{font-size:20px;margin-top:2px}
 
 
+
+/* ruta entre marcadores: une 1 → 2 → 3 cuando el orden de las acciones no sigue el de la pantalla */
+.ruta{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}
+.ruta path{fill:none;stroke:var(--naranja);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:2 9;opacity:0;transition:opacity .4s}
+.active .ruta path{opacity:.7;transition-delay:1.6s}
+.ruta circle{fill:var(--naranja);opacity:0;transition:opacity .4s}
+.active .ruta circle{opacity:.9;transition-delay:1.6s}
+@media (prefers-reduced-motion:reduce){.active .ruta path,.active .ruta circle{transition:none}}
+
 /* ---------- Estandarización de diagramación ---------- */
 h2{font-size:76px}
 .slide .content>h2+*:not(.body){margin-top:56px!important}
@@ -505,7 +514,7 @@ h2{font-size:76px}
     <p class="eyebrow in" style="--i:0">Accesos y acuerdo</p>
     <h2 class="in" style="--i:1">Antes de tu primer turno.</h2>
     <ul class="check">
-      <li class="in" style="--i:2"><i></i><div><b>Consola</b><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div></li>
+      <li class="in" style="--i:2"><i></i><div><b>Consola</b><code>sintonia.my/piloto/mago.html</code></div></li>
       <li class="in" style="--i:3"><i></i><div><b>Clave de la consola</b><span>Te la entregamos en persona. Se guarda solo en esa pestaña y se borra al cerrarla. La cambiamos al terminar tus dos semanas.</span></div></li>
       <li class="in" style="--i:4"><i></i><div><b>WhatsApp</b><span>Acceso al número de Sintonía (WhatsApp Business del equipo). Nunca uses tu número personal.</span></div></li>
       <li class="in" style="--i:5"><i></i><div><b>Tu nombre</b><span>En «Quién atiende hoy»: es la firma de /humano.</span></div></li>
@@ -538,21 +547,21 @@ h2{font-size:76px}
     <h2 class="in" style="--i:1">Así se ve la consola.</h2>
     <div class="wt map">
       <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
       <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
       <div class="cw-top"><div class="hs" data-n="1" style="--n:1"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div></div><div class="hs" data-n="2" style="--n:2"><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div></div><div class="hs" style="margin-left:auto;--n:3" data-n="3" style="--n:3"><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div></div>
-      <div class="cw-tabs"><span class="on">Grupo</span><span class="">Plan</span><span class="hs" data-n="6" style="--n:6;padding:0"><span class="">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
+      <div class="cw-tabs"><span class="on">Grupo</span><span class="">Plan</span><span class="hs" data-n="4" style="--n:4;padding:0"><span class="">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
       <div class="cw-body"><div class="cw-split">
-  <div class="hs" data-n="4" style="--n:4"><div class="gl">
+  <div class="hs" data-n="5" style="--n:5"><div class="gl">
   <div class="gr on"><span><b>amigos · a3f91c</b><small>Grupo: Cerrar el reclutamiento</small></span><span class="pl srch">Reclutando</span></div>
   <div class="gr"><span><b>familia · 7be20d</b><small>Plan 1: Registrar votos (faltan 2)</small></span><span class="pl live">Votación</span></div>
   <div class="gr"><span><b>trabajo · c41a88</b><small>Plan 1: Enviar /confirmado</small></span><span class="pl fix">Fijado</span></div>
 </div></div>
-  <div class="cc next hs" data-n="5" style="--n:5"><span class="ey">Lo que toca ahora · amigos · a3f91c</span><h4>Grupo · Cerrar el reclutamiento</h4><span class="mut">Aceptaron todos: cierra el reclutamiento para activar el grupo.</span><div class="row"><span class="btn">Ir a cerrar el reclutamiento →</span></div>
+  <div class="cc next hs" data-n="6" style="--n:6"><span class="ey">Lo que toca ahora · amigos · a3f91c</span><h4>Grupo · Cerrar el reclutamiento</h4><span class="mut">Aceptaron todos: cierra el reclutamiento para activar el grupo.</span><div class="row"><span class="btn">Ir a cerrar el reclutamiento →</span></div>
     <div class="bar" style="margin-top:6px"><i style="width:8%"></i></div><span class="mut">Recorrido del grupo · 1 de 14 pasos</span></div>
 </div></div>
     </div></div>
-      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Condición</b><span>Siempre <b>E1</b>.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Modo prueba</b><span><b>SÍ</b> en ensayos · <b>NO</b> con grupos reales.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Mago in / Mago off</b><span>Verde: tus minutos cuentan.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Lista de grupos</b><span>Cada fila dice qué le falta.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Lo que toca ahora</b><span>Su botón → te lleva al sitio exacto.</span></div></li><li class="in" data-n="6" style="--i:8"><i>6</i><div><b>Pestañas</b><span>Usas cuatro. «Ajustes» no se toca.</span></div></li></ol></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Condición</b><span>Siempre <b>E1</b>.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Modo prueba</b><span><b>SÍ</b> en ensayos · <b>NO</b> con grupos reales.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Mago in / Mago off</b><span>Verde: tus minutos cuentan.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Pestañas</b><span>Usas cuatro. «Ajustes» no se toca.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Lista de grupos</b><span>Cada fila dice qué le falta.</span></div></li><li class="in" data-n="6" style="--i:8"><i>6</i><div><b>Lo que toca ahora</b><span>Su botón → te lleva al sitio exacto.</span></div></li></ol></div>
     </div>
   </div>
 </section>
@@ -564,7 +573,7 @@ h2{font-size:76px}
     <h2 class="in" style="--i:1">Entra y abre tu sesión.</h2>
     <div class="wt">
       <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
       <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
       <div class="cw-top"><div class="hs" data-n="2" style="--n:2"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div></div><div class="hs" data-n="3" style="--n:3"><div class="swc on"><div><b>Modo prueba</b><small>Activo: no cuenta en el panel</small></div><span class="k"></span><span class="v">SÍ</span></div></div><div class="hs" style="margin-left:auto;--n:4" data-n="4" style="--n:4"><div class="mg"><span class="led"></span><span class="inp" style="min-width:150px">Katherine</span><span class="btn or">▶ Mago in</span></div></div></div>
       <div class="cw-tabs"><span class="on">Grupo</span><span class="">Plan</span><span class="">Mensajes</span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
@@ -587,7 +596,7 @@ h2{font-size:76px}
     <h2 class="in" style="--i:1">Activa el grupo y da la bienvenida.</h2>
     <div class="wt">
       <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
       <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
       <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
       <div class="cw-tabs"><span class="on">Grupo</span><span class="">Plan</span><span class="hs" data-n="4" style="--n:4;--n:4;padding:0"><span class="">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
@@ -617,7 +626,7 @@ h2{font-size:76px}
     <h2 class="in" style="--i:1">Pide opciones y publica.</h2>
     <div class="wt">
       <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
       <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
       <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
       <div class="cw-tabs"><span class="">Grupo</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="on">Plan</span></span><span class="">Mensajes</span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
@@ -642,21 +651,21 @@ h2{font-size:76px}
     <h2 class="in" style="--i:1">Registra votos y cierra el plan.</h2>
     <div class="wt">
       <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
       <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
       <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
       <div class="cw-tabs"><span class="">Grupo</span><span class="on">Plan</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
       <div class="cw-body"><div class="cc"><h4>Plan 1 <span class="pl live" style="margin:0">votando</span></h4>
-  <div class="cc warn hs" data-n="3" style="--n:3;display:block;padding:8px 12px;font-size:16px">Publicado hace <b>2,1 h</b> · faltan <b>2</b> voto(s): Caro, Pipe</div>
+  <div class="cc warn hs" data-n="2" style="--n:2;display:block;padding:8px 12px;font-size:16px">Publicado hace <b>2,1 h</b> · faltan <b>2</b> voto(s): Caro, Pipe</div>
   <b style="font-size:17px">Votos por persona</b>
   <div class="mem"><b>Ana</b><span class="mut">opción 2</span><span class="inp sel" style="min-width:200px">Registrar voto…</span></div>
-  <div class="mem"><b>Caro</b><span class="mut">sin voto</span><span class="inp sel hs" data-n="2" style="--n:2;min-width:200px">Registrar voto…</span></div>
+  <div class="mem"><b>Caro</b><span class="mut">sin voto</span><span class="inp sel hs" data-n="3" style="--n:3;min-width:200px">Registrar voto…</span></div>
   <div class="cc soft" style="gap:8px;padding:10px 12px"><b style="font-size:16px">Cerrar votación</b>
     <div class="row"><div class="fld"><label>Opción ganadora</label><span class="inp sel">2. Asado en el parque</span></div><div class="fld"><label>Encuentro (día y hora)</label><span class="inp">sáb 14/11 · 4:00 p. m.</span></div><div class="fld"><label>Salida sugerida</label><span class="inp">3:15 p. m.</span></div></div>
     <div class="row"><span class="btn hs" data-n="4" style="--n:4">Cerrar plan</span><span class="inp sel" style="margin-left:auto;min-width:140px">Causa…</span><span class="btn dg hs" data-n="5" style="--n:5">Marcar como caído</span></div></div>
 </div></div>
     </div></div>
-      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Mensajes → /opciones<em class="wa">En WhatsApp</em></b><span>Copiar, pegar y marcar como enviado.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Registrar voto…</b><span>Por cada voto: 1, 2, 3, TODAS o NINGUNA.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>¿2 h y faltan votos?</b><span>Un solo <code>/recordatorio</code>.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Cerrar votación</b><span>Ganadora, día, hora y salida → <b>Cerrar plan</b>.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>¿No se dio?</b><span>Causa → <b>Marcar como caído</b>.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Cerrar no avisa al grupo.</b> El aviso es /confirmado.</p></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Mensajes → /opciones<em class="wa">En WhatsApp</em></b><span>Copiar, pegar y marcar como enviado.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>¿2 h y faltan votos?</b><span>Un solo <code>/recordatorio</code>.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Registrar voto…</b><span>Por cada voto: 1, 2, 3, TODAS o NINGUNA.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Cerrar votación</b><span>Ganadora, día, hora y salida → <b>Cerrar plan</b>.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>¿No se dio?</b><span>Causa → <b>Marcar como caído</b>.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Cerrar no avisa al grupo.</b> El aviso es /confirmado.</p></div>
     </div>
   </div>
 </section>
@@ -668,7 +677,7 @@ h2{font-size:76px}
     <h2 class="in" style="--i:1">Confirma y avisa la salida.</h2>
     <div class="wt">
       <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
       <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
       <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
       <div class="cw-tabs"><span class="">Grupo</span><span class="">Plan</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="on">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
@@ -676,7 +685,9 @@ h2{font-size:76px}
 <div class="cc"><h4>/confirmado <span class="mut" style="font-weight:500">Plan cerrado</span></h4>
   <span class="inp ta hs" data-n="2" style="--n:2">¡Quedó! Ruta clara, ganas intactas:
 📍 Asado en el parque — Parque del barrio (Oeste)
+📌 Dirección: entrada principal del parque
 🕒 Encuentro: sáb 14/11 · 4:00 p. m. · 🚗 Salida sugerida: 3:15 p. m.
+💰 Presupuesto aprox.: $25.000 por persona
 Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
   <div class="row"><span class="btn hs" data-n="3" style="--n:3">Copiar</span><span class="btn hn">✨ Ajustar con Gemini</span><span class="btn ok">✓ Enviado 18:42</span></div></div>
 <div class="cc"><h4>/salida <span class="mut" style="font-weight:500">Hora de salida (2 h antes)</span></h4><div class="row"><span class="btn hs" data-n="4" style="--n:4">Copiar</span></div></div></div>
@@ -693,7 +704,7 @@ Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
     <h2 class="in" style="--i:1">El día del plan.</h2>
     <div class="wt">
       <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
       <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
       <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
       <div class="cw-tabs"><span class="">Grupo</span><span class="">Plan</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="">Mensajes</span></span><span class="on">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
@@ -714,13 +725,13 @@ Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
 </section>
 
 <!-- 17 · Walkthrough 7 · Pulso y plan 2 -->
-<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 7 · Pulso y plan 2" data-notes="El pulso trae SEQ y SUS y dura unos 4 minutos; se abre en el mismo celular del registro. Sin pulso, el plan se queda sin su métrica principal. Después del plan 2 la consola muestra «Grupo completo».">
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 7 · Pulso y plan 2" data-notes="El pulso trae SEQ y SUS y dura unos 4 minutos; se abre en el mismo celular del registro. Sin pulso, el plan se queda sin su métrica principal. Después del plan 2 la consola muestra «Grupo completo». Quien organiza ve, además, el bloque de disposición a pagar (4 preguntas de precio y la opción de apartar un cupo). Hoy no se cobra nada.">
   <div class="content">
     <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 7 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="ok">4 · Votos y cierre</span><span class="ok">5 · Confirmar</span><span class="ok">6 · Día del plan</span><span class="cur">7 · Pulso y plan 2</span></div></div>
     <h2 class="in" style="--i:1">Pulso, plan 2 y Mago off.</h2>
     <div class="wt">
       <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>josebdiaz.github.io/sintonia-piloto/piloto/mago.html</code></div>
+      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
       <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
       <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="hs" style="margin-left:auto;--n:5" data-n="5" style="--n:5"><div class="mg in"><span class="led"></span><p>En línea · 38 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div></div>
       <div class="cw-tabs"><span class="">Grupo</span><span class="on">Plan</span><span class="">Mensajes</span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
@@ -732,13 +743,13 @@ Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
   <div class="cc soft" style="padding:10px 12px"><span style="font-size:15px"><b>¿El plan ya pasó?</b> Cada grupo hace 2 planes: crea el plan 2 en <b>el mismo grupo de WhatsApp</b>.</span><span class="btn hs" data-n="4" style="--n:4;align-self:flex-start">+ Crear plan 2 para este grupo</span></div>
 </div></div><div class="toast">Mago off · 38 min sumados al plan</div>
     </div></div>
-      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Plan → Enlaces al pulso</b><span>Uno personal por persona.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Enviar por WhatsApp<em class="wa">En WhatsApp</em></b><span>Abre su chat con el texto listo.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Revisa «pulso ✓»</b><span>¿Falta usabilidad? Enviar complemento.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>+ Crear plan 2</b><span>Mismo grupo. Vuelves a la etapa 3.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>■ Mago off</b><span>Tus minutos se suman solos al plan.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Sin pulso no hay métrica.</b></p></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Plan → Enlaces al pulso</b><span>Uno personal por persona.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Enviar por WhatsApp<em class="wa">En WhatsApp</em></b><span>Abre su chat con el texto listo.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Revisa «pulso ✓»</b><span>¿Falta usabilidad? Enviar complemento.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>+ Crear plan 2</b><span>Mismo grupo. Vuelves a la etapa 3.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>■ Mago off</b><span>Tus minutos se suman solos al plan.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Sin pulso no hay métrica.</b> A quien organiza el pulso le muestra, además, 4 preguntas de precio.</p></div>
     </div>
   </div>
 </section>
 
 <!-- 18 · Lo que escribe el grupo -->
-<section class="slide s-papel" data-chap="Paso a paso" data-title="Lo que escribe el grupo" data-notes="«voy tarde» o «no sé si pueda» no son ME APUNTO ni NO PUEDO. Se pregunta con calma o se deja sin marcar.">
+<section class="slide s-papel" data-chap="En el chat" data-title="Lo que escribe el grupo" data-notes="«voy tarde» o «no sé si pueda» no son ME APUNTO ni NO PUEDO. Se pregunta con calma o se deja sin marcar.">
   <div class="content">
     <p class="eyebrow in" style="--i:0">Lo que escribe el grupo</p>
     <h2 class="in" style="--i:1">Cada palabra tiene un registro.</h2>
@@ -748,7 +759,7 @@ Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
 </section>
 
 <!-- 19 · Voz de Sintonía -->
-<section class="slide s-papel" data-chap="Paso a paso" data-title="Voz de Sintonía" data-notes="Ejemplo «Así sí»: «Van 3 de 5 votos. ¿Cuál les suena más: 1, 2 o 3?». Ejemplo «Así no»: «Ana y Luis, ¡faltan ustedes! 😅🙏⏰».">
+<section class="slide s-papel" data-chap="En el chat" data-title="Voz de Sintonía" data-notes="Ejemplo «Así sí»: «Van 3 de 5 votos. ¿Cuál les suena más: 1, 2 o 3?». Ejemplo «Así no»: «Ana y Luis, ¡faltan ustedes! 😅🙏⏰».">
   <div class="content">
     <p class="eyebrow in" style="--i:0">Voz de Sintonía</p>
     <h2 class="in" style="--i:1">Cuando escribes con tus palabras.</h2>
@@ -773,7 +784,7 @@ Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
 </section>
 
 <!-- 20 · Contingencias -->
-<section class="slide s-noche" data-chap="Paso a paso" data-title="Contingencias" data-notes="La regla es una sola: no improvisar. «Pasar a la web» saca el plan de la comparación, así que solo se usa si el equipo lo decide.">
+<section class="slide s-noche" data-chap="En el chat" data-title="Contingencias" data-notes="La regla es una sola: no improvisar. «Pasar a la web» saca el plan de la comparación, así que solo se usa si el equipo lo decide.">
   <div class="content">
     <p class="eyebrow in" style="--i:0">Contingencias</p>
     <h2 class="in" style="--i:1">Si algo falla, anota y avisa.</h2>
@@ -793,7 +804,7 @@ Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
 </section>
 
 <!-- 22 · Qué entregas -->
-<section class="slide s-papel" data-chap="Reglas" data-title="Qué entregas" data-notes="La nota por plan es insumo de diseño, no evaluación del monitor. Lo que más nos sirve es lo que te sorprendió.">
+<section class="slide s-papel" data-chap="Cierre" data-title="Qué entregas" data-notes="La nota por plan es insumo de diseño, no evaluación del monitor. Lo que más nos sirve es lo que te sorprendió.">
   <div class="content">
     <p class="eyebrow in" style="--i:0">Qué entregas</p>
     <h2 class="in" style="--i:1">Datos limpios, plan por plan.</h2>
@@ -809,7 +820,7 @@ Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
 </section>
 
 <!-- 23 · Preguntas frecuentes -->
-<section class="slide s-papel" data-chap="Reglas" data-title="Preguntas frecuentes" data-notes="Cerrar con el primer turno: un ensayo completo en modo prueba con el equipo, antes de tocar un grupo real.">
+<section class="slide s-papel" data-chap="Cierre" data-title="Preguntas frecuentes" data-notes="Cerrar con el primer turno: un ensayo completo en modo prueba con el equipo, antes de tocar un grupo real.">
   <div class="content">
     <p class="eyebrow in" style="--i:0">Antes de empezar</p>
     <h2 class="in" style="--i:1">Preguntas frecuentes.</h2>
@@ -921,5 +932,37 @@ if(document.readyState!=='loading')fit();else document.addEventListener('DOMCont
 
 
 
+<script>
+/* Ruta entre marcadores (etapas del walkthrough): una línea punteada une 1 → 2 → 3 para que la vista siga el orden de las acciones */
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  function draw(s){
+    var w=s.querySelector('.wt'); if(!w||!s.querySelector('.wtp')) return;
+    var cw=w.querySelector('.cw'); if(!cw) return; var host=cw.parentElement;
+    host.style.position='relative';
+    var old=host.querySelector('.ruta'); if(old) old.remove();
+    var hr=host.getBoundingClientRect(); if(!hr.width) return;
+    var k=hr.width/host.offsetWidth, pts=[], seen={};
+    [].slice.call(cw.querySelectorAll('.hs[data-n]')).forEach(function(h){var n=+h.dataset.n; if(seen[n]) return; var r=h.getBoundingClientRect(); seen[n]=[(r.right-hr.left)/k-3,(r.top-hr.top)/k+1];});
+    var ns=Object.keys(seen).map(Number).sort(function(a,b){return a-b;});
+    ns.forEach(function(n){pts.push(seen[n]);});
+    if(pts.length<2) return;
+    /* solo si el orden de lectura (filas de arriba abajo, luego izquierda a derecha) no coincide con el de las acciones */
+    var lect=ns.slice().sort(function(a,b){var p=seen[a],q=seen[b];return Math.abs(p[1]-q[1])>40?p[1]-q[1]:p[0]-q[0];});
+    if(lect.join()===ns.join()) return;
+    var svg=document.createElementNS(NS,'svg'); svg.setAttribute('class','ruta'); svg.setAttribute('aria-hidden','true');
+    svg.setAttribute('viewBox','0 0 '+host.offsetWidth+' '+host.offsetHeight); svg.setAttribute('preserveAspectRatio','none');
+    var d='M'+pts[0][0].toFixed(1)+' '+pts[0][1].toFixed(1);
+    for(var i=1;i<pts.length;i++){var p=pts[i-1],q=pts[i],mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2-24; d+=' Q'+mx.toFixed(1)+' '+my.toFixed(1)+' '+q[0].toFixed(1)+' '+q[1].toFixed(1);}
+    var path=document.createElementNS(NS,'path'); path.setAttribute('d',d); svg.appendChild(path);
+    var e=pts[pts.length-1], c=document.createElementNS(NS,'circle'); c.setAttribute('cx',e[0]); c.setAttribute('cy',e[1]); c.setAttribute('r',6); svg.appendChild(c);
+    host.appendChild(svg);
+  }
+  function all(){ var a=document.querySelector('.slide.active'); if(a) draw(a); }
+  new MutationObserver(function(){ setTimeout(all,60); }).observe(document.getElementById('stage'),{subtree:true,attributes:true,attributeFilter:['class']});
+  window.addEventListener('resize',function(){ setTimeout(all,120); }); window.addEventListener('load',function(){ setTimeout(all,200); });
+  if(document.fonts) document.fonts.ready.then(function(){ setTimeout(all,200); });
+})();
+</script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 ---
 titulo: "Sintonía · Onboarding del monitor"
 subtitulo: "Cómo operar el mago en el piloto de WhatsApp"
-version: "v1 · 6 nov 2026"
+version: "v1.1 · 6 nov 2026"
 audiencia: "Monitor asignado por la maestría (20 h en 2 semanas)"
 autores: "Jose Bolaños · Katherine Castro"
 idioma: "es-CO"
@@ -27,7 +27,7 @@ Etiqueta: Onboarding del monitor · noviembre 2026
 
 **Tu guía para operar el mago, de principio a fin.**
 
-Qué es Sintonía, en qué va el piloto y cómo llevar un grupo de WhatsApp desde el primer mensaje hasta la encuesta de cierre.
+Qué es Sintonía, en qué va el piloto y cómo llevar un grupo de WhatsApp desde el primer mensaje hasta el pulso (la encuesta corta del final).
 
 `E1 · WhatsApp + mago` · `20 h · 2 semanas` · `Universidad Icesi`
 
@@ -129,7 +129,7 @@ Etiqueta: Cómo se reparte tu tiempo (estimación)
 | Bloque | Horas |
 |---|---|
 | Esta inducción y un ensayo en modo prueba | 3 |
-| Plan 1 en 2 grupos (votación, cierre, día del plan, encuesta) | 7 |
+| Plan 1 en 2 grupos (votación, cierre, día del plan, pulso) | 7 |
 | Plan 2 en los mismos 2 grupos | 7 |
 | Revisión de datos y nota por plan | 2 |
 | Margen para imprevistos | 1 |
@@ -146,7 +146,7 @@ Visual: barra horizontal apilada con los cinco bloques.
 
 Etiqueta: Accesos y acuerdo
 
-- [ ] **Consola:** `josebdiaz.github.io/sintonia-piloto/piloto/mago.html`
+- [ ] **Consola:** `sintonia.my/piloto/mago.html`
 - [ ] **Clave de la consola:** te la entregamos en persona. Se guarda solo en esa pestaña y se borra al cerrarla. La cambiamos al terminar tus dos semanas.
 - [ ] **WhatsApp:** acceso al número de Sintonía (WhatsApp Business del equipo). Nunca uses tu número personal.
 - [ ] **Tu nombre** en «Quién atiende hoy»: es la firma de /humano.
@@ -215,7 +215,7 @@ Visual: cinco cajas conectadas con flechas, fondo noche.
 
 ---
 
-## Plan 1 · del cierre a la encuesta, y otra vez
+## Plan 1 · del cierre al pulso, y otra vez
 
 Etiqueta: Paso a paso · 2 de 2
 
@@ -229,7 +229,7 @@ Etiqueta: Paso a paso · 2 de 2
 
 Visual: cinco cajas con flechas; la última en rubí («Repetir y Mago off»).
 
-> Notas: La encuesta de cierre es la fuente de SEQ y SUS. Si no le llega a cada persona, el plan se queda sin su métrica principal. La pregunta de continuidad solo aparece desde el plan 2.
+> Notas: El pulso es la fuente de SEQ y SUS. Si no le llega a cada persona, el plan se queda sin su métrica principal. La pregunta de continuidad solo aparece desde el plan 2.
 
 ---
 
@@ -319,7 +319,7 @@ Al cerrar cada plan, revisa que tenga:
 - **Embudo:** invitadas, me apunto y llegaron, por persona.
 - **Minutos:** sesiones de Mago in / off con tu nombre.
 - **Mensajes:** cada paso marcado como enviado, en orden.
-- **Encuesta:** enlace enviado a cada persona.
+- **Pulso:** enlace enviado a cada persona.
 
 Y una **nota corta por plan:** qué fue difícil, qué preguntó la gente y qué harías distinto.
 
