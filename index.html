@@ -82,6 +82,7 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
 .card h3{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:0}
 .card p{margin:0;line-height:1.45;font-size:16px}
 .card ul{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:10px}
+.card .muted a{font-weight:600}
 .card a{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--naranja);text-underline-offset:4px;text-decoration-thickness:2px}
 .card.now a{text-decoration-color:var(--naranja-700)}
 .muted{color:var(--papel-300);font-size:14px;font-weight:400}
@@ -89,7 +90,7 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
 .note{margin-top:28px;color:var(--papel-300);font-size:14px}
 .menu .stagger > *{opacity:0;transform:translateY(16px);transition:opacity 600ms var(--ease-enter),transform 600ms var(--ease-enter)}
 .menu.open .stagger > *{opacity:1;transform:none}
-.menu.open .stagger > *:nth-child(1){transition-delay:.45s} .menu.open .stagger > *:nth-child(2){transition-delay:.6s} .menu.open .stagger > *:nth-child(3){transition-delay:.75s}
+.menu.open .stagger > *:nth-child(1){transition-delay:.45s} .menu.open .stagger > *:nth-child(2){transition-delay:.6s} .menu.open .stagger > *:nth-child(3){transition-delay:.75s} .menu.open .stagger > *:nth-child(4){transition-delay:.9s} .menu.open .stagger > *:nth-child(5){transition-delay:1.05s}
 
 /* pista de la secuencia */
 .keys{position:fixed;left:50%;bottom:calc(64px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:8px;z-index:6;pointer-events:none}
@@ -147,18 +148,41 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
         <ul><li><a href="piloto/aviso.html">Aviso de privacidad</a></li></ul>
       </section>
       <section class="card team">
-        <span class="tag">Equipo</span>
+        <span class="tag">Equipo · operar</span>
         <h3>Operación del piloto</h3>
-        <p class="muted">Piden la clave del equipo.</p>
+        <p class="muted">La consola y el panel piden la clave del equipo.</p>
         <ul>
           <li><a href="piloto/mago.html">Consola del mago</a></li>
           <li><a href="piloto/panel.html">Panel del piloto</a></li>
-          <li><a href="docs/deck-status-26oct.html">Status 26 oct</a></li>
-          <li><a href="docs/deck-pitch-tecnico.html">Pitch técnico · motor y agente</a></li>
-          <li><a href="docs/deck-pitch-final.html">Pitch final · 12 dic</a></li>
+          <li><a href="docs/plan-pruebas-usuario.html">Plan de pruebas de usuario</a> <span class="muted">· <a href="docs/plan-pruebas-usuario.pdf">PDF</a></span></li>
           <li><a href="docs/deck-onboarding-monitor.html">Onboarding del monitor</a></li>
-          <li><a href="docs/plan-pruebas-usuario.html">Plan de pruebas de usuario</a></li>
           <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/protocolo-m2.md">Protocolo de operación</a></li>
+        </ul>
+      </section>
+      <section class="card team">
+        <span class="tag">Equipo · decks</span>
+        <h3>Presentaciones</h3>
+        <p class="muted">De la más reciente a la más antigua.</p>
+        <ul>
+          <li><a href="docs/deck-pitch-final.html">Pitch final</a> <span class="muted">· 12 dic</span></li>
+          <li><a href="docs/deck-onboarding-monitor.html">Onboarding del monitor</a> <span class="muted">· 6 nov</span></li>
+          <li><a href="docs/deck-pitch-tecnico.html">Pitch técnico · motor y agente</a> <span class="muted">· 30 oct</span></li>
+          <li><a href="docs/deck-status-26oct.html">Status</a> <span class="muted">· 26 oct</span></li>
+          <li><a href="docs/deck-business-case.html">Business case</a></li>
+          <li><a href="docs/deck-status-interno-p7.html">Status interno P7</a> <span class="muted">· 15 oct</span></li>
+          <li><a href="docs/deck-metodo-interno-p7.html">Método interno P7</a></li>
+          <li><a href="docs/deck-pivote.html">Tutoría P6 · pivote</a></li>
+        </ul>
+      </section>
+      <section class="card team">
+        <span class="tag">Equipo · documentos</span>
+        <h3>Documentación</h3>
+        <p class="muted">Guías por estado, textos fuente y versiones.</p>
+        <ul>
+          <li><a href="docs/guias/">Control de guías</a> <span class="muted">· vigentes, hechas y pendientes</span></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/guias/onboarding-monitor.md">Onboarding del monitor (Markdown)</a></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/GUIA-CONTINUACION.md">Motor n8n · guía de continuación</a></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/CHANGELOG.md">Motor n8n · cambios</a></li>
           <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md">Versiones (CHANGELOG)</a> <span class="muted" id="ver"></span></li>
         </ul>
       </section>
@@ -168,6 +192,7 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
         <ul>
           <li><a href="archivo/p4-pre-pivote/researchers/index.html">Periodo 4 · H1–H4 e investigadores</a> <span class="muted">antes del pivote</span></li>
           <li><a href="archivo/piloto-m1-claude/index.html">Piloto 1.0.0 («M1»)</a></li>
+          <li><a href="docs/deck-induccion-monitor.html">Inducción del monitor v1</a> <span class="muted">reemplazada por el onboarding</span></li>
           <li><a href="archivo/">Todo el archivo</a></li>
         </ul>
       </section>
