@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.3.1',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.3.2',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
@@ -233,7 +233,7 @@
   window.CONFIG = CONFIG;
 
   /* ---------- Versión visible en el pie (trazabilidad: qué versión vio cada quien) ---------- */
-  function sello() { var f = document.querySelector('.foot'); if (f && !f.querySelector('.ver')) { var v = document.createElement('span'); v.className = 'ver'; v.textContent = ' · v' + CONFIG.FRONTEND_VERSION; f.appendChild(v); } }
+  function sello() { var f = document.querySelector('.foot') || document.querySelector('.top .brand'); if (f && !f.querySelector('.ver')) { var v = document.createElement('span'); v.className = 'ver'; v.textContent = (f.classList.contains('brand') ? 'v' : ' · v') + CONFIG.FRONTEND_VERSION; f.appendChild(v); } }
   function enlacesInicio() {
     var m = me();
     $$('a.brand[href="./"], a[data-inicio]').forEach(function (a) { a.href = (!m.pid && a.hasAttribute('data-quedarse')) ? location.href : inicio(); });

@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-14 · Marca en las páginas de participantes (frontend 2.3.2)
+- Registro, unirse, plan, pulso y aviso usan el wordmark «sintonía» y un hero en noche con mostaza y vitral; el registro lleva el lema «Menos vueltas, más plan».
+- La versión se ve en el encabezado de la consola y del panel (no tienen pie de página).
+- QA visual en escritorio y celular (iPhone 13): sin desbordes horizontales; QA E2E 24 de 24.
+
 ### 2026-11-14 · QA de punta a punta de la consola (frontend 2.3.1)
 - **QA E2E** del flujo E1 en la consola (grupo → /ingreso → opciones y encuesta → votos y empate → cierre con salida calculada → /confirmado → llegadas → pulso → Mago off), contra el backend 2.3.6 en una hoja simulada: 24 de 24.
 - **Arreglo:** marcar «En casa» a alguien sin «Llegó» antes ahora registra las dos cosas. Antes, esa persona no contaba como llegada (ni en «Lo que toca ahora» ni en la métrica llegaron / invitadas).

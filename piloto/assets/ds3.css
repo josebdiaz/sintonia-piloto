@@ -557,3 +557,18 @@ dialog.hoja::backdrop { background: rgba(31, 33, 38, .45); }
 h1, h2, .brand, .hero h1, .kpi .v { font-weight: 800; letter-spacing: -.03em; }
 .s-eyebrow, .eyebrow { color: var(--brand-naranja-700); }
 :focus-visible { outline-color: var(--brand-naranja-700); }
+
+/* 2.3.2 · Páginas de participantes (registro, unirse, plan, pulso, aviso): marca actual */
+body.publico .brand { font-size: 1.45rem; }
+body.publico .brand-mark { width: 32px; height: 32px; }
+body.publico .top { padding-bottom: 14px; border-bottom: 1px solid rgba(14,17,22,.08); margin-bottom: 18px; }
+body.publico .hero { position: relative; padding: 22px 22px 20px; margin: 0 0 18px; border-radius: 20px; background: #0e1116; color: #faf9f6; overflow: hidden; }
+body.publico .hero::after { content: ""; position: absolute; right: -52px; top: -52px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, #ebc46a 0 34%, transparent 35%), radial-gradient(circle, rgba(44,106,134,.55) 0 62%, transparent 63%); opacity: .9; pointer-events: none; }
+body.publico .hero .eyebrow { position: relative; z-index: 1; margin: 0 0 6px; color: #ebc46a; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+body.publico .hero h1 { position: relative; z-index: 1; color: #faf9f6; font-size: clamp(1.8rem, 7.5vw, 2.5rem); line-height: 1.05; letter-spacing: -.035em; margin: 0 0 10px; max-width: 16ch; padding-right: 44px; }
+body.publico .hero p:not(.eyebrow) { position: relative; z-index: 1; color: rgba(250,249,246,.78); max-width: 46ch; }
+body.publico .hero .hl { background: linear-gradient(transparent 62%, #c23a00 62% 88%, transparent 88%); }
+body.publico .card { border-radius: 18px; box-shadow: 0 1px 0 rgba(14,17,22,.04), 0 8px 24px -16px rgba(14,17,22,.18); }
+body.publico .step-label { color: #c23a00; }
+body.publico .chip input:checked + span, body.publico .opt[aria-pressed="true"], body.publico .scale button[aria-pressed="true"] { box-shadow: 0 0 0 2px #2c6a86 inset; }
+.top .brand .ver { font-size: .7rem; font-weight: 600; letter-spacing: 0; color: var(--muted, #6b6b6b); margin-left: 6px; align-self: flex-end; padding-bottom: 3px; }
