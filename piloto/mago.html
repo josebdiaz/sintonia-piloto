@@ -758,9 +758,12 @@
     S.$$('[data-estado]', el).forEach(function (s) {
       s.onchange = function () {
         var tipo = s.value; if (!tipo) return; s.disabled = true;
-        S.post({ action: 'evento', key: key, plan_id: sel.plan, grupo_id: sel.grupo, pid: s.dataset.estado, tipo: tipo, canal: (g || {}).experimento || vexp }).then(function (r) {
+        var pid = s.dataset.estado, ev = function (t) { return S.post({ action: 'evento', key: key, plan_id: sel.plan, grupo_id: sel.grupo, pid: pid, tipo: t, canal: (g || {}).experimento || vexp }); };
+        // 2.3.1 (QA): «En casa» sin «Llegó» antes también cuenta como llegada; si no, la llegada se pierde en la métrica
+        var antes = (tipo === 'llego_casa' && !(est[pid] || {}).llego) ? ev('checkpoint_llegada') : Promise.resolve({ ok: true });
+        antes.then(function (r0) { return (r0 && r0.ok) ? ev(tipo) : r0; }).then(function (r) {
           if (!r || !r.ok) { s.disabled = false; s.value = ''; return S.toast(S.errMsg(r), true); }
-          S.toast('Estado registrado'); load();
+          S.toast(tipo === 'llego_casa' && !(est[pid] || {}).llego ? 'Registrado: llegó y está en casa' : 'Estado registrado'); load();
         });
       };
     });

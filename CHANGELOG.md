@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-14 · QA de punta a punta de la consola (frontend 2.3.1)
+- **QA E2E** del flujo E1 en la consola (grupo → /ingreso → opciones y encuesta → votos y empate → cierre con salida calculada → /confirmado → llegadas → pulso → Mago off), contra el backend 2.3.6 en una hoja simulada: 24 de 24.
+- **Arreglo:** marcar «En casa» a alguien sin «Llegó» antes ahora registra las dos cosas. Antes, esa persona no contaba como llegada (ni en «Lo que toca ahora» ni en la métrica llegaron / invitadas).
+
 ### 2026-11-14 · Propuestas más rápidas y look & feel (frontend 2.3.0 · backend 2.3.6)
 - **Backend 2.3.6:** antes de llamar a Gemini, el inventario activo se filtra con lo que pidió el grupo (zona, franja y presupuesto) y se envían como máximo 50 lugares, en vez de los 1000. Si el filtro deja menos de 15, se afloja solo. Las ids que devuelve Gemini se siguen validando contra todo el inventario activo. QA: 67 de 67.
 - **Look & feel:** la consola, el panel y las páginas de participantes usan la marca actual (papel y noche, vitral como color principal, mostaza de acento, naranja en el detalle, títulos en Inter 800). Solo se sobrescriben tokens semánticos; la paleta del DS 3.0 no cambia.
