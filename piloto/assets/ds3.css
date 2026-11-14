@@ -542,3 +542,18 @@ dialog.hoja::backdrop { background: rgba(31, 33, 38, .45); }
 .wm .i { position: relative; display: inline-block; }
 .wm .i::after { content: ""; position: absolute; width: .30em; height: .10em; border-radius: .05em; left: .02em; top: .2em; transform: rotate(-40deg); transform-origin: left center; background: #c23a00; }
 .brand .sep { opacity: .35; font-weight: 400; }
+
+/* 2.3.0 · look & feel con la marca actual (decks, Home y logo final del 6/11): vitral como color principal, mostaza de acento,
+ * naranja para el detalle y Inter 800 en los títulos. Se sobrescriben solo los tokens semánticos; los de paleta quedan como están. */
+:root {
+  --brand-vitral: #2c6a86; --brand-vitral-hover: #23566d; --brand-vitral-soft: #e1edf2; --brand-vitral-deep: #173f50; --brand-vitral-glow: #b9d5e2;
+  --brand-naranja: #ff4f00; --brand-naranja-700: #c23a00;
+  --font-family-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --color-bg-brand: var(--brand-vitral); --color-bg-brand-hover: var(--brand-vitral-hover); --color-bg-brand-soft: var(--brand-vitral-soft); --color-bg-brand-deep: var(--brand-vitral-deep);
+  --color-text-brand: var(--brand-vitral); --color-icon-brand: var(--brand-vitral); --color-border-brand: var(--brand-vitral); --color-border-focus: var(--brand-naranja-700);
+  --color-signal-live: var(--brand-vitral); --color-signal-locked: var(--brand-vitral-deep); --color-signal-glow: var(--brand-vitral-glow);
+  --color-chat-bubble-out: var(--brand-vitral-soft); --color-data-bar: var(--brand-vitral); --color-radio-display-live: var(--brand-vitral);
+}
+h1, h2, .brand, .hero h1, .kpi .v { font-weight: 800; letter-spacing: -.03em; }
+.s-eyebrow, .eyebrow { color: var(--brand-naranja-700); }
+:focus-visible { outline-color: var(--brand-naranja-700); }

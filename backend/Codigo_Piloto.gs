@@ -1,7 +1,8 @@
 /**
- * Sintonía · Piloto v2.3.5 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.3.6 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.3.6 (14/11): Gemini recibe como máximo 50 lugares, filtrados por zona, franja y presupuesto según lo pedido (antes, los 1000).
  * Versión 2.3.5 (14/11): solo cuenta como activo el lugar con estado «activo» (un estado vacío ya no entra a las propuestas), y probarMontaje
  *   acepta el inventario ampliado de 33 columnas en otro orden, porque el código lee por nombre y no escribe en esa hoja.
  * Versión 2.3.4 (14/11): más rápido. La hoja, cada pestaña y sus filas se leen una vez por consulta (antes, la vista del mago leía
@@ -293,12 +294,38 @@ function esActivo_(i) { return String(i.estado || '').trim().toLowerCase() === '
 function inventarioPendiente_() { return rows_('inventario').filter(function (i) { return i.id !== '' && !esActivo_(i); }); }
 function inventarioActivo_() { return rows_('inventario').filter(function (i) { return esActivo_(i) && i.id !== ''; }); }
 
+/** v2.3.6 · velocidad: antes de llamar a Gemini se filtra el inventario activo con lo que pidió el grupo (zona, franja y presupuesto)
+ *  y se envían como máximo 50 lugares, en vez de los 1000. Si un filtro deja menos de 15, se afloja (primero zona, luego franja, luego costo).
+ *  Las ids que devuelve Gemini se siguen validando contra TODO el inventario activo. */
+function preFiltro_(inv, texto) {
+  var q = String(texto || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  var sin = function (s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); };
+  var zonas = ['norte', 'sur', 'oeste', 'este', 'centro', 'oriente'].filter(function (z) { return new RegExp('\\b' + z + '\\b').test(q); });
+  var franjas = ['manana', 'tarde', 'noche'].filter(function (f) { return q.indexOf(f) >= 0; });
+  var m = q.match(/(?:max(?:imo)?\.?|hasta|tope)\s*\$?\s*([\d.]+)/), tope = m ? Number(m[1].replace(/\./g, '')) : 0;
+  if (tope && tope < 1000) tope = tope * 1000;   // «máx. 40» → 40.000
+  var fZona = function (i) { var z = sin(i.macro_zona) + ' ' + sin(i.zona); return zonas.some(function (x) { return z.indexOf(x) >= 0; }); };
+  var fFranja = function (i) { var f = sin(i.franja_horaria) + ' ' + sin(i.horario); return !f.trim() || franjas.some(function (x) { return f.indexOf(x) >= 0; }); };
+  var fCosto = function (i) { var c = Number(String(i.costo_min_cop || '').replace(/[^\d]/g, '')); return !c || c <= tope; };
+  var capas = [zonas.length ? fZona : null, franjas.length ? fFranja : null, tope ? fCosto : null];
+  var sel = inv;
+  for (var k = 0; k <= capas.length; k++) {
+    var activas = capas.slice(k).filter(Boolean);
+    sel = inv.filter(function (i) { return activas.every(function (fn) { return fn(i); }); });
+    if (sel.length >= 15 || !activas.length) break;
+  }
+  if (sel.length < 15) sel = inv;
+  for (var j = sel.length - 1; j > 0; j--) { var r = Math.floor(Math.random() * (j + 1)), x = sel[j]; sel[j] = sel[r]; sel[r] = x; }   // variedad entre planes
+  return sel.slice(0, 50);
+}
+
 /** I6: Gemini SOLO elige y compone desde el inventario verificado; los ids que no existan se descartan. */
 function proponerIA_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
   var inv = inventarioActivo_(); if (!inv.length) return { ok: false, error: 'inventario_vacio' };
-  var invTxt = inv.map(function (i) { return [i.id, i.categoria, i.nombre, i.zona, i.costo_aprox, i.horario, i.duracion, i.apto_para].join(' | '); }).join('\n');
+  var cand = preFiltro_(inv, String(d.restricciones || '') + ' ' + rows_('preferencias').filter(function (r) { return r.grupo_id === p.grupo_id; }).map(function (r) { return r.resumen; }).join(' '));   // v2.3.6
+  var invTxt = cand.map(function (i) { return [i.id, i.categoria, i.nombre, i.zona, i.costo_aprox, i.horario, i.franja_horaria || '', i.duracion, i.apto_para].join(' | '); }).join('\n');
   var prefs = rows_('preferencias').filter(function (r) { return r.grupo_id === p.grupo_id; }).map(function (r) { return '- ' + r.resumen; }).join('\n') || '- (sin preferencias declaradas)';
   var prompt =
     'Eres Sintonía, el "quinto amigo" que coordina planes de grupos que ya existen en Cali, Colombia. Tu única tarea es proponer planes.\n' +

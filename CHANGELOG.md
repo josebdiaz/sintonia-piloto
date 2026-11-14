@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-14 · Propuestas más rápidas y look & feel (frontend 2.3.0 · backend 2.3.6)
+- **Backend 2.3.6:** antes de llamar a Gemini, el inventario activo se filtra con lo que pidió el grupo (zona, franja y presupuesto) y se envían como máximo 50 lugares, en vez de los 1000. Si el filtro deja menos de 15, se afloja solo. Las ids que devuelve Gemini se siguen validando contra todo el inventario activo. QA: 67 de 67.
+- **Look & feel:** la consola, el panel y las páginas de participantes usan la marca actual (papel y noche, vitral como color principal, mostaza de acento, naranja en el detalle, títulos en Inter 800). Solo se sobrescriben tokens semánticos; la paleta del DS 3.0 no cambia.
+
 ### 2026-11-14 · Inventario verificado (backend 2.3.5)
 - **Solo entra lo marcado «activo».** Antes, un `estado` vacío contaba como activo: con el inventario ampliado (1000 filas, todas con `estado` vacío) Gemini podía proponer lugares sin verificar, y cada propuesta le enviaba las 1000 filas.
 - `probarMontaje` acepta el inventario de 33 columnas en otro orden: las 14 del código están, el código lee por nombre y nunca escribe en esa hoja.
