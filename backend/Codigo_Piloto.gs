@@ -1,7 +1,9 @@
 /**
- * Sintonía · Piloto v2.3.4 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.3.5 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.3.5 (14/11): solo cuenta como activo el lugar con estado «activo» (un estado vacío ya no entra a las propuestas), y probarMontaje
+ *   acepta el inventario ampliado de 33 columnas en otro orden, porque el código lee por nombre y no escribe en esa hoja.
  * Versión 2.3.4 (14/11): más rápido. La hoja, cada pestaña y sus filas se leen una vez por consulta (antes, la vista del mago leía
  *   «preferencias» una vez por grupo y abría la hoja en cada lectura). La línea base pregunta «de los últimos 5 planes, ¿cuántos se hicieron?»
  *   y guarda los caídos como 5 − hechos (mismas columnas).
@@ -139,6 +141,7 @@ function revisarEncabezados_() {
   Object.keys(SHEETS).forEach(function (n) {
     var sh = sheet_(n), want = SHEETS[n], have = sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), 1)).getValues()[0].filter(function (x) { return x !== ''; });
     if (have.join('|') === want.join('|')) return;
+    if (n === 'inventario' && want.every(function (c) { return have.indexOf(c) >= 0; })) { avisos.push('ℹ️ inventario: las ' + want.length + ' columnas del código están (en otro orden' + (have.length > want.length ? ', con ' + (have.length - want.length) + ' extra' : '') + '). El código lee por nombre y nunca escribe en esta hoja.'); return; }   // v2.3.5
     if (have.length > want.length && have.slice(0, want.length).join('|') === want.join('|')) { avisos.push('ℹ️ ' + n + ': ' + (have.length - want.length) + ' columnas extra al final (se conservan; el código lee por nombre)'); return; }   // v2.3.0: inventario ampliado
     if (have.length < want.length && want.slice(0, have.length).join('|') === have.join('|')) {   // solo faltan columnas nuevas al final
       sh.getRange(1, have.length + 1, 1, want.length - have.length).setValues([want.slice(have.length)]); avisos.push('🔧 ' + n + ': columnas nuevas agregadas al final'); return; }
@@ -285,8 +288,10 @@ function crearPlan_(d) {
   return { ok: true, plan_id: pl, ronda: ronda, version: g.version || 'v1' };
 }
 
-function inventarioPendiente_() { return rows_('inventario').filter(function (i) { return i.id !== '' && String(i.estado || 'activo') !== 'activo'; }); }
-function inventarioActivo_() { return rows_('inventario').filter(function (i) { return String(i.estado || 'activo') === 'activo' && i.id !== ''; }); }
+/* v2.3.5: solo cuenta como activo lo marcado «activo». Antes, un estado vacío contaba como activo (1000 filas sin verificar entraban a las propuestas). */
+function esActivo_(i) { return String(i.estado || '').trim().toLowerCase() === 'activo'; }
+function inventarioPendiente_() { return rows_('inventario').filter(function (i) { return i.id !== '' && !esActivo_(i); }); }
+function inventarioActivo_() { return rows_('inventario').filter(function (i) { return esActivo_(i) && i.id !== ''; }); }
 
 /** I6: Gemini SOLO elige y compone desde el inventario verificado; los ids que no existan se descartan. */
 function proponerIA_(d) {

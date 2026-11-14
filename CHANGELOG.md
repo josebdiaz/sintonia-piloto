@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-14 · Inventario verificado (backend 2.3.5)
+- **Solo entra lo marcado «activo».** Antes, un `estado` vacío contaba como activo: con el inventario ampliado (1000 filas, todas con `estado` vacío) Gemini podía proponer lugares sin verificar, y cada propuesta le enviaba las 1000 filas.
+- `probarMontaje` acepta el inventario de 33 columnas en otro orden: las 14 del código están, el código lee por nombre y nunca escribe en esa hoja.
+- **Antes de desplegar:** marcar en la hoja los lugares verificados como `activo` y el resto como `por_confirmar`; si no, la consola no tendrá lugares para proponer.
+
 ### 2026-11-14 · Velocidad, marca y línea base (frontend 2.3.0 · backend 2.3.4)
 - **Más rápido (backend 2.3.4):** la hoja, cada pestaña y sus filas se leen una sola vez por consulta; cualquier escritura descarta la copia de esa pestaña. Antes la vista del mago abría la hoja en cada lectura y leía «preferencias» una vez por grupo. QA: 67 de 67.
 - **Marca:** el logo final (glifo con anillos) reemplaza el círculo genérico en las 8 páginas del piloto (`piloto/assets/glifo.svg`); la consola muestra el wordmark «sintonía» con la tilde.
