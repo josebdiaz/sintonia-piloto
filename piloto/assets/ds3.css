@@ -535,3 +535,10 @@ dialog.hoja::backdrop { background: rgba(31, 33, 38, .45); }
 .chips[role="group"] .chip input:checked + span::before { content: "✓ "; }
 .mago-tira b { font: 700 var(--font-size-16)/1.2 var(--font-family-display); }
 .mago-tira #tiraMin { font-family: var(--font-family-mono); font-variant-numeric: tabular-nums; }
+
+/* 2.3.0 · identidad de marca actualizada (logo final aprobado el 6/11): glifo con anillos y wordmark con tilde */
+.brand-mark { width: 34px; height: 34px; border-radius: 50%; background: url(glifo.svg) center / contain no-repeat; box-shadow: none; flex: none; }
+.wm { font-family: 'Inter', system-ui, sans-serif; font-weight: 800; letter-spacing: -.045em; line-height: 1; display: inline-block; }
+.wm .i { position: relative; display: inline-block; }
+.wm .i::after { content: ""; position: absolute; width: .30em; height: .10em; border-radius: .05em; left: .02em; top: .2em; transform: rotate(-40deg); transform-origin: left center; background: #c23a00; }
+.brand .sep { opacity: .35; font-weight: 400; }

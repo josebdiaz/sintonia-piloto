@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-14 · Velocidad, marca y línea base (frontend 2.3.0 · backend 2.3.4)
+- **Más rápido (backend 2.3.4):** la hoja, cada pestaña y sus filas se leen una sola vez por consulta; cualquier escritura descarta la copia de esa pestaña. Antes la vista del mago abría la hoja en cada lectura y leía «preferencias» una vez por grupo. QA: 67 de 67.
+- **Marca:** el logo final (glifo con anillos) reemplaza el círculo genérico en las 8 páginas del piloto (`piloto/assets/glifo.svg`); la consola muestra el wordmark «sintonía» con la tilde.
+- **Línea base:** «planes que sí hicieron» y «planes que se cayeron el último mes» pasan a una sola pregunta, comparable con la encuesta del pivote: «De los últimos 5 planes que propusieron en el chat del parche, ¿cuántos se hicieron?». Se guarda en las mismas columnas (caídos = 5 − hechos); el panel cambia sus etiquetas.
+
 ### 2026-11-14 · Ajustes del test drive (frontend 2.3.0 · backend 2.3.3)
 Ensayo interno del 13/11 en modo prueba (Juan José como mago). Todavía no hay grupos reales: los cambios entran antes del primer plan del piloto, así que todos los grupos tendrán la misma versión.
 - **Grupo:** «Crear el grupo de WhatsApp y enviar el enlace», «Enviar /ingreso» y «Crear el plan 1» son tres pasos. La tarjeta del grupo guarda el enlace de invitación y arma «Invitar a…» por persona (la privacidad de cada usuario puede impedir agregarlo directo).
@@ -16,7 +21,7 @@ Ensayo interno del 13/11 en modo prueba (Juan José como mago). Todavía no hay 
 - **Pulso:** en modo prueba abre antes de la hora del encuentro. SUS ítem 7: «aprenderían».
 - **Consola:** una carga vieja ya no pisa una más nueva (los estados «retrocedían»). Votos con las mismas palabras de la encuesta.
 - **Backend 2.3.3:** el prompt de Gemini pide títulos de 30 caracteres como máximo y una descripción de una o dos frases (`PROMPT_VERSION` p2-2026-11). QA: 67 de 67. La consola recorta los títulos largos aunque el backend no esté desplegado.
-- **Pendiente:** replicar en las plantillas de n8n (W1, W3, W4 y W5) para que E1.5 envíe lo mismo que E1. Revisar con Katherine la pregunta «Planes que sí hicieron el último mes» del registro.
+- **Pendiente:** replicar en las plantillas de n8n (W1, W3, W4 y W5) para que E1.5 envíe lo mismo que E1. 
 
 ### 2026-11-06 · Favicon
 - **Nuevo** en la raíz: `favicon.svg` y `favicon.ico` (16, 32 y 48 px; disco mostaza con la «s» del logo final, sin anillos para que se lea en la pestaña), `apple-touch-icon.png` (180 px), `icon-192.png` e `icon-512.png` (glifo completo con anillos) y `site.webmanifest`.

@@ -1,7 +1,10 @@
 /**
- * Sintonía · Piloto v2.3.3 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.3.4 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.3.4 (14/11): más rápido. La hoja, cada pestaña y sus filas se leen una vez por consulta (antes, la vista del mago leía
+ *   «preferencias» una vez por grupo y abría la hoja en cada lectura). La línea base pregunta «de los últimos 5 planes, ¿cuántos se hicieron?»
+ *   y guarda los caídos como 5 − hechos (mismas columnas).
  * Versión 2.3.3 (14/11, test drive 13/11): títulos de Gemini de 30 caracteres como máximo (caben en una encuesta de WhatsApp) y
  *   descripción («por_que») de una o dos frases, porque cada opción ahora se envía en su propio mensaje.
  * Versión 2.3.2 (24/10): eventos msg_ingreso, msg_opciones, msg_confirmado y msg_retro; las sesiones abiertas más de 4 h se cierran solas sin minutos
@@ -117,11 +120,17 @@ var CAUSAS_CAIDA = ['trafico','lluvia','agenda','costo','desinteres','imprevisto
 /* ============================== Utilidades ============================== */
 
 function prop_(k, def) { var v = PropertiesService.getScriptProperties().getProperty(k); return (v === null || v === '') ? def : v; }
-function ss_() { return SpreadsheetApp.openById(prop_('SHEET_ID')); }
+/* v2.3.4 · velocidad: la hoja, cada pestaña y sus filas se leen una sola vez por consulta. Cualquier escritura descarta la copia de esa pestaña. */
+var MEMO_ = { ss: null, sh: {}, rows: {} };
+function memoReset_() { MEMO_ = { ss: null, sh: {}, rows: {} }; }
+function memoSoltar_(name) { if (name) delete MEMO_.rows[name]; else MEMO_.rows = {}; }
+function ss_() { return MEMO_.ss || (MEMO_.ss = SpreadsheetApp.openById(prop_('SHEET_ID'))); }
 function sheet_(name) {
+  if (MEMO_.sh[name]) return MEMO_.sh[name];
   var ss = ss_(), sh = ss.getSheetByName(name);
   if (!sh) { sh = ss.insertSheet(name); sh.appendRow(SHEETS[name]); sh.setFrozenRows(1); }
   else if (sh.getLastRow() === 0) { sh.appendRow(SHEETS[name]); sh.setFrozenRows(1); }
+  MEMO_.sh[name] = sh;
   return sh;
 }
 /** Compara el encabezado de cada hoja con el esquema. Si la hoja no tiene datos, lo reescribe; si tiene datos, solo avisa. */
@@ -136,23 +145,29 @@ function revisarEncabezados_() {
     if (sh.getLastRow() <= 1) { sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), want.length)).clearContent(); sh.getRange(1, 1, 1, want.length).setValues([want]); avisos.push('🔧 ' + n + ': encabezado actualizado'); }
     else avisos.push('❌ ' + n + ': el encabezado no coincide y ya hay datos. Borra esas filas de prueba o la hoja y vuelve a correr probarMontaje.');
   });
+  memoSoltar_();   // v2.3.4
   return avisos;
 }
 function append_(name, obj) {
+  memoSoltar_(name);
   sheet_(name).appendRow(SHEETS[name].map(function (c) { return c === 'ts' ? new Date() : (obj[c] === undefined ? '' : obj[c]); }));
 }
 function rows_(name) {
+  if (MEMO_.rows[name]) return MEMO_.rows[name].map(function (o) { return Object.assign({}, o); });
   var v = sheet_(name).getDataRange().getValues(), h = v[0], out = [];
   for (var i = 1; i < v.length; i++) { if (v[i].every(function (x) { return x === '' || x === null; })) continue;   // v2.3.1: ignora la fila vacía que deja «Empezar piloto real»
     var o = {}; for (var j = 0; j < h.length; j++) o[h[j]] = v[i][j]; o._row = i + 1; out.push(o); }
-  return out;
+  MEMO_.rows[name] = out;
+  return out.map(function (o) { return Object.assign({}, o); });
 }
 function updateRow_(name, rowNum, patch) {
+  memoSoltar_(name);
   var sh = sheet_(name), cols = SHEETS[name];
   Object.keys(patch).forEach(function (k) { var c = cols.indexOf(k); if (c >= 0) sh.getRange(rowNum, c + 1).setValue(patch[k]); });
 }
 function deleteWhere_(name, fn) {   // borra de abajo hacia arriba para no correr índices
   var r = rows_(name).filter(fn).map(function (x) { return x._row; }).sort(function (a, b) { return b - a; });
+  memoSoltar_(name);
   r.forEach(function (n) { sheet_(name).deleteRow(n); });
   return r.length;
 }
@@ -185,6 +200,7 @@ function fecha_(v) { if (!v) return ''; var d = new Date(String(v).trim().replac
 /* ============================== POST ============================== */
 
 function doPost(e) {
+  memoReset_();
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
@@ -569,6 +585,7 @@ function sesionMago_(d) {
 /* ============================== GET ============================== */
 
 function doGet(e) {
+  memoReset_();
   var q = (e && e.parameter) || {};
   try {
     if (q.view === 'plan') return json_(vistaPlan_(q));
@@ -798,6 +815,7 @@ function limpiarRegistros_(d) {
     sh.getRange(2, 1, last - 1, Math.max(sh.getLastColumn(), 1)).clearContent();   // Sheets no deja borrar TODAS las filas no congeladas
     if (last > 2) sh.deleteRows(3, last - 2);
   });
+  memoSoltar_();   // v2.3.4
   append_('bitacora', { accion: 'limpiar_registros', detalle: JSON.stringify(antes), respaldo_url: bk.getUrl(), registrado_por: str_(d.registrado_por, 40) });
   return { ok: true, borradas: antes, total: total, respaldo: bk.getUrl() };
 }
@@ -841,5 +859,6 @@ function borrarDatosEstudio() {
   ['contactos', 'preferencias'].forEach(function (n) { var sh = sheet_(n); if (sh.getLastRow() > 1) sh.deleteRows(2, sh.getLastRow() - 1); });
   var r = sheet_('retro');
   ['comentario', 'que_agregaria'].forEach(function (col) { var c = SHEETS.retro.indexOf(col) + 1; if (r.getLastRow() > 1) r.getRange(2, c, r.getLastRow() - 1, 1).clearContent(); });
+  memoSoltar_();   // v2.3.4
   ui.alert('Listo. Quedan solo métricas con ids seudónimos.');
 }

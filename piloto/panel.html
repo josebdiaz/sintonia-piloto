@@ -147,8 +147,8 @@
     S.$('#foco').innerHTML = foco(pe);
     S.$('#cols').innerHTML = col('E1', pe.E1) + col('E2', pe.E2);
     var lb = r.linea_base_grupos || {};
-    S.$('#base').innerHTML = '<h3>Línea base (por grupo)</h3><div class="kpis">' + kpi(lb.n || 0, 'Grupos con línea base') + kpi(S.num(lb.planes_realizados_mes_prom), 'Planes hechos el mes anterior') +
-      kpi(S.num(lb.planes_fallidos_mes_prom), 'Planes caídos el mes anterior') + kpi(S.num(lb.fatiga_previa_org_prom), 'Fatiga previa del organizador, 1–5') + kpi(r.participantes_activos, 'Participantes activos') + '</div>';
+    S.$('#base').innerHTML = '<h3>Línea base (por grupo)</h3><div class="kpis">' + kpi(lb.n || 0, 'Grupos con línea base') + kpi(S.num(lb.planes_realizados_mes_prom), 'Planes hechos de los últimos 5 (antes del pilotor') +
+      kpi(S.num(lb.planes_fallidos_mes_prom), 'Planes caídos de los últimos 5') + kpi(S.num(lb.fatiga_previa_org_prom), 'Fatiga previa del organizador, 1–5') + kpi(r.participantes_activos, 'Participantes activos') + '</div>';
     var ex = r.grupos_excluidos || [];
     S.$('#excluidos').innerHTML = '<h3>Grupos desestimados (I9)</h3>' + (ex.length ? '<table><thead><tr><th>Grupo</th><th>Cond.</th><th>Motivo</th></tr></thead><tbody>' + ex.map(function (g) { return '<tr><td>' + e(g.grupo_id.slice(-6)) + '</td><td>' + e(g.experimento === 'E2' ? 'E1.5' : g.experimento) + '</td><td>' + e(g.motivo) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="small muted">Ninguno.</p>');
     var w = r.wtp_organizadores || [];

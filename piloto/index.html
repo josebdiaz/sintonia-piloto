@@ -59,10 +59,7 @@
           <label class="chip"><input type="checkbox" value="entre_semana"><span>Entre semana</span></label><label class="chip"><input type="checkbox" value="viernes"><span>Viernes</span></label><label class="chip"><input type="checkbox" value="sabado"><span>Sábado</span></label><label class="chip"><input type="checkbox" value="domingo"><span>Domingo</span></label></div></div>
         <div class="field"><span class="label" id="franjasLbl">¿A qué hora les queda mejor?</span><div class="chips" id="franjas" role="group" aria-labelledby="franjasLbl">
           <label class="chip"><input type="checkbox" value="manana"><span>Mañana</span></label><label class="chip"><input type="checkbox" value="tarde"><span>Tarde</span></label><label class="chip"><input type="checkbox" value="noche"><span>Noche</span></label></div><span class="hint">Marca todas las que apliquen.</span></div>
-        <div class="row">
-          <div class="field"><label for="realizados">Planes que sí hicieron el último mes</label><input id="realizados" type="number" inputmode="numeric" min="0" max="31" required></div>
-          <div class="field"><label for="fallidos">Planes que se cayeron el último mes</label><input id="fallidos" type="number" inputmode="numeric" min="0" max="31" required></div>
-        </div>
+        <div class="field"><label for="realizados">De los últimos 5 planes que propusieron en el chat del parche, ¿cuántos se hicieron?</label><select id="realizados" required><option value="">Elige…</option><option value="0">Ninguno</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">Los 5</option></select><span class="hint">Un cálculo aproximado está bien.</span></div>
         <div class="field"><label for="quien">¿Quién suele organizar?</label><input id="quien" type="text" maxlength="40" placeholder="Por ejemplo: yo, mi hermana, nadie fijo"></div>
         <div class="field"><span class="label" id="fatigaLbl">Hoy, ¿qué tan desgastante es para ti cuadrar un plan con este grupo?</span><div id="fatiga" aria-labelledby="fatigaLbl"></div></div>
         <div class="actions"><button class="btn btn-primary btn-block" type="button" data-next="2">Seguir</button></div>
@@ -155,7 +152,7 @@
     var n = int('#ninv');
     if (n === '' || n < 2 || n > 8) return 'Al plan van entre 2 y 8 personas, contándote.';
     if (!marcados('dias').length || !marcados('franjas').length) return 'Marca al menos un día y una franja en que suelen poder salir.';
-    if (int('#realizados') === '' || int('#fallidos') === '') return 'Cuéntanos cuántos planes hicieron y cuántos se cayeron (puede ser 0).';
+    if (int('#realizados') === '') return 'Cuéntanos cuántos de los últimos 5 planes se hicieron (puede ser ninguno).';
     if (!fatiga.value()) return 'Marca qué tan desgastante es cuadrar un plan (1 a 5).';
     return '';
   }
@@ -177,7 +174,7 @@
     if (!cons.valid()) return S.toast('Para participar necesitamos las 4 autorizaciones.', true);
     var payload = Object.assign({
       action: 'registrar', experimento: exp, modo: modo, tipo_grupo: tipo.value(), n_invitados: int('#ninv'), disponibilidad: disponibilidad(), origen: S.param('origen') || '',
-      planes_realizados_mes: int('#realizados'), planes_fallidos_mes: int('#fallidos'), quien_organiza: S.$('#quien').value.trim(),
+      planes_realizados_mes: int('#realizados'), planes_fallidos_mes: 5 - int('#realizados'),   /* 2.3.0: de los últimos 5 planes (antes, conteo del último mes) */ quien_organiza: S.$('#quien').value.trim(),
       fatiga_previa: fatiga.value(), preferencias: S.$('#prefs').value.trim(), nombre_pila: nombre, whatsapp: '+57' + wa,
       consent_metodo: cons.metodo(), aviso_version: S.CONFIG.AVISO_VERSION
     }, cons.values());
