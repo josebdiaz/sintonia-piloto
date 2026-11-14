@@ -1,7 +1,9 @@
 /**
- * Sintonía · Piloto v2.3.2 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.3.3 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.3.3 (14/11, test drive 13/11): títulos de Gemini de 30 caracteres como máximo (caben en una encuesta de WhatsApp) y
+ *   descripción («por_que») de una o dos frases, porque cada opción ahora se envía en su propio mensaje.
  * Versión 2.3.2 (24/10): eventos msg_ingreso, msg_opciones, msg_confirmado y msg_retro; las sesiones abiertas más de 4 h se cierran solas sin minutos
  *   (cerrada_auto) y se completan con operacion + sesion_id (cerrada_a_mano).
  * Versión 2.3.1 (24/10): rows_ ignora filas completamente vacías (la fila 2 que deja «Empezar piloto real» aparecía como un grupo y un plan fantasma).
@@ -75,7 +77,7 @@
  * Zona horaria: en Configuración del proyecto, poner America/Bogota. La hora_encuentro se interpreta en esa zona.
  */
 
-var PROMPT_VERSION = 'p1-2026-10';
+var PROMPT_VERSION = 'p2-2026-11';
 var MAX_GRUPO = 8;
 
 /* ============================== Esquema ============================== */
@@ -282,7 +284,9 @@ function proponerIA_(d) {
     'Arma entre 1 y 3 opciones USANDO SOLO lugares del INVENTARIO (por id). Prohibido inventar lugares, eventos, precios u horarios.\n' +
     'Reglas: (1) que nadie del grupo quede incómodo (least misery): respeta presupuesto, energía y restricciones; ' +
     '(2) 1 o 2 paradas, la mejor al final; (3) sugiere la hora de salida pensando en trancones de hora pico y lluvia en Cali; ' +
-    '(4) español de Colombia, tono cercano; sin datos personales.\n\n' +
+    '(4) español de Colombia, tono cercano; sin datos personales; ' +
+    '(5) "titulo": máximo 30 caracteres, sin emojis (va como opción de una encuesta de WhatsApp); ' +
+    '"por_que": una o dos frases, máximo 160 caracteres, sobre qué van a hacer y por qué le sirve a este grupo.\n\n' +
     'Restricciones del plan: ' + str_(d.restricciones, 600) + '\n' +
     'Preferencias del grupo (resumidas):\n' + prefs + '\n\n' +
     'INVENTARIO (id | categoría | nombre | zona | costo | horario | duración | apto para):\n' + invTxt + '\n\n' +
@@ -295,7 +299,7 @@ function proponerIA_(d) {
   var descartadas = 0;
   ops = ops.slice(0, 3).map(function (o) {
     var ids = (o.paradas_ids || []).filter(function (x) { if (byId[x]) return true; descartadas++; return false; }).slice(0, 2);
-    return { titulo: str_(o.titulo, 80), hora_salida: str_(o.hora_salida, 40), presupuesto_aprox: str_(o.presupuesto_aprox, 40), por_que: str_(o.por_que, 200),
+    return { titulo: str_(o.titulo, 60), hora_salida: str_(o.hora_salida, 40), presupuesto_aprox: str_(o.presupuesto_aprox, 40), por_que: str_(o.por_que, 200),
       paradas: ids.map(function (x) { var i = byId[x]; return { id: i.id, nombre: i.nombre, zona: i.zona, costo_aprox: i.costo_aprox, horario: i.horario }; }) };
   }).filter(function (o) { return o.paradas.length > 0; });
   updateRow_('planes', p._row, { estado: 'en_revision', opciones_json: JSON.stringify(ops), t_propuesto: new Date() });

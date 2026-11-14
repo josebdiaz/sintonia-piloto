@@ -5,6 +5,19 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-14 · Ajustes del test drive (frontend 2.3.0 · backend 2.3.3)
+Ensayo interno del 13/11 en modo prueba (Juan José como mago). Todavía no hay grupos reales: los cambios entran antes del primer plan del piloto, así que todos los grupos tendrán la misma versión.
+- **Grupo:** «Crear el grupo de WhatsApp y enviar el enlace», «Enviar /ingreso» y «Crear el plan 1» son tres pasos. La tarjeta del grupo guarda el enlace de invitación y arma «Invitar a…» por persona (la privacidad de cada usuario puede impedir agregarlo directo).
+- **Opciones:** `/opciones` pasa a ser una introducción, seguida de un mensaje por opción (`/opcion_1` a `/opcion_3`) y de `/encuesta` (pregunta y opciones para la encuesta de WhatsApp, de una sola respuesta, con «Cualquiera me sirve» y «Ninguna me sirve»). La votación se marca como enviada desde la encuesta. Nuevo `/empate`.
+- **Recordatorio:** la versión de grupo usa conteo («Van 2 de 3 votos»), sin nombres. La personal queda para después de 24 h.
+- **Cierre:** el encuentro se elige en pasos de 15 min y la salida sugerida se calcula sola (1 h antes, editable), con una vista previa «Salida → Encuentro».
+- **Confirmación:** `/confirmado` sin la petición de asistencia y con enlace «Agéndenlo» (Google Calendar). Nuevas `/asistencia` («¿Van?»), `/reprogramar` (otro día u otra hora) y `/horario` (encuesta con horas concretas).
+- **Día del plan:** `/checkpoint` y `/en_casa` como encuesta. `/salida` recuerda el pico y placa en días hábiles. Si el encuentro es después de las 8:00 p. m., el recorrido pide «en casa» y pulso al día siguiente a las 10:00.
+- **Pulso:** en modo prueba abre antes de la hora del encuentro. SUS ítem 7: «aprenderían».
+- **Consola:** una carga vieja ya no pisa una más nueva (los estados «retrocedían»). Votos con las mismas palabras de la encuesta.
+- **Backend 2.3.3:** el prompt de Gemini pide títulos de 30 caracteres como máximo y una descripción de una o dos frases (`PROMPT_VERSION` p2-2026-11). QA: 67 de 67. La consola recorta los títulos largos aunque el backend no esté desplegado.
+- **Pendiente:** replicar en las plantillas de n8n (W1, W3, W4 y W5) para que E1.5 envíe lo mismo que E1. Revisar con Katherine la pregunta «Planes que sí hicieron el último mes» del registro.
+
 ### 2026-11-06 · Favicon
 - **Nuevo** en la raíz: `favicon.svg` y `favicon.ico` (16, 32 y 48 px; disco mostaza con la «s» del logo final, sin anillos para que se lea en la pestaña), `apple-touch-icon.png` (180 px), `icon-192.png` e `icon-512.png` (glifo completo con anillos) y `site.webmanifest`.
 - Etiquetas `<link rel="icon">`, `apple-touch-icon` y `manifest` en el `<head>` de las páginas del portal, el piloto, los decks y las guías. `archivo/` y `e3-app/` no se tocan: reciben `/favicon.ico` desde la raíz.
