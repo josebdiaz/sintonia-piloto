@@ -8,7 +8,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 | Componente | Versión | Estado |
 |---|---|---|
 | Frontend (consola, panel, páginas de participante) | **2.7.0** | Publicado en https://sintonia.my el 15/11 |
-| Backend (Apps Script) | **2.7.2** | Entregado el 15/11 (2.7.1: el motor puede pedir más opciones; 2.7.2: «Empezar piloto real» conserva minutos y sesiones del mago). **Despliegue por confirmar.** En vivo está la 2.5.0 (los correos de inscripción ya funcionan) |
+| Backend (Apps Script) | **2.7.2** | **Desplegado el 15/11** (incluye 2.7.0 y 2.7.1). Correos de inscripción verificados |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Inventario verificado | Hoja del piloto | Revisión de ubicaciones con `probarMontaje()` (2.5.0): **resultado por reportar** |
 
@@ -45,7 +45,7 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 | N10 | **Medición de la consola** (2.7.0): segundos activos y toques por etapa, solo con «Mago in» | En E1.5 el trabajo humano ocurre en Telegram y n8n, no en la consola: `medicion_consola` subestima E1.5 | Comparar E1 y E1.5 **solo con los minutos de «Mago in»** (métrica del piloto). `medicion_consola` sirve dentro de E1 para mejorar la herramienta | **Validez** (de interpretación) |
 | N11 | **Pulso del mago** (SUS + NASA-TLX, 2.7.0) | El SUS pregunta por «la consola»; quien revisa en E1.5 usa sobre todo Telegram | El NASA-TLX es comparable entre condiciones. Para el SUS de E1.5, decidir si se pregunta por «Telegram + consola» o se omite | Decisión abierta |
 
-**Sigue vigente de la guía del 30/10:** B1 (opción C con Telegram, no Evolution), B2 (`pid` en `view=plan`), B5 (publicar antes de enviar), I2–I3 (no guardar ejecuciones, quitar el dato fijado), C14 por decidir y el plan de pago de n8n (la prueba gratuita vencía cerca del 8/11: **por confirmar**).
+**Estado de la guía del 30/10** (según `n8n/CHANGELOG.md`, 3/11): ya hechos B2 (excepto I5 en W3), B3–B4 (con los textos de la consola de ese momento: hay que volver a copiarlos, N2), I1 (con `evento_msg` vacío; N4 lo mejora) e I2–I3. Siguen abiertos B1 (canal; depende de C14), B5 (orden de W1; depende de SW · Aprobar), I5 y el plan de pago de n8n (la prueba gratuita vencía cerca del 8/11: **por confirmar**).
 
 ### 3.2 Operación del piloto (monitor, protocolo y guías)
 
@@ -54,7 +54,7 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 | O1 | La guía y el deck del monitor describen la consola 2.2.2: no hay mapa, cola, conteo «− n +», botones de llegadas, menú «⋯» ni pulso del mago | Actualizar `docs/guias/onboarding-monitor.md` y `docs/deck-onboarding-monitor.html` a la 2.7.0 antes del primer grupo real | **Bloquea** (inducción) |
 | O2 | `docs/protocolo-m2.md` describe E2 como web app (anterior a D1) | Marcarlo como «Hecha» (superado); el protocolo vigente es el onboarding más este archivo | Ajuste |
 | O3 | **Congelar la versión.** La 2.7.0 cambia la herramienta de E1; cambiarla a mitad del piloto mezcla dos interfaces en los minutos humanos | Arrancar los grupos del piloto en 2.7.0 y no cambiar la interfaz hasta el cierre del análisis (cada fila de medición guarda `consola_version`) | **Validez** |
-| O4 | El pulso del mago y la medición solo existen con el backend 2.7.0 o posterior (entregado: 2.7.1) | Desplegar: pegar el .gs, correr `probarMontaje()` (crea las 2 hojas nuevas) y publicar como «Nueva versión» | **Bloquea** (F5) |
+| O4 | El pulso del mago y la medición necesitan el backend 2.7.0 o posterior | **Resuelto:** 2.7.2 desplegado el 15/11 | — |
 | O5 | Prueba externa de Juan José con Paula (15/11, modo prueba) | Primera evidencia con la 2.7.0: pedir la grabación y el pulso del mago | Ajuste |
 
 ### 3.3 Métricas y plan de pruebas
@@ -83,7 +83,7 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Desplegar el backend 2.7.2 **antes** de usar «⟲ Empezar piloto real» (con la 2.5.0 en vivo, el botón borra los minutos de Juan José) y confirmar la versión | F5, N7 y horas del monitor | José (dueño del script) |
+| 1 | ~~Desplegar el backend 2.7.2~~ **Hecho el 15/11.** «⟲ Empezar piloto real» ya conserva minutos y sesiones del mago | — | José |
 | 2 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
 | 3 | Actualizar el onboarding del monitor a la consola 2.7.0 (O1) | Inducción | Equipo |
 | 4 | Publicar el aviso de privacidad v2 | Datos reales | Equipo |

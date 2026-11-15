@@ -2,6 +2,12 @@
 
 Formato: lo más reciente arriba. Fechas en hora de Bogotá.
 
+## 15 nov 2026 · La consola de E1 cambió: ajustes pendientes para E1.5
+
+- **Backend 2.7.2 desplegado.** Para el motor: `reabrir_opciones` ya está en `MOTOR_ACCIONES` (2.7.1, solo planes de E1.5), hay eventos nuevos (`msg_hoy`, `msg_checkpoint`, `msg_todos`, `msg_en_casa`, `msg_evento`, 2.4.0) y `cerrar_plan` acepta `decision` con los conteos de la ronda (2.4.0).
+- **Sin cambios todavía en los flujos.** La lista de ajustes (N1–N11: encuesta nativa, textos de la consola 2.7.0, regla de corchetes, eventos, relojes, pulso por persona, ronda 2, paradas completas y medición) está en la §7 de [`GUIA-CONTINUACION.md`](GUIA-CONTINUACION.md) y en [`../ESTADO.md`](../ESTADO.md) §3.1. Pruebas nuevas: T13–T16.
+- Los textos que se pegaron el 3/11 (B3) corresponden a la consola de esa fecha; hay que volver a copiarlos de `piloto/mago.html` (lista `TPL`).
+
 ## 6 nov 2026 · Aviso de privacidad v2 aprobado
 
 - Néstor aprobó el aviso v2 (R6 del estado del 30/10). Falta publicarlo en `piloto/aviso.html` y subir `AVISO_VERSION` antes de usar datos reales en E1.5.

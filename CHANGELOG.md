@@ -5,7 +5,7 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
-### 2026-11-15 · «Empezar piloto real» conserva los minutos del mago (backend 2.7.2)
+### 2026-11-15 · «Empezar piloto real» conserva los minutos del mago (backend 2.7.2) · **desplegado el 15/11**
 - `operacion` y `sesiones` pasan a la lista de hojas que no se borran: son el registro de horas del monitor. El panel solo cuenta los minutos de grupos en modo piloto, así que los de los ensayos no entran en las métricas.
 - Las sesiones que se cerraron solas en planes que ya no existen dejan de pedir minutos en la consola.
 - La pestaña «⟲ Empezar piloto real» lo explica (la lista de lo que se conserva la manda el backend).
@@ -153,6 +153,18 @@ Ensayo interno del 13/11 en modo prueba (Juan José como mago). Todavía no hay 
 
 ## Frontend del piloto (`piloto/`)
 
+Desde la 2.3.0, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
+
+### [2.7.0] · 2026-11-15 · Plan de mejoras F0–F5 · **en vivo**
+Marcadores `[n]` bloqueados, menú «⋯» por persona, cola de mensajes, mapa en la columna izquierda, pestañas flotantes, votos «− n +», día y hora en botones, llegadas en un toque, color semántico, teléfonos enmascarados, sin «Trabajo» en la inscripción, pulso del mago y medición de la consola. Tag `piloto/v2.7.0`.
+### [2.6.0] · 2026-11-15 · Mapa del recorrido (2 planes × 5 etapas) y relojes que se apagan
+### [2.5.1] · 2026-11-14 · QA visual (radios y alturas, barra flotante, mensajes recortados)
+### [2.5.0] · 2026-11-14 · Marca actual, enlaces de Google Maps, relojes, atajos y accesibilidad (axe 0)
+### [2.4.0] · 2026-11-15 · El mago como usuario: decisión por ronda, encuesta nativa, textos nuevos, formularios que no se borran
+### [2.3.2] · 2026-11-14 · Marca en las páginas de participantes
+### [2.3.1] · 2026-11-14 · QA de punta a punta de la consola
+### [2.3.0] · 2026-11-14 · Ajustes del test drive, velocidad y look & feel
+
 ### [2.2.2] · 2026-10-24 · Feedback del QA, radios y controles de la barra superior
 - **Mago in / off rediseñado:** un estado (luz, «Fuera de línea» o «En línea · 57 min», quién y en qué plan) y un solo botón (Button primario «▶ Mago in» o «■ Mago off»). Se quitan la empuñadura y el punto decorativo de «Presione para hablar». Aviso a las 2 h; a las 4 h la sesión se cierra sola sin minutos y la consola pide registrarlos a mano.
 - **Modo prueba:** título, estado escrito y un interruptor estándar; activo = mostaza con «SÍ» y aviso en la lista de grupos.
@@ -267,6 +279,19 @@ Ensayo interno del 13/11 en modo prueba (Juan José como mago). Todavía no hay 
 - Archivado en `archivo/piloto-m1-claude/`. Tag `piloto/v1.0.0`.
 
 ## Backend (`backend/Codigo_Piloto.gs`)
+
+Desde la 2.3.3, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
+
+### [2.7.2] · 2026-11-15 · «Empezar piloto real» conserva `operacion` y `sesiones` · **desplegado el 15/11**
+Tag `backend/v2.7.2`. QA: 85 de 85. Incluye 2.7.0 y 2.7.1.
+### [2.7.1] · 2026-11-15 · `reabrir_opciones` en `MOTOR_ACCIONES` (solo planes de E1.5)
+### [2.7.0] · 2026-11-15 · Hojas `pulso_mago` y `medicion_consola`; panel «La consola del mago»
+### [2.5.0] · 2026-11-14 · Revisión de ubicaciones en `probarMontaje`; `?view=mago&inv=0`
+### [2.4.0] · 2026-11-15 · Hoja `decisiones`, `reabrir_opciones`, Gemini con 3 opciones, eventos nuevos, correos al equipo, modo prueba sin reloj
+### [2.3.6] · 2026-11-14 · Propuestas más rápidas
+### [2.3.5] · 2026-11-14 · Inventario verificado
+### [2.3.4] · 2026-11-14 · Velocidad y línea base
+### [2.3.3] · 2026-11-14 · Ajustes del test drive
 
 ### [2.3.2] · 2026-10-24 · Feedback del QA
 - Eventos nuevos `msg_ingreso`, `msg_opciones`, `msg_confirmado` y `msg_retro` (solo equipo): los mensajes marcados como enviados.
