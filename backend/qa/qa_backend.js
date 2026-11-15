@@ -134,8 +134,48 @@ chk('2.3.2 sesión de más de 4 h se cierra sola sin minutos', !vm2.sesiones_abi
 const om = post({ action: 'operacion', key: A, plan_id: pz.plan_id, minutos: 35, causa: 'sesion', sesion_id: sa.sesion_id });
 chk('2.3.2 minutos manuales completan la sesión cerrada sola', om.ok && !get({ view: 'mago', key: A }).sesiones_por_revisar.some(x => x.sesion_id === sa.sesion_id), om);
 
+// 2.4.0: decisión por ronda, más opciones sin plan caído, modo prueba sin reloj, nombre del grupo, avisos, indicación y 3 opciones
+const correos = []; ctx.MailApp = { sendEmail: (to, a, b) => correos.push([to, a, b]), getRemainingDailyQuota: () => 100 }; PROPS.NOTIFICAR_A = 'equipo@qa';
+const g4 = post(Object.assign({ action: 'registrar', experimento: 'E1', modo: 'prueba', tipo_grupo: 'amigos', n_invitados: 2, nombre_grupo: 'Parche en la tarde', disponibilidad: 'dias: viernes, sabado · franjas: tarde', nombre_pila: 'Paula', whatsapp: '+573009990011' }, cons));
+const y4 = post(Object.assign({ action: 'registrar', codigo_invitacion: g4.codigo_invitacion, nombre_pila: 'Kate', whatsapp: '+573009990012' }, cons));
+chk('2.4.0 avisos por correo: inscripción y «ya aceptaron todos», sin nombres ni números', correos.length === 2 && correos.every(c => c[0] === 'equipo@qa' && !/Paula|Kate|300999/.test(c[1] + c[2])), correos);
+post({ action: 'cerrar_reclutamiento', key: A, grupo_id: g4.grupo_id });
+const vg4 = get({ view: 'mago', key: A }).grupos.filter(x => x.grupo_id === g4.grupo_id)[0];
+chk('2.4.0 nombre del grupo y disponibilidad en la vista del mago', vg4 && vg4.nombre === 'Parche en la tarde' && /viernes/.test(vg4.disponibilidad), vg4);
+const p4 = post({ action: 'crear_plan', key: A, grupo_id: g4.grupo_id });
+let llamadas = 0, ultimoPrompt = '';
+const resp = ops => ({ getResponseCode: () => 200, getContentText: () => JSON.stringify({ candidates: [{ content: { parts: [{ text: JSON.stringify({ opciones: ops }) }] } }], usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 } }) });
+const fetchViejo = ctx.UrlFetchApp.fetch;
+ctx.UrlFetchApp.fetch = (u, o) => { llamadas++; ultimoPrompt = JSON.parse(o.payload).contents[0].parts[0].text;
+  return llamadas === 1 ? resp([{ tipo: 'exacta', titulo: 'Museo', paradas_ids: ['INV-01'] }])
+    : resp([{ tipo: 'exacta', titulo: 'Museo', paradas_ids: ['INV-01'] }, { tipo: 'intermedia', titulo: 'Museo y café', paradas_ids: ['INV-01', 'NO-EXISTE'] }, { tipo: 'diferente', titulo: 'Otra', paradas_ids: ['INV-02'] }]); };
+SHEETS.inventario.rows.push(['INV-02', 'comida', 'Galería', 'Alameda', 'Cl 8', '20000', '10-20', '2h', 'fácil', 'todos', 'web', '2026-10-20', 'activo', '', 'Sur']);
+const ia4 = post({ action: 'proponer_ia', key: A, plan_id: p4.plan_id, restricciones: '[6:41 p. m.] Kate: mmm pizza o tapas' });
+chk('2.4.0 Gemini: pide otra vez si trae menos de 3 y recibe la disponibilidad', llamadas === 2 && /EXACTAMENTE 3/.test(ultimoPrompt) && /viernes, sabado/.test(ultimoPrompt) && ia4.ok, [llamadas, ia4]);
+chk('2.4.0 Gemini: sin opciones repetidas y paradas con dirección para Maps', ia4.opciones.length === 2 && ia4.opciones[1].paradas[0].direccion === 'Cl 8' && ia4.opciones[1].tipo === 'diferente', ia4.opciones);
+post({ action: 'publicar_plan', key: A, plan_id: p4.plan_id });
+const re4 = post({ action: 'reabrir_opciones', key: A, plan_id: p4.plan_id, resultado: 'ninguna', decision: { votaron: 2, total: 2, votos: [0, 0], ninguna: 2 } });
+const pl4 = get({ view: 'mago', key: A }).planes.filter(x => x.plan_id === p4.plan_id)[0];
+chk('2.4.0 «Pedir más opciones»: vuelve a borrador sin caer y deja la ronda', re4.ok && re4.ronda_votacion === 1 && pl4.estado === 'borrador' && pl4.decisiones.length === 1 && pl4.decisiones[0].resultado === 'ninguna', [re4, pl4 && pl4.estado, pl4 && pl4.decisiones]);
+ctx.UrlFetchApp.fetch = () => resp([{ tipo: 'exacta', titulo: 'A', paradas_ids: ['INV-01'] }, { tipo: 'intermedia', titulo: 'B', paradas_ids: ['INV-02'] }, { tipo: 'diferente', titulo: 'C', paradas_ids: ['INV-01', 'INV-02'] }]);
+post({ action: 'proponer_ia', key: A, plan_id: p4.plan_id, restricciones: 'x' }); post({ action: 'publicar_plan', key: A, plan_id: p4.plan_id });
+const futuro = new Date(Date.now() + 26 * 36e5), fx = futuro.getFullYear() + '-' + String(futuro.getMonth() + 1).padStart(2, '0') + '-' + String(futuro.getDate()).padStart(2, '0') + ' 19:00';
+const c4 = post({ action: 'cerrar_plan', key: A, plan_id: p4.plan_id, elegida: 1, hora_encuentro: fx, hora_salida: '6:00 p. m.', decision: { votaron: 2, total: 2, votos: [1, 2, 0], cualquiera: 0, ninguna: 0 } });
+const pl4b = get({ view: 'mago', key: A }).planes.filter(x => x.plan_id === p4.plan_id)[0];
+chk('2.4.0 cerrar con la decisión de la ronda 2 (votos por opción, sin votos por persona)', c4.ok && pl4b.decisiones.length === 2 && String(pl4b.decisiones[1].resultado) === '1' && pl4b.decisiones[1].votos_opciones === '[1,2,0]' && Object.keys(pl4b.votos_por_pid).length === 0, pl4b && pl4b.decisiones);
+const r4 = post({ action: 'retro', plan_id: p4.plan_id, pid: y4.pid, satisfaccion_plan: 4 });
+const u4 = post({ action: 'usabilidad', plan_id: p4.plan_id, pid: y4.pid, seq_activacion: 6, seq_interaccion: 6, sus_omitido: true });
+chk('2.4.0 modo prueba sin reloj: pulso y usabilidad antes del encuentro', r4.ok && u4.ok, [r4, u4]);
+chk('2.4.0 en modo piloto el pulso sigue esperando el encuentro', (() => { const gx = post(Object.assign({ action: 'registrar', experimento: 'E1', modo: 'piloto', tipo_grupo: 'pareja', n_invitados: 2, nombre_pila: 'Q', whatsapp: '+573009990021' }, cons)); const yx = post(Object.assign({ action: 'registrar', codigo_invitacion: gx.codigo_invitacion, nombre_pila: 'W', whatsapp: '+573009990022' }, cons));
+  post({ action: 'cerrar_reclutamiento', key: A, grupo_id: gx.grupo_id }); const px = post({ action: 'crear_plan', key: A, grupo_id: gx.grupo_id }); post({ action: 'proponer_ia', key: A, plan_id: px.plan_id, restricciones: 'x' }); post({ action: 'publicar_plan', key: A, plan_id: px.plan_id });
+  post({ action: 'cerrar_plan', key: A, plan_id: px.plan_id, elegida: 0, hora_encuentro: fx }); return post({ action: 'retro', plan_id: px.plan_id, pid: yx.pid }).error === 'retro_antes_del_plan'; })(), null);
+ctx.UrlFetchApp.fetch = (u, o) => { ultimoPrompt = JSON.parse(o.payload).contents[0].parts[0].text; return { getResponseCode: () => 200, getContentText: () => JSON.stringify({ candidates: [{ content: { parts: [{ text: 'Hola, chicas' }] } }], usageMetadata: {} }) }; };
+const rd = post({ action: 'redactar_ia', key: A, plan_id: p4.plan_id, paso: '/recordatorio', tono: 'plan tranqui', datos: 'base', indicacion: 'es un grupo de chicas' });
+chk('2.4.0 «Ajustar con Gemini» usa la indicación del mago', rd.ok && /Indicación del equipo.*grupo de chicas/.test(ultimoPrompt), ultimoPrompt.slice(0, 200));
+ctx.UrlFetchApp.fetch = fetchViejo; delete PROPS.NOTIFICAR_A;
+
 const lim = post({ action: 'limpiar_registros', key: A, confirmar: 'EMPEZAR PILOTO' });
-chk('Empezar piloto real limpia (incluye sesiones y usabilidad)', lim.ok && SHEETS.sesiones.rows.length <= 2 && SHEETS.usabilidad.rows.length <= 2 && SHEETS.inventario.rows.length === 2, lim.borradas);
+chk('Empezar piloto real limpia (incluye sesiones y usabilidad)', lim.ok && SHEETS.sesiones.rows.length <= 2 && SHEETS.usabilidad.rows.length <= 2 && SHEETS.inventario.rows.length === 3 && SHEETS.decisiones.rows.length <= 2, lim.borradas);
 console.log(res.map(r => r.join(' · ')).join('\n'));
 console.log('\n' + res.filter(r => r[0] === 'OK ').length + ' de ' + res.length + ' OK');
 const vmL = get({ view: 'mago', key: A }), pnL = get({ view: 'panel', key: A });

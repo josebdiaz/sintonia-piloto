@@ -166,7 +166,7 @@
     if (antes) h += calendario(o, hora);
     h += '<div class="card soft"><h3>Después de la salida</h3>' + (yo.retro ? '<p class="small">¡Gracias por contarnos cómo les fue!</p>' :
       antes ? '<p class="small muted">Después del encuentro te pediremos unos 4 minutos para contarnos cómo les fue.</p>' :
-      '<p class="small">Si hubo sintonía, sigan. Cuéntanos cómo te fue en unos 4 minutos.</p><div class="actions"><a class="btn btn-primary btn-block" href="' + S.esc(S.link('retro.html', { plan_id: planId, pid: pid })) + '">Cuéntanos cómo te fue</a></div>') + '</div>';
+      '<p class="small">¿Cómo te fue? Cuéntanos en unos 4 minutos.</p><div class="actions"><a class="btn btn-primary btn-block" href="' + S.esc(S.link('retro.html', { plan_id: planId, pid: pid })) + '">Cuéntanos cómo te fue</a></div>') + '</div>';
     if (antes && hora.getTime() - now < 12 * 36e5) { clearTimeout(timer); timer = setTimeout(load, hora.getTime() - now + 5000); }   // una sola recarga al llegar la hora (sin sondear el backend)
     html(h + recorrido(r));
     S.$$('[data-ev]', app).forEach(function (b) {

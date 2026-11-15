@@ -5,6 +5,20 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-15 · El mago como usuario (frontend 2.4.0 · backend 2.4.0)
+Ajustes de la segunda prueba (14/11) y su grabación de pantalla. Plan: `claude/plan-ejecucion-ajustes-2026-11-15.md` (Proyecto).
+- **Lo que toca ahora** es la pantalla de trabajo: cada paso trae sus mensajes adentro, con «Copiar y marcar enviado», y botones directos (cerrar reclutamiento, crear plan, «Llegaron todos», «Todos en casa», pulso por persona).
+- **Lo escrito no se pierde** al cambiar de pestaña o al actualizarse la consola (V1). Día y hora del encuentro en dos campos; la hora en una lista de 15 en 15 min.
+- **Se registra la decisión de cada ronda**, no el voto de cada persona: votos por opción copiados de la encuesta, votaron X de Y, ronda (hoja nueva `decisiones`). «Pedir más opciones» durante la votación sin marcar el plan como caído ni gastar el plan 2 (V3). La hoja `votos` queda por compatibilidad.
+- **Encuestas y evento de WhatsApp listos para copiar** campo por campo, con la indicación de una o varias respuestas (V4, V7). El enlace largo de Google Calendar sale de `/confirmado`, que ahora son tres mensajes cortos.
+- **Gemini propone siempre 3 opciones** (cumple todo, punto medio, algo diferente), recibe la disponibilidad del grupo y el chat pegado; si trae menos, pide otra vez una vez. Cada opción lleva lugar, zona y enlace de Google Maps. Aviso si se pide sin contexto (V2).
+- **Pulso con enlace personal** por persona; el aviso al grupo ya no lleva un enlace genérico que solo abría en el celular del registro (V6). En modo prueba, llegadas y pulso sin esperar la hora del encuentro.
+- **Textos**: `/ingreso` más corto; `/opciones` dice el día; `/hoy`, `/todos`, `/dia` nuevos; `/horario` con horas de encuentro de la franja (V5); fuera «No usamos su ubicación», «Gracias por sintonizar hoy» y «Si hubo sintonía, sigan».
+- **Grupo**: nombre del grupo en el registro (`grupos.nombre`) y en la consola; mensaje de bienvenida con el enlace de inscripción; archivar grupos de prueba en la consola; aviso tras 10 min sin actividad para cerrar Mago off (V9); avisos de inscripción en la consola y, con `NOTIFICAR_A`, por correo.
+- **Mensajes** en orden cronológico por etapa con etiquetas para saltar; «Indicación para Gemini» aparte del texto base.
+- QA: backend 76 de 76; recorrido completo en el navegador 48 de 48 (guion de la grabación, modo prueba); QA visual sin desbordes.
+- **Pendiente:** replicar en n8n (W1, W3, W4, W5) para que E1.5 tenga el mismo estímulo; paquete de stickers en la cuenta.
+
 ### 2026-11-14 · Marca en las páginas de participantes (frontend 2.3.2)
 - Registro, unirse, plan, pulso y aviso usan el wordmark «sintonía» y un hero en noche con mostaza y vitral; el registro lleva el lema «Menos vueltas, más plan».
 - La versión se ve en el encabezado de la consola y del panel (no tienen pie de página).

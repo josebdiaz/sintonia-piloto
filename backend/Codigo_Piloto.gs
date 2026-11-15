@@ -1,7 +1,16 @@
 /**
- * Sintonía · Piloto v2.3.6 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.4.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.4.0 (15/11, segunda prueba del 14/11 y su grabación):
+ *   - Hoja nueva 'decisiones': el mago registra el resultado de cada ronda de votación (opción ganadora o «ninguna», votaron X de Y y votos por
+ *     opción copiados de la encuesta de WhatsApp), no el voto de cada persona. cerrar_plan acepta «decision»; reabrir_opciones devuelve un plan en
+ *     votación a borrador para pedir más opciones sin marcarlo como caído. La hoja 'votos' se conserva por compatibilidad (motor y web).
+ *   - Gemini propone siempre 3 opciones distintas (exacta, intermedia, diferente), con la disponibilidad del grupo; si devuelve menos, pide otra vez una sola vez.
+ *     Las paradas guardan dirección, macro zona y coordenadas para el enlace de Google Maps.
+ *   - Modo prueba sin reloj: el pulso y la usabilidad se pueden enviar antes de la hora del encuentro.
+ *   - redactar_ia acepta «indicacion» (lo que el mago le pide a Gemini, aparte del texto base).
+ *   - grupos.nombre: el organizador le pone nombre al grupo al inscribirse. NOTIFICAR_A (opcional): correo al equipo cuando se inscribe un grupo o aceptan todos.
  * Versión 2.3.6 (14/11): Gemini recibe como máximo 50 lugares, filtrados por zona, franja y presupuesto según lo pedido (antes, los 1000).
  * Versión 2.3.5 (14/11): solo cuenta como activo el lugar con estado «activo» (un estado vacío ya no entra a las propuestas), y probarMontaje
  *   acepta el inventario ampliado de 33 columnas en otro orden, porque el código lee por nombre y no escribe en esa hoja.
@@ -79,6 +88,7 @@
  *   COSTO_HORA_HUMANA_COP (valor de referencia para costear minutos del mago; opcional),
  *   AVISO_VERSION (p. ej. v1-2026-10),
  *   TOLERANCIA_MIN (minutos de gracia para contar una llegada "a tiempo"; por defecto 15)
+ *   NOTIFICAR_A (opcional, v2.4.0: correo del equipo para avisar inscripciones; sin datos personales)
  *
  * Zona horaria: en Configuración del proyecto, poner America/Bogota. La hora_encuentro se interpreta en esa zona.
  */
@@ -91,7 +101,7 @@ var MAX_GRUPO = 8;
 var SHEETS = {
   participantes:    ['ts','pid','grupo_id','rol','experimento','autoriza_datos','optin_whatsapp','mayor_18','consent_investigacion','aviso_version','estado','consent_metodo'],
   contactos:        ['ts','pid','nombre_pila','whatsapp'],
-  grupos:           ['ts','grupo_id','experimento','modo','organizador_pid','codigo_invitacion','tipo_grupo','tamano_grupo','n_invitados','estado','motivo','version'],
+  grupos:           ['ts','grupo_id','experimento','modo','organizador_pid','codigo_invitacion','tipo_grupo','tamano_grupo','n_invitados','estado','motivo','version','nombre'],
   linea_base_grupo: ['ts','grupo_id','tipo_grupo','tamano_grupo','planes_realizados_mes','planes_fallidos_mes','quien_organiza','fatiga_previa_org','disponibilidad','origen'],
   linea_base:       ['ts','pid','grupo_id','fatiga_previa'],
   preferencias:     ['ts','pid','grupo_id','resumen'],
@@ -109,12 +119,15 @@ var SHEETS = {
   usabilidad:       ['ts','plan_id','pid','grupo_id','rol','experimento','ronda','toma','dias_desde_encuentro','seq_activacion','seq_interaccion','seq_continuidad',
                      'sus_01','sus_02','sus_03','sus_04','sus_05','sus_06','sus_07','sus_08','sus_09','sus_10','sus_puntaje','sus_omitido'],
   // v2.3.0: mago in / mago off. Una fila por sesión; al cerrarla se suma a 'operacion' con causa 'sesion'
-  sesiones:         ['ts','sesion_id','experimento','grupo_id','plan_id','mago','inicio','fin','minutos','estado']
+  sesiones:         ['ts','sesion_id','experimento','grupo_id','plan_id','mago','inicio','fin','minutos','estado'],
+  // v2.4.0: una fila por ronda de votación (no por persona). resultado: índice de la opción ganadora, 'ninguna' o 'mas_opciones'
+  decisiones:       ['ts','plan_id','grupo_id','experimento','ronda_votacion','resultado','votaron','total','votos_opciones','cualquiera','ninguna','nota']
 };
 
 var TIPOS_GRUPO  = ['amigos','familia','pareja','trabajo','otro'];
 var TIPOS_EVENTO = ['activacion','recordatorio','me_apunto','no_puedo','salida_sugerida','checkpoint_llegada','llego_casa','cuenta','mensaje_mago','plan_caido','salir','cambio_canal',
-  'msg_ingreso','msg_opciones','msg_confirmado','msg_retro'];   // v2.3.2: mensajes del mago marcados como enviados (para el recorrido de la consola)
+  'msg_ingreso','msg_opciones','msg_confirmado','msg_retro',
+  'msg_evento','msg_hoy','msg_checkpoint','msg_todos','msg_en_casa'];   // v2.4.0: más mensajes del recorrido del mago   // v2.3.2: mensajes del mago marcados como enviados (para el recorrido de la consola)
 var EVENTOS_PARTICIPANTE = ['me_apunto', 'no_puedo', 'checkpoint_llegada', 'llego_casa', 'salir'];   // v2.2.5: lo único que un participante registra por sí mismo
 var ACTORES      = ['mago','soporte','tecnico','motor'];   // v2.3.0: motor = n8n
 var CAUSAS       = ['sesion','coordinacion','redactar_mensaje','resolver_duda','cambio_plan','recordatorio','falla_tecnica','seguridad','otro'];
@@ -181,6 +194,11 @@ function str_(v, max) { return String(v === undefined || v === null ? '' : v).sl
 function int_(v) { var n = parseInt(v, 10); return isNaN(n) ? '' : n; }
 function bool_(v) { return v === true || v === 'true' || v === 1 || v === '1'; }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+/** v2.4.0: correo al equipo (propiedad NOTIFICAR_A). Nunca lleva nombres ni números de participantes. */
+function avisarEquipo_(asunto, cuerpo) {
+  var to = prop_('NOTIFICAR_A', ''); if (!to || typeof MailApp === 'undefined') return;
+  try { MailApp.sendEmail(to, asunto, cuerpo); } catch (x) { Logger.log('aviso no enviado: ' + x); }
+}
 function isAdmin_(k) { var a = prop_('ADMIN_KEY', ''); return a !== '' && String(k || '') === a; }
 function isMotor_(k) { var m = prop_('MOTOR_KEY', ''); return m !== '' && String(k || '') === m; }   // v2.3.0
 var MOTOR_ACCIONES = ['evento', 'operacion', 'proponer_ia', 'publicar_plan', 'cerrar_plan', 'redactar_ia'];   // lo único que el motor puede hacer con MOTOR_KEY
@@ -213,7 +231,8 @@ function doPost(e) {
       registrar: registrar_, cerrar_reclutamiento: cerrarReclutamiento_, crear_plan: crearPlan_,
       proponer_ia: proponerIA_, publicar_plan: publicarPlan_, votar: votar_, cerrar_plan: cerrarPlan_, marcar_caido: marcarCaido_, corregir_plan: corregirPlan_, marcar_failover: marcarFailover_,
       evento: evento_, operacion: operacion_, registrar_cambio: registrarCambio_, redactar_ia: redactarIA_,
-      retro: retro_, wtp: wtp_, usabilidad: usabilidad_, revocar: revocar_, sesion_mago: sesionMago_, limpiar_registros: limpiarRegistros_
+      retro: retro_, wtp: wtp_, usabilidad: usabilidad_, revocar: revocar_, sesion_mago: sesionMago_, limpiar_registros: limpiarRegistros_,
+      reabrir_opciones: reabrirOpciones_   // v2.4.0
     };
     var a = String(d.action || '');
     if (!H[a]) return json_({ ok: false, error: 'accion_desconocida' });
@@ -239,7 +258,9 @@ function registrar_(d) {
     grupo = { grupo_id: gid, experimento: d.experimento === 'E2' ? 'E2' : 'E1', codigo_invitacion: inv };
     append_('grupos', { grupo_id: gid, experimento: grupo.experimento, modo: d.modo === 'prueba' ? 'prueba' : 'piloto',
       organizador_pid: pid, codigo_invitacion: inv, tipo_grupo: tipo, tamano_grupo: int_(d.tamano_grupo) === '' ? nInv : int_(d.tamano_grupo), n_invitados: nInv,
-      estado: 'reclutando', version: 'v1' });
+      estado: 'reclutando', version: 'v1', nombre: limpiar_(str_(d.nombre_grupo, 25)) });
+    avisarEquipo_('Sintonía · grupo nuevo inscrito (' + (grupo.experimento === 'E2' ? 'E1.5' : 'E1') + (d.modo === 'prueba' ? ' · prueba' : '') + ')',
+      'Se inscribió el grupo «' + (limpiar_(str_(d.nombre_grupo, 25)) || tipo) + '» (' + tipo + ', ' + nInv + ' personas). Abre la consola del mago: https://sintonia.my/piloto/mago.html');
     append_('linea_base_grupo', { grupo_id: gid, tipo_grupo: tipo, tamano_grupo: int_(d.tamano_grupo) === '' ? nInv : int_(d.tamano_grupo),
       planes_realizados_mes: int_(d.planes_realizados_mes), planes_fallidos_mes: int_(d.planes_fallidos_mes),
       quien_organiza: limpiar_(str_(d.quien_organiza, 40)), fatiga_previa_org: int_(d.fatiga_previa),
@@ -259,6 +280,10 @@ function registrar_(d) {
     aviso_version: prop_('AVISO_VERSION', 'v1'), estado: 'activo',
     consent_metodo: d.consent_metodo === 'boton_todo' ? 'boton_todo' : 'individual' });   // v2.2.1: queda registro de si usó "Marcar todo"
   append_('contactos', { pid: pid, nombre_pila: str_(d.nombre_pila, 40), whatsapp: str_(d.whatsapp, 20).replace(/[^\d+]/g, '') });
+  if (rol === 'miembro') {   // v2.4.0: aviso cuando aceptan todos
+    var gg = findOne_('grupos', 'grupo_id', grupo.grupo_id);
+    if (gg && activos_(gg.grupo_id).length >= Number(gg.n_invitados)) avisarEquipo_('Sintonía · ya aceptaron todos', 'Ya aceptaron todas las personas del grupo «' + (gg.nombre || gg.tipo_grupo) + '». Cierra el reclutamiento y crea el grupo de WhatsApp: https://sintonia.my/piloto/mago.html');
+  }
   if (int_(d.fatiga_previa) !== '') append_('linea_base', { pid: pid, grupo_id: grupo.grupo_id, fatiga_previa: int_(d.fatiga_previa) });
   if (d.preferencias) append_('preferencias', { pid: pid, grupo_id: grupo.grupo_id, resumen: limpiar_(str_(d.preferencias, 400)) });
   return { ok: true, pid: pid, rol: rol, grupo_id: grupo.grupo_id, experimento: grupo.experimento,
@@ -327,32 +352,42 @@ function proponerIA_(d) {
   var cand = preFiltro_(inv, String(d.restricciones || '') + ' ' + rows_('preferencias').filter(function (r) { return r.grupo_id === p.grupo_id; }).map(function (r) { return r.resumen; }).join(' '));   // v2.3.6
   var invTxt = cand.map(function (i) { return [i.id, i.categoria, i.nombre, i.zona, i.costo_aprox, i.horario, i.franja_horaria || '', i.duracion, i.apto_para].join(' | '); }).join('\n');
   var prefs = rows_('preferencias').filter(function (r) { return r.grupo_id === p.grupo_id; }).map(function (r) { return '- ' + r.resumen; }).join('\n') || '- (sin preferencias declaradas)';
+  var lb = findOne_('linea_base_grupo', 'grupo_id', p.grupo_id), dispo = lb && lb.disponibilidad ? String(lb.disponibilidad) : 'sin dato';   // v2.4.0
   var prompt =
     'Eres Sintonía, el "quinto amigo" que coordina planes de grupos que ya existen en Cali, Colombia. Tu única tarea es proponer planes.\n' +
-    'Arma entre 1 y 3 opciones USANDO SOLO lugares del INVENTARIO (por id). Prohibido inventar lugares, eventos, precios u horarios.\n' +
+    'Arma EXACTAMENTE 3 opciones USANDO SOLO lugares del INVENTARIO (por id). Prohibido inventar lugares, eventos, precios u horarios.\n' +
+    'Las 3 opciones deben ser distintas entre sí y no repetir lugares: (A) "exacta": la que cumple todo lo que pidió el grupo; ' +
+    '(B) "intermedia": cumple lo principal y cambia una cosa; (C) "diferente": saca al grupo de la rutina sin romper sus restricciones de presupuesto, zona ni horario.\n' +
     'Reglas: (1) que nadie del grupo quede incómodo (least misery): respeta presupuesto, energía y restricciones; ' +
-    '(2) 1 o 2 paradas, la mejor al final; (3) sugiere la hora de salida pensando en trancones de hora pico y lluvia en Cali; ' +
+    '(2) 1 o 2 paradas cercanas entre sí, la mejor al final; (3) sugiere la hora de salida pensando en trancones de hora pico y lluvia en Cali; ' +
     '(4) español de Colombia, tono cercano; sin datos personales; ' +
     '(5) "titulo": máximo 30 caracteres, sin emojis (va como opción de una encuesta de WhatsApp); ' +
-    '"por_que": una o dos frases, máximo 160 caracteres, sobre qué van a hacer y por qué le sirve a este grupo.\n\n' +
-    'Restricciones del plan: ' + str_(d.restricciones, 600) + '\n' +
+    '"por_que": una frase, máximo 120 caracteres, sobre qué van a hacer.\n\n' +
+    'Disponibilidad del grupo (días y franjas que marcó quien organiza): ' + str_(dispo, 200) + '\n' +
+    'Lo que dijeron para este plan (puede ser el chat pegado): ' + str_(d.restricciones, 1500) + '\n' +
     'Preferencias del grupo (resumidas):\n' + prefs + '\n\n' +
-    'INVENTARIO (id | categoría | nombre | zona | costo | horario | duración | apto para):\n' + invTxt + '\n\n' +
-    'Responde SOLO JSON: {"opciones":[{"titulo":"","paradas_ids":["INV-01"],"hora_salida":"","presupuesto_aprox":"","por_que":""}]}';
-  var r = gemini_(prompt, true, p.plan_id, p.grupo_id, 'propuesta');
-  if (!r.ok) return r;
-  var ops;
-  try { ops = JSON.parse(r.text).opciones || []; } catch (x) { return { ok: false, error: 'respuesta_no_json', raw: r.text }; }
+    'INVENTARIO (id | categoría | nombre | zona | costo | horario | franja | duración | apto para):\n' + invTxt + '\n\n' +
+    'Responde SOLO JSON: {"opciones":[{"tipo":"exacta|intermedia|diferente","titulo":"","paradas_ids":["INV-01"],"hora_salida":"","presupuesto_aprox":"","por_que":""}]}';
   var byId = {}; inv.forEach(function (i) { byId[i.id] = i; });
-  var descartadas = 0;
-  ops = ops.slice(0, 3).map(function (o) {
-    var ids = (o.paradas_ids || []).filter(function (x) { if (byId[x]) return true; descartadas++; return false; }).slice(0, 2);
-    return { titulo: str_(o.titulo, 60), hora_salida: str_(o.hora_salida, 40), presupuesto_aprox: str_(o.presupuesto_aprox, 40), por_que: str_(o.por_que, 200),
-      paradas: ids.map(function (x) { var i = byId[x]; return { id: i.id, nombre: i.nombre, zona: i.zona, costo_aprox: i.costo_aprox, horario: i.horario }; }) };
-  }).filter(function (o) { return o.paradas.length > 0; });
+  var descartadas = 0, r = null, ops = [], usos = { in: 0, out: 0, costo_usd: 0 };
+  for (var intento = 0; intento < 2 && ops.length < 3; intento++) {   // v2.4.0: si devuelve menos de 3, se pide una vez más
+    r = gemini_(intento ? prompt + '\nOJO: la respuesta anterior trajo menos de 3 opciones válidas. Devuelve 3, con ids del inventario.' : prompt, true, p.plan_id, p.grupo_id, 'propuesta');
+    if (!r.ok) return r;
+    usos.in += r.usage.in; usos.out += r.usage.out; usos.costo_usd += r.usage.costo_usd;
+    var crudo; try { crudo = JSON.parse(r.text).opciones || []; } catch (x) { if (intento) return { ok: false, error: 'respuesta_no_json', raw: r.text }; continue; }
+    var vistos = {};
+    ops = crudo.slice(0, 3).map(function (o) {
+      var ids = (o.paradas_ids || []).filter(function (x) { if (byId[x]) return true; descartadas++; return false; }).slice(0, 2);
+      return { tipo: ['exacta', 'intermedia', 'diferente'].indexOf(String(o.tipo)) >= 0 ? String(o.tipo) : '', titulo: str_(o.titulo, 60), hora_salida: str_(o.hora_salida, 40), presupuesto_aprox: str_(o.presupuesto_aprox, 40), por_que: str_(o.por_que, 200),
+        paradas: ids.map(function (x) { return parada_(byId[x]); }) };
+    }).filter(function (o) { var k = o.paradas.map(function (q) { return q.id; }).join('+'); if (!o.paradas.length || vistos[k]) return false; vistos[k] = 1; return true; });
+  }
   updateRow_('planes', p._row, { estado: 'en_revision', opciones_json: JSON.stringify(ops), t_propuesto: new Date() });
-  return { ok: true, opciones: ops, ids_descartados: descartadas, tokens: r.usage };
+  return { ok: true, opciones: ops, ids_descartados: descartadas, tokens: usos };
 }
+
+/** v2.4.0: lo que se guarda de cada parada (sirve para el mensaje, la ubicación del evento y el enlace de Google Maps). */
+function parada_(i) { return { id: i.id, nombre: i.nombre, zona: i.zona, macro_zona: i.macro_zona || '', direccion: i.direccion || '', latitud: i.latitud || '', longitud: i.longitud || '', costo_aprox: i.costo_aprox, horario: i.horario }; }
 
 /** Humano en el loop: el mago revisa o edita antes de publicar. */
 function publicarPlan_(d) {
@@ -387,8 +422,32 @@ function cerrarPlan_(d) {
   var patch = { estado: caido ? 'caido' : 'cerrado', elegida: int_(d.elegida), t_cerrado: new Date(),
     hora_encuentro: hora, causa_caida: caido ? causa : '', nota: str_(d.nota, 300) };
   if (!caido && d.hora_salida !== undefined) patch.opciones_json = conSalida_(p.opciones_json, int_(d.elegida), d.hora_salida);   // v2.2.5: la salida queda coherente con el encuentro
+  if (!caido && d.decision) decision_(p, d.decision, int_(d.elegida));   // v2.4.0
   updateRow_('planes', p._row, patch);
   return { ok: true };
+}
+
+/** v2.4.0 · Se registra la decisión de cada ronda, no el voto de cada persona (minimización y menos minutos del mago).
+ *  dec = { votaron, total, votos: [n por opción], cualquiera, ninguna, nota }. resultado: índice ganador, 'ninguna' o 'mas_opciones'. */
+function decision_(p, dec, resultado) {
+  dec = dec || {};
+  var previas = rows_('decisiones').filter(function (x) { return x.plan_id === p.plan_id; }).length;
+  var n = function (v) { var k = int_(v); return k === '' || k < 0 ? '' : Math.min(k, 99); };
+  append_('decisiones', { plan_id: p.plan_id, grupo_id: p.grupo_id, experimento: p.experimento, ronda_votacion: previas + 1, resultado: resultado,
+    votaron: n(dec.votaron), total: n(dec.total) === '' ? (Number(p.n_consentidos) || '') : n(dec.total),
+    votos_opciones: JSON.stringify((Array.isArray(dec.votos) ? dec.votos : []).slice(0, 3).map(n)), cualquiera: n(dec.cualquiera), ninguna: n(dec.ninguna), nota: str_(dec.nota, 200) });
+  return previas + 1;
+}
+
+/** v2.4.0 · «Pedir más opciones» durante la votación: queda la decisión de la ronda y el plan vuelve a borrador (no se marca como caído). */
+function reabrirOpciones_(d) {
+  if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
+  var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
+  if (p.estado !== 'votando' && p.estado !== 'en_revision') return { ok: false, error: 'plan_no_reabrible' };
+  var ronda = p.estado === 'votando' ? decision_(p, d.decision, d.resultado === 'ninguna' ? 'ninguna' : 'mas_opciones') : 0;
+  updateRow_('planes', p._row, { estado: 'borrador', opciones_json: '', nota: str_((p.nota ? p.nota + ' · ' : '') + 'más opciones' + (ronda ? ' (ronda ' + ronda + ')' : ''), 300) });
+  append_('eventos', { plan_id: p.plan_id, grupo_id: p.grupo_id, tipo: 'activacion', canal: p.experimento, nota: 'más opciones' });
+  return { ok: true, ronda_votacion: ronda };
 }
 
 function conSalida_(json, i, salida) {
@@ -488,6 +547,7 @@ function redactarIA_(d) {
   var prompt =
     'Eres Sintonía, el "quinto amigo" de un grupo en Cali. Redacta UN mensaje de WhatsApp (máx. 60 palabras) para el paso: ' + str_(d.paso, 40) + '.\n' +
     'Tono: ' + str_(d.tono || 'plan tranqui', 40) + '. Español de Colombia, cercano, sin culpa ni presión, máximo un emoji.\n' +
+    (d.indicacion ? 'Indicación del equipo (síguela si no contradice las reglas): ' + str_(d.indicacion, 200) + '\n' : '') +   // v2.4.0
     'Datos del plan: ' + str_(d.datos || (p ? p.opciones_json : ''), 900) + '\n' +
     'Usa solo los lugares y horarios de los datos; no inventes nada ni pidas datos personales. Responde solo con el texto.';
   var r = gemini_(prompt, false, p ? p.plan_id : '', p ? p.grupo_id : '', 'mensaje:' + str_(d.paso, 30));
@@ -502,7 +562,8 @@ function retro_(d) {
   if (rows_('retro').some(function (r) { return r.plan_id === p.plan_id && r.pid === d.pid; })) return { ok: false, error: 'retro_ya_enviada' };
   if (p.estado !== 'cerrado') return { ok: false, error: 'plan_no_cerrado' };
   var he = p.hora_encuentro ? new Date(p.hora_encuentro) : null;
-  if (he && !isNaN(he.getTime()) && new Date() < he) return { ok: false, error: 'retro_antes_del_plan' };   // v2.2.3: el pulso es sobre una salida que ya pasó   // una retro por persona y plan
+  var gp = findOne_('grupos', 'grupo_id', p.grupo_id) || {};   // v2.4.0: en modo prueba no hay reloj
+  if (gp.modo !== 'prueba' && he && !isNaN(he.getTime()) && new Date() < he) return { ok: false, error: 'retro_antes_del_plan' };   // v2.2.3: el pulso es sobre una salida que ya pasó   // una retro por persona y plan
   append_('retro', { plan_id: p.plan_id, pid: d.pid, rol: m.rol, fatiga_post: escala_(d.fatiga_post),
     carga_organizador: m.rol === 'organizador' ? escala_(d.carga_organizador) : '',
     satisfaccion_plan: escala_(d.satisfaccion_plan), valor_final: escala_(d.valor_final),
@@ -527,7 +588,8 @@ function usabilidad_(d) {
   if (!m || m.grupo_id !== p.grupo_id || m.estado !== 'activo') return { ok: false, error: 'no_miembro' };
   if (p.estado !== 'cerrado') return { ok: false, error: 'plan_no_cerrado' };
   var he = p.hora_encuentro ? new Date(p.hora_encuentro) : null;
-  if (he && !isNaN(he.getTime()) && new Date() < he) return { ok: false, error: 'retro_antes_del_plan' };
+  var gp = findOne_('grupos', 'grupo_id', p.grupo_id) || {};   // v2.4.0: en modo prueba no hay reloj
+  if (gp.modo !== 'prueba' && he && !isNaN(he.getTime()) && new Date() < he) return { ok: false, error: 'retro_antes_del_plan' };
   if (rows_('usabilidad').some(function (r) { return r.plan_id === p.plan_id && r.pid === d.pid; })) return { ok: false, error: 'usabilidad_ya_enviada' };
   var ronda = Number(p.ronda) || 1;
   var sa = seq_(d.seq_activacion), si = seq_(d.seq_interaccion), sc = ronda >= 2 ? seq_(d.seq_continuidad) : '';   // 'na' o vacío → ''
@@ -679,16 +741,19 @@ function vistaPlan_(q) {
 function vistaMago_() {
   var nombres = {}; rows_('contactos').forEach(function (c) { nombres[c.pid] = { nombre: c.nombre_pila, whatsapp: c.whatsapp }; });
   var part = rows_('participantes').filter(function (p) { return p.estado === 'activo'; });
+  var lbs = {}; rows_('linea_base_grupo').forEach(function (b) { lbs[b.grupo_id] = b; });
   var grupos = rows_('grupos').map(function (g) {
     return { grupo_id: g.grupo_id, experimento: g.experimento, modo: g.modo, estado: g.estado, motivo: g.motivo, version: g.version,
-      tipo_grupo: g.tipo_grupo, n_invitados: g.n_invitados, codigo_invitacion: g.codigo_invitacion,
+      tipo_grupo: g.tipo_grupo, n_invitados: g.n_invitados, codigo_invitacion: g.codigo_invitacion, nombre: g.nombre || '',
+      disponibilidad: (lbs[g.grupo_id] || {}).disponibilidad || '',   // v2.4.0
       miembros: part.filter(function (p) { return p.grupo_id === g.grupo_id; }).map(function (p) {
         return { pid: p.pid, rol: p.rol, nombre: (nombres[p.pid] || {}).nombre || '', whatsapp: (nombres[p.pid] || {}).whatsapp || '' }; }),
       preferencias: rows_('preferencias').filter(function (r) { return r.grupo_id === g.grupo_id; }).map(function (r) { return r.resumen; }) };
   });
-  var votos = rows_('votos'), evs = rows_('eventos'), oper = rows_('operacion'), rts = rows_('retro'), usb = rows_('usabilidad');
+  var votos = rows_('votos'), evs = rows_('eventos'), oper = rows_('operacion'), rts = rows_('retro'), usb = rows_('usabilidad'), decs = rows_('decisiones');
   var planes = rows_('planes').map(function (p) {
     var o = {}; SHEETS.planes.forEach(function (c) { o[c] = p[c]; });
+    o.decisiones = decs.filter(function (x) { return x.plan_id === p.plan_id; }).map(function (x) { return { ronda_votacion: x.ronda_votacion, resultado: x.resultado, votaron: x.votaron, total: x.total, votos_opciones: x.votos_opciones, cualquiera: x.cualquiera, ninguna: x.ninguna, ts: x.ts }; });   // v2.4.0
     // v2.2.6: quién ya respondió el pulso y la usabilidad (para enviar el complemento de W1 solo a quien falta)
     o.retro_pids = rts.filter(function (r) { return r.plan_id === p.plan_id; }).map(function (r) { return r.pid; });
     o.usabilidad_pids = usb.filter(function (r) { return r.plan_id === p.plan_id; }).map(function (r) { return r.pid; });
@@ -707,7 +772,7 @@ function vistaMago_() {
         if (e.tipo === 'checkpoint_llegada') { s.llego = true; s.apuntado = true; } if (e.tipo === 'llego_casa') s.casa = true; o.estado_por_pid[e.pid] = s; });
     return o;
   });
-  var copia = function (i) { var o = {}; SHEETS.inventario.forEach(function (c) { o[c] = i[c]; }); return o; };
+  var copia = function (i) { var o = {}; SHEETS.inventario.concat(['macro_zona', 'latitud', 'longitud', 'franja_horaria']).forEach(function (c) { if (i[c] !== undefined) o[c] = i[c]; }); return o; };   // v2.4.0: + coordenadas para Maps
   var inventario = inventarioActivo_().map(copia), pendiente = inventarioPendiente_().map(copia);
   // v2.3.2: una sesión abierta hace más de 4 h se cierra sola SIN sumar minutos (estado cerrada_auto); la consola pide registrar los reales a mano
   var ses = rows_('sesiones'), limite = Date.now() - 4 * 36e5;
@@ -737,7 +802,10 @@ function vistaPanel_() {
     var pl = planes.filter(function (p) { return p.experimento === x && validos[p.grupo_id] && !p.failover; });   // v2.2.2: sin planes con cambio de canal
     var ids = pl.map(function (p) { return p.plan_id; });
     var cerr = pl.filter(function (p) { return p.estado === 'cerrado'; });
-    var sinVeto = cerr.filter(function (p) { return !votos.some(function (v) { return v.plan_id === p.plan_id && bool_(v.veto); }); });
+    var decs = rows_('decisiones');
+    var sinVeto = cerr.filter(function (p) { return !votos.some(function (v) { return v.plan_id === p.plan_id && bool_(v.veto); }) &&
+      !decs.some(function (x) { return x.plan_id === p.plan_id && (x.resultado === 'ninguna' || Number(x.ninguna) > 0); }); });   // v2.4.0: también con decisiones por ronda
+    var rondas = cerr.map(function (p) { var k = decs.filter(function (x) { return x.plan_id === p.plan_id; }).length; return k || ''; });
     var horas = cerr.map(function (p) { return p.t_publicado && p.t_cerrado ? (new Date(p.t_cerrado) - new Date(p.t_publicado)) / 36e5 : ''; });
     var rOrg = retro.filter(function (q) { return ids.indexOf(q.plan_id) >= 0 && q.rol === 'organizador'; });
     var rTodos = retro.filter(function (q) { return ids.indexOf(q.plan_id) >= 0; });
@@ -773,6 +841,7 @@ function vistaPanel_() {
       llegaron_sobre_apuntados: sum(pl, 'n_apuntados') ? sum(pl, 'n_asistentes') / sum(pl, 'n_apuntados') : null,
       cierres_sin_veto: cerr.length ? sinVeto.length / cerr.length : null,
       horas_a_cierre_prom: mean(horas),
+      rondas_votacion_prom: mean(rondas), rondas_votacion_n: rondas.filter(function (x) { return x !== ''; }).length,   // v2.4.0
       repeticion_grupos_2_planes: Object.keys(cerradosPorGrupo).filter(function (k) { return cerradosPorGrupo[k] >= 2; }).length,
       organizador: { carga_prom: mean(rOrg.map(function (q) { return q.carga_organizador; })), fatiga_post_prom: mean(rOrg.map(function (q) { return q.fatiga_post; })), n: rOrg.length },
       todos: { valor_final_prom: mean(rTodos.map(function (q) { return q.valor_final; })), confort_bot_prom: mean(rTodos.map(function (q) { return q.confort_bot; })),
@@ -876,7 +945,9 @@ function probarMontaje() {
   r.push(prop_('MOTOR_KEY', '') ? (prop_('MOTOR_KEY', '') === prop_('ADMIN_KEY', '') ? '❌ MOTOR_KEY no puede ser igual a ADMIN_KEY' : '✅ MOTOR_KEY (motor n8n)') : '⚠️ sin MOTOR_KEY: el motor de E1.5 no puede escribir');   // v2.3.0
   try { var ss = ss_(); r.push('✅ Hoja: ' + ss.getName()); } catch (x) { r.push('❌ No abre la hoja (revisa SHEET_ID): ' + x); Logger.log(r.join('\n')); return; }
   Object.keys(SHEETS).forEach(function (n) { sheet_(n); }); r.push('✅ ' + Object.keys(SHEETS).length + ' hojas listas');
-  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.3.2)');
+  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.4.0)');
+  if (prop_('NOTIFICAR_A', '')) { try { r.push('✅ Avisos por correo a NOTIFICAR_A (cupo diario: ' + MailApp.getRemainingDailyQuota() + ')'); } catch (x) { r.push('❌ Avisos por correo: ' + x); } }
+  else r.push('ℹ️ sin NOTIFICAR_A: no se envían avisos de inscripción por correo (opcional)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');
   r.push('Zona horaria del proyecto: ' + Session.getScriptTimeZone() + (Session.getScriptTimeZone() === 'America/Bogota' ? ' ✅' : ' ⚠️ cambiar a America/Bogota'));
   if (prop_('GEMINI_API_KEY', '')) {
