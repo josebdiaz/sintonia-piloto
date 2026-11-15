@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.7.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.7.1',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
@@ -121,8 +121,10 @@
   function base() { return /^https?:$/.test(location.protocol) ? location.href : CONFIG.BASE_PUBLICA; }
   function link(page, params) { var u = new URL(page, base()); Object.keys(params || {}).forEach(function (k) { if (params[k] !== undefined && params[k] !== '') u.searchParams.set(k, params[k]); }); return u.toString(); }
   function phone(raw) { var d = String(raw || '').replace(/\D/g, ''); if (d.length === 10 && d.charAt(0) === '3') d = '57' + d; return d; }
-  function wa(num, text) { return 'https://wa.me/' + phone(num) + (text ? '?text=' + encodeURIComponent(text) : ''); }
-  function waShare(text) { return 'https://wa.me/?text=' + encodeURIComponent(text); }
+  /* 2.7.1 (prueba de Juan José): en el texto prellenado de wa.me algunos WhatsApp muestran los emojis como «?»; se quitan solo ahí (al copiar se conservan) */
+  function sinEmoji(t) { try { return String(t).replace(/(?:\p{Extended_Pictographic}|\p{Regional_Indicator})(?:\uFE0F|\u200D(?:\p{Extended_Pictographic})\uFE0F?|[\u{1F3FB}-\u{1F3FF}])*/gu, '').replace(/[ \t]+([.,!?)])/g, '$1').replace(/[ \t]{2,}/g, ' ').replace(/[ \t]+\n/g, '\n').trim(); } catch (x) { return t; } }
+  function wa(num, text) { return 'https://wa.me/' + phone(num) + (text ? '?text=' + encodeURIComponent(sinEmoji(text)) : ''); }
+  function waShare(text) { return 'https://wa.me/?text=' + encodeURIComponent(sinEmoji(text)); }
   function copy(text) {
     if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).then(function () { toast('Copiado ✓'); }, fallback);
     return Promise.resolve(fallback());

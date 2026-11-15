@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
- * Sintonía · Consola del mago y panel · capa de marca 2026-11 (frontend 2.7.0)
+ * Sintonía · Consola del mago y panel · capa de marca 2026-11 (frontend 2.7.1)
  * Reemplaza en estas pantallas la firma «radio» del DS 3.0 (selector de banda, interruptor de palanca, luz piloto con
  * resplandor, display LCD, tipografía mono) por el lenguaje de la marca actual: el de la portada y el pitch final.
  *   Papel y crema de fondo · noche para el texto y la barra · naranja para el foco, el progreso y lo que toca ahora ·
@@ -451,3 +451,9 @@ body.consola .toast { top: 88px !important; bottom: auto !important; left: 50% !
 #decision .field input, #decision .field select { max-width: 520px; }
 .c-cola { grid-template-columns: minmax(0, 1fr); } .c-cola-i, #siguiente, .s-next { min-width: 0; }
 body.consola .toast { width: max-content; }
+/* 2.7.1 · Prueba de Juan José: encuesta de cierre como mensaje y Gemini con indicación */
+.c-encuesta .poll-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 8px 0; border-top: 1px solid var(--m-papel-100); }
+.c-encuesta .poll-row:first-of-type { border-top: 0; }
+.c-ia-box { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: var(--m-papel-100); }
+.c-ia-box > label { display: block; margin: 0 0 6px; font: 700 13px/1.2 var(--m-txt); }
+.c-ia-box .c-chip { min-height: 34px; font-size: 13px; }

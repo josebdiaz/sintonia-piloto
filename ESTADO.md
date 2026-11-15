@@ -7,8 +7,8 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Componente | Versión | Estado |
 |---|---|---|
-| Frontend (consola, panel, páginas de participante) | **2.7.0** | Publicado en https://sintonia.my el 15/11 |
-| Backend (Apps Script) | **2.7.2** | **Desplegado el 15/11** (incluye 2.7.0 y 2.7.1). Correos de inscripción verificados |
+| Frontend (consola, panel, páginas de participante) | **2.7.1** | Publicado en https://sintonia.my el 15/11 (ajustes de la prueba de Juan José) |
+| Backend (Apps Script) | **2.7.2 en vivo** · 2.7.3 entregada | 2.7.2 desplegado el 15/11. **2.7.3** (Gemini sigue la indicación y usa español neutro) **por desplegar** |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Inventario verificado | Hoja del piloto | Revisión de ubicaciones con `probarMontaje()` (2.5.0): **resultado por reportar** |
 
@@ -93,6 +93,19 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 | 8 | Confirmar el plan de pago de n8n y la decisión C14 (Evolution o asistida) | E1.5 | Equipo |
 | 9 | D4 · viabilidad técnica del motor (sin respuesta de Moncada) | Cierre metodológico | Equipo |
 | 10 | Confirmar el calendario: el propuesto el 6/11 tenía el plan 1 del 11 al 15/11. `[Por confirmar]` si sigue vigente | Piloto | Equipo |
+
+## 4.1 Prueba de Juan José (15/11, consola 2.7.0)
+
+| Hallazgo | Estado |
+|---|---|
+| WhatsApp no deja crear un grupo vacío | Hecho en 2.7.1: se crea con quien organiza y el resto entra por enlace |
+| 👋 sale como «?» en el mensaje prellenado | Hecho en 2.7.1: `wa.me` va sin emojis |
+| Faltan los stickers de Sintonía en el chat | **Pendiente.** Se envían desde el teléfono del número Sintonía: requiere un paquete (3 a 30 stickers WebP de 512 × 512, menos de 100 KB, ícono de 96 × 96) instalado con una app de stickers. Por diseñar |
+| «Ajustar tono» lo vuelve caleño y no deja dar la instrucción | Hecho en 2.7.1 y 2.7.3 (backend por desplegar) |
+| «Llegó» y «En casa» no se ven hasta recargar | Hecho en 2.7.1 (se ven al instante). Causa exacta en la hoja: **por confirmar** si se repite |
+| «Pulso» no se entiende y su mensaje no está en Mensajes | Hecho en 2.7.1: «Encuesta de cierre», también en Mensajes · Cierre |
+| Desempeño (encuesta del mago) con los extremos al revés | Hecho en 2.7.1. La respuesta que Juan José ya guardó se hizo con la escala anterior: **confirmar con él** qué quiso marcar y, si hace falta, corregir `tlx_desempeno` y `tlx_raw` en la hoja `pulso_mago` |
+| El recorrido nuevo se entiende bien (el anterior era más detallado) | Se mantiene; la lista completa de pasos sigue en «Todos los pasos» |
 
 ## 5. Lo que aún no hay
 

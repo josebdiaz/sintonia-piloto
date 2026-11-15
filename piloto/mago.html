@@ -112,6 +112,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       if (!r || !r.ok) { if (r && r.error === 'no_autorizado') { S.forgetKey(); gate(true); } S.toast(S.errMsg(r), true); return; }
       if (r.inventario) { invCache = { a: r.inventario, p: r.inventario_pendiente }; invTs = Date.now(); } else if (invCache) { r.inventario = invCache.a; r.inventario_pendiente = invCache.p; }
       avisarNovedades(r);
+      reaplicarPendientes(r);
       D = r; ultimaCarga = new Date(); gate(false); renderAll();
     });
   }
@@ -285,7 +286,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   }
   function leerEncuentro(pref, el) { var f = S.$('#fecha' + pref, el), h = S.$('#hora' + pref, el); return f && h && f.value && h.value ? f.value + 'T' + h.value : ''; }
   function archivados() { try { return JSON.parse(S.LS.get('sintonia_archivados') || '[]'); } catch (x) { return []; } }
-  function invitaTxt(nom, link) { return 'Hola ' + nom + ' 👋 Soy Sintonía. Este es el grupo del plan de tu parche: ' + (link || '[enlace del grupo]') + '\nSi prefieres no seguir, responde SALIR.'; }
+  function invitaTxt(nom, link) { return 'Hola, ' + nom + '. Soy Sintonía. Este es el grupo del plan de tu parche: ' + (link || '[enlace del grupo]') + '\nSi prefieres no seguir, responde SALIR.'; }
   function encuesta(preg, ops) { return 'ENCUESTA · una sola respuesta\nPregunta: ' + preg + '\nOpciones:\n' + ops.join('\n'); }
   function nombre(gid, pid) { var g = grupo(gid); var m = g && g.miembros.filter(function (x) { return x.pid === pid; })[0]; return m ? m.nombre || pid : pid; }
   function badge(t) { return '<span class="badge ' + e(t) + '">' + e(cap(String(t).replace(/_/g, ' '))) + '</span>'; }   // 2.7.0 (F3): mayúscula inicial
@@ -299,7 +300,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   /** 2.0.4 (QA 5/10): "Abrir chat" deja escrito el primer mensaje según el estado del grupo y el rol de la persona. */
   function primerMensaje(g, m) {
     var org = organizador(g), n = g.miembros.length, inv = Number(g.n_invitados) || n, esOrg = m.rol === 'organizador';
-    var hola = 'Hola ' + (m.nombre || '') + ' 👋 Soy Sintonía, el quinto amigo que ayuda a que el plan sí se dé.';
+    var hola = 'Hola, ' + (m.nombre || '') + '. Soy Sintonía, el quinto amigo que ayuda a que el plan sí se dé.';
     if (g.estado === 'reclutando') return esOrg
       ? hola + ' Ya aceptaron ' + n + ' de ' + inv + ' personas de tu parche. Cuando estén todas, armo el grupo del plan por aquí. Si alguien no ha visto la invitación, este es el enlace: ' + S.link('unirse.html', { inv: g.codigo_invitacion })
       : hola + ' Ya quedaste en el parche de ' + (org ? org.nombre : 'tu grupo') + '. Cuando acepten todos, te escribimos para armar el plan.';
@@ -317,14 +318,14 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       prueba: 'Si coordinar dentro de un grupo de WhatsApp, con una persona detrás del número Sintonía, mueve más gente del «me apunto» a llegar.',
       grupo: 'Vota, confirma y avisa que llegó escribiendo en el grupo de WhatsApp del plan.',
       mago: 'Abre «Mago in» al empezar, crea el grupo de WhatsApp, envía cada mensaje y registra aquí votos, confirmaciones y llegadas. «Mago off» al terminar: los minutos se calculan solos.',
-      mide: 'SEQ por momento y SUS (pulso), llegaron / invitadas, minutos humanos por plan (mago in/off) y si repetirían con el grupo (Nivel 2).',
-      pasos: [['grupos', 'Mago in. Cuando acepten todos: cerrar reclutamiento, crear el grupo de WhatsApp y enviar el enlace a cada persona'], ['mensajes', 'Enviar /ingreso cuando entre la primera persona'], ['planes', 'Crear el plan 1, pedir opciones a Gemini y publicar'], ['mensajes', 'Enviar /opciones, un mensaje por opción y la encuesta'], ['planes', 'Registrar votos (encuesta) y cerrar con día y hora'], ['mensajes', 'Enviar /confirmado, la encuesta /asistencia, la salida y el checkpoint'], ['registro', 'Registrar quién se apuntó, quién llegó y quién está en casa'], ['planes', 'Enviar el pulso (si fue de noche, al día siguiente) y crear el plan 2. Mago off']] },
+      mide: 'SEQ por momento y SUS (encuesta de cierre), llegaron / invitadas, minutos humanos por plan (mago in/off) y si repetirían con el grupo (Nivel 2).',
+      pasos: [['grupos', 'Mago in. Cuando acepten todos: cerrar reclutamiento, crear el grupo de WhatsApp y enviar el enlace a cada persona'], ['mensajes', 'Enviar /ingreso en el grupo'], ['planes', 'Crear el plan 1, pedir opciones a Gemini y publicar'], ['mensajes', 'Enviar /opciones, un mensaje por opción y la encuesta'], ['planes', 'Registrar votos (encuesta) y cerrar con día y hora'], ['mensajes', 'Enviar /confirmado, la encuesta /asistencia, la salida y el checkpoint'], ['registro', 'Registrar quién se apuntó, quién llegó y quién está en casa'], ['planes', 'Enviar la encuesta de cierre (si fue de noche, al día siguiente) y crear el plan 2. Mago off']] },
     E2: { nombre: 'E1.5 · WhatsApp automatizado', corto: 'WhatsApp automatizado', clase: 'e2',
       prueba: 'Si el mismo recorrido en WhatsApp, operado por un sistema automatizado (n8n) con revisión humana, logra lo mismo con menos trabajo humano.',
       grupo: 'Lo mismo que en E1: vota, confirma y avisa que llegó en el grupo de WhatsApp del plan.',
       mago: 'El motor envía los mensajes y registra votos y llegadas. La persona del equipo abre «Mago in» mientras revisa lo que manda el motor, y registra a mano aquí solo si el motor falla.',
       mide: 'Lo mismo que E1. La diferencia que importa: minutos humanos por plan frente a E1.',
-      pasos: [['grupos', 'Mago in. Cuando acepten todos: cerrar reclutamiento y crear el grupo de WhatsApp'], ['planes', 'Crear el plan 1 (el motor pide las opciones y las publica)'], ['planes', 'Revisar que los votos lleguen; si el motor falla, registrarlos a mano'], ['planes', 'Revisar el cierre con día y hora'], ['registro', 'Revisar quién se apuntó y quién llegó'], ['planes', 'Revisar el pulso y crear el plan 2 en el mismo grupo. Mago off']] }
+      pasos: [['grupos', 'Mago in. Cuando acepten todos: cerrar reclutamiento y crear el grupo de WhatsApp'], ['planes', 'Crear el plan 1 (el motor pide las opciones y las publica)'], ['planes', 'Revisar que los votos lleguen; si el motor falla, registrarlos a mano'], ['planes', 'Revisar el cierre con día y hora'], ['registro', 'Revisar quién se apuntó y quién llegó'], ['planes', 'Revisar la encuesta de cierre y crear el plan 2 en el mismo grupo. Mago off']] }
   };
   var vexp = S.LS.get('sintonia_mago_exp') === 'E2' ? 'E2' : 'E1';
   function expChip(k) { return '<span class="xp ' + EXP[k].clase + '">' + e(EXP[k].nombre) + '</span>'; }
@@ -401,9 +402,9 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
         : { t: 'Cerrar reclutamiento y crear el grupo', run: 'cerrar', ayuda: 'Ya aceptaron todos (' + n + ' de ' + inv + '). Ciérralo para activar el grupo y crear el grupo de WhatsApp.' });
     var p1 = ps.filter(function (x) { return Number(x.ronda) === 1; }).pop();
     var ingOk = ingresoHecho(g.grupo_id) || ps.some(function (x) { return env(x, 'msg_ingreso'); }) || !!(p1 && ['borrador', 'en_revision'].indexOf(p1.estado) < 0);
-    add('Grupo', 'Crear el grupo de WhatsApp y enviar el enlace a cada persona', ingOk || !!p1 || !!linkGrupo(g.grupo_id),   // 2.4.0: pegar el enlace del grupo cuenta como grupo creado
-      { t: 'Ir a crear el grupo', tab: 'grupos', q: '#crearGrupoWA', ayuda: 'Créalo desde el número Sintonía' + (g.nombre ? ' con el nombre «' + g.nombre + '»' : '') + ' (solo administradores agregan miembros; sin mensajes temporales). Pega el enlace del grupo y usa «Invitar a…» con cada persona.' });
-    if (!e15) add('Grupo', 'Enviar /ingreso cuando entre la primera persona', ingOk, { tpls: ['/ingreso'], ayuda: 'La bienvenida al grupo. Cópiala en el grupo y queda marcada como enviada.' });
+    add('Grupo', 'Crear el grupo de WhatsApp con quien organiza y enviar el enlace a los demás', ingOk || !!p1 || !!linkGrupo(g.grupo_id),   // 2.4.0: pegar el enlace del grupo cuenta como grupo creado
+      { t: 'Ir a crear el grupo', tab: 'grupos', q: '#crearGrupoWA', ayuda: 'WhatsApp no deja crear un grupo vacío: créalo desde el número Sintonía' + (g.nombre ? ' con el nombre «' + g.nombre + '»' : '') + ' agregando a quien organiza (solo administradores agregan miembros; sin mensajes temporales). Pega el enlace del grupo y usa «Invitar a…» con los demás.' });
+    if (!e15) add('Grupo', 'Enviar /ingreso en el grupo', ingOk, { tpls: ['/ingreso'], ayuda: 'La bienvenida al grupo. Cópiala en el grupo y queda marcada como enviada.' });
     add('Grupo', 'Crear el plan 1', !!p1, { t: 'Crear el plan 1', run: 'crearPlan', ayuda: e15 ? 'El motor envía /ingreso y propone las opciones.' : 'Con el grupo armado y /ingreso enviado.' });
     [1, 2].forEach(function (r) {
       var p = ps.filter(function (x) { return Number(x.ronda) === r; }).pop(), caido = p && p.estado === 'caido', cerr = p && (p.estado === 'cerrado' || caido);
@@ -419,8 +420,8 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       L.res[r + '|proponer'] = !p ? 'Sin crear' : p.estado === 'borrador' ? 'Sin opciones' : p.estado === 'en_revision' ? 'Opciones en revisión' : (opsR.length || 3) + ' opciones' + (rondas > 1 ? ' · ronda ' + rondas : '');
       L.res[r + '|decidir'] = !p ? '' : caido ? 'Plan caído' : p.estado === 'votando' ? 'Votando' : cerr ? (gan ? 'Ganó: ' + gan : 'Decidido') : '';
       L.res[r + '|dia'] = he ? diaCorto(he) + (paso ? ' · llegaron ' + llegaron + '/' + van : '') : '';
-      L.res[r + '|cierre'] = p && cerr && !caido ? 'Pulso ' + (n - faltanP) + ' de ' + n : '';
-      if (r === 2) add(G, 'Crear el plan 2 en el mismo grupo', !!p, { t: 'Crear el plan 2', run: 'siguienteRonda', ayuda: 'Con el plan 1 cerrado y el pulso enviado, en el mismo grupo de WhatsApp.' });
+      L.res[r + '|cierre'] = p && cerr && !caido ? 'Encuesta ' + (n - faltanP) + ' de ' + n : '';
+      if (r === 2) add(G, 'Crear el plan 2 en el mismo grupo', !!p, { t: 'Crear el plan 2', run: 'siguienteRonda', ayuda: 'Con el plan 1 cerrado y la encuesta de cierre enviada, en el mismo grupo de WhatsApp.' });
       add(G, (e15 ? 'El motor propone y publica las opciones' : 'Pedir opciones a Gemini, revisar y publicar') + (rondas && p && (p.estado === 'borrador' || p.estado === 'en_revision') ? ' (ronda ' + (rondas + 1) + ')' : ''), p && p.estado !== 'borrador' && p.estado !== 'en_revision',
         { t: 'Ir a las opciones', tab: 'planes', q: '#restr', ayuda: 'Pega lo que dijeron en el grupo y pide 3 opciones. Revísalas antes de publicar.' });
       if (!e15) add(G, 'Enviar las opciones y la encuesta', cerr || env(p, 'msg_opciones'), { tpls: ['/opciones', '/opcion_1', '/opcion_2', '/opcion_3', '/encuesta'], ayuda: 'Un mensaje por opción y, al final, la encuesta (pregunta y opciones se copian una por una).' });
@@ -436,7 +437,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       et = 'cierre';
       add(G, '«Ya en casa» (' + casa + ' de ' + llegaron + ')', paso && ((llegaron > 0 && casa >= llegaron) || env(p, 'msg_en_casa') || ahora > he + 8 * 36e5),
         { run2: 'casa', tpls: e15 ? [] : ['/en_casa'], ayuda: noche ? 'Plan de noche: pregúntalo mañana a las 10:00.' : 'Al terminar el plan. Registra quién respondió «Ya en casa».' });
-      add(G, 'Pulso con SEQ y SUS' + (p && cerr ? ' (faltan ' + faltanP + ')' : ''), p && cerr && faltanP === 0,
+      add(G, 'Enviar la encuesta de cierre (SEQ y SUS)' + (p && cerr ? ' (faltan ' + faltanP + ')' : ''), p && cerr && faltanP === 0,
         { pulso: true, tpls: e15 ? [] : ['/retro'], ayuda: e15 ? 'Lo envía el motor; usa los enlaces solo si falla.' : (noche ? 'Plan de noche: mañana a las 10:00. ' : '') + 'Envía a cada persona su enlace con su botón y, si quieres, el aviso al grupo.' });
     });
     return L;
@@ -460,7 +461,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       if (!env('msg_checkpoint')) out.push({ etapa: 'dia', txt: 'Checkpoint de llegada', t: he });
       var fin = noche ? new Date(new Date(he).setHours(24 + 10, 0, 0, 0)).getTime() : he + 3 * 36e5;
       if (!env('msg_en_casa')) out.push({ etapa: 'cierre', txt: '«¿Ya en casa?»', t: fin });
-      if (!env('msg_retro')) out.push({ etapa: 'cierre', txt: 'Pulso', t: fin });
+      if (!env('msg_retro')) out.push({ etapa: 'cierre', txt: 'Encuesta de cierre', t: fin });
     }
     return out.map(function (x) { x.vencido = ahora >= x.t; return x; }).sort(function (a, b) { return a.t - b.t; });
   }
@@ -472,18 +473,34 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var r = relojesDe(g).slice(0, 3); if (!r.length) return '';
     return '<ul class="c-relojes" aria-label="Lo que tiene hora">' + r.map(function (x) { return '<li data-vencido="' + (x.vencido ? 1 : 0) + '">' + (x.vencido ? 'Toca ya: ' : '') + e(x.txt) + ' · <b>' + (x.vencido ? enCuanto(x.t) : enCuanto(x.t) + ' (' + horaTxt(new Date(x.t)) + ')') + '</b></li>'; }).join('') + '</ul>';
   }
-  function pulsoBotones(g) {
-    var p = plan(sel.plan); if (!p || p.estado !== 'cerrado') return '';
-    return '<div class="actions" style="flex-wrap:wrap;margin-top:8px">' + g.miembros.map(function (m) {
-      var ya = (p.retro_pids || []).indexOf(m.pid) >= 0;
-      return '<a class="btn btn-sm ' + (ya ? 'btn-ghost' : 'btn-primary') + '" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp, txtPulso(m.nombre, linkRetro(m.pid, p.plan_id)))) + '">' + (ya ? '✓ ' : '') + 'Pulso a ' + e(m.nombre) + '</a>';
-    }).join('') + '</div>';
+  function pulsoBotones(g) { var p = plan(sel.plan); return p && p.estado === 'cerrado' ? encuestaCierreHtml(g, p) : ''; }
+  /** 2.7.1 (prueba de Juan José): la encuesta de cierre es un mensaje más, con su texto para copiar o abrir en el chat de cada persona; vive en «Lo que toca ahora» y en Mensajes · Cierre */
+  function encuestaCierreHtml(g, p) {
+    if (!g || !p || p.estado !== 'cerrado') return '';
+    var faltan = g.miembros.filter(function (m) { return (p.retro_pids || []).indexOf(m.pid) < 0; }).length;
+    return '<div class="tpl c-encuesta"><div class="tpl-head"><b>Encuesta de cierre</b> <span class="small muted">por privado, a cada persona · unos 4 minutos · faltan ' + faltan + ' de ' + g.miembros.length + '</span></div>' +
+      g.miembros.map(function (m) {
+        var ya = (p.retro_pids || []).indexOf(m.pid) >= 0, t = txtPulso(m.nombre, linkRetro(m.pid, p.plan_id));
+        return '<div class="poll-row"><span><b>' + e(m.nombre) + '</b> <span class="tiny ' + (ya ? '' : 'muted') + '">' + (ya ? '✓ respondió' : 'pendiente') + '</span></span><span class="actions" style="margin:0">' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-cp="' + e(t) + '">Copiar mensaje</button><a class="btn btn-sm ' + (ya ? 'btn-ghost' : 'btn-primary') + '" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp, t)) + '">' + (ya ? 'Abrir chat' : 'Enviar a ' + e(m.nombre)) + '</a></span></div>';
+      }).join('') + '</div>';
+  }
+  /** 2.7.1 (prueba de Juan José): «Llegó» y «En casa» se ven al instante; si la hoja tarda en reflejarlos, la consola los sostiene 3 min */
+  var pendientes = {};
+  function aplicarEstado(p, pid, tipo) {
+    if (!p) return; p.estado_por_pid = p.estado_por_pid || {}; var st = p.estado_por_pid[pid] = p.estado_por_pid[pid] || {};
+    if (tipo === 'me_apunto') st.apuntado = true; if (tipo === 'no_puedo') st.apuntado = false;
+    if (tipo === 'checkpoint_llegada') { st.llego = true; st.apuntado = true; } if (tipo === 'llego_casa') { st.casa = true; st.llego = true; st.apuntado = true; }
+  }
+  function marcarLocal(planId, pid, tipo) { pendientes[planId + '|' + pid + '|' + tipo] = Date.now(); aplicarEstado(plan(planId), pid, tipo); }
+  function reaplicarPendientes(r) {
+    Object.keys(pendientes).forEach(function (k) { if (Date.now() - pendientes[k] > 18e4) { delete pendientes[k]; return; } var x = k.split('|'); aplicarEstado((r.planes || []).filter(function (p) { return p.plan_id === x[0]; })[0], x[1], x[2]); });
   }
   function registrarTodos(btn, tipo, pids) {
     if (!pids.length) return S.toast('No hay a quién registrar.', true);
-    var g = grupo(sel.grupo);
+    var g = grupo(sel.grupo), pl0 = sel.plan;
     S.busy(btn, function () { return pids.reduce(function (pr, pid) { return pr.then(function (r) { if (r && !r.ok) return r; return S.post({ action: 'evento', key: key, plan_id: sel.plan, grupo_id: sel.grupo, pid: pid, tipo: tipo, canal: (g || {}).experimento || vexp }); }); }, Promise.resolve({ ok: true })); })
-      .then(function (r) { if (!r || !r.ok) return S.toast(S.errMsg(r), true); S.toast(pids.length + (pids.length === 1 ? ' persona registrada' : ' personas registradas')); load(); });
+      .then(function (r) { if (!r || !r.ok) { S.toast(S.errMsg(r), true); return load(); } pids.forEach(function (pid) { marcarLocal(pl0, pid, tipo); }); renderAll(); S.toast(pids.length + (pids.length === 1 ? ' persona registrada' : ' personas registradas')); load(); });
   }
   function renderSiguiente() {
     var el = S.$('#siguiente'), g = grupo(sel.grupo);
@@ -493,7 +510,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     medida.etapa = cur ? cur.etapa : ''; medida.plan = cur ? cur.plan_id || '' : ''; medida.grupo = g.grupo_id;   // 2.7.0 (F5)
     var h = '<div class="s-next"><p class="s-eyebrow" style="margin:0">Lo que toca ahora · ' + e(grupoNom(g)) + '</p>';
     if (g.estado === 'excluido') h += '<h2 class="c-paso" style="margin:0">Este grupo quedó desestimado</h2><p style="margin:0">' + e(g.motivo || 'Retiro o consentimiento incompleto') + '. No hay nada más que hacer con él.</p>';
-    else if (!cur) h += '<h2 class="c-paso" style="margin:0">Grupo completo: 2 planes y sus pulsos</h2><p style="margin:0">Si ya no vas a operar otro grupo, cierra tu sesión con «Mago off».</p>';
+    else if (!cur) h += '<h2 class="c-paso" style="margin:0">Grupo completo: 2 planes y sus encuestas de cierre</h2><p style="margin:0">Si ya no vas a operar otro grupo, cierra tu sesión con «Mago off».</p>';
     else {
       h += '<h2 class="c-paso" style="margin:0">' + e(cur.txt) + '</h2><p class="c-de">' + e(cur.grupo) + '</p>';   // 2.7.0 (F3): título corto; el plan va aparte
       var bt = '';
@@ -509,7 +526,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     }
     var pUlt = planesDe(g.grupo_id).slice(-1)[0];
     if (pUlt && (a.pulso || !cur) && (pUlt.estado === 'cerrado' || pUlt.estado === 'caido') && !pulsoMagoHecho(pUlt.plan_id) && g.estado !== 'excluido')
-      h += '<p class="c-sin-sesion"><span>Al terminar, responde <b>tu pulso como mago</b> de ' + e(rondaLabel(pUlt)) + ' (2 minutos).</span> <button type="button" class="btn btn-ghost btn-sm" id="irPulsoMago" data-plan="' + e(pUlt.plan_id) + '">Responder</button></p>';   // 2.7.0 (F5)
+      h += '<p class="c-sin-sesion"><span>Al terminar, responde <b>tu encuesta como mago</b> de ' + e(rondaLabel(pUlt)) + ' (2 minutos).</span> <button type="button" class="btn btn-ghost btn-sm" id="irPulsoMago" data-plan="' + e(pUlt.plan_id) + '">Responder</button></p>';   // 2.7.0 (F5)
     h += '</div>';
     if (cur) h = h.replace(/<\/div>$/, '') + '<p class="c-atajos">Atajos: <kbd>C</kbd> copiar y marcar el siguiente mensaje · <kbd>N</kbd> ir a la acción · <kbd>M</kbd> mapa · <kbd>?</kbd> todos</p></div>';
     var vivo = S.$('#vivo'), anuncio = cur ? 'Lo que toca ahora: ' + cur.grupo + ', ' + cur.txt : ''; if (vivo && vivo.dataset.ultimo !== anuncio) { vivo.textContent = anuncio; vivo.dataset.ultimo = anuncio; }   // 2.5.0: se anuncia el cambio de paso
@@ -560,24 +577,24 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     'Creo que necesitaría ayuda de alguien técnico para usarla.', 'Las funciones de la consola están bien integradas.', 'Hay demasiadas inconsistencias en la consola.',
     'La mayoría de las personas aprenderían a usarla muy rápido.', 'La consola me pareció muy engorrosa de usar.', 'Me sentí con confianza usando la consola.', 'Tuve que aprender muchas cosas antes de poder usarla.'];
   var TLX = [['mental', 'Exigencia mental', '¿Cuánto tuviste que pensar, decidir y recordar?', 'Muy baja', 'Muy alta'], ['fisica', 'Exigencia física', '¿Cuánta actividad física requirió (clics, escribir, moverte)?', 'Muy baja', 'Muy alta'],
-    ['temporal', 'Presión de tiempo', '¿Qué tanto te apuró el ritmo del grupo o los relojes?', 'Muy baja', 'Muy alta'], ['desempeno', 'Desempeño', '¿Qué tan bien crees que lo hiciste?', 'Perfecto', 'Fracaso'],
+    ['temporal', 'Presión de tiempo', '¿Qué tanto te apuró el ritmo del grupo o los relojes?', 'Muy baja', 'Muy alta'], ['desempeno', 'Desempeño', '¿Qué tan bien crees que lo hiciste?', 'Fracaso', 'Perfecto', true],
     ['esfuerzo', 'Esfuerzo', '¿Cuánto te tuviste que esforzar para lograrlo?', 'Muy bajo', 'Muy alto'], ['frustracion', 'Frustración', '¿Qué tan inseguro, irritado o estresado te sentiste?', 'Muy baja', 'Muy alta']];
   function pulsoMagoHecho(pid) { return !!S.LS.get('sintonia_pulso_mago_' + pid); }
   function pulsoMagoHtml(p) {
     if (!p || p.estado !== 'cerrado' && p.estado !== 'caido') return '';
-    if (pulsoMagoHecho(p.plan_id)) return '<div class="card soft small" id="pulsoMago">Tu pulso como mago de ' + e(rondaLabel(p)) + ' ya quedó registrado. Gracias.</div>';
-    return '<details class="card" id="pulsoMago"><summary><b>Tu pulso como mago</b> · ' + e(rondaLabel(p)) + ' · 2 minutos</summary>' +
+    if (pulsoMagoHecho(p.plan_id)) return '<div class="card soft small" id="pulsoMago">Tu encuesta como mago de ' + e(rondaLabel(p)) + ' ya quedó registrado. Gracias.</div>';
+    return '<details class="card" id="pulsoMago"><summary><b>Tu encuesta como mago</b> · ' + e(rondaLabel(p)) + ' · 2 minutos</summary>' +
       '<p class="small muted">Sirve para separar «la consola es lenta» de «la tarea es difícil». Responde pensando solo en este plan.</p>' +
       '<fieldset class="c-sus"><legend>Qué tan de acuerdo estás (1 = nada, 5 = totalmente)</legend>' + SUS_MAGO.map(function (t, i) {
         var n = 'pm_sus_' + (i + 1); return '<div class="c-sus-i"><span id="' + n + '_l">' + (i + 1) + '. ' + e(t) + '</span><span class="c-seg-btn" role="radiogroup" aria-labelledby="' + n + '_l">' +
           [1, 2, 3, 4, 5].map(function (v) { return '<label><input type="radio" name="' + n + '" value="' + v + '" data-keep="' + n + '|' + v + '"><span>' + v + '</span></label>'; }).join('') + '</span></div>';
       }).join('') + '</fieldset>' +
       '<fieldset class="c-tlx"><legend>Carga de trabajo (0 a 100)</legend>' + TLX.map(function (t) {
-        return '<div class="c-tlx-i"><label for="pm_tlx_' + t[0] + '"><b>' + e(t[1]) + '</b> <span class="muted">' + e(t[2]) + '</span></label><input type="range" id="pm_tlx_' + t[0] + '" min="0" max="100" step="5" value="50" data-keep="pm_tlx_' + t[0] + '" data-tocado="">' +
+        return '<div class="c-tlx-i"><label for="pm_tlx_' + t[0] + '"><b>' + e(t[1]) + '</b> <span class="muted">' + e(t[2]) + '</span></label><input type="range" id="pm_tlx_' + t[0] + '" min="0" max="100" step="5" value="50" data-keep="pm_tlx_' + t[0] + '" data-tocado=""' + (t[5] ? ' data-inv="1"' : '') + '>' +
           '<span class="c-tlx-ext"><span>' + e(t[3]) + '</span><output for="pm_tlx_' + t[0] + '">—</output><span>' + e(t[4]) + '</span></span></div>';
       }).join('') + '</fieldset>' +
       '<div class="field"><label for="pm_com">Lo que más te costó (opcional)</label><input id="pm_com" data-keep="pm_com" type="text" maxlength="300"></div>' +
-      '<div class="actions"><button type="button" class="btn btn-primary btn-sm" id="pmEnviar" data-busy="Guardando…">Guardar mi pulso</button></div></details>';
+      '<div class="actions"><button type="button" class="btn btn-primary btn-sm" id="pmEnviar" data-busy="Guardando…">Guardar mi encuesta</button></div></details>';
   }
   function bindPulsoMago(el, p) {
     var box = S.$('#pulsoMago', el); if (!box || !S.$('#pmEnviar', box)) return;
@@ -585,11 +602,11 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     S.$('#pmEnviar', box).onclick = function () {
       var b = this, d = { action: 'pulso_mago', key: key, plan_id: p.plan_id, mago: S.LS.get('sintonia_mago_nombre') || '', consola_version: S.CONFIG.FRONTEND_VERSION, comentario: S.$('#pm_com', box).value.trim() }, falta = 0;
       for (var i = 1; i <= 10; i++) { var c = S.$('input[name="pm_sus_' + i + '"]:checked', box); if (!c) falta++; else d['sus_' + (i < 10 ? '0' + i : i)] = Number(c.value); }
-      TLX.forEach(function (t) { var r = S.$('#pm_tlx_' + t[0], box); if (!r.dataset.tocado) falta++; d['tlx_' + t[0]] = Number(r.value); });
+      TLX.forEach(function (t) { var r = S.$('#pm_tlx_' + t[0], box); if (!r.dataset.tocado) falta++; d['tlx_' + t[0]] = r.dataset.inv ? 100 - Number(r.value) : Number(r.value); });   // 2.7.1: Desempeño se muestra de Fracaso a Perfecto; se guarda como en NASA-TLX (0 = perfecto)
       if (falta) return S.toast('Faltan ' + falta + ' respuesta(s). Mueve cada escala aunque la dejes en 50.', true);
       S.busy(b, function () { return enviarMedicion().then(function () { return S.post(d); }); }).then(function (r) {
-        if (!r || !r.ok) return S.toast(r && r.error === 'accion_desconocida' ? 'El backend en vivo no tiene el pulso del mago: despliega la 2.7.0.' : S.errMsg(r), true);
-        S.LS.set('sintonia_pulso_mago_' + p.plan_id, new Date().toISOString()); olvidarForm('pm_'); S.toast('Pulso guardado · SUS ' + r.sus_puntaje + ' · carga ' + r.tlx_raw); renderRegistro();
+        if (!r || !r.ok) return S.toast(r && r.error === 'accion_desconocida' ? 'El backend en vivo no tiene la encuesta del mago: despliega la 2.7.0 o posterior.' : S.errMsg(r), true);
+        S.LS.set('sintonia_pulso_mago_' + p.plan_id, new Date().toISOString()); olvidarForm('pm_'); S.toast('Encuesta guardada · SUS ' + r.sus_puntaje + ' · carga ' + r.tlx_raw); renderRegistro();
       });
     };
   }
@@ -769,9 +786,9 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
         (g.preferencias && g.preferencias.length ? '<details style="margin-top:10px"><summary class="small">Preferencias (' + g.preferencias.length + ')</summary><ul class="small">' + g.preferencias.map(function (p) { return '<li>' + e(p) + '</li>'; }).join('') + '</ul></details>' : '') +
         '<div style="margin-top:8px">' + (mm || '<p class="small muted">Sin miembros activos.</p>') + '</div>' +
         (g.estado === 'activo' && n ? '<div class="card soft small" id="crearGrupoWA" style="margin:10px 0 0"><b>Crear el grupo del plan en WhatsApp.</b> Meta no deja crearlo automáticamente desde una cuenta sin verificar. Hazlo a mano desde el número Sintonía:' +
-          '<ol style="margin:6px 0 0;padding-left:18px"><li>Crea el grupo' + (g.nombre ? ' con el nombre <b>«' + e(g.nombre) + '»</b>' : '') + '. En Ajustes del grupo: solo administradores agregan miembros; mensajes temporales apagados.</li><li>Copia el enlace de invitación del grupo y pégalo aquí.</li><li>Envíaselo a cada persona con su botón. Cuando entre la primera, envía <b>/ingreso</b> (pestaña 3).</li></ol>' +
+          (function () { var og = organizador(g); return '<ol style="margin:6px 0 0;padding-left:18px"><li>Crea el grupo' + (g.nombre ? ' con el nombre <b>«' + e(g.nombre) + '»</b>' : '') + ' y agrega a <b>' + e(og ? og.nombre : 'quien organiza') + '</b>' + (og ? ' (quien organiza)' : '') + ': WhatsApp no deja crear un grupo sin al menos una persona. ' + (og ? '<button type="button" class="btn btn-ghost btn-sm" data-copy="+' + e(S.phone(og.whatsapp)) + '">Copiar su número</button>' : '') + ' En Ajustes del grupo: solo administradores agregan miembros; mensajes temporales apagados.</li><li>Copia el enlace de invitación del grupo y pégalo aquí.</li><li>Envíaselo a los demás con su botón' + (og ? ' (' + e(og.nombre) + ' ya está en el grupo)' : '') + '. Cuando entre la primera persona, envía <b>/ingreso</b>.</li>'; })() + '</ol>' +
           '<div class="field" style="margin:8px 0 0"><label for="linkGrupo">Enlace de invitación del grupo</label><input id="linkGrupo" data-gid="' + e(g.grupo_id) + '" type="url" inputmode="url" placeholder="https://chat.whatsapp.com/…" value="' + e(linkGrupo(g.grupo_id)) + '"></div>' +
-          '<div class="actions" style="margin-top:8px;flex-wrap:wrap">' + g.miembros.map(function (x) { return '<a class="btn btn-primary btn-sm" data-invita="1" data-wa="' + e(x.whatsapp) + '" data-nom="' + e(x.nombre) + '" target="_blank" rel="noopener" href="' + e(S.wa(x.whatsapp, invitaTxt(x.nombre, linkGrupo(g.grupo_id)))) + '">Invitar a ' + e(x.nombre) + '</a>'; }).join('') + '</div>' +
+          '<div class="actions" style="margin-top:8px;flex-wrap:wrap">' + g.miembros.filter(function (x) { return x.rol !== 'organizador'; }).map(function (x) { return '<a class="btn btn-primary btn-sm" data-invita="1" data-wa="' + e(x.whatsapp) + '" data-nom="' + e(x.nombre) + '" target="_blank" rel="noopener" href="' + e(S.wa(x.whatsapp, invitaTxt(x.nombre, linkGrupo(g.grupo_id)))) + '">Invitar a ' + e(x.nombre) + '</a>'; }).join('') + '</div>' +
           '<div class="actions" style="margin-top:8px"><button class="btn btn-ghost btn-sm" data-copy="' + e(g.miembros.map(function (x) { return x.nombre + ' +' + S.phone(x.whatsapp); }).join('\n')) + '">Copiar nombres y números</button></div></div>' : '') +
         (g.modo === 'prueba' || g.estado === 'excluido' ? '<div class="actions" style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-archivar="' + e(g.grupo_id) + '">' + (arch ? 'Volver a mostrar en la lista' : 'Archivar en esta consola') + '</button></div>' : '') +
         '</div>';
@@ -874,15 +891,15 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       h += '<details class="small" style="margin:0 0 10px"><summary><b>Corregir hora del encuentro</b> · si el grupo la cambió después de cerrar</summary><div style="margin-top:8px">' + campoEncuentro('C', p.hora_encuentro) +
         '<div class="row" style="align-items:flex-end"><div class="field" style="margin:0"><label for="salidaC">Salida sugerida</label><input id="salidaC" data-keep="salidaC" type="text" maxlength="40" value="' + e(((ops[Number(p.elegida)] || {}).hora_salida) || '') + '"></div><button class="btn btn-ghost btn-sm" id="corregir" data-busy="Guardando…" style="flex:0 0 auto">Guardar corrección</button></div></div>' +
         '<p class="tiny muted">No cambia la hora del cierre ni la opción elegida (las métricas quedan intactas). La hora anterior queda en la nota del plan.</p>' + (p.nota ? '<p class="tiny muted">Nota: ' + e(p.nota) + '</p>' : '') + '</details>';
-      h += '<h3 id="pulsos">Enlaces personales al pulso</h3><p class="tiny muted">El pulso incluye SEQ y SUS (unos 4 minutos). ' + (p.experimento === 'E2' ? 'En E1.5 lo envía el motor; usa estos botones solo si falla.' : 'Envíalo a cada persona, por privado, después del encuentro.') + (Array.isArray(p.usabilidad_pids) ? ' «Enviar complemento» aparece si alguien respondió el pulso pero no la parte de usabilidad.' : '') + '</p>' + (g3 ? g3.miembros : []).map(function (m) {
+      h += '<h3 id="pulsos">Encuesta de cierre · enlaces personales</h3><p class="tiny muted">La encuesta de cierre incluye SEQ y SUS (unos 4 minutos). ' + (p.experimento === 'E2' ? 'En E1.5 lo envía el motor; usa estos botones solo si falla.' : 'Envíalo a cada persona, por privado, después del encuentro.') + (Array.isArray(p.usabilidad_pids) ? ' «Enviar complemento» aparece si alguien respondió la encuesta de cierre pero no la parte de usabilidad.' : '') + '</p>' + (g3 ? g3.miembros : []).map(function (m) {
         var st = (p.estado_por_pid || {})[m.pid] || {}, l = linkRetro(m.pid, p.plan_id);
         var hayU = Array.isArray(p.usabilidad_pids), yaR = (p.retro_pids || []).indexOf(m.pid) >= 0, yaU = hayU && p.usabilidad_pids.indexOf(m.pid) >= 0, pendUsab = hayU && yaR && !yaU;
-        return '<div class="member"><div class="who">' + e(m.nombre) + ' <span class="tiny muted">' + [st.apuntado ? 'apuntado' : '', st.llego ? 'llegó' : '', st.casa ? 'en casa' : '', yaR ? 'pulso ✓' : '', hayU ? (yaU ? 'usabilidad ✓' : (yaR ? 'usabilidad pendiente' : '')) : ''].filter(Boolean).join(' · ') + '</span></div>' +
+        return '<div class="member"><div class="who">' + e(m.nombre) + ' <span class="tiny muted">' + [st.apuntado ? 'apuntado' : '', st.llego ? 'llegó' : '', st.casa ? 'en casa' : '', yaR ? 'encuesta ✓' : '', hayU ? (yaU ? 'usabilidad ✓' : (yaR ? 'usabilidad pendiente' : '')) : ''].filter(Boolean).join(' · ') + '</span></div>' +
           '<button class="btn btn-ghost btn-sm" data-copy="' + e(l) + '">Copiar enlace</button>' + ('<a class="btn btn-primary btn-sm" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp, txtPulso(m.nombre, l))) + '">Enviar por WhatsApp</a>') +
           (pendUsab ? '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp, txtUsab(m.nombre, l))) + '">Enviar complemento</a>' : '') + '</div>';
       }).join('');
       var ultima = planesDe(p.grupo_id).slice(-1)[0];
-      h += '<div class="card soft small" style="margin-top:12px"><b>¿El plan ya pasó?</b> Registra llegadas y «en casa» y envía el pulso con los botones de arriba. ' +
+      h += '<div class="card soft small" style="margin-top:12px"><b>¿El plan ya pasó?</b> Registra llegadas y «en casa» y envía la encuesta de cierre con los botones de arriba. ' +
         (Number(p.ronda) < 2 ? 'Cada grupo hace 2 planes: crea el plan 2 en <b>el mismo grupo de WhatsApp</b>; no hace falta otro chat.' : 'Este grupo ya hizo sus 2 planes.') +
         (ultima && ultima.plan_id === p.plan_id && g3 && g3.estado === 'activo' ? '<div class="actions" style="margin-top:8px"><button class="btn btn-primary btn-sm" id="siguienteRonda" data-busy="Creando…">+ Crear plan ' + (Number(p.ronda) + 1) + ' para este grupo</button></div>' : '') + '</div>';
       h += '<div class="row" style="margin-top:12px;align-items:flex-end"><div class="field" style="margin:0"><label for="causa2">¿Se cayó después de cerrado?</label><select id="causa2">' + opts([['', 'Causa…']].concat(CAIDA)) + '</select></div><button class="btn btn-danger btn-sm" id="marcarCaido" data-busy="Guardando…" style="flex:0 0 auto">Marcar como caído</button></div>';
@@ -1083,7 +1100,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     ['/no_llega', 'Alguien no ha llegado', 'persona', 'preguntar con cuidado a una persona que todavía no llega cómo va y si está bien, sin culpa ni presión', function (d) { return d.nom + ', ¿cómo vas? El parche ya está en ' + d.lugarCorto + '. ¿Todo bien? Si se te complicó llegar, cuéntanos y lo ajustamos 🙌'; }],
     ['/todos', 'Ya llegaron todos', 'grupo', 'celebrar breve que ya llegó todo el parche', function () { return 'Ya estamos todos. ¡Disfruten! 🙌'; }],
     ['/en_casa', '¿Ya en casa? (si el plan fue de noche, al día siguiente a las 10:00)', 'ambos', 'preguntar si ya llegaron bien a la casa después del plan', function (d) { return d.persona ? d.nom + ', ¿ya en casa? Con un «ya en casa» basta.' : { poll: poll('¿Ya en casa?', ['Ya en casa', 'Todavía no'], false) }; }],
-    ['/retro', 'Pulso · aviso al grupo (los enlaces van por privado)', 'ambos', 'invitar a responder el pulso de 4 minutos después del plan', function (d) { return d.persona ? (d.retro ? txtPulso(d.nom, d.retro) : null) : '¿Cómo les fue? A cada uno le llega por privado su enlace para contarnos en 4 minutos. Sus respuestas son privadas.'; }],
+    ['/retro', 'Encuesta de cierre · aviso al grupo (los enlaces van por privado)', 'ambos', 'invitar a responder la encuesta de cierre de 4 minutos después del plan', function (d) { return d.persona ? (d.retro ? txtPulso(d.nom, d.retro) : null) : '¿Cómo les fue? A cada uno le llega por privado su enlace para contarnos en 4 minutos. Sus respuestas son privadas.'; }],
     ['/guardrail', 'Fuera de alcance (política de IA de WhatsApp)', 'ambos', 'decir con amabilidad que solo ayudamos a armar planes y volver al plan', function () { return 'Mi tarea es ayudarles a armar y coordinar planes en Cali, así que en eso no les puedo ayudar. ¿Volvemos al plan?'; }],
     ['/humano', 'Escalar a una persona', 'ambos', 'presentarse como persona del equipo que toma la conversación', function (d) { return 'Hola' + (d.persona ? ' ' + d.nom : '') + ', soy ' + d.humano + ', del equipo de investigación de Sintonía. Tomo la conversación para ayudarles con lo que necesiten. Si es una emergencia, llamen al 123.'; }]
   ];
@@ -1128,10 +1145,13 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       [['Nombre del evento', o.evento.titulo], ['Descripción', o.evento.descripcion], ['Fecha', o.evento.fecha], ['Hora de inicio', o.evento.hora], ['Ubicación', o.evento.ubicacion]].map(function (f) { return '<div class="poll-row"><span><span class="tiny muted">' + e(f[0]) + '</span><br>' + e(f[1]) + '</span><button type="button" class="btn btn-ghost btn-sm" data-cp="' + e(f[1]) + '">Copiar</button></div>'; }).join('') + '</div>';
     var mapaU = (o.txts.join(' ').match(/https:\/\/www\.google\.com\/maps\/[^\s]+/) || [])[0] || (o.evento && o.evento.mapa) || '';
     var pie = copiaUnica + (mapaU ? '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(mapaU) + '">Ver en el mapa ↗</a>' : '') +
-      (o.txts.length ? '<button type="button" class="btn btn-ghost btn-sm c-ia" data-ia="' + i + '" data-w="' + w + '" data-busy="Redactando…">Ajustar tono</button>' : '') +
+      (o.txts.length ? '<button type="button" class="btn btn-ghost btn-sm c-ia" data-ia-abrir="' + i + '|' + w + '" aria-expanded="false">Ajustar con Gemini</button>' : '') +
       (ajustes[i + '|' + dd] ? '<button type="button" class="btn btn-ghost btn-sm" data-orig="' + i + '">Volver al texto base</button>' : '') +
       (mk && !uno ? '<button type="button" class="btn btn-sm ' + (env ? 'btn-ghost' : 'btn-primary') + '" data-marca="' + mk + '" data-busy="Guardando…">' + (env ? 'Marcar otra vez' : 'Marcar como enviado') + '</button>' : '');
-    return h + (pie ? '<div class="actions" style="margin-top:6px">' + pie + '</div>' : '') + '</div>';
+    var iaBox = o.txts.length ? '<div class="c-ia-box" id="ia-' + w + '-' + i + '" hidden><label for="ind-' + w + '-' + i + '">¿Cómo lo ajusto?</label><div class="c-chips">' +
+      ['Más corto', 'Más cálido', 'Tono entre amigas', 'Más formal, para familia', 'Sin jerga'].map(function (c) { return '<button type="button" class="c-chip" data-ind="' + e(c) + '">' + e(c) + '</button>'; }).join('') + '</div>' +
+      '<div class="row" style="align-items:flex-end;margin-top:6px"><div class="field" style="margin:0;flex:1"><input id="ind-' + w + '-' + i + '" type="text" maxlength="200" placeholder="Ej.: hazlo más corto · tono femenino, como entre amigas"></div><button type="button" class="btn btn-ia btn-sm" data-ia="' + i + '" data-w="' + w + '" data-busy="Redactando…" style="flex:0 0 auto">Ajustar</button></div></div>' : '';   // 2.7.1 (prueba de Juan José): la indicación va junto al mensaje
+    return h + (pie ? '<div class="actions" style="margin-top:6px">' + pie + '</div>' : '') + iaBox + '</div>';
   }
   function marcar(tipo, b) {
     var g = grupo(sel.grupo);
@@ -1146,10 +1166,13 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var dd = d.persona ? d.persona.pid : 'grupo';
     S.$$('[data-marca]', el).forEach(function (b) { b.onclick = function () { marcar(b.dataset.marca, b); }; });
     S.$$('[data-orig]', el).forEach(function (b) { b.onclick = function () { delete ajustes[b.dataset.orig + '|' + dd]; redibujar(function () { renderSiguiente(); renderMensajes(); }, 'tpl|' + b.dataset.orig + '|' + dd + '|0'); }; });
+    S.$$('[data-ia-abrir]', el).forEach(function (b) { b.onclick = function () { var bx = S.$('#ia-' + b.dataset.iaAbrir.split('|')[1] + '-' + b.dataset.iaAbrir.split('|')[0], el); if (!bx) return; bx.hidden = !bx.hidden; b.setAttribute('aria-expanded', String(!bx.hidden)); if (!bx.hidden) S.$('input', bx).focus(); }; });
+    S.$$('.c-ia-box [data-ind]', el).forEach(function (c) { c.onclick = function () { var inp = S.$('input', c.closest('.c-ia-box')); inp.value = inp.value ? inp.value + ' · ' + c.dataset.ind.toLowerCase() : c.dataset.ind; inp.focus(); }; });
+    S.$$('.c-ia-box input', el).forEach(function (inp) { inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); var go = S.$('[data-ia]', inp.closest('.c-ia-box')); if (go) go.click(); } }); });
     S.$$('[data-ia]', el).forEach(function (b) {
       b.onclick = function () {
         var i = Number(b.dataset.ia), t = TPL[i], ta = S.$('#ta-' + b.dataset.w + '-' + i + '-0'), base = ta ? ta.value : '';
-        var ind = S.$('#indic') ? S.$('#indic').value.trim() : fv('indic');
+        var indL = S.$('#ind-' + b.dataset.w + '-' + i, el), ind = [indL ? indL.value.trim() : '', S.$('#indic') ? S.$('#indic').value.trim() : fv('indic')].filter(Boolean).join(' · ');
         var datos = ('Objetivo del mensaje: ' + t[3] + '. Destinatario: ' + (d.persona ? 'solo ' + d.persona.nombre + ', en chat individual' : 'todo el grupo') + '. ' +
           (d.p ? 'Plan: ' + d.plan + ' en ' + d.lugar + ', encuentro ' + d.hora + ', salida ' + d.salida + '. ' : '') +
           'Reescribe este mensaje base sin cambiar sus datos (enlaces, horas, lugares): ' + base).slice(0, 900);
@@ -1175,6 +1198,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       '<div class="s-quick-replies" role="group" aria-label="Ir a una etapa" style="margin-top:10px">' + ETAPAS.map(function (x) { return '<button type="button" class="s-quick-reply" data-etapa="' + x[0] + '" aria-pressed="' + (x[0] === cur) + '">' + e(x[1]) + '</button>'; }).join('') + '</div></div>';
     h += ETAPAS.map(function (x) {
       var boxes = x[2].map(function (c) { var k = tplIdx(c), t = TPL[k]; if (k < 0 || (dest === 'grupo' ? t[2] === 'persona' : t[2] === 'grupo')) return ''; return tplBox(k, d, 'm'); }).join('');
+      if (x[0] === 'cierre' && dest === 'grupo') boxes += encuestaCierreHtml(g, p);   // 2.7.1
       return boxes ? '<details class="card etapa" id="etapa-' + x[0] + '"' + (x[0] === cur ? ' open' : '') + '><summary><b>' + e(x[1]) + '</b>' + (x[0] === cur ? ' <span class="badge ok">ahora</span>' : '') + '</summary><div class="grid two" style="margin-top:10px">' + boxes + '</div></details>' : '';
     }).join('');
     el.innerHTML = h;
@@ -1240,13 +1264,14 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     bindPulsoMago(el, p);
     S.$$('[data-estado]', el).forEach(function (s) {
       s.onclick = function () {
-        var tipo = s.dataset.tipo; if (!tipo) return; s.disabled = true;
+        var tipo = s.dataset.tipo; if (!tipo) return; s.disabled = true; s.textContent = 'Guardando…';
         var pid = s.dataset.estado, ev = function (t) { return S.post({ action: 'evento', key: key, plan_id: sel.plan, grupo_id: sel.grupo, pid: pid, tipo: t, canal: (g || {}).experimento || vexp }); };
         // 2.3.1 (QA): «En casa» sin «Llegó» antes también cuenta como llegada; si no, la llegada se pierde en la métrica
         var antes = (tipo === 'llego_casa' && !(est[pid] || {}).llego) ? ev('checkpoint_llegada') : Promise.resolve({ ok: true });
         antes.then(function (r0) { return (r0 && r0.ok) ? ev(tipo) : r0; }).then(function (r) {
-          if (!r || !r.ok) { s.disabled = false; return S.toast(S.errMsg(r), true); }
-          S.toast(tipo === 'llego_casa' && !(est[pid] || {}).llego ? 'Registrado: llegó y está en casa' : 'Estado registrado'); load();
+          if (!r || !r.ok) { S.toast(S.errMsg(r), true); return load(); }
+          var msgOk = tipo === 'llego_casa' && !(est[pid] || {}).llego ? 'Registrado: llegó y está en casa' : 'Estado registrado';
+          marcarLocal(sel.plan, pid, tipo); renderAll(); S.toast(msgOk); load();
         });
       };
     });
@@ -1325,12 +1350,12 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       (ultimoReinicio.respaldo ? 'Respaldo (sin contactos) en tu Drive: <a href="' + e(ultimoReinicio.respaldo) + '" target="_blank" rel="noopener">abrir la hoja de respaldo ↗</a>.' : 'No había nada que respaldar.') +
       ' La consola quedó en modo <b>Piloto (cuenta)</b>. Ya pueden compartir los enlaces de inscripción reales.</p></div>';
     h += '<div class="card danger"><h3>Empezar el piloto real</h3>' +
-      '<p class="small">Borra todo lo que dejaron los ensayos para que la semana de pruebas arranque en cero: grupos, personas, votos, eventos y pulsos. <b>Se conservan los minutos y las sesiones del mago</b> (el registro de horas del monitor; el panel solo cuenta los de grupos en modo piloto), los tokens (el costo de IA acumulado), el inventario y la bitácora. Antes de borrar, el backend copia las pestañas a una hoja de respaldo nueva en el Drive del dueño del script, <b>sin la pestaña de contactos</b>.</p>' +
+      '<p class="small">Borra todo lo que dejaron los ensayos para que la semana de pruebas arranque en cero: grupos, personas, votos, eventos y encuestas de cierre. <b>Se conservan los minutos y las sesiones del mago</b> (el registro de horas del monitor; el panel solo cuenta los de grupos en modo piloto), los tokens (el costo de IA acumulado), el inventario y la bitácora. Antes de borrar, el backend copia las pestañas a una hoja de respaldo nueva en el Drive del dueño del script, <b>sin la pestaña de contactos</b>.</p>' +
       '<p class="small" style="margin:6px 0 0">Hoy hay <b>' + pruebas + '</b> grupo(s) en modo prueba y <b>' + piloto + '</b> en modo piloto. ' + (piloto ? '<b>Ojo:</b> los grupos en modo piloto también se borran.' : '') + '</p></div>' +
       '<div class="grid two"><div class="card"><h3>Se borra (' + S.num(total) + ' registros)</h3><div class="table-scroll"><table><thead><tr><th>Pestaña</th><th style="text-align:right">Filas</th></tr></thead><tbody>' + borrar.map(fila).join('') + '</tbody></table></div></div>' +
       '<div class="card soft"><h3>Se conserva</h3><div class="table-scroll"><table><thead><tr><th>Pestaña</th><th style="text-align:right">Filas</th></tr></thead><tbody>' + cons.concat(conservarCambios ? ['cambios'] : []).filter(function (n) { return n in reg; }).map(fila).join('') + '</tbody></table></div>' +
       '<label class="small" style="display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="rc-cambios"' + (conservarCambios ? ' checked' : '') + '> <span>Conservar también <b>Cambios entre planes</b> (solo si ya registraron un cambio que vale para el piloto real).</span></label></div></div>' +
-      '<div class="card"><h3>Antes de borrar</h3><ol class="pasos small"><li>El ensayo terminó y nadie está votando ni respondiendo un pulso.</li><li>El equipo sabe que se reinicia (los enlaces personales de los ensayos dejan de funcionar).</li><li>Si alguien quiere revisar algo del ensayo, que lo haga ahora o en el respaldo.</li></ol>' +
+      '<div class="card"><h3>Antes de borrar</h3><ol class="pasos small"><li>El ensayo terminó y nadie está votando ni respondiendo una encuesta de cierre.</li><li>El equipo sabe que se reinicia (los enlaces personales de los ensayos dejan de funcionar).</li><li>Si alguien quiere revisar algo del ensayo, que lo haga ahora o en el respaldo.</li></ol>' +
       '<div class="field" style="max-width:420px"><label for="rc-frase">Para confirmar, escribe <b>' + FRASE + '</b></label><input id="rc-frase" autocomplete="off" spellcheck="false" placeholder="' + FRASE + '"></div>' +
       '<div class="actions"><button class="btn btn-danger" type="button" id="rc-go" disabled data-busy="Respaldando y borrando…">Borrar los ensayos y empezar el piloto</button></div>' +
       '<p class="tiny muted">No se puede deshacer desde la consola; lo borrado queda solo en la hoja de respaldo.</p></div>';

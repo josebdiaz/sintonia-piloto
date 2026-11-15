@@ -197,13 +197,20 @@ Visual: secuencia horizontal de cinco pasos con flechas; el primero y el último
 
 ---
 
+> **Actualización 15/11 · consola 2.7.1** (prueba de Juan José). Esta guía describe la consola 2.2.2; mientras se actualiza completa, valen estos cambios:
+> - El grupo de WhatsApp se crea agregando a quien organiza; a los demás se les manda el enlace.
+> - «Pulso» ahora se llama **Encuesta de cierre** y está también en Mensajes · Cierre, con un mensaje por persona.
+> - «Ajustar con Gemini» abre un campo para escribir la indicación («más corto», «tono entre amigas»); Gemini usa español neutro, sin jerga caleña.
+> - «Llegó» y «En casa» se ven al instante, sin recargar.
+> - Los mensajes que se abren en WhatsApp con «Abrir chat» o «Enviar a…» van sin emojis (algunos WhatsApp los muestran como «?»); los que se copian los conservan.
+
 ## Plan 1 · del grupo al plan cerrado
 
 Etiqueta: Paso a paso · 1 de 2
 
 | # | Dónde | Qué haces |
 |---|---|---|
-| 1 | Grupo | Con todas las aceptaciones: cerrar reclutamiento y crear el grupo desde el número de Sintonía |
+| 1 | Grupo | Con todas las aceptaciones: cerrar reclutamiento y crear el grupo desde el número de Sintonía **agregando a quien organiza** (WhatsApp no deja crear un grupo vacío). Pegar el enlace del grupo y enviárselo a los demás con «Invitar a…» |
 | 2 | Mensajes | Enviar **/ingreso**: bienvenida, transparencia y aviso de privacidad |
 | 3 | Plan | Crear el plan 1. Pedir opciones (solo inventario activo), revisarlas y publicar |
 | 4 | Mensajes | Pegar **/opciones**. Si a las 2 h faltan votos: **un solo /recordatorio** |
@@ -224,7 +231,7 @@ Etiqueta: Paso a paso · 2 de 2
 | 6 | Mensajes | **/confirmado** con lugar, dirección, hora y salida sugerida. **/salida** 2 h antes |
 | 7 | Día del plan | **/checkpoint**: «¿Ya llegaron?». Si alguien no llega: **/no_llega**, con cuidado |
 | 8 | Llegadas | Marcar me apunto, llegó y en casa. Una marca por persona |
-| 9 | Mensajes | **/retro**: enlace personal a cada persona. A quien organiza le sale además la pregunta de precio |
+| 9 | Mensajes · Cierre | **Encuesta de cierre** (antes «pulso»): un mensaje privado por persona con su enlace («Copiar mensaje» o «Enviar a…»). A quien organiza le sale además la pregunta de precio. Al terminar, tu propia encuesta como mago en Llegadas y tiempo |
 | 10 | Plan | Crear el plan 2 en el mismo grupo. **■ Mago off** |
 
 Visual: cinco cajas con flechas; la última en rubí («Repetir y Mago off»).
@@ -319,7 +326,7 @@ Al cerrar cada plan, revisa que tenga:
 - **Embudo:** invitadas, me apunto y llegaron, por persona.
 - **Minutos:** sesiones de Mago in / off con tu nombre.
 - **Mensajes:** cada paso marcado como enviado, en orden.
-- **Pulso:** enlace enviado a cada persona.
+- **Encuesta de cierre:** enlace enviado a cada persona.
 
 Y una **nota corta por plan:** qué fue difícil, qué preguntó la gente y qué harías distinto.
 

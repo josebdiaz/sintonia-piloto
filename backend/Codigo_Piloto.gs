@@ -1,7 +1,8 @@
 /**
- * Sintonía · Piloto v2.7.2 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.7.3 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.7.3 (15/11, prueba de Juan José): «Ajustar con Gemini» pone primero la indicación del mago y pide español neutro, sin jerga caleña.
  * Versión 2.7.2 (15/11): «Empezar piloto real» ya no borra 'operacion' ni 'sesiones' (son el registro de horas del monitor; el panel solo
  *   cuenta los minutos de grupos en modo piloto). Las sesiones que se cerraron solas de planes ya borrados no vuelven a pedir minutos.
  * Versión 2.7.1 (15/11): el motor (MOTOR_KEY) puede llamar reabrir_opciones para pedir más opciones en E1.5 sin marcar el plan como caído,
@@ -565,9 +566,10 @@ function redactarIA_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = d.plan_id ? findOne_('planes', 'plan_id', d.plan_id) : null;
   var prompt =
-    'Eres Sintonía, el "quinto amigo" de un grupo en Cali. Redacta UN mensaje de WhatsApp (máx. 60 palabras) para el paso: ' + str_(d.paso, 40) + '.\n' +
-    'Tono: ' + str_(d.tono || 'plan tranqui', 40) + '. Español de Colombia, cercano, sin culpa ni presión, máximo un emoji.\n' +
-    (d.indicacion ? 'Indicación del equipo (síguela si no contradice las reglas): ' + str_(d.indicacion, 200) + '\n' : '') +   // v2.4.0
+    'Eres Sintonía, el "quinto amigo" de un grupo de amigos. Redacta UN mensaje de WhatsApp (máx. 60 palabras) para el paso: ' + str_(d.paso, 40) + '.\n' +
+    (d.indicacion ? 'LO MÁS IMPORTANTE · indicación del equipo, aplícala tal cual si no contradice las reglas: ' + str_(d.indicacion, 200) + '\n' : '') +   // v2.4.0 · v2.7.3: la indicación manda
+    'Tono: ' + str_(d.tono || 'plan tranqui', 40) + '. Español neutro de Colombia, cercano, sin culpa ni presión, máximo un emoji. ' +
+    'No uses jerga regional ni caleña (nada de «parce», «mor», «ve», «oís», «pues») salvo que la indicación lo pida.\n' +
     'Datos del plan: ' + str_(d.datos || (p ? p.opciones_json : ''), 900) + '\n' +
     'Usa solo los lugares y horarios de los datos; no inventes nada ni pidas datos personales. Responde solo con el texto.';
   var r = gemini_(prompt, false, p ? p.plan_id : '', p ? p.grupo_id : '', 'mensaje:' + str_(d.paso, 30));

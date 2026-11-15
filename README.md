@@ -4,7 +4,7 @@ Proyecto de la Maestría en Gestión de la Innovación (Universidad Icesi) · Jo
 Sintonía es un sistema que coordina planes para grupos de amigos que ya existen en Cali («el quinto amigo del parche»).
 El piloto compara dos condiciones en WhatsApp: **E1**, con un mago humano (Mago de Oz), y **E1.5**, automatizada con n8n y una persona que aprueba y pega (valor interno `E2`). Las dos usan el mismo backend.
 
-**Estado actual, versiones e implicaciones pendientes: [`ESTADO.md`](ESTADO.md)** (15/11/2026 · frontend 2.7.0 · backend 2.7.2).
+**Estado actual, versiones e implicaciones pendientes: [`ESTADO.md`](ESTADO.md)** (15/11/2026 · frontend 2.7.1 · backend 2.7.2 en vivo).
 
 Sitio publicado (GitHub Pages, rama `main`): https://sintonia.my
 

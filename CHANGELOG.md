@@ -5,6 +5,15 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-15 · Prueba de Juan José con la consola 2.7.0 (frontend 2.7.1 · backend 2.7.3)
+- **Crear el grupo:** WhatsApp no deja crear un grupo vacío. La consola y la guía del monitor dicen ahora: crear el grupo agregando a quien organiza (con «Copiar su número») y mandar el enlace a los demás; «Invitar a…» ya no aparece para quien organiza.
+- **Emojis como «?»:** los mensajes que se abren en WhatsApp (`wa.me`: «Abrir chat», «Enviar a…», invitaciones) van sin emojis; los que se copian los conservan. El saludo pasa a «Hola, Paula. Soy Sintonía…».
+- **Ajustar con Gemini:** vuelve el nombre y abre un campo para escribir la indicación, con sugerencias (más corto, más cálido, tono entre amigas, más formal, sin jerga). El backend pone la indicación primero y pide español neutro, sin jerga caleña (2.7.3).
+- **Llegadas:** «Llegó», «En casa» y «Llegaron todos» se ven al instante; la consola los sostiene 3 min aunque la hoja tarde en reflejarlos.
+- **«Pulso» pasa a «Encuesta de cierre»** en la consola, y la encuesta por persona («Copiar mensaje» o «Enviar a…») está también en Mensajes · Cierre. Las páginas de participante no cambian.
+- **Encuesta del mago:** la escala de Desempeño se muestra de «Fracaso» a «Perfecto» (como las demás, de menos a más); se guarda invertida para conservar la escala de NASA-TLX (0 = perfecto).
+- QA: backend 85 de 85; recorrido completo 52 de 52; F0–F5 y 2.7.1 25 de 25; axe-core sin hallazgos.
+
 ### 2026-11-15 · «Empezar piloto real» conserva los minutos del mago (backend 2.7.2) · **desplegado el 15/11**
 - `operacion` y `sesiones` pasan a la lista de hojas que no se borran: son el registro de horas del monitor. El panel solo cuenta los minutos de grupos en modo piloto, así que los de los ensayos no entran en las métricas.
 - Las sesiones que se cerraron solas en planes que ya no existen dejan de pedir minutos en la consola.

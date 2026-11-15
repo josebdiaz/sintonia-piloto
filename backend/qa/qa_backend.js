@@ -171,7 +171,7 @@ chk('2.4.0 en modo piloto el pulso sigue esperando el encuentro', (() => { const
   post({ action: 'cerrar_plan', key: A, plan_id: px.plan_id, elegida: 0, hora_encuentro: fx }); return post({ action: 'retro', plan_id: px.plan_id, pid: yx.pid }).error === 'retro_antes_del_plan'; })(), null);
 ctx.UrlFetchApp.fetch = (u, o) => { ultimoPrompt = JSON.parse(o.payload).contents[0].parts[0].text; return { getResponseCode: () => 200, getContentText: () => JSON.stringify({ candidates: [{ content: { parts: [{ text: 'Hola, chicas' }] } }], usageMetadata: {} }) }; };
 const rd = post({ action: 'redactar_ia', key: A, plan_id: p4.plan_id, paso: '/recordatorio', tono: 'plan tranqui', datos: 'base', indicacion: 'es un grupo de chicas' });
-chk('2.4.0 «Ajustar con Gemini» usa la indicación del mago', rd.ok && /Indicación del equipo.*grupo de chicas/.test(ultimoPrompt), ultimoPrompt.slice(0, 200));
+chk('2.4.0 «Ajustar con Gemini» usa la indicación del mago', rd.ok && /indicación del equipo.*grupo de chicas/.test(ultimoPrompt) && /jerga regional/i.test(ultimoPrompt) && ultimoPrompt.indexOf('indicación') < ultimoPrompt.indexOf('Tono:'), ultimoPrompt.slice(0, 200));
 // v2.7.0 · pulso del mago y medición de la consola
 const sus10 = {}; for (let i = 1; i <= 10; i++) sus10['sus_' + String(i).padStart(2, '0')] = i % 2 ? 4 : 2;
 const pm = post(Object.assign({ action: 'pulso_mago', key: A, plan_id: p4.plan_id, mago: 'Juan José', consola_version: '2.7.0', tlx_mental: 40, tlx_fisica: 5, tlx_temporal: 30, tlx_desempeno: 20, tlx_esfuerzo: 35, tlx_frustracion: 10 }, sus10));
