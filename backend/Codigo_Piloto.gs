@@ -195,8 +195,10 @@ function int_(v) { var n = parseInt(v, 10); return isNaN(n) ? '' : n; }
 function bool_(v) { return v === true || v === 'true' || v === 1 || v === '1'; }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 /** v2.4.0: correo al equipo (propiedad NOTIFICAR_A). Nunca lleva nombres ni números de participantes. */
+var NOTIFICAR_A_POR_DEFECTO = '';   // v2.4.0: correo(s) del equipo, separados por coma. La propiedad NOTIFICAR_A, si existe, manda sobre esto.
+function notificarA_() { return prop_('NOTIFICAR_A', NOTIFICAR_A_POR_DEFECTO); }
 function avisarEquipo_(asunto, cuerpo) {
-  var to = prop_('NOTIFICAR_A', ''); if (!to || typeof MailApp === 'undefined') return;
+  var to = notificarA_(); if (!to || typeof MailApp === 'undefined') return;
   try { MailApp.sendEmail(to, asunto, cuerpo); } catch (x) { Logger.log('aviso no enviado: ' + x); }
 }
 function isAdmin_(k) { var a = prop_('ADMIN_KEY', ''); return a !== '' && String(k || '') === a; }
@@ -946,7 +948,7 @@ function probarMontaje() {
   try { var ss = ss_(); r.push('✅ Hoja: ' + ss.getName()); } catch (x) { r.push('❌ No abre la hoja (revisa SHEET_ID): ' + x); Logger.log(r.join('\n')); return; }
   Object.keys(SHEETS).forEach(function (n) { sheet_(n); }); r.push('✅ ' + Object.keys(SHEETS).length + ' hojas listas');
   var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.4.0)');
-  if (prop_('NOTIFICAR_A', '')) { try { r.push('✅ Avisos por correo a NOTIFICAR_A (cupo diario: ' + MailApp.getRemainingDailyQuota() + ')'); } catch (x) { r.push('❌ Avisos por correo: ' + x); } }
+  if (notificarA_()) { try { MailApp.sendEmail(notificarA_(), 'Sintonía · prueba de avisos', 'Si te llegó este correo, los avisos de inscripción de la consola del mago funcionan.'); r.push('✅ Avisos por correo a ' + notificarA_() + ' (correo de prueba enviado; cupo diario: ' + MailApp.getRemainingDailyQuota() + ')'); } catch (x) { r.push('❌ Avisos por correo: ' + x); } }
   else r.push('ℹ️ sin NOTIFICAR_A: no se envían avisos de inscripción por correo (opcional)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');
   r.push('Zona horaria del proyecto: ' + Session.getScriptTimeZone() + (Session.getScriptTimeZone() === 'America/Bogota' ? ' ✅' : ' ⚠️ cambiar a America/Bogota'));
