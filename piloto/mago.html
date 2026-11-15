@@ -63,7 +63,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     <p class="small muted" id="resumen"></p>
     <div class="consola-top"><div id="expbar"></div><div id="modobox"></div><div id="magobar"></div></div>
     <div id="magoNudge"></div>
-    <div class="consola-mid"><div id="glist"></div><div id="siguiente"></div></div>
+    <div class="consola-mid"><div class="c-izq"><div id="glist"></div><div id="mapa"></div></div><div id="siguiente"></div></div>
     <div class="c-tabbar"><nav class="s-tabs" role="tablist" aria-label="Operación">
       <button role="tab" data-tab="grupos" aria-selected="true">Grupo</button>
       <button role="tab" data-tab="planes">Plan</button>
@@ -144,17 +144,32 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   // 2.4.0: copiar (texto fijo o de un cuadro), abrir WhatsApp con el texto editado y «Copiar y marcar enviado», en cualquier pantalla
   document.addEventListener('click', function (ev) {
     var b = ev.target.closest && ev.target.closest('[data-cp],[data-cp-ta],[data-wa-ta]'); if (!b) return;
+    var taF = document.getElementById(b.dataset.cpTa || b.dataset.waTa || ''), falta = taF ? faltaEn(taF.value) : (b.dataset.cp !== undefined ? faltaEn(b.dataset.cp) : '');
+    if (falta) {   // 2.7.0 (F0): nada con [corchetes] sale al grupo
+      ev.preventDefault(); ev.stopImmediatePropagation();
+      S.toast('Antes de copiar, completa ' + falta + ' en el texto.', true);
+      if (taF) { var k0 = taF.value.indexOf(falta); taF.focus(); taF.setSelectionRange(k0, k0 + falta.length); }
+      return;
+    }
     if (b.dataset.cp !== undefined) S.copy(b.dataset.cp);
-    else if (b.dataset.cpTa) { var t = document.getElementById(b.dataset.cpTa); if (t) S.copy(t.value); }
+    else if (b.dataset.cpTa) { var t = document.getElementById(b.dataset.cpTa); if (t) S.copy(t.value); anotarCopia(b.dataset.cpTa, !!b.dataset.cpm); }
     if (b.dataset.waTa) { var t2 = document.getElementById(b.dataset.waTa); if (t2) window.open(S.wa(b.dataset.wa, t2.value), '_blank', 'noopener'); }
     if (b.dataset.cpm) marcar(b.dataset.cpm, b);
   });
+  /** 2.7.0 (F1): copiar el último texto de una plantilla la da por copiada y la cola avanza */
+  function anotarCopia(id, marcara) {
+    var m = /^ta-[nm]-(\d+)-(\d+)$/.exec(id || ''); if (!m || document.getElementById('ta-' + id.split('-')[1] + '-' + m[1] + '-' + (Number(m[2]) + 1))) return;
+    var key = (sel.plan || sel.grupo) + '|' + TPL[Number(m[1])][0]; copiados[key] = new Date().toISOString(); delete abiertos[key];
+    S.LS.set('sintonia_copiados', JSON.stringify(copiados));
+    if (!marcara) setTimeout(function () { redibujar(function () { renderSiguiente(); }); }, 250);
+  }
   // 2.5.0 · Atajos de teclado (no actúan mientras escribes)
   document.addEventListener('keydown', function (ev) {
     if (!D || ev.metaKey || ev.ctrlKey || ev.altKey) return;
     var t = ev.target; if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return; if (S.$('#hoja') && S.$('#hoja').open) return;
     var k = ev.key.toLowerCase(), sg = S.$('#siguiente'), b = null;
-    if (k === 'c') b = S.$('[data-cpm]', sg) || S.$('[data-marca]', sg) || S.$('[data-cp-ta]', sg);
+    var ab = S.$('.c-cola-i[open]', sg) || sg;   // 2.7.0: C actúa sobre el mensaje abierto de la cola
+    if (k === 'c') b = S.$('[data-cpm]', ab) || S.$('[data-cp-ta]', ab) || S.$('[data-marca]', ab);
     else if (k === 'n') b = S.$('#irPaso', sg) || S.$('#todosLlegaron', sg) || S.$('#todosCasa', sg);
     else if (k === 'm') b = S.$('a[href*="google.com/maps"]', sg);
     else if (k === '?' || (k === '/' && ev.shiftKey)) { ev.preventDefault(); return verAtajos(); }
@@ -173,7 +188,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function devolverFoco() {
     var a = document.activeElement; if (a && a !== document.body && document.contains(a)) return;
     if (Date.now() - lastAct > 3000) return;   // solo justo después de una acción de la persona
-    var b = S.$('#siguiente [data-cpm]') || S.$('#siguiente #irPaso') || S.$('#siguiente .acciones button') || S.$('#siguiente [data-marca]');
+    var b = S.$('#siguiente .c-cola-i[open] [data-cpm], #siguiente .c-cola-i[open] [data-cp-ta]') || S.$('#siguiente [data-cpm]') || S.$('#siguiente #irPaso') || S.$('#siguiente .acciones button') || S.$('#siguiente [data-marca]');
     if (b) b.focus({ preventScroll: true });
   }
   function act(btn, payload, okMsg) {
@@ -203,7 +218,11 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function redibujar(fn, olvidar) { guardarForm(); if (olvidar) olvidarForm(olvidar); fn(); restaurarForm(); devolverFoco(); }
   var trasRestaurar = function () {};
   function fv(k) { var v = formCache[(sel.plan || sel.grupo) + '|' + k]; return v === undefined ? '' : v; }
-  function growAll() { S.$$('.tpl-text').forEach(function (ta) { ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 4) + 'px'; }); }
+  /** 2.7.0 (F0): el primer marcador sin llenar ([n], [hora], [lugar]…) o '' */
+  function faltaEn(t) { var m = String(t || '').match(/\[[^\]\n]{1,30}\]/); return m ? m[0] : ''; }
+  function marcarFaltas(root) { S.$$('.tpl-text', root || document).forEach(function (ta) { var f = faltaEn(ta.value); ta.toggleAttribute('data-falta', !!f); var tp = ta.closest('.tpl'); if (tp) tp.toggleAttribute('data-falta', !!f); }); }
+  document.addEventListener('input', function (ev) { if (ev.target && ev.target.classList && ev.target.classList.contains('tpl-text')) marcarFaltas(ev.target.parentNode); });
+  function growAll() { marcarFaltas(); S.$$('.tpl-text').forEach(function (ta) { ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 4) + 'px'; }); }
 
   /* ---------- Ayudas ---------- */
   function grupo(id) { return (D.grupos || []).filter(function (g) { return g.grupo_id === id; })[0]; }
@@ -269,7 +288,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function invitaTxt(nom, link) { return 'Hola ' + nom + ' 👋 Soy Sintonía. Este es el grupo del plan de tu parche: ' + (link || '[enlace del grupo]') + '\nSi prefieres no seguir, responde SALIR.'; }
   function encuesta(preg, ops) { return 'ENCUESTA · una sola respuesta\nPregunta: ' + preg + '\nOpciones:\n' + ops.join('\n'); }
   function nombre(gid, pid) { var g = grupo(gid); var m = g && g.miembros.filter(function (x) { return x.pid === pid; })[0]; return m ? m.nombre || pid : pid; }
-  function badge(t) { return '<span class="badge ' + e(t) + '">' + e(t) + '</span>'; }
+  function badge(t) { return '<span class="badge ' + e(t) + '">' + e(cap(String(t).replace(/_/g, ' '))) + '</span>'; }   // 2.7.0 (F3): mayúscula inicial
   function opts(list, val) { return list.map(function (o) { o = Array.isArray(o) ? o : [o, o]; return '<option value="' + e(o[0]) + '"' + (String(o[0]) === String(val) ? ' selected' : '') + '>' + e(o[1]) + '</option>'; }).join(''); }
   function grupoLabel(g) { return grupoNom(g) + ' · ' + (g.experimento === 'E2' ? 'E1.5' : 'E1') + (g.modo === 'prueba' ? ' (prueba)' : ''); }
   function linkPlan(pid) { return S.link('plan.html', { pid: pid }); }
@@ -343,7 +362,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     if (g.estado === 'reclutando') return ['searching', 'Reclutando'];
     if (!p) return ['live', 'Sin plan'];
     if (p.estado === 'votando') return ['live', 'Votación'];
-    if (p.estado === 'cerrado') return ['fixed', 'Fijado'];
+    if (p.estado === 'cerrado') return ['fixed', 'Cerrado'];   // 2.7.0 (F3): el vocabulario del glosario
     if (p.estado === 'caido') return ['off', 'Caído'];
     return ['searching', 'Preparando'];
   }
@@ -468,30 +487,40 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   }
   function renderSiguiente() {
     var el = S.$('#siguiente'), g = grupo(sel.grupo);
-    if (!g) { el.innerHTML = '<div class="s-next"><p class="s-eyebrow" style="margin:0">Lo que toca ahora</p><h2 class="c-paso" style="margin:0">Elige un grupo</h2><p style="margin:0">O inscribe uno nuevo con el enlace de la izquierda.</p></div>'; return; }
+    if (!g) { S.$('#mapa').innerHTML = ''; el.innerHTML = '<div class="s-next"><p class="s-eyebrow" style="margin:0">Lo que toca ahora</p><h2 class="c-paso" style="margin:0">Elige un grupo</h2><p style="margin:0">O inscribe uno nuevo con el enlace de la izquierda.</p></div>'; return; }
     var L = pasosDe(g), i = L.findIndex(function (x) { return !x.hecho; }), cur = g.estado === 'excluido' || i < 0 ? null : L[i], hechosN = L.filter(function (x) { return x.hecho; }).length;
     var x = EXP[g.experimento], ses = D.sesiones_abiertas === undefined ? true : miSesion(), a = cur ? cur.accion : {};
+    medida.etapa = cur ? cur.etapa : ''; medida.plan = cur ? cur.plan_id || '' : ''; medida.grupo = g.grupo_id;   // 2.7.0 (F5)
     var h = '<div class="s-next"><p class="s-eyebrow" style="margin:0">Lo que toca ahora · ' + e(grupoNom(g)) + '</p>';
     if (g.estado === 'excluido') h += '<h2 class="c-paso" style="margin:0">Este grupo quedó desestimado</h2><p style="margin:0">' + e(g.motivo || 'Retiro o consentimiento incompleto') + '. No hay nada más que hacer con él.</p>';
     else if (!cur) h += '<h2 class="c-paso" style="margin:0">Grupo completo: 2 planes y sus pulsos</h2><p style="margin:0">Si ya no vas a operar otro grupo, cierra tu sesión con «Mago off».</p>';
     else {
-      h += '<h2 class="c-paso" style="margin:0">' + e(cur.grupo) + ' · ' + e(cur.txt) + '</h2><p style="margin:0">' + e(a.ayuda || '') + '</p>';
-      if (!ses) h += '<div class="s-banner" data-type="progress"><span><strong>Abre «Mago in» antes de seguir</strong>Sin sesión abierta, este trabajo no cuenta en los minutos humanos' + (g.experimento === 'E2' ? ' de la revisión del motor.' : '.') + '</span></div>';
+      h += '<h2 class="c-paso" style="margin:0">' + e(cur.txt) + '</h2><p class="c-de">' + e(cur.grupo) + '</p>';   // 2.7.0 (F3): título corto; el plan va aparte
       var bt = '';
       if (a.t) bt += '<button type="button" class="s-button" data-size="sm" id="irPaso">' + e(a.t) + (a.run ? '' : ' →') + '</button>';
       if (a.run2 === 'llegaron') bt += '<button type="button" class="s-button" data-size="sm" id="todosLlegaron" data-busy="Registrando…">Llegaron todos</button><button type="button" class="s-button" data-size="sm" data-style="secondary" id="irLlegadas">Uno por uno →</button>';
       if (a.run2 === 'casa') bt += '<button type="button" class="s-button" data-size="sm" id="todosCasa" data-busy="Registrando…">Todos en casa</button><button type="button" class="s-button" data-size="sm" data-style="secondary" id="irLlegadas">Uno por uno →</button>';
-      if (bt) h += '<div class="acciones">' + bt + '</div>';
+      if (bt) h += '<div class="acciones">' + bt + '</div>';   // 2.7.0 (F1): la acción va primero; la ayuda, debajo
       if (a.pulso) h += pulsoBotones(g);
+      h += '<p class="c-ayuda-paso">' + e(a.ayuda || '') + '</p>';
+      if (!ses) h += '<p class="c-sin-sesion"><span>Sin «Mago in», este trabajo no cuenta en los minutos humanos' + (g.experimento === 'E2' ? ' de la revisión del motor' : '') + '.</span> <button type="button" class="btn btn-ghost btn-sm" id="abrirSesion">Abrir «Mago in»</button></p>';
       h += relojesHtml(g);
-      if (a.tpls && a.tpls.length) { var d = tplData('grupo'); h += '<div class="next-msgs">' + a.tpls.map(function (c) { var k = tplIdx(c); return k < 0 ? '' : tplBox(k, d, 'n'); }).join('') + '</div>'; }
+      if (a.tpls && a.tpls.length) h += colaHtml(a.tpls, tplData('grupo'), cur);
     }
+    var pUlt = planesDe(g.grupo_id).slice(-1)[0];
+    if (pUlt && (a.pulso || !cur) && (pUlt.estado === 'cerrado' || pUlt.estado === 'caido') && !pulsoMagoHecho(pUlt.plan_id) && g.estado !== 'excluido')
+      h += '<p class="c-sin-sesion"><span>Al terminar, responde <b>tu pulso como mago</b> de ' + e(rondaLabel(pUlt)) + ' (2 minutos).</span> <button type="button" class="btn btn-ghost btn-sm" id="irPulsoMago" data-plan="' + e(pUlt.plan_id) + '">Responder</button></p>';   // 2.7.0 (F5)
     h += '</div>';
     if (cur) h = h.replace(/<\/div>$/, '') + '<p class="c-atajos">Atajos: <kbd>C</kbd> copiar y marcar el siguiente mensaje · <kbd>N</kbd> ir a la acción · <kbd>M</kbd> mapa · <kbd>?</kbd> todos</p></div>';
     var vivo = S.$('#vivo'), anuncio = cur ? 'Lo que toca ahora: ' + cur.grupo + ', ' + cur.txt : ''; if (vivo && vivo.dataset.ultimo !== anuncio) { vivo.textContent = anuncio; vivo.dataset.ultimo = anuncio; }   // 2.5.0: se anuncia el cambio de paso
     h += mapaHtml(g, L, i, cur, hechosN);
     h += '</section><details class="small c-como"><summary>Cómo funciona ' + e(x.nombre) + '</summary><p style="margin:6px 0 0"><b>Qué se prueba.</b> ' + e(x.prueba) + '</p><p style="margin:4px 0 0"><b>El mago.</b> ' + e(x.mago) + '</p><p style="margin:4px 0 0"><b>Se mide.</b> ' + e(x.mide) + '</p></details>';
-    var corte = h.indexOf('<section class="c-mapa"'); var fin = h.indexOf('</section>', corte) + 10; el.innerHTML = h.slice(corte, fin) + h.slice(0, corte) + h.slice(fin);   // 2.6.0: el mapa orienta arriba; el paso, debajo
+    var corte = h.indexOf('<section class="c-mapa"'), fin = h.indexOf('</section>', corte) + 10;   // 2.7.0 (F1): el mapa vive aparte (columna izquierda en pantalla ancha; arriba del paso en media pantalla)
+    S.$('#mapa').innerHTML = h.slice(corte, fin); el.innerHTML = h.slice(0, corte) + h.slice(fin);
+    S.$$('#mapa [data-ir-etapa]').forEach(function (b) { b.onclick = function () { var dst = MAPA_IR[b.dataset.irEtapa]; if (b.dataset.plan) sel.plan = b.dataset.plan; renderAll(); irA(dst[0], dst[1]); }; });
+    S.$$('.c-cola-i', el).forEach(function (dt) { dt.addEventListener('toggle', function () { abiertos[dt.dataset.cola] = dt.open; if (dt.open) growAll(); }); });
+    var ipm = S.$('#irPulsoMago', el); if (ipm) ipm.onclick = function () { sel.plan = ipm.dataset.plan; renderAll(); irA('registro', '#pulsoMago'); setTimeout(function () { var d = S.$('#pulsoMago'); if (d && 'open' in d) d.open = true; }, 80); };
+    var abS = S.$('#abrirSesion', el); if (abS) abS.onclick = function () { var q = S.$('#magoQuien'), mi = S.$('#magoIn'); var t = q && !q.value ? q : mi; if (t) { t.scrollIntoView({ behavior: suave(), block: 'center' }); t.focus(); } };
     var b = S.$('#irPaso', el);
     if (b) b.onclick = function () {
       var t = a.run === 'cerrar' ? S.$('[data-cerrar]') : a.run === 'crearPlan' ? S.$('#crearPlan') : a.run === 'siguienteRonda' ? S.$('#siguienteRonda') : null;
@@ -503,17 +532,95 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var tc = S.$('#todosCasa', el); if (tc) tc.onclick = function () { registrarTodos(tc, 'llego_casa', g.miembros.filter(function (m) { var s = est[m.pid] || {}; return s.llego && !s.casa; }).map(function (m) { return m.pid; })); };
     var il = S.$('#irLlegadas', el); if (il) il.onclick = function () { irA('registro', '.estado-sel'); };
     bindTpl(el, tplData('grupo'));
-    S.$$('[data-ir-etapa]', el).forEach(function (b) { b.onclick = function () {
-      var dst = MAPA_IR[b.dataset.irEtapa]; if (b.dataset.plan) sel.plan = b.dataset.plan;
-      renderAll(); irA(dst[0], dst[1]);
-    }; });
+  }
+  /** 2.7.0 (F5) · La consola se mide sola, por etapa del mapa y solo con «Mago in»: segundos activos (pestaña visible y uso en el último minuto), toques y scroll.
+   * Se guarda en este navegador y se envía al cerrar la sesión o al responder el pulso del mago. No guarda nada de los participantes. */
+  var medida = { etapa: '', plan: '', grupo: '', ult: 0, y: window.scrollY };
+  function medidas() { try { return JSON.parse(S.LS.get('sintonia_medicion') || '{}'); } catch (x) { return {}; } }
+  function sumarMedida(campo, v) {
+    if (!medida.etapa || !medida.grupo || !D || !miSesion()) return;
+    var m = medidas(), k = (medida.plan || '-') + '|' + medida.grupo + '|' + medida.etapa, r = m[k] || (m[k] = { plan_id: medida.plan, grupo_id: medida.grupo, etapa: medida.etapa, segundos: 0, toques: 0, scroll: 0 });
+    r[campo] += v; S.LS.set('sintonia_medicion', JSON.stringify(m));
+  }
+  ['pointerdown', 'keydown'].forEach(function (t) { document.addEventListener(t, function (ev) { medida.ult = Date.now(); if (t === 'pointerdown' && ev.target.closest && ev.target.closest('button, a, summary, select, input, textarea, label')) sumarMedida('toques', 1); }, true); });
+  window.addEventListener('scroll', function () { var y = window.scrollY, dy = Math.abs(y - medida.y); medida.y = y; medida.ult = Date.now(); if (dy) sumarMedida('scroll', Math.round(dy)); }, { passive: true });
+  setInterval(function () { if (document.visibilityState === 'visible' && Date.now() - medida.ult < 60000) sumarMedida('segundos', 5); }, 5000);
+  setInterval(function () { enviarMedicion(); }, 10 * 60000);
+  function enviarMedicion() {
+    var m = medidas(), por = {}; Object.keys(m).forEach(function (k) { var r = m[k], pk = r.plan_id + '|' + r.grupo_id; (por[pk] = por[pk] || { plan_id: r.plan_id, grupo_id: r.grupo_id, filas: [], keys: [] }).filas.push({ etapa: r.etapa, segundos: r.segundos, toques: r.toques, scroll: r.scroll }); por[pk].keys.push(k); });
+    return Promise.all(Object.keys(por).map(function (pk) {
+      var x = por[pk];
+      return S.post({ action: 'medicion_consola', key: key, plan_id: x.plan_id, grupo_id: x.grupo_id, mago: S.LS.get('sintonia_mago_nombre') || '', consola_version: S.CONFIG.FRONTEND_VERSION, filas: x.filas }).then(function (r) {
+        if (r && (r.ok || r.error === 'accion_desconocida' || r.error === 'grupo_no_encontrado')) { var mm = medidas(); x.keys.forEach(function (k) { delete mm[k]; }); S.LS.set('sintonia_medicion', JSON.stringify(mm)); }   // sin backend 2.7.0 no se acumula para siempre
+      }).catch(function () {});
+    }));
+  }
+  /** 2.7.0 (F5) · Pulso del mago: SUS de la consola y NASA-TLX sin ponderar, después de cada plan. */
+  var SUS_MAGO = ['Creo que me gustaría usar esta consola con frecuencia.', 'La consola me pareció innecesariamente compleja.', 'La consola me pareció fácil de usar.',
+    'Creo que necesitaría ayuda de alguien técnico para usarla.', 'Las funciones de la consola están bien integradas.', 'Hay demasiadas inconsistencias en la consola.',
+    'La mayoría de las personas aprenderían a usarla muy rápido.', 'La consola me pareció muy engorrosa de usar.', 'Me sentí con confianza usando la consola.', 'Tuve que aprender muchas cosas antes de poder usarla.'];
+  var TLX = [['mental', 'Exigencia mental', '¿Cuánto tuviste que pensar, decidir y recordar?', 'Muy baja', 'Muy alta'], ['fisica', 'Exigencia física', '¿Cuánta actividad física requirió (clics, escribir, moverte)?', 'Muy baja', 'Muy alta'],
+    ['temporal', 'Presión de tiempo', '¿Qué tanto te apuró el ritmo del grupo o los relojes?', 'Muy baja', 'Muy alta'], ['desempeno', 'Desempeño', '¿Qué tan bien crees que lo hiciste?', 'Perfecto', 'Fracaso'],
+    ['esfuerzo', 'Esfuerzo', '¿Cuánto te tuviste que esforzar para lograrlo?', 'Muy bajo', 'Muy alto'], ['frustracion', 'Frustración', '¿Qué tan inseguro, irritado o estresado te sentiste?', 'Muy baja', 'Muy alta']];
+  function pulsoMagoHecho(pid) { return !!S.LS.get('sintonia_pulso_mago_' + pid); }
+  function pulsoMagoHtml(p) {
+    if (!p || p.estado !== 'cerrado' && p.estado !== 'caido') return '';
+    if (pulsoMagoHecho(p.plan_id)) return '<div class="card soft small" id="pulsoMago">Tu pulso como mago de ' + e(rondaLabel(p)) + ' ya quedó registrado. Gracias.</div>';
+    return '<details class="card" id="pulsoMago"><summary><b>Tu pulso como mago</b> · ' + e(rondaLabel(p)) + ' · 2 minutos</summary>' +
+      '<p class="small muted">Sirve para separar «la consola es lenta» de «la tarea es difícil». Responde pensando solo en este plan.</p>' +
+      '<fieldset class="c-sus"><legend>Qué tan de acuerdo estás (1 = nada, 5 = totalmente)</legend>' + SUS_MAGO.map(function (t, i) {
+        var n = 'pm_sus_' + (i + 1); return '<div class="c-sus-i"><span id="' + n + '_l">' + (i + 1) + '. ' + e(t) + '</span><span class="c-seg-btn" role="radiogroup" aria-labelledby="' + n + '_l">' +
+          [1, 2, 3, 4, 5].map(function (v) { return '<label><input type="radio" name="' + n + '" value="' + v + '" data-keep="' + n + '|' + v + '"><span>' + v + '</span></label>'; }).join('') + '</span></div>';
+      }).join('') + '</fieldset>' +
+      '<fieldset class="c-tlx"><legend>Carga de trabajo (0 a 100)</legend>' + TLX.map(function (t) {
+        return '<div class="c-tlx-i"><label for="pm_tlx_' + t[0] + '"><b>' + e(t[1]) + '</b> <span class="muted">' + e(t[2]) + '</span></label><input type="range" id="pm_tlx_' + t[0] + '" min="0" max="100" step="5" value="50" data-keep="pm_tlx_' + t[0] + '" data-tocado="">' +
+          '<span class="c-tlx-ext"><span>' + e(t[3]) + '</span><output for="pm_tlx_' + t[0] + '">—</output><span>' + e(t[4]) + '</span></span></div>';
+      }).join('') + '</fieldset>' +
+      '<div class="field"><label for="pm_com">Lo que más te costó (opcional)</label><input id="pm_com" data-keep="pm_com" type="text" maxlength="300"></div>' +
+      '<div class="actions"><button type="button" class="btn btn-primary btn-sm" id="pmEnviar" data-busy="Guardando…">Guardar mi pulso</button></div></details>';
+  }
+  function bindPulsoMago(el, p) {
+    var box = S.$('#pulsoMago', el); if (!box || !S.$('#pmEnviar', box)) return;
+    S.$$('input[type=range]', box).forEach(function (r) { var o = S.$('output[for="' + r.id + '"]', box); var u = function () { r.dataset.tocado = '1'; o.textContent = r.value; }; r.addEventListener('input', u); });
+    S.$('#pmEnviar', box).onclick = function () {
+      var b = this, d = { action: 'pulso_mago', key: key, plan_id: p.plan_id, mago: S.LS.get('sintonia_mago_nombre') || '', consola_version: S.CONFIG.FRONTEND_VERSION, comentario: S.$('#pm_com', box).value.trim() }, falta = 0;
+      for (var i = 1; i <= 10; i++) { var c = S.$('input[name="pm_sus_' + i + '"]:checked', box); if (!c) falta++; else d['sus_' + (i < 10 ? '0' + i : i)] = Number(c.value); }
+      TLX.forEach(function (t) { var r = S.$('#pm_tlx_' + t[0], box); if (!r.dataset.tocado) falta++; d['tlx_' + t[0]] = Number(r.value); });
+      if (falta) return S.toast('Faltan ' + falta + ' respuesta(s). Mueve cada escala aunque la dejes en 50.', true);
+      S.busy(b, function () { return enviarMedicion().then(function () { return S.post(d); }); }).then(function (r) {
+        if (!r || !r.ok) return S.toast(r && r.error === 'accion_desconocida' ? 'El backend en vivo no tiene el pulso del mago: despliega la 2.7.0.' : S.errMsg(r), true);
+        S.LS.set('sintonia_pulso_mago_' + p.plan_id, new Date().toISOString()); olvidarForm('pm_'); S.toast('Pulso guardado · SUS ' + r.sus_puntaje + ' · carga ' + r.tlx_raw); renderRegistro();
+      });
+    };
+  }
+  /** 2.7.0 (F1) · Cola de mensajes: solo el siguiente va abierto; lo enviado o copiado se pliega con su hora. */
+  var copiados = {}; try { copiados = JSON.parse(S.LS.get('sintonia_copiados') || '{}'); } catch (x) {}
+  var abiertos = {};
+  function colaKey(d, c) { return (d.p ? d.p.plan_id : d.g ? d.g.grupo_id : '') + '|' + c; }
+  function tplEstado(c, d) {
+    var mk = d.p ? MARCA[c] || '' : (c === '/ingreso' && d.g ? 'msg_ingreso' : ''), env = '';
+    if (c === '/ingreso' && d.g && ingresoHecho(d.g.grupo_id)) env = S.LS.get('sintonia_ingreso_' + d.g.grupo_id) || new Date().toISOString();
+    else if (mk && d.p) { var l = desdePub(d.p, mk, hechos(d.p.plan_id)[mk] || []); env = l.length ? l[l.length - 1] : ''; }
+    var cop = copiados[colaKey(d, c)] || ''; if (cop && d.p && d.p.t_publicado && new Date(cop) < new Date(d.p.t_publicado)) cop = '';   // tras «más opciones» se vuelve a copiar
+    return { mk: mk, env: env, cop: cop, hecho: mk ? !!env : !!(env || cop) };
+  }
+  function colaHtml(tpls, d, cur) {
+    var it = tpls.map(function (c) { var k = tplIdx(c); if (k < 0) return null; var box = tplBox(k, d, 'n'); if (!box) return null; var x = tplEstado(c, d); x.c = c; x.k = k; x.box = box; return x; }).filter(Boolean);
+    if (!it.length) return '';
+    var opc = cur && cur.etapa === 'decidir', sig = opc ? -1 : it.findIndex(function (x) { return !x.hecho; });
+    return '<div class="c-cola" aria-label="Mensajes de este paso">' + (opc ? '<p class="c-cola-nota">Solo si hace falta, según lo que pase en la votación.</p>' : '') + it.map(function (x, j) {
+      var st = x.hecho ? 'hecho' : j === sig ? 'siguiente' : 'despues', key = colaKey(d, x.c), ab = key in abiertos ? abiertos[key] : j === sig;
+      var cuando = x.env || x.cop, lab = x.hecho ? (x.env ? 'Enviado' : 'Copiado') + (cuando ? ' ' + hhmm(cuando) : '') : x.cop ? 'Copiado ' + hhmm(x.cop) + ' · falta marcar' : j === sig ? 'Siguiente' : opc ? 'Si hace falta' : 'Después';
+      return '<details class="c-cola-i" data-st="' + st + '" data-cola="' + e(key) + '"' + (ab ? ' open' : '') + '><summary><span class="c-cola-m" aria-hidden="true"></span><b>' + e(x.c) + '</b><span class="c-cola-t">' + e(TPL[x.k][1]) + '</span><span class="c-cola-st">' + e(lab) + '</span></summary>' + x.box + '</details>';
+    }).join('') + '</div>';
   }
   /** 2.6.0 · Mapa del recorrido: 5 etapas por plan, ligadas a los tres momentos. Reemplaza la lista de 19 pasos. */
   var ETAPAS_MAPA = [['grupo', 'Grupo', 'Antes'], ['proponer', 'Proponer', 'Activación'], ['decidir', 'Decidir', 'Activación'], ['dia', 'El día', 'Interacción'], ['cierre', 'Cierre', 'Continuidad']];
   var MAPA_IR = { grupo: ['grupos', null], proponer: ['planes', '#restr'], decidir: ['planes', '#decision'], dia: ['registro', '.estado-sel'], cierre: ['planes', '#pulsos'] };
   function mapaHtml(g, L, i, cur, hechosN) {
     var rel = relojesDe(g), psG = planesDe(g.grupo_id), ultR = psG.length ? Number(psG[psG.length - 1].ronda) : 0;
-    function celda(r, et) {
+    function pos(hr, hc, vr, vc) { return ' style="--hr:' + hr + ';--hc:' + hc + ';--vr:' + vr + ';--vc:' + vc + '"'; }
+    function celda(r, et, c, act) {
       var pasos = L.filter(function (s) { return s.etapa === et[0] && (et[0] === 'grupo' ? true : s.ronda === r); });
       var ahora = cur && pasos.indexOf(cur) >= 0, st = !pasos.length ? 'omitido' : pasos.every(function (s) { return s.hecho; }) ? 'hecho' : ahora ? 'ahora' : 'pendiente';
       var res = L.res[(et[0] === 'grupo' ? 0 : r) + '|' + et[0]] || (st === 'hecho' ? 'Listo' : st === 'omitido' ? '—' : '');
@@ -525,17 +632,19 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       var inner = '<b><span class="c-m" aria-hidden="true">' + marca + '</span>' + e(et[1]) + '</b><span class="c-res">' + e(res) + '</span>' +
         (rl ? '<span class="c-rel" data-vencido="' + (rl.vencido ? 1 : 0) + '">' + (rl.vencido ? 'Toca ya · ' : '') + e(enCuanto(rl.t)) + '</span>' : '');
       var lab = 'Plan ' + r + ', ' + et[1] + ' (' + et[2] + '): ' + ({ hecho: 'hecho', ahora: 'toca ahora', pendiente: 'pendiente', omitido: 'no aplica' })[st] + (res && res !== '—' ? ', ' + res : '') + (rl ? ', ' + rl.txt + ' ' + enCuanto(rl.t) : '');
-      return '<li class="c-etapa" data-st="' + st + '"' + (rl && rl.vencido ? ' data-vencido="1"' : '') + (ahora ? ' aria-current="step"' : '') + '>' +
-        (ir ? '<button type="button" data-ir-etapa="' + et[0] + '" data-plan="' + e(pid) + '" aria-label="' + e(lab) + '">' + inner + '</button>' : '<div aria-label="' + e(lab) + '" role="group">' + inner + '</div>') + '</li>';
+      return '<div class="c-etapa" data-st="' + st + '"' + (act ? ' data-actual="1"' : '') + pos(r + 1, c + 2, c + 2, r + 1) + (rl && rl.vencido ? ' data-vencido="1"' : '') + (ahora ? ' aria-current="step"' : '') + '>' +
+        (ir ? '<button type="button" data-ir-etapa="' + et[0] + '" data-plan="' + e(pid) + '" aria-label="' + e(lab) + '">' + inner + '</button>' : '<div aria-label="' + e(lab) + '" role="group">' + inner + '</div>') + '</div>';
     }
-    var h = '<section class="c-mapa"' + (cur ? '' : ' data-state="done"') + ' aria-labelledby="mapaT"><header><h3 id="mapaT">Recorrido del grupo</h3><small>Paso ' + Math.min(hechosN + 1, L.length) + ' de ' + L.length + '</small></header>';
-    h += '<div class="c-fila c-momentos" aria-hidden="true"><span></span><ol class="c-etapas">' + ETAPAS_MAPA.map(function (et) { return '<li>' + e(et[2]) + '</li>'; }).join('') + '</ol></div>';
+    var h = '<section class="c-mapa"' + (cur ? '' : ' data-state="done"') + ' aria-labelledby="mapaT"><header><h3 id="mapaT">Recorrido del grupo</h3><small>' + e(grupoNom(g)) + '</small></header>';
+    // 2.7.0 (F1): una sola rejilla; en pantalla ancha va vertical en la columna izquierda (etapas hacia abajo, planes en columnas)
+    h += '<div class="c-g">' + ETAPAS_MAPA.map(function (et, c) { return '<span class="c-mom" aria-hidden="true"' + pos(1, c + 2, c + 2, 1) + '>' + e(et[2]) + '</span>'; }).join('');
     [1, 2].forEach(function (r) {
       var actual = cur ? (cur.etapa === 'grupo' ? r === 1 : cur.ronda === r) : r === 2;
-      h += '<div class="c-fila"' + (actual ? ' data-actual="1"' : '') + '><span class="c-fila-n">Plan ' + r + '</span><ol class="c-etapas">' + ETAPAS_MAPA.map(function (et) {
-        return et[0] === 'grupo' ? (r === 1 ? celda(r, et) : '<li class="c-etapa c-hueco" aria-hidden="true"><span>Mismo grupo</span></li>') : celda(r, et);
-      }).join('') + '</ol></div>';
+      h += '<span class="c-fila-n"' + (actual ? ' data-actual="1"' : '') + pos(r + 1, 1, 1, r + 1) + '>Plan ' + r + '</span>' + ETAPAS_MAPA.map(function (et, c) {
+        return et[0] === 'grupo' && r === 2 ? '<span class="c-etapa c-hueco" aria-hidden="true"' + pos(3, 2, 2, 3) + '>Mismo grupo</span>' : celda(r, et, c, actual);
+      }).join('');
     });
+    h += '</div>';
     if (cur) {
       var enEt = L.filter(function (s) { return s.etapa === cur.etapa && s.ronda === cur.ronda; });
       h += '<ol class="c-detalle" aria-label="Pasos de la etapa actual">' + enEt.map(function (s) { var now = s === cur; return '<li data-st="' + (s.hecho ? 'hecho' : now ? 'ahora' : 'pendiente') + '"' + (now ? ' aria-current="step"' : '') + '>' + e(s.txt) + '</li>'; }).join('') + '</ol>';
@@ -568,6 +677,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       S.$$('[data-tab]').forEach(function (x) { if (x.getAttribute('role') === 'tab') x.setAttribute('aria-selected', String(x.dataset.tab === b.dataset.tab)); else x.dataset.activa = x === b ? '1' : ''; });   // 2.5.0: solo las pestañas llevan aria-selected
       S.$$('.tab').forEach(function (t) { S.show(t, t.id === 'tab-' + b.dataset.tab); }); var aj = S.$('.c-ajustes'); if (aj) aj.open = false;
       growAll();   // 2.5.1: los mensajes de una pestaña oculta se medían en 0 px
+      var pn = S.$('#tab-' + b.dataset.tab); if (pn && pn.getBoundingClientRect().top > innerHeight - 120) pn.scrollIntoView({ behavior: suave(), block: 'start' });   // 2.7.0 (F1): la barra de pestañas flota abajo; tocarla lleva al panel
     };
   });
 
@@ -595,7 +705,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       if (tira) { tira.hidden = false; tira.innerHTML = '<span class="mago-led" aria-hidden="true"></span><span><b>Mago en línea</b> · <b id="tiraMin">' + hm(Date.now() - ini) + '</b> <span class="tiny">· ' + e(nom) + (ps ? ' · ' + e(rondaLabel(ps)) : '') + '</span></span><button type="button" class="s-button" data-size="sm" data-style="danger" id="tiraOff">■ Mago off</button>'; }
       var nudge = function () { var nz = S.$('#magoNudge'); if (nz) nz.innerHTML = Date.now() - lastAct > 10 * 6e4 ? '<div class="s-banner" data-type="progress" style="margin-top:8px"><span><strong>¿Sigues atendiendo?</strong>Si estás esperando respuestas, cierra con «Mago off»: la consola te avisa cuando haya novedades y los minutos quedan bien medidos.</span></div>' : ''; };
       reloj = setInterval(function () { var t = hm(Date.now() - ini), m = S.$('#magoMin'), m2 = S.$('#tiraMin'); if (m) m.textContent = t; if (m2) m2.textContent = t; nudge(); }, 15000);   // 2.4.0: aviso tras 10 min sin actividad
-      var off = function () { var b = this; act(b, { action: 'sesion_mago', accion: 'off', mago: nom, sesion_id: ses.sesion_id }, function (r) { return 'Mago off · ' + S.num(r.minutos, 1) + ' min sumados al plan'; }).then(function (r) { if (r && r.ok) { D.sesiones_abiertas = (D.sesiones_abiertas || []).filter(function (x) { return x.sesion_id !== ses.sesion_id; }); renderMagobar(); renderSiguiente(); } }); };
+      var off = function () { var b = this; enviarMedicion(); act(b, { action: 'sesion_mago', accion: 'off', mago: nom, sesion_id: ses.sesion_id }, function (r) { return 'Mago off · ' + S.num(r.minutos, 1) + ' min sumados al plan'; }).then(function (r) { if (r && r.ok) { D.sesiones_abiertas = (D.sesiones_abiertas || []).filter(function (x) { return x.sesion_id !== ses.sesion_id; }); renderMagobar(); renderSiguiente(); } }); };
       S.$('#magoOff', el).onclick = off; if (tira) S.$('#tiraOff', tira).onclick = off;
     } else {
       if (tira) tira.hidden = true;
@@ -644,13 +754,14 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       var n = g.miembros.length, inv = Number(g.n_invitados) || 0, invLink = S.link('unirse.html', { inv: g.codigo_invitacion });
       var mm = g.miembros.map(function (m) {
         var personal = linkPlan(m.pid);
-        return '<div class="member"><div class="who"><b>' + e(m.nombre || '—') + '</b> <span class="tiny muted">' + e(m.rol) + '</span><br><span class="tiny muted">+' + e(S.phone(m.whatsapp)) + '</span></div>' +
+        return '<div class="member"><div class="who"><b>' + e(m.nombre || '—') + '</b> <span class="tiny muted">' + e(m.rol) + '</span><br><span class="tiny muted c-tel" data-tel="+' + e(S.phone(m.whatsapp)) + '">' + e(telOculto(m.whatsapp)) + '</span> <button type="button" class="c-ver-tel" data-ver-tel aria-label="Mostrar el número de ' + e(m.nombre) + '">Mostrar</button></div>' +
           (function () { var pm = primerMensaje(g, m); return '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(S.wa(m.whatsapp, pm)) + '"' + (pm ? ' title="Abre WhatsApp con el primer mensaje escrito; revísalo antes de enviar">Abrir chat con mensaje' : '>Abrir chat') + '</a>'; })() +
-          (personal ? '<button class="btn btn-ghost btn-sm" data-copy="' + e(personal) + '">' + 'Enlace web (contingencia)' + '</button>' : '') +
-          '<button class="btn btn-danger btn-sm" data-revocar="' + e(m.pid) + '" data-nombre="' + e(m.nombre) + '" data-busy="Purgando…">Revocar y purgar</button></div>';
+          '<details class="c-mas-p"><summary aria-label="Más acciones para ' + e(m.nombre) + '">⋯</summary><div class="c-mas-pop">' +   // 2.7.0 (F0): lo destructivo, fuera de la fila
+          (personal ? '<button type="button" class="btn btn-ghost btn-sm" data-copy="' + e(personal) + '">Copiar enlace web (contingencia)</button>' : '') +
+          '<button type="button" class="btn btn-danger btn-sm" data-revocar="' + e(m.pid) + '" data-nombre="' + e(m.nombre) + '" data-busy="Purgando…">Revocar y purgar datos…</button></div></details></div>';
       }).join('');
       var arch = archivados().indexOf(g.grupo_id) >= 0;
-      return '<div class="card"><div class="actions" style="margin:0 0 8px;justify-content:space-between"><h3 style="margin:0">' + e(grupoNom(g)) + (g.nombre ? ' <span class="tiny muted">' + e(g.tipo_grupo) + ' · ' + e(g.grupo_id.slice(-6)) + '</span>' : '') + '</h3>' + expChip(g.experimento) + '<span>' + badge(g.estado) + ' ' + (g.modo === 'prueba' ? badge('prueba') : '') + ' <span class="badge">' + e(g.version || 'v1') + '</span></span></div>' +
+      return '<div class="card"><div class="actions" style="margin:0 0 8px;justify-content:space-between"><h3 style="margin:0">' + e(grupoNom(g)) + (g.nombre ? ' <span class="tiny muted">' + e(cap(g.tipo_grupo)) + '</span>' : '') + '</h3><span>' + badge(g.estado) + ' ' + (g.modo === 'prueba' ? badge('prueba') : '') + '</span></div>' +
         '<p class="small" style="margin:0">Quórum: <b>' + n + ' / ' + inv + '</b> consintieron' + (g.motivo ? ' · <span class="muted">' + e(g.motivo) + '</span>' : '') + '</p>' +
         '<div class="bar"><i style="width:' + (inv ? Math.min(100, Math.round(n / inv * 100)) : 0) + '%"></i></div>' +
         (g.estado === 'reclutando' ? '<div class="linkbox" style="margin-top:10px">' + e(invLink) + '</div><div class="actions"><button class="btn btn-ghost btn-sm" data-copy="' + e(invLink) + '">Copiar invitación</button>' +
@@ -667,6 +778,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     }).join('') + '</div>';
     el.innerHTML = h;
     bindCopy(el);
+    S.$$('[data-ver-tel]', el).forEach(function (b) { b.onclick = function () { var t = b.previousElementSibling, ver = b.textContent === 'Mostrar'; t.textContent = ver ? t.dataset.tel : telOculto(t.dataset.tel); b.textContent = ver ? 'Ocultar' : 'Mostrar'; }; });   // 2.7.0 (F4): minimización
     S.$$('[data-archivar]', el).forEach(function (b) { b.onclick = function () { var ar = archivados(), k = ar.indexOf(b.dataset.archivar); if (k >= 0) ar.splice(k, 1); else ar.push(b.dataset.archivar); S.LS.set('sintonia_archivados', JSON.stringify(ar)); S.toast(k >= 0 ? 'El grupo vuelve a la lista' : 'Archivado en esta consola (no se borra nada)'); renderAll(); }; });   // 2.4.0
     S.$$('[data-cerrar]', el).forEach(function (b) {
       b.onclick = function () {
@@ -683,6 +795,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       };
     });
   }
+  function telOculto(w) { var d = String(w || '').replace(/\D/g, ''); return d.length < 6 ? '+' + d : '+' + d.slice(0, 2) + ' ' + d.slice(2, 5) + ' ••• ' + d.slice(-4); }
   function bindCopy(el) { S.$$('[data-copy]', el).forEach(function (b) { b.onclick = function () { S.copy(b.dataset.copy); }; }); }
 
   /* ---------- 2 · Curaduría de planes (humano en el loop) ---------- */
@@ -712,7 +825,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function planCard(g, p) {
     var ops = []; try { ops = JSON.parse(p.opciones_json || '[]'); } catch (x) {}
     var decs = p.decisiones || [], ultDec = decs[decs.length - 1];
-    var h = '<div class="card"><div class="actions" style="margin:0 0 6px;justify-content:space-between"><h3 style="margin:0">' + e(rondaLabel(p)) + '</h3><span>' + expChip(p.experimento) + ' ' + badge(p.estado) + ' <span class="badge">' + e(p.version) + '</span></span></div>';
+    var h = '<div class="card"><div class="actions" style="margin:0 0 6px;justify-content:space-between"><h3 style="margin:0">' + e(rondaLabel(p)) + '</h3><span>' + badge(p.estado) + '</span></div>';
     if (p.estado === 'borrador' || p.estado === 'en_revision') {
       if (!borrador.length && ops.length) borrador = ops.map(function (o) { return { tipo: o.tipo || '', titulo: o.titulo, hora_salida: o.hora_salida, presupuesto_aprox: o.presupuesto_aprox, por_que: o.por_que, ids: (o.paradas || []).map(function (s) { return s.id; }) }; });
       var prefs = (g && g.preferencias) || [], dt = diaTxt(g);
@@ -721,7 +834,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
         (prefs.length ? '<ul style="margin:6px 0 0;padding-left:18px">' + prefs.map(function (x) { return '<li>' + e(x) + '</li>'; }).join('') + '</ul>' : '<p class="muted" style="margin:6px 0 0">Nadie escribió gustos o restricciones.</p>') + '</div>';
       if (ultDec) h += '<div class="card warn small" style="margin:8px 0"><b>Ronda ' + (decs.length + 1) + ' de opciones.</b> En la anterior, ' + e(resumenDecision(ultDec)) + '. Pega lo que dijeron en el grupo para que Gemini proponga otras.</div>';
       h += '<div class="field"><label for="restr">Lo que dijeron en el grupo para este plan</label><textarea id="restr" data-keep="restr" maxlength="1500" placeholder="Pega aquí los mensajes del chat tal cual, o escribe: sábado en la tarde, máx. $40.000, sur u oeste."></textarea><span class="hint">Gemini lo usa junto con lo del registro. Sin esto solo tiene lo del registro y suele proponer menos.</span></div>' +
-        '<div class="actions"><button class="btn btn-honey btn-sm" id="pedirIA" data-busy="Gemini pensando…">✨ ' + (borrador.length ? 'Pedir otras 3 opciones' : 'Pedir 3 opciones a Gemini') + '</button><button class="btn btn-ghost btn-sm" id="addOp">+ Opción manual</button></div>' +
+        '<div class="actions"><button class="btn btn-ia btn-sm" id="pedirIA" data-busy="Gemini pensando…">' + (borrador.length ? 'Pedir otras 3 opciones' : 'Pedir 3 opciones a Gemini') + '</button><button class="btn btn-ghost btn-sm" id="addOp">+ Opción manual</button></div>' +
         '<p class="tiny muted">Gemini solo usa lugares activos del inventario. Revisa y edita antes de publicar. Si un horario o un costo del inventario está mal, corrígelo en la hoja «inventario».</p>';
       var TIPO = { exacta: 'Cumple todo', intermedia: 'Punto medio', diferente: 'Algo diferente' };
       h += borrador.map(function (o, i) {
@@ -743,14 +856,13 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     if (p.estado === 'votando') {
       var g2 = grupo(p.grupo_id), total = g2 ? g2.miembros.length : 0;
       var horasPub = p.t_publicado ? (Date.now() - new Date(p.t_publicado).getTime()) / 36e5 : 0;
-      h += '<div class="card ' + (horasPub >= 2 ? 'warn' : 'soft') + ' small" style="margin-top:12px">Publicado hace <b>' + S.num(horasPub) + ' h</b>.' + (horasPub >= 2 ? ' Si faltan votos, envía el recordatorio con conteo (pestaña Mensajes o «Lo que toca ahora»).' : '') + '</div>';
+      h += '<div class="card ' + (horasPub >= 2 ? 'warn' : 'soft') + ' small" style="margin-top:12px">Publicado <b>' + e(enCuanto(new Date(p.t_publicado).getTime())) + '</b>.' + (horasPub >= 2 ? ' Si faltan votos, envía el recordatorio con conteo (pestaña Mensajes o «Lo que toca ahora»).' : '') + '</div>';
       h += '<div class="card soft" id="decision" style="margin-top:12px"><h3 style="margin:0 0 4px">Registrar la decisión</h3><p class="small muted" style="margin:0 0 8px">Copia los números de la encuesta de WhatsApp («Ver votos»). No hace falta registrar quién votó qué.</p>' +
-        '<div class="dec-grid">' + ops.map(function (o, i) { return '<label class="dec-n"><span>' + (i + 1) + '. ' + e(corto(o.titulo)) + '</span><input type="number" min="0" max="99" inputmode="numeric" id="dv' + i + '" data-keep="dv' + i + '"></label>'; }).join('') +
-        '<label class="dec-n"><span>Cualquiera me sirve</span><input type="number" min="0" max="99" inputmode="numeric" id="dvc" data-keep="dvc"></label><label class="dec-n"><span>Ninguna me sirve</span><input type="number" min="0" max="99" inputmode="numeric" id="dvn" data-keep="dvn"></label>' +
-        '<label class="dec-n"><span>Personas que votaron (de ' + total + ')</span><input type="number" min="0" max="' + total + '" inputmode="numeric" id="dvp" data-keep="dvp"></label></div>' +
+        '<div class="c-votos">' + ops.map(function (o, i) { return voto('dv' + i, (i + 1) + '. ' + corto(o.titulo), 99, i); }).join('') + voto('dvc', 'Cualquiera me sirve', 99, 'c') + voto('dvn', 'Ninguna me sirve', 99, 'n') + '</div>' +   // 2.7.0 (F2): conteo con − y +
+        '<div class="c-votaron">' + voto('dvp', 'Votaron', total, 'p') + '<span class="muted">de ' + total + ' personas</span></div>' +
         '<p class="small" id="vaGanando" style="margin:8px 0"></p>' +
         '<div class="field"><label for="elegida">Opción ganadora</label><select id="elegida" data-keep="elegida">' + opts(ops.map(function (o, i) { return [i, (i + 1) + '. ' + o.titulo]; }), 0) + '</select></div>' +
-        campoEncuentro('E', '') +
+        '<p class="c-sub">Día y hora</p>' + chipsEncuentro(g2, 'E') + '<details class="c-otro"><summary>Otro día u hora</summary>' + campoEncuentro('E', '') + '</details>' +
         '<div class="field"><label for="salida">Salida sugerida</label><input id="salida" data-keep="salida" type="text" maxlength="40" placeholder="Se calcula: 1 h antes del encuentro"><span class="hint" id="prevSalida">Se calcula sola: 1 h antes del encuentro (traslado conservador en Cali). Puedes editarla.</span></div>' +
         '<div class="field"><label for="nota">Nota (opcional)</label><input id="nota" data-keep="nota" type="text" maxlength="300"></div>' +
         '<div class="actions"><button class="btn btn-primary btn-sm" id="cerrarPlan" data-busy="Cerrando…">Cerrar el plan con esta decisión</button><button class="btn btn-ghost btn-sm" id="masOpciones" data-busy="Reabriendo…">Ninguna convence → pedir más opciones</button></div>' +
@@ -797,6 +909,20 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       var o = borrador[Number(c.dataset.op)];
       S.$$('[data-f]', c).forEach(function (f) { if (f.dataset.f === 'id0') o.ids[0] = f.value; else if (f.dataset.f === 'id1') o.ids[1] = f.value; else o[f.dataset.f] = f.value; });
     });
+  }
+  function voto(id, lab, max, k) {
+    return '<div class="c-voto" data-k="' + k + '"><label for="' + id + '">' + e(lab) + '</label><span class="c-step"><button type="button" data-step="-1" data-for="' + id + '" aria-label="Uno menos en ' + e(lab) + '">−</button>' +
+      '<input type="number" min="0" max="' + max + '" inputmode="numeric" id="' + id + '" data-keep="' + id + '" placeholder="0"><button type="button" data-step="1" data-for="' + id + '" aria-label="Uno más en ' + e(lab) + '">+</button></span>' + (k === 'p' ? '' : '<i class="c-voto-bar" aria-hidden="true"></i>') + '</div>';
+  }
+  /** 2.7.0 (F2): botones de día y hora sacados de la disponibilidad del grupo («Otro día» sigue en los campos). */
+  function chipsEncuentro(g, pref) {
+    var d = dispoDe(g), hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+    var want = { 'viernes': [5], 'sábado': [6], 'domingo': [0], 'entre semana': [1, 2, 3, 4] }, dias = [];
+    for (var k = 0; k < 14 && dias.length < 4; k++) { var x = new Date(hoy.getTime() + k * 864e5), w = x.getDay(); if (!d.dias.length ? k < 7 && dias.length < 3 : d.dias.some(function (n) { return (want[n] || []).indexOf(w) >= 0; })) dias.push(x); }
+    var f = d.franjas[0] || 'tarde', hs = f === 'mañana' ? ['09:00', '10:00', '11:00'] : f === 'noche' ? ['19:00', '20:00', '21:00'] : ['15:00', '16:00', '17:00'];
+    var ds = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'], ms = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    return '<div class="c-chips" role="group" aria-label="Día del encuentro">' + dias.map(function (x) { var v = x.getFullYear() + '-' + pad2(x.getMonth() + 1) + '-' + pad2(x.getDate()); return '<button type="button" class="c-chip" data-fecha="' + v + '" data-pref="' + pref + '">' + ds[x.getDay()] + ' ' + x.getDate() + ' ' + ms[x.getMonth()] + '</button>'; }).join('') + '</div>' +
+      '<div class="c-chips" role="group" aria-label="Hora del encuentro">' + hs.map(function (v) { var p2 = v.split(':'); return '<button type="button" class="c-chip" data-hora="' + v + '" data-pref="' + pref + '">' + e(horaTxt(new Date(2000, 0, 1, +p2[0], +p2[1]))) + '</button>'; }).join('') + '</div>';
   }
   function conteos(el, n) {
     var num = function (id) { var x = S.$('#' + id, el); return x && x.value !== '' ? Math.max(0, Number(x.value) || 0) : ''; };
@@ -845,12 +971,18 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       var vg = S.$('#vaGanando', el); if (!vg || !opsP.length) return;
       var c = conteos(el, opsP.length), extra = Number(c.cualquiera) || 0, tot = c.votos.map(function (x) { return (Number(x) || 0) + extra; });
       var tope = Math.max.apply(null, tot.concat([0])), top = tot.map(function (x, i) { return x === tope ? i : -1; }).filter(function (i) { return i >= 0; });
-      if (!tope) { vg.textContent = 'Escribe los votos de cada opción para ver cuál va ganando.'; return; }
+      var maxV = Math.max(1, tope, Number(c.cualquiera) || 0, Number(c.ninguna) || 0);
+      S.$$('.c-voto', el).forEach(function (r) { var k = r.dataset.k, bar = S.$('.c-voto-bar', r); if (!bar) return; var v = k === 'c' ? extra : k === 'n' ? Number(c.ninguna) || 0 : tot[Number(k)] || 0; bar.style.setProperty('--w', Math.round(v / maxV * 100) + '%'); r.dataset.gana = String(k !== 'c' && k !== 'n' && tope > 0 && v === tope); });
+      if (!tope) { vg.textContent = 'Toca + en cada opción con los números de «Ver votos».'; return; }
       if (top.length > 1) vg.innerHTML = '<b>Empate</b> entre ' + top.map(function (i) { return 'la ' + (i + 1); }).join(' y ') + ' (' + tope + ' votos). Usa /empate o decide con el grupo.';
       else { vg.innerHTML = 'Va ganando: <b>' + (top[0] + 1) + '. ' + e(opsP[top[0]].titulo) + '</b> (' + tope + ' votos' + (extra ? ', con «Cualquiera»' : '') + ').'; if (selE && !selE.dataset.manual && !fv('elegidaManual')) selE.value = String(top[0]); }
       if (Number(c.ninguna) > 0 && Number(c.ninguna) >= tope) vg.innerHTML += ' «Ninguna me sirve» tiene ' + c.ninguna + ': considera pedir más opciones.';
     }
     S.$$('[id^="dv"]', el).forEach(function (x) { x.addEventListener('input', calcGanador); });
+    S.$$('[data-step]', el).forEach(function (b) { b.onclick = function () { var x = S.$('#' + b.dataset.for, el); if (!x) return; var v = Math.max(0, Math.min(Number(x.max) || 99, (Number(x.value) || 0) + Number(b.dataset.step))); x.value = String(v); x.dispatchEvent(new Event('input', { bubbles: true })); }; });
+    function marcarChips() { ['E'].forEach(function (pf) { var fe = S.$('#fecha' + pf, el), ho = S.$('#hora' + pf, el); S.$$('.c-chip[data-pref="' + pf + '"]', el).forEach(function (c) { c.setAttribute('aria-pressed', String(c.dataset.fecha ? !!fe && fe.value === c.dataset.fecha : !!ho && ho.value === c.dataset.hora)); }); }); }
+    S.$$('.c-chip', el).forEach(function (c) { c.onclick = function () { var t = S.$((c.dataset.fecha ? '#fecha' : '#hora') + c.dataset.pref, el); if (!t) return; t.value = c.dataset.fecha || c.dataset.hora; t.dispatchEvent(new Event('change', { bubbles: true })); t.dispatchEvent(new Event('input', { bubbles: true })); marcarChips(); }; });
+    ['#fechaE', '#horaE'].forEach(function (q) { var x = S.$(q, el); if (x) x.addEventListener('change', marcarChips); });
     if (selE) selE.addEventListener('change', function () { selE.dataset.manual = '1'; formCache[scopeDom + '|elegidaManual'] = '1'; });
     // 2.3.0 / 2.4.0: la salida se calcula desde el encuentro (1 h antes); se puede editar
     function enlazarSalida(pref, sId) {
@@ -861,7 +993,8 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       return upd;
     }
     var updE = enlazarSalida('E', 'salida'), updC = enlazarSalida('C', 'salidaC');
-    trasRestaurar = function () { calcGanador(); updE(); };
+    trasRestaurar = function () { calcGanador(); updE(); marcarChips(); };
+    marcarChips();
     calcGanador();
     var corr = S.$('#corregir', el);   // 2.0.7 (R1): corregir la hora de un plan cerrado sin tocar el cierre
     if (corr) corr.onclick = function () {
@@ -923,7 +1056,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       n: ops.length || 3, plan: w.titulo || '[plan elegido]', lugar: (w.paradas || []).map(function (s) { return s.nombre + (s.zona ? ' (' + s.zona + ')' : ''); }).join(' → ') || '[lugar]',
       lugarCorto: s0 ? s0.nombre : '[lugar]', mapa: s0 ? mapaDe(mezcla(i0, s0)) : '',
       hora: hd ? S.fecha(hd) : '[día y hora]', horaSola: hd ? horaTxt(hd) : '[hora]', fecha: hd ? hd.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' }) : '[fecha]',
-      retro: persona && p ? linkRetro(persona.pid, p.plan_id) : '', apuntados: apuntados || '[n]', dia: diaTxt(g), dias: dispoDe(g).dias,
+      retro: persona && p ? linkRetro(persona.pid, p.plan_id) : '', apuntados: apuntados || '[n]', apuntadosN: apuntados, dia: diaTxt(g), dias: dispoDe(g).dias,
       p: p, g: g, persona: persona, nom: persona ? persona.nombre : '', noLlegan: noLlegan
     };
   }
@@ -944,7 +1077,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     ['/evento', 'Evento del grupo (WhatsApp: Adjuntar → Evento)', 'grupo', 'datos del evento del grupo', function (d) { return d.p && d.p.estado === 'cerrado' ? { evento: { titulo: corto(d.plan, 40), descripcion: d.lugar + ' · salida sugerida ' + d.salida, fecha: cap(d.fecha), hora: d.horaSola, ubicacion: [d.lugarCorto, d.dir].filter(Boolean).join(', '), mapa: d.mapa } } : null; }],
     ['/asistencia', 'Asistencia · solo si no creaste el evento', 'grupo', 'pregunta y opciones de la encuesta de asistencia', function () { return { poll: poll('¿Van?', ['Me apunto', 'No puedo'], false) }; }],
     ['/reprogramar', 'Si alguien no puede · otro día u otra hora', 'grupo', 'proponer con calma buscar otro día u otra hora, sin señalar a nadie', function () { return { txt: 'A parte del parche no le cuadra. Busquemos algo que nos sirva a todos.', poll: poll('¿Qué les sirve más?', ['Otro día', 'Otra hora', 'Así está bien'], false) }; }],
-    ['/hoy', 'Día del plan · en la mañana', 'grupo', 'recordar que hoy es el plan, con el conteo de confirmados', function (d) { return d.p && d.p.estado === 'cerrado' ? '¡Es hoy! Van ' + d.apuntados + ' confirmados. Nos vemos a las ' + d.horaSola + ' en ' + d.lugarCorto + '. Salida sugerida: ' + d.salida + ' 🙌' : null; }],
+    ['/hoy', 'Día del plan · en la mañana', 'grupo', 'recordar que hoy es el plan, con el conteo de confirmados', function (d) { return d.p && d.p.estado === 'cerrado' ? '¡Es hoy! ' + (d.apuntadosN ? 'Van ' + d.apuntadosN + ' confirmados. ' : '') + 'Nos vemos a las ' + d.horaSola + ' en ' + d.lugarCorto + '. Salida sugerida: ' + d.salida + ' 🙌' : null; }],
     ['/salida', 'Hora de salida (2 h antes)', 'ambos', 'avisar la hora de salida sugerida según el tráfico, dos horas antes del encuentro', function (d) { return (d.persona ? d.nom + ', ' : '') + 'Para llegar a ' + d.lugarCorto + ' a las ' + d.horaSola + ', salgan a las ' + d.salida + ' (si llueve o hay trancón, mejor un poco antes) 🚗' + (d.habil ? '\nSi van en carro, revisen el pico y placa.' : ''); }],
     ['/checkpoint', 'Llegada · encuesta a la hora del encuentro', 'grupo', 'preguntar al grupo si ya llegaron', function () { return { poll: poll('¿Ya llegaron?', ['Ya llegué', 'Voy en camino', 'No voy a poder'], false) }; }],
     ['/no_llega', 'Alguien no ha llegado', 'persona', 'preguntar con cuidado a una persona que todavía no llega cómo va y si está bien, sin culpa ni presión', function (d) { return d.nom + ', ¿cómo vas? El parche ya está en ' + d.lugarCorto + '. ¿Todo bien? Si se te complicó llegar, cuéntanos y lo ajustamos 🙌'; }],
@@ -982,7 +1115,8 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     o.txts.forEach(function (txt, k) {
       var id = 'ta-' + w + '-' + i + '-' + k, val = k === 0 && ajustes[i + '|' + dd] ? ajustes[i + '|' + dd] : txt;
       h += (o.txts.length > 1 ? '<p class="tiny muted" style="margin:8px 0 2px">Mensaje ' + (k + 1) + ' de ' + o.txts.length + '</p>' : '') +
-        '<textarea class="tpl-text" id="' + id + '" data-keep="tpl|' + i + '|' + dd + '|' + k + '" aria-label="Texto de ' + e(t[0]) + '">' + e(val) + '</textarea>' +
+        '<textarea class="tpl-text" id="' + id + '" data-keep="tpl|' + i + '|' + dd + '|' + k + '" aria-label="Texto de ' + e(t[0]) + '" aria-describedby="' + id + '-f">' + e(val) + '</textarea>' +
+        '<p class="tpl-falta" id="' + id + '-f">Completa lo que está entre [corchetes] antes de copiar.</p>' +
         (o.txts.length === 1 && !d.persona ? '' : '<div class="actions" style="margin-top:4px">' + (d.persona ? '<button type="button" class="btn btn-primary btn-sm" data-wa-ta="' + id + '" data-wa="' + e(d.persona.whatsapp) + '">Abrir chat con ' + e(d.persona.nombre) + '</button>'
           : '<button type="button" class="btn ' + (uno ? 'btn-primary' : 'btn-ghost') + ' btn-sm" data-cp-ta="' + id + '"' + (uno ? ' data-cpm="' + mk + '" data-busy="Guardando…">Copiar y marcar enviado' : '>Copiar') + '</button>') + '</div>');
     });
@@ -994,7 +1128,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       [['Nombre del evento', o.evento.titulo], ['Descripción', o.evento.descripcion], ['Fecha', o.evento.fecha], ['Hora de inicio', o.evento.hora], ['Ubicación', o.evento.ubicacion]].map(function (f) { return '<div class="poll-row"><span><span class="tiny muted">' + e(f[0]) + '</span><br>' + e(f[1]) + '</span><button type="button" class="btn btn-ghost btn-sm" data-cp="' + e(f[1]) + '">Copiar</button></div>'; }).join('') + '</div>';
     var mapaU = (o.txts.join(' ').match(/https:\/\/www\.google\.com\/maps\/[^\s]+/) || [])[0] || (o.evento && o.evento.mapa) || '';
     var pie = copiaUnica + (mapaU ? '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(mapaU) + '">Ver en el mapa ↗</a>' : '') +
-      (o.txts.length ? '<button type="button" class="btn btn-honey btn-sm" data-ia="' + i + '" data-w="' + w + '" data-busy="Redactando…">✨ Ajustar con Gemini</button>' : '') +
+      (o.txts.length ? '<button type="button" class="btn btn-ghost btn-sm c-ia" data-ia="' + i + '" data-w="' + w + '" data-busy="Redactando…">Ajustar tono</button>' : '') +
       (ajustes[i + '|' + dd] ? '<button type="button" class="btn btn-ghost btn-sm" data-orig="' + i + '">Volver al texto base</button>' : '') +
       (mk && !uno ? '<button type="button" class="btn btn-sm ' + (env ? 'btn-ghost' : 'btn-primary') + '" data-marca="' + mk + '" data-busy="Guardando…">' + (env ? 'Marcar otra vez' : 'Marcar como enviado') + '</button>' : '');
     return h + (pie ? '<div class="actions" style="margin-top:6px">' + pie + '</div>' : '') + '</div>';
@@ -1078,44 +1212,40 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
 
   function renderRegistro() {
     var el = S.$('#tab-registro'), p = plan(sel.plan), g = grupo(sel.grupo), e1 = true;   // 2.1.0: en las dos condiciones se puede registrar (en E1.5, solo si el motor falla)
-    var h = '<div class="card"><div class="actions" style="margin:0 0 6px;justify-content:space-between;flex-wrap:wrap"><h3 style="margin:0">Estado de cada persona</h3>' + expChip(vexp) + '</div>' +
+    var h = '<div class="card"><div class="actions" style="margin:0 0 6px;justify-content:space-between;flex-wrap:wrap"><h3 style="margin:0">Estado de cada persona</h3></div>' +
       '<p class="small muted" style="margin:0">' + (p ? e(rondaLabel(p)) + ' · ' + e(p.estado) + ' · ' + e(grupoLabel(g)) : 'Ningún plan seleccionado (elige uno en la pestaña 2).') + '</p>' +
       '<p class="small" style="margin:6px 0 0">' + (vexp === 'E1' ? 'En E1 tú registras lo que cada persona dijo en el grupo de WhatsApp. El menú <b>registra</b>; no le envía nada a nadie.' : 'En E1.5 lo registra el motor. Usa el menú solo si el motor falló o pasaste el plan al mago.') + '</p>';
     if (p && g) {
       var est = p.estado_por_pid || {};
-      h += '<div class="table-scroll" style="margin-top:10px"><table class="evtable"><thead><tr><th>Persona</th><th>Estado actual</th>' + (e1 ? '<th>Registrar</th>' : '') + '</tr></thead><tbody>' +
-        g.miembros.map(function (m) {
-          var es = estadoPersona(est[m.pid] || {});
-          return '<tr><td><b>' + e(m.nombre) + '</b> <span class="tiny muted">' + e(m.rol) + '</span></td><td><span class="st ' + es[0] + '">' + es[1] + '</span></td>' +
-            (e1 ? '<td><select class="estado-sel" data-estado="' + e(m.pid) + '" aria-label="Registrar estado de ' + e(m.nombre) + '"><option value="">Cambiar a…</option>' +
-              ESTADOS.map(function (t) { return '<option value="' + t[0] + '"' + (t[2] === es[0] ? ' disabled' : '') + '>' + t[1] + (t[2] === es[0] ? ' (actual)' : '') + '</option>'; }).join('') + '</select></td>' : '') + '</tr>';
-        }).join('') + '</tbody></table></div>';
-      h += '<p class="tiny muted" style="margin-top:6px">Orden normal: <span class="st sin">sin respuesta</span> → <span class="st apuntado">se apuntó</span> → <span class="st llego">llegó</span> → <span class="st casa">en casa</span>. <span class="st nopuede">no puede</span> si avisa que no va.</p>';
+      var cuenta = function (k) { return g.miembros.filter(function (m) { var x = est[m.pid] || {}; return k === 'apuntado' ? x.apuntado === true : k === 'nopuede' ? x.apuntado === false : !!x[k]; }).length; };
+      h += '<p class="c-cuenta">' + [['apuntado', 'se apuntaron'], ['llego', 'llegaron'], ['casa', 'en casa'], ['nopuede', 'no pueden']].map(function (k) { return '<span><b>' + cuenta(k[0]) + '</b> ' + k[1] + '</span>'; }).join('') + '<span class="muted">de ' + g.miembros.length + '</span></p>';
+      h += '<ul class="c-personas">' + g.miembros.map(function (m, j) {   // 2.7.0 (F2): un toque por persona y estado, sin menú
+        var es = estadoPersona(est[m.pid] || {});
+        return '<li><span class="c-pn"><b>' + e(m.nombre) + '</b> <span class="tiny muted">' + e(m.rol) + '</span></span>' +
+          (e1 ? '<span class="c-seg-btn" role="group" aria-label="Registrar a ' + e(m.nombre) + '">' + ESTADOS.map(function (t, q) { var on = t[2] === es[0]; return '<button type="button" class="' + (j === 0 && q === 0 ? 'estado-sel' : '') + '" data-estado="' + e(m.pid) + '" data-tipo="' + t[0] + '" aria-pressed="' + on + '"' + (on ? ' disabled' : '') + '>' + t[1] + '</button>'; }).join('') + '</span>'
+            : '<span class="st ' + es[0] + '">' + es[1] + '</span>') + '</li>';
+      }).join('') + '</ul>';
+      h += '<p class="tiny muted" style="margin-top:6px">Lo normal: se apuntó → llegó → en casa. «En casa» sin «Llegó» cuenta las dos cosas.</p>';
+      h += '<div class="actions" style="margin-top:8px"><button type="button" class="btn btn-ghost btn-sm" data-msg="mensaje_mago" data-busy="Guardando…">Envié otro mensaje al grupo</button></div>';
     }
     h += '</div>';
-    if (p && g && e1) {
-      var hx = hechos(p.plan_id);
-      h += '<div class="card"><h3>Mensajes del mago al grupo</h3><p class="small muted">Márcalo cuando ya lo enviaste. Queda en la hoja de eventos y lo ve todo el equipo, en cualquier computador.</p><div class="msg-done">' +
-        MSG_GRUPO.map(function (t) {
-          var l = hx[t[0]] || [], ok = l.length > 0;
-          return '<div class="msg-row' + (ok ? ' done' : '') + '"><span class="msg-name">' + (ok ? '✓ ' : '') + e(t[1]) + '</span><span class="tiny muted">' + (ok ? 'Hecho a las ' + hhmm(l[l.length - 1]) + (l.length > 1 ? ' · ' + l.length + ' veces' : '') : 'Pendiente') + '</span>' +
-            '<button class="btn btn-sm ' + (ok ? 'btn-ghost' : 'btn-primary') + '" data-msg="' + t[0] + '" data-busy="Guardando…">' + (ok ? 'Marcar otra vez' : 'Marcar como enviado') + '</button></div>';
-        }).join('') + '</div></div>';
-    }
+    // 2.7.0 (F1): «Mensajes del mago al grupo» salió de aquí; cada mensaje se marca en su plantilla («Lo que toca ahora» o Mensajes)
+    h += pulsoMagoHtml(p);
     h += '<details class="card"' + ((D.sesiones_por_revisar || []).length ? ' open' : '') + '><summary><b>Registro manual de minutos</b> · ' + ((D.sesiones_por_revisar || []).length ? 'hay una sesión que se cerró sola: escribe sus minutos reales' : 'solo si olvidaste el «Mago in»') + '</summary><p class="small muted">Con «Mago in / Mago off» los minutos se calculan solos (I3). Usa esto solo para un bloque que quedó por fuera.</p>' +
       '<div class="row"><div class="field"><label for="minActor">Rol de quien trabajó</label><select id="minActor">' + opts([['mago', 'Mago (habla con el grupo)'], ['soporte', 'Soporte (planes e inventario)'], ['tecnico', 'Técnico (arreglar fallas)']]) + '</select></div><div class="field"><label for="minN">Minutos</label><input id="minN" type="number" inputmode="numeric" min="1" max="600"></div></div>' +
       '<div class="field"><label for="minCausa">En qué se fue el tiempo</label><select id="minCausa">' + opts(CAUSAS) + '</select></div><div class="field"><label for="minNota">Nota (opcional)</label><input id="minNota" type="text" maxlength="300"></div>' +
       '<div class="actions"><button class="btn btn-primary btn-sm" id="minGuardar" data-busy="Guardando…">Guardar minutos' + (p ? ' en este plan' : '') + '</button></div></details>' +
       (p ? '<p class="small">Tiempo humano en ' + e(rondaLabel(p)) + ': <b>' + S.num(p.minutos || 0, 0) + ' min</b> (sesiones de mago y registros manuales).</p>' : '');
     el.innerHTML = h;
+    bindPulsoMago(el, p);
     S.$$('[data-estado]', el).forEach(function (s) {
-      s.onchange = function () {
-        var tipo = s.value; if (!tipo) return; s.disabled = true;
+      s.onclick = function () {
+        var tipo = s.dataset.tipo; if (!tipo) return; s.disabled = true;
         var pid = s.dataset.estado, ev = function (t) { return S.post({ action: 'evento', key: key, plan_id: sel.plan, grupo_id: sel.grupo, pid: pid, tipo: t, canal: (g || {}).experimento || vexp }); };
         // 2.3.1 (QA): «En casa» sin «Llegó» antes también cuenta como llegada; si no, la llegada se pierde en la métrica
         var antes = (tipo === 'llego_casa' && !(est[pid] || {}).llego) ? ev('checkpoint_llegada') : Promise.resolve({ ok: true });
         antes.then(function (r0) { return (r0 && r0.ok) ? ev(tipo) : r0; }).then(function (r) {
-          if (!r || !r.ok) { s.disabled = false; s.value = ''; return S.toast(S.errMsg(r), true); }
+          if (!r || !r.ok) { s.disabled = false; return S.toast(S.errMsg(r), true); }
           S.toast(tipo === 'llego_casa' && !(est[pid] || {}).llego ? 'Registrado: llegó y está en casa' : 'Estado registrado'); load();
         });
       };

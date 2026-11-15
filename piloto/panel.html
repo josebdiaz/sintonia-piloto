@@ -102,7 +102,19 @@
     var sinU = !u(pe.E1) && !u(pe.E2);
     return '<h2 style="margin:0">E1 frente a E1.5</h2><p class="small muted" style="margin:4px 0 0">' + (pe.E1 ? pe.E1.grupos : 0) + ' grupo(s) en E1 y ' + (pe.E2 ? pe.E2.grupos : 0) + ' en E1.5. Cada cifra lleva su n; con 2 grupos por condición la lectura es descriptiva.</p>' +
       (sinU ? '<p class="small" style="color:var(--danger)">El backend en vivo no envía SEQ ni SUS: despliega la versión 2.3.0.</p>' : '') +
-      tabla('Métricas validadas con Néstor', filas) + tabla('Contexto', ctx);
+      tabla('Métricas validadas con Néstor', filas) + tabla('Contexto', ctx) + consolaTabla(pe);
+  }
+  /* 2.7.0 (F5): la herramienta del mago también se mide. Tiempo activo y toques por etapa; SUS y NASA-TLX de quien opera. */
+  function consolaTabla(pe) {
+    function c(x) { return (x && x.consola) || null; }
+    if (!c(pe.E1) && !c(pe.E2)) return '<p class="tiny muted" style="margin-top:10px">La medición de la consola llega con el backend 2.7.0.</p>';
+    var ET = [['grupo', 'Grupo'], ['proponer', 'Proponer'], ['decidir', 'Decidir'], ['dia', 'El día'], ['cierre', 'Cierre']];
+    var rows = [['SUS de quien opera (0–100)', function (x) { var k = c(x) || {}; return nn(k.sus_mago_prom, k.pulso_mago_n, 0); }],
+      ['Carga NASA-TLX sin ponderar (0–100, menos es mejor)', function (x) { var k = c(x) || {}; return nn(k.tlx_raw_prom, k.pulso_mago_n, 0); }]].concat(ET.map(function (t) {
+        return ['Etapa ' + t[1] + ' · min activos y toques por plan', function (x) { var b = ((c(x) || {}).por_etapa || {})[t[0]] || {}; return b.planes ? S.num(b.minutos_activos_por_plan) + ' min · ' + S.num(b.toques_por_plan, 0) + ' toques <span class="tiny muted">(n = ' + b.planes + ')</span>' : '—'; }];
+      }));
+    return '<h3 style="margin-top:14px">La consola del mago</h3><p class="tiny muted" style="margin:0 0 6px">Lo mide la consola con «Mago in». Sirve para separar «la herramienta es lenta» de «la tarea es difícil»; no es un resultado del piloto.</p><div class="table-scroll"><table><thead><tr><th><span class="sr-only">Métrica</span></th><th>' + NOMBRE.E1 + '</th><th>' + NOMBRE.E2 + '</th></tr></thead><tbody>' +
+      rows.map(function (r) { return '<tr><td>' + e(r[0]) + '</td><td>' + r[1](pe.E1) + '</td><td>' + r[1](pe.E2) + '</td></tr>'; }).join('') + '</tbody></table></div>';
   }
 
   function porPlan(x) {

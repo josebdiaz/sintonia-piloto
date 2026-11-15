@@ -138,7 +138,12 @@
 
   if (!pid) return msg('warn', 'Abre tu enlace personal', 'Este formulario se abre desde el enlace del plan o desde el mensaje de Sintonía.');
   var q = { view: 'plan', pid: pid }; if (planId) q.plan_id = planId;
+  var tarda = setTimeout(function () {   // 2.7.0 (F4): nunca un «Cargando…» sin salida
+    msg('warn', 'Esto está tardando más de lo normal', 'Revisa tu conexión y vuelve a intentarlo. Si sigue igual, escríbenos por WhatsApp en el grupo del plan.');
+    estado.insertAdjacentHTML('beforeend', '<button type="button" class="btn btn-primary" onclick="location.reload()">Volver a intentar</button>');
+  }, 15000);
   S.get(q).then(function (r) {
+    clearTimeout(tarda);
     if (!r || !r.ok) return msg(r && r.error === 'revocado' ? 'warn' : 'danger', r && r.error === 'revocado' ? 'Tu participación se cerró' : 'No pudimos abrir el formulario', S.errMsg(r));
     S.saveMe({ rol: r.rol, exp: r.experimento });
     if (r.estado === 'caido') return msg('warn', 'Este plan no se dio', 'No hay salida para evaluar. Cuando haya un próximo plan, el pulso se abre aquí.');

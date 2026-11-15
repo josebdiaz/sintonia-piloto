@@ -172,6 +172,15 @@ chk('2.4.0 en modo piloto el pulso sigue esperando el encuentro', (() => { const
 ctx.UrlFetchApp.fetch = (u, o) => { ultimoPrompt = JSON.parse(o.payload).contents[0].parts[0].text; return { getResponseCode: () => 200, getContentText: () => JSON.stringify({ candidates: [{ content: { parts: [{ text: 'Hola, chicas' }] } }], usageMetadata: {} }) }; };
 const rd = post({ action: 'redactar_ia', key: A, plan_id: p4.plan_id, paso: '/recordatorio', tono: 'plan tranqui', datos: 'base', indicacion: 'es un grupo de chicas' });
 chk('2.4.0 «Ajustar con Gemini» usa la indicación del mago', rd.ok && /Indicación del equipo.*grupo de chicas/.test(ultimoPrompt), ultimoPrompt.slice(0, 200));
+// v2.7.0 · pulso del mago y medición de la consola
+const sus10 = {}; for (let i = 1; i <= 10; i++) sus10['sus_' + String(i).padStart(2, '0')] = i % 2 ? 4 : 2;
+const pm = post(Object.assign({ action: 'pulso_mago', key: A, plan_id: p4.plan_id, mago: 'Juan José', consola_version: '2.7.0', tlx_mental: 40, tlx_fisica: 5, tlx_temporal: 30, tlx_desempeno: 20, tlx_esfuerzo: 35, tlx_frustracion: 10 }, sus10));
+chk('2.7.0 pulso del mago: SUS 75 y TLX sin ponderar', pm.ok && pm.sus_puntaje === 75 && pm.tlx_raw === 23.3, pm);
+chk('2.7.0 pulso del mago: incompleto o sin llave se rechaza', post({ action: 'pulso_mago', key: A, plan_id: p4.plan_id, sus_01: 3 }).error === 'faltan_respuestas' && post(Object.assign({ action: 'pulso_mago', key: 'x', plan_id: p4.plan_id }, sus10)).error === 'no_autorizado', null);
+const mc = post({ action: 'medicion_consola', key: A, plan_id: p4.plan_id, mago: 'Juan José', consola_version: '2.7.0', filas: [{ etapa: 'proponer', segundos: 312, toques: 14, scroll: 2400 }, { etapa: 'inventada', segundos: 9 }, { etapa: 'decidir', segundos: 0, toques: 0 }] });
+chk('2.7.0 medición de la consola: solo etapas válidas y con datos', mc.ok && mc.filas === 1, mc);
+const pnC = get({ view: 'panel', key: A });
+chk('2.7.0 panel resume la consola por condición', pnC.ok && pnC.por_experimento && pnC.por_experimento.E1 && pnC.por_experimento.E1.consola && 'por_etapa' in pnC.por_experimento.E1.consola, pnC.por_experimento && pnC.por_experimento.E1 && pnC.por_experimento.E1.consola);
 ctx.UrlFetchApp.fetch = fetchViejo; delete PROPS.NOTIFICAR_A;
 
 // 2.5.0: ubicaciones e inventario liviano

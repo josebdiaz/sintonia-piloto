@@ -1,7 +1,12 @@
 /**
- * Sintonía · Piloto v2.5.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.7.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.7.0 (15/11, revisión visual de la consola, F5 «medir la consola»):
+ *   - Hoja nueva 'pulso_mago': después de cada plan, quien operó responde SUS (10 ítems, 1–5) y NASA-TLX sin ponderar (6 escalas, 0–100).
+ *     Separa «la consola es lenta» de «la tarea es difícil». Acción pulso_mago (requiere ADMIN_KEY).
+ *   - Hoja nueva 'medicion_consola': tiempo activo, toques y scroll por etapa del recorrido, medidos en la consola con la sesión de mago abierta.
+ *     Acción medicion_consola (requiere ADMIN_KEY). El panel resume las dos por condición (solo grupos en modo piloto).
  * Versión 2.5.0 (15/11, QA de UX, UI y accesibilidad): probarMontaje revisa las ubicaciones del inventario; ?view=mago&inv=0 no envía el
  *   inventario (la consola lo pide una vez y lo guarda): cada actualización pesa una fracción.
  * Versión 2.4.0 (15/11, segunda prueba del 14/11 y su grabación):
@@ -123,7 +128,12 @@ var SHEETS = {
   // v2.3.0: mago in / mago off. Una fila por sesión; al cerrarla se suma a 'operacion' con causa 'sesion'
   sesiones:         ['ts','sesion_id','experimento','grupo_id','plan_id','mago','inicio','fin','minutos','estado'],
   // v2.4.0: una fila por ronda de votación (no por persona). resultado: índice de la opción ganadora, 'ninguna' o 'mas_opciones'
-  decisiones:       ['ts','plan_id','grupo_id','experimento','ronda_votacion','resultado','votaron','total','votos_opciones','cualquiera','ninguna','nota']
+  decisiones:       ['ts','plan_id','grupo_id','experimento','ronda_votacion','resultado','votaron','total','votos_opciones','cualquiera','ninguna','nota'],
+  // v2.7.0: carga y usabilidad de la consola para quien opera (después de cada plan). TLX sin ponderar: promedio de 6 escalas 0–100
+  pulso_mago:       ['ts','plan_id','grupo_id','experimento','ronda','mago','consola_version','sus_01','sus_02','sus_03','sus_04','sus_05','sus_06','sus_07','sus_08','sus_09','sus_10','sus_puntaje',
+                     'tlx_mental','tlx_fisica','tlx_temporal','tlx_desempeno','tlx_esfuerzo','tlx_frustracion','tlx_raw','comentario'],
+  // v2.7.0: lo que mide la propia consola, por etapa del mapa (grupo, proponer, decidir, dia, cierre)
+  medicion_consola: ['ts','plan_id','grupo_id','experimento','mago','consola_version','etapa','segundos_activos','toques','scroll_px']
 };
 
 var TIPOS_GRUPO  = ['amigos','familia','pareja','trabajo','otro'];
@@ -236,7 +246,8 @@ function doPost(e) {
       proponer_ia: proponerIA_, publicar_plan: publicarPlan_, votar: votar_, cerrar_plan: cerrarPlan_, marcar_caido: marcarCaido_, corregir_plan: corregirPlan_, marcar_failover: marcarFailover_,
       evento: evento_, operacion: operacion_, registrar_cambio: registrarCambio_, redactar_ia: redactarIA_,
       retro: retro_, wtp: wtp_, usabilidad: usabilidad_, revocar: revocar_, sesion_mago: sesionMago_, limpiar_registros: limpiarRegistros_,
-      reabrir_opciones: reabrirOpciones_   // v2.4.0
+      reabrir_opciones: reabrirOpciones_,   // v2.4.0
+      pulso_mago: pulsoMago_, medicion_consola: medicionConsola_   // v2.7.0
     };
     var a = String(d.action || '');
     if (!H[a]) return json_({ ok: false, error: 'accion_desconocida' });
@@ -582,9 +593,56 @@ function retro_(d) {
  * Fuera de I4: es medición en ambas condiciones, no un cambio del tratamiento. Una respuesta por persona y plan.
  */
 function seq_(v) { var n = int_(v); return (n !== '' && n >= 1 && n <= 7) ? n : ''; }
+/** v2.7.0: pulso del mago y medición por etapa, para los planes de una condición */
+function resumenConsola_(ids, mean) {
+  var pm = rows_('pulso_mago').filter(function (r) { return ids.indexOf(r.plan_id) >= 0; });
+  var mc = rows_('medicion_consola').filter(function (r) { return ids.indexOf(r.plan_id) >= 0; });
+  var porEtapa = {};
+  ETAPAS_CONSOLA.forEach(function (et) {
+    var f = mc.filter(function (r) { return r.etapa === et; }), planesEt = {}; f.forEach(function (r) { planesEt[r.plan_id] = 1; });
+    var np = Object.keys(planesEt).length, seg = f.reduce(function (s, r) { return s + (Number(r.segundos_activos) || 0); }, 0), tq = f.reduce(function (s, r) { return s + (Number(r.toques) || 0); }, 0);
+    porEtapa[et] = { planes: np, minutos_activos_por_plan: np ? Math.round(seg / 60 / np * 10) / 10 : null, toques_por_plan: np ? Math.round(tq / np * 10) / 10 : null };
+  });
+  return { pulso_mago_n: pm.length, sus_mago_prom: mean(pm.map(function (r) { return r.sus_puntaje; })), tlx_raw_prom: mean(pm.map(function (r) { return r.tlx_raw; })),
+    por_etapa: porEtapa, versiones: mc.reduce(function (o, r) { o[r.consola_version] = (o[r.consola_version] || 0) + 1; return o; }, {}) };
+}
 function susPuntaje_(r) {
   if (r.some(function (x) { return x === ''; })) return '';
   return r.reduce(function (s, x, i) { return s + (i % 2 === 0 ? x - 1 : 5 - x); }, 0) * 2.5;
+}
+/** v2.7.0 · Pulso de quien opera la consola: SUS + NASA-TLX sin ponderar, uno por plan y persona (el último reemplaza al anterior). */
+var ETAPAS_CONSOLA = ['grupo', 'proponer', 'decidir', 'dia', 'cierre'];
+function pulsoMago_(d) {
+  if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
+  var p = d.plan_id ? findOne_('planes', 'plan_id', str_(d.plan_id, 40)) : null; if (!p) return { ok: false, error: 'plan_no_encontrado' };
+  var sus = []; for (var i = 1; i <= 10; i++) { var v = int_(d['sus_' + (i < 10 ? '0' + i : i)]); sus.push(v === '' || v < 1 || v > 5 ? '' : v); }
+  if (sus.some(function (x) { return x === ''; })) return { ok: false, error: 'faltan_respuestas' };
+  var T = ['mental', 'fisica', 'temporal', 'desempeno', 'esfuerzo', 'frustracion'], tlx = {}, ok = true;
+  T.forEach(function (k) { var v = int_(d['tlx_' + k]); if (v === '' || v < 0 || v > 100) ok = false; tlx['tlx_' + k] = v; });
+  if (!ok) return { ok: false, error: 'faltan_respuestas' };
+  var fila = { plan_id: p.plan_id, grupo_id: p.grupo_id, experimento: p.experimento, ronda: p.ronda, mago: str_(d.mago, 40) || 'mago', consola_version: str_(d.consola_version, 12),
+    sus_puntaje: susPuntaje_(sus), tlx_raw: Math.round(T.reduce(function (s, k) { return s + tlx['tlx_' + k]; }, 0) / T.length * 10) / 10, comentario: limpiar_(str_(d.comentario, 300)) };
+  sus.forEach(function (x, j) { fila['sus_' + (j < 9 ? '0' + (j + 1) : j + 1)] = x; });
+  Object.keys(tlx).forEach(function (k) { fila[k] = tlx[k]; });
+  append_('pulso_mago', fila);
+  return { ok: true, sus_puntaje: fila.sus_puntaje, tlx_raw: fila.tlx_raw };
+}
+/** v2.7.0 · Medición de la consola por etapa (la envía la consola al cerrar la sesión de mago o al responder el pulso del mago). */
+function medicionConsola_(d) {
+  if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
+  var p = d.plan_id ? findOne_('planes', 'plan_id', str_(d.plan_id, 40)) : null;
+  var g = p ? findOne_('grupos', 'grupo_id', p.grupo_id) : (d.grupo_id ? findOne_('grupos', 'grupo_id', str_(d.grupo_id, 40)) : null);
+  if (!g) return { ok: false, error: 'grupo_no_encontrado' };
+  var filas = Array.isArray(d.filas) ? d.filas.slice(0, 10) : [], n = 0;
+  filas.forEach(function (f) {
+    var et = String(f && f.etapa || ''); if (ETAPAS_CONSOLA.indexOf(et) < 0) return;
+    var sg = Math.max(0, Math.min(36000, Math.round(Number(f.segundos) || 0))), tq = Math.max(0, Math.min(5000, int_(f.toques) || 0)), sc = Math.max(0, Math.min(1e6, int_(f.scroll) || 0));
+    if (!sg && !tq) return;
+    append_('medicion_consola', { plan_id: p ? p.plan_id : '', grupo_id: g.grupo_id, experimento: p ? p.experimento : g.experimento, mago: str_(d.mago, 40) || 'mago',
+      consola_version: str_(d.consola_version, 12), etapa: et, segundos_activos: sg, toques: tq, scroll_px: sc });
+    n++;
+  });
+  return { ok: true, filas: n };
 }
 function usabilidad_(d) {
   var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
@@ -855,7 +913,8 @@ function vistaPanel_() {
         costo_humano_cop: costoHora ? minutos / 60 * costoHora : null,
         usd_tokens_por_plan_cerrado: cerr.length ? usd / cerr.length : null, minutos_por_plan_cerrado: cerr.length ? minutos / cerr.length : null },
       versiones: pl.reduce(function (o, p) { o[p.version] = (o[p.version] || 0) + 1; return o; }, {}),
-      usabilidad: resumenUsab_(usb.filter(function (u) { return ids.indexOf(u.plan_id) >= 0; }), mean)   // v2.2.6 · fuera de I4
+      usabilidad: resumenUsab_(usb.filter(function (u) { return ids.indexOf(u.plan_id) >= 0; }), mean),   // v2.2.6 · fuera de I4
+      consola: resumenConsola_(ids, mean)   // v2.7.0 · la propia herramienta del mago
     };
   });
   var lb = lbg.filter(function (b) { return validos[b.grupo_id]; });

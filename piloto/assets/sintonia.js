@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.6.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.7.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
@@ -105,7 +105,7 @@
     var t = $('#toast');
     if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; t.setAttribute('role', 'status'); t.setAttribute('aria-live', 'polite'); document.body.appendChild(t); }
     t.textContent = msg; t.classList.toggle('err', !!isErr); t.classList.remove('hidden');
-    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.add('hidden'); }, 4200);
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.add('hidden'); }, isErr ? 6500 : 3200);
   }
 
   /** Deshabilita el botón y muestra un spinner mientras corre fn (que devuelve una promesa). Evita envíos dobles. */

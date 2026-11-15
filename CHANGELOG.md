@@ -5,6 +5,17 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-15 · Plan de mejoras F0–F5 de la revisión visual (frontend 2.7.0 · backend 2.7.0)
+Plan y estado: `claude/revision-visual-consola-2026-11-15.md` (Proyecto).
+- **F0 · Riesgos ante el grupo:** ningún texto con [corchetes] se copia ni se abre en WhatsApp (queda marcado y la consola dice qué falta); /hoy ya no inventa el conteo si nadie se apuntó. «Revocar y purgar» pasa a un menú «⋯» por persona, con confirmación.
+- **F1 · Una pantalla de trabajo:** cola de mensajes (solo el siguiente va abierto; lo copiado o enviado se pliega con su hora; el atajo C actúa sobre el abierto). La acción va arriba y la ayuda debajo; el aviso de «Mago in» es una línea con botón. El mapa del recorrido vive en la columna izquierda, vertical, en pantalla ancha, y arriba del paso en media pantalla. La barra de pestañas flota abajo hasta llegar a su lugar. «Mensajes del mago al grupo» salió de Llegadas (cada mensaje se marca en su plantilla; queda «Envié otro mensaje al grupo»).
+- **F2 · Formularios de un toque:** votos con «− n +» y barra (la ganadora se resalta y se elige sola); día y hora en botones según la disponibilidad del grupo («Otro día u hora» abre los campos); llegadas con un botón por persona y estado, con conteo arriba.
+- **F3 · Sistema visual:** mapa semántico de color (naranja = acción, noche = seleccionado, crema = solo modo prueba, mostaza = solo IA, vitral = información, rojo = destructivo). «Ajustar tono» pasa a botón secundario sin emoji; fuera «v1», el id corto y la condición repetida; estados con mayúscula inicial y «Cerrado» en vez de «Fijado». Títulos cortos (el plan va debajo), «Publicado hace 3 min», foco visible en la marca, avisos arriba al centro por 3 s (6,5 s los errores).
+- **F4 · Coherencia y privacidad:** la inscripción ya no ofrece «Trabajo» (el piloto es para amigos, familia o pareja); el pulso muestra un aviso con «Volver a intentar» si tarda más de 15 s; los teléfonos se ven enmascarados (+57 300 ••• 0001) con «Mostrar».
+- **F5 · Medir la consola:** con «Mago in», la consola mide segundos activos, toques y scroll por etapa del mapa y los envía al cerrar la sesión (hoja nueva `medicion_consola`). Después de cada plan, **pulso del mago**: SUS de la consola y NASA-TLX sin ponderar (hoja nueva `pulso_mago`). El panel muestra las dos por condición en «La consola del mago».
+- **Backend 2.7.0:** acciones `pulso_mago` y `medicion_consola` (requieren la llave de administración); `probarMontaje()` crea las hojas nuevas. Sin el despliegue, la consola sigue funcionando y avisa al guardar el pulso del mago.
+- QA: backend 82 de 82; recorrido completo 52 de 52; F0–F5 22 de 22; axe-core sin hallazgos; sin scroll horizontal a 390 px.
+
 ### 2026-11-15 · Mapa del recorrido y revisión visual (frontend 2.6.0)
 Revisión visual completa y plan de mejoras: `claude/revision-visual-consola-2026-11-15.md` (Proyecto).
 - **Mapa del recorrido** arriba de «Lo que toca ahora»: Plan 1 y Plan 2 en cinco etapas (Grupo, Proponer, Decidir, El día, Cierre) bajo los tres momentos (activación, interacción, continuidad). Cada etapa dice si está hecha, si toca ahora o si falta, con un resumen corto («3 de 3 aceptaron», «Ganó: …», «vie 20 · 19:00 · llegaron 3/3», «Pulso 1 de 3»). Tocar una etapa abre su pestaña y su formulario. Debajo, solo los pasos de la etapa actual; la lista completa queda plegada.
