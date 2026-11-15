@@ -1,7 +1,9 @@
 /**
- * Sintonía · Piloto v2.7.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.7.1 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.7.1 (15/11): el motor (MOTOR_KEY) puede llamar reabrir_opciones para pedir más opciones en E1.5 sin marcar el plan como caído,
+ *   igual que el mago en E1. Solo en planes de E1.5.
  * Versión 2.7.0 (15/11, revisión visual de la consola, F5 «medir la consola»):
  *   - Hoja nueva 'pulso_mago': después de cada plan, quien operó responde SUS (10 ítems, 1–5) y NASA-TLX sin ponderar (6 escalas, 0–100).
  *     Separa «la consola es lenta» de «la tarea es difícil». Acción pulso_mago (requiere ADMIN_KEY).
@@ -215,7 +217,7 @@ function avisarEquipo_(asunto, cuerpo) {
 }
 function isAdmin_(k) { var a = prop_('ADMIN_KEY', ''); return a !== '' && String(k || '') === a; }
 function isMotor_(k) { var m = prop_('MOTOR_KEY', ''); return m !== '' && String(k || '') === m; }   // v2.3.0
-var MOTOR_ACCIONES = ['evento', 'operacion', 'proponer_ia', 'publicar_plan', 'cerrar_plan', 'redactar_ia'];   // lo único que el motor puede hacer con MOTOR_KEY
+var MOTOR_ACCIONES = ['evento', 'operacion', 'proponer_ia', 'publicar_plan', 'cerrar_plan', 'redactar_ia', 'reabrir_opciones'];   // v2.7.1: + reabrir_opciones (ronda 2 en E1.5)   // lo único que el motor puede hacer con MOTOR_KEY
 function findOne_(name, key, val) { var r = rows_(name); for (var i = 0; i < r.length; i++) if (String(r[i][key]) === String(val)) return r[i]; return null; }
 function activos_(gid) { return rows_('participantes').filter(function (p) { return p.grupo_id === gid && p.estado === 'activo'; }); }
 /** v2.2.3: ¿ese celular ya está activo en el grupo? Compara los últimos 10 dígitos (se guarda como +57…). */
@@ -459,6 +461,7 @@ function reabrirOpciones_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
   if (p.estado !== 'votando' && p.estado !== 'en_revision') return { ok: false, error: 'plan_no_reabrible' };
+  if (d.por_motor && p.experimento !== 'E2') return { ok: false, error: 'solo_e15' };   // v2.7.1: el motor no toca planes de E1
   var ronda = p.estado === 'votando' ? decision_(p, d.decision, d.resultado === 'ninguna' ? 'ninguna' : 'mas_opciones') : 0;
   updateRow_('planes', p._row, { estado: 'borrador', opciones_json: '', nota: str_((p.nota ? p.nota + ' · ' : '') + 'más opciones' + (ronda ? ' (ronda ' + ronda + ')' : ''), 300) });
   append_('eventos', { plan_id: p.plan_id, grupo_id: p.grupo_id, tipo: 'activacion', canal: p.experimento, nota: 'más opciones' });

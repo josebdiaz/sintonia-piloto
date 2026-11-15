@@ -8,7 +8,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 | Componente | Versión | Estado |
 |---|---|---|
 | Frontend (consola, panel, páginas de participante) | **2.7.0** | Publicado en https://sintonia.my el 15/11 |
-| Backend (Apps Script) | **2.7.0** | Entregado el 15/11. **Despliegue por confirmar.** En vivo está la 2.5.0 (los correos de inscripción ya funcionan) |
+| Backend (Apps Script) | **2.7.1** | Entregado el 15/11 (2.7.1: el motor puede pedir más opciones). **Despliegue por confirmar.** En vivo está la 2.5.0 (los correos de inscripción ya funcionan) |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Inventario verificado | Hoja del piloto | Revisión de ubicaciones con `probarMontaje()` (2.5.0): **resultado por reportar** |
 
@@ -39,7 +39,7 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 | N4 | **Eventos nuevos** (`msg_hoy`, `msg_checkpoint`, `msg_todos`, `msg_en_casa`, `msg_evento`) | Resuelve I1 mejor que dejar `evento_msg` vacío | W4: `msg_checkpoint` y `msg_todos`; W5: `msg_en_casa`. Agregar `/hoy` (en la mañana, `msg_hoy`) | Ajuste |
 | N5 | **Relojes de E1** (2.5.0): recordatorio a las 2 h; `/salida` 2 h antes; checkpoint a la hora; «en casa» y pulso 3 h después, o al día siguiente a las 10:00 si el plan es desde las 8 p. m. | W5 manda `/retro` siempre al día siguiente a las 10:00 | Igualar W5 a la regla de E1 (3 h, o día siguiente si es de noche) | **Validez** |
 | N6 | **Pulso por enlace personal** (2.4.0): un chat privado por persona | En la opción C, quien revisa tendría que pegar N mensajes privados | W5 entrega en Telegram la lista de enlaces `wa.me` por persona, ya armados | Ajuste |
-| N7 | **«Pedir más opciones» sin plan caído** (`reabrir_opciones`, 2.4.0) | `reabrir_opciones` no está en `MOTOR_ACCIONES`, y la deduplicación de W1 por `plan_id` bloquea la ronda 2 del mismo plan | Agregar `reabrir_opciones` a `MOTOR_ACCIONES` (cambio de 1 línea en el backend) y deduplicar W1 por `plan_id` + ronda | **Validez** |
+| N7 | **«Pedir más opciones» sin plan caído** (`reabrir_opciones`, 2.4.0) | `reabrir_opciones` no está en `MOTOR_ACCIONES`, y la deduplicación de W1 por `plan_id` bloquea la ronda 2 del mismo plan | **Backend listo en 2.7.1** (`reabrir_opciones` en `MOTOR_ACCIONES`, solo planes de E1.5). Falta deduplicar W1 por `plan_id` + ronda | **Validez** |
 | N8 | **Gemini: 3 opciones con `tipo` y paradas con dirección y coordenadas** (2.4.0–2.5.0) | «Normalizar opciones» de W1 tiene que conservar `tipo`, `direccion`, `latitud` y `longitud`, o los enlaces de Maps quedan débiles | Pasar las paradas completas a `publicar_plan`, como hace la consola | Ajuste |
 | N9 | **Evento de WhatsApp** («se apuntó») creado a mano (2.4.0) | No se puede automatizar en la opción C | Instrucción para quien revisa en SW · Enviar; los «me apunto» se registran en la consola | Ajuste |
 | N10 | **Medición de la consola** (2.7.0): segundos activos y toques por etapa, solo con «Mago in» | En E1.5 el trabajo humano ocurre en Telegram y n8n, no en la consola: `medicion_consola` subestima E1.5 | Comparar E1 y E1.5 **solo con los minutos de «Mago in»** (métrica del piloto). `medicion_consola` sirve dentro de E1 para mejorar la herramienta | **Validez** (de interpretación) |
@@ -54,7 +54,7 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 | O1 | La guía y el deck del monitor describen la consola 2.2.2: no hay mapa, cola, conteo «− n +», botones de llegadas, menú «⋯» ni pulso del mago | Actualizar `docs/guias/onboarding-monitor.md` y `docs/deck-onboarding-monitor.html` a la 2.7.0 antes del primer grupo real | **Bloquea** (inducción) |
 | O2 | `docs/protocolo-m2.md` describe E2 como web app (anterior a D1) | Marcarlo como «Hecha» (superado); el protocolo vigente es el onboarding más este archivo | Ajuste |
 | O3 | **Congelar la versión.** La 2.7.0 cambia la herramienta de E1; cambiarla a mitad del piloto mezcla dos interfaces en los minutos humanos | Arrancar los grupos del piloto en 2.7.0 y no cambiar la interfaz hasta el cierre del análisis (cada fila de medición guarda `consola_version`) | **Validez** |
-| O4 | El pulso del mago y la medición solo existen con el backend 2.7.0 | Desplegar: pegar el .gs, correr `probarMontaje()` (crea las 2 hojas nuevas) y publicar como «Nueva versión» | **Bloquea** (F5) |
+| O4 | El pulso del mago y la medición solo existen con el backend 2.7.0 o posterior (entregado: 2.7.1) | Desplegar: pegar el .gs, correr `probarMontaje()` (crea las 2 hojas nuevas) y publicar como «Nueva versión» | **Bloquea** (F5) |
 | O5 | Prueba externa de Juan José con Paula (15/11, modo prueba) | Primera evidencia con la 2.7.0: pedir la grabación y el pulso del mago | Ajuste |
 
 ### 3.3 Métricas y plan de pruebas
@@ -83,12 +83,12 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Desplegar el backend 2.7.0 y confirmar la versión en vivo | F5 | José (dueño del script) |
+| 1 | Desplegar el backend 2.7.1 y confirmar la versión en vivo | F5 y N7 | José (dueño del script) |
 | 2 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
 | 3 | Actualizar el onboarding del monitor a la consola 2.7.0 (O1) | Inducción | Equipo |
 | 4 | Publicar el aviso de privacidad v2 | Datos reales | Equipo |
 | 5 | Decidir N1 (encuesta nativa también en E1.5) y N11 (SUS del revisor) | Diseño de E1.5 | Equipo, con Néstor |
-| 6 | Agregar `reabrir_opciones` a `MOTOR_ACCIONES` (N7) | Ronda 2 en E1.5 | José (backend) |
+| 6 | ~~Agregar `reabrir_opciones` a `MOTOR_ACCIONES` (N7)~~ Hecho en el backend 2.7.1; falta la deduplicación por ronda en W1 | Ronda 2 en E1.5 | Equipo (n8n) |
 | 7 | Corregir n8n: B1–B5, I2–I3 y N2–N8; después T1–T12 y el ensayo de 2 planes | E1.5 | Equipo |
 | 8 | Confirmar el plan de pago de n8n y la decisión C14 (Evolution o asistida) | E1.5 | Equipo |
 | 9 | D4 · viabilidad técnica del motor (sin respuesta de Moncada) | Cierre metodológico | Equipo |

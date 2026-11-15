@@ -181,6 +181,21 @@ const mc = post({ action: 'medicion_consola', key: A, plan_id: p4.plan_id, mago:
 chk('2.7.0 medición de la consola: solo etapas válidas y con datos', mc.ok && mc.filas === 1, mc);
 const pnC = get({ view: 'panel', key: A });
 chk('2.7.0 panel resume la consola por condición', pnC.ok && pnC.por_experimento && pnC.por_experimento.E1 && pnC.por_experimento.E1.consola && 'por_etapa' in pnC.por_experimento.E1.consola, pnC.por_experimento && pnC.por_experimento.E1 && pnC.por_experimento.E1.consola);
+// v2.7.1 · el motor reabre opciones solo en E1.5
+{ const fx0 = ctx.UrlFetchApp.fetch; ctx.UrlFetchApp.fetch = () => resp([{ tipo: 'exacta', titulo: 'A', paradas_ids: ['INV-01'] }, { tipo: 'intermedia', titulo: 'B', paradas_ids: ['INV-02'] }, { tipo: 'diferente', titulo: 'C', paradas_ids: ['INV-01', 'INV-02'] }]);
+  const ge = post(Object.assign({ action: 'registrar', experimento: 'E2', modo: 'prueba', tipo_grupo: 'amigos', n_invitados: 2, nombre_pila: 'M', whatsapp: '+573009990031' }, cons));
+  post(Object.assign({ action: 'registrar', codigo_invitacion: ge.codigo_invitacion, nombre_pila: 'N', whatsapp: '+573009990032' }, cons));
+  post({ action: 'cerrar_reclutamiento', key: A, grupo_id: ge.grupo_id }); const pe = post({ action: 'crear_plan', key: A, grupo_id: ge.grupo_id });
+  post({ action: 'proponer_ia', key: A, plan_id: pe.plan_id, restricciones: 'x' }); post({ action: 'publicar_plan', key: A, plan_id: pe.plan_id });
+  const rm = post({ action: 'reabrir_opciones', key: M, plan_id: pe.plan_id, decision: { votaron: 2, total: 2, votos: [0, 0, 0], ninguna: 2 }, resultado: 'ninguna' });
+  chk('2.7.1 el motor reabre opciones en E1.5 (ronda guardada, sin caer)', rm.ok && rm.ronda_votacion === 1, rm);
+  const g1 = post(Object.assign({ action: 'registrar', experimento: 'E1', modo: 'prueba', tipo_grupo: 'amigos', n_invitados: 2, nombre_pila: 'O', whatsapp: '+573009990033' }, cons));
+  post(Object.assign({ action: 'registrar', codigo_invitacion: g1.codigo_invitacion, nombre_pila: 'P', whatsapp: '+573009990034' }, cons));
+  post({ action: 'cerrar_reclutamiento', key: A, grupo_id: g1.grupo_id }); const p1e = post({ action: 'crear_plan', key: A, grupo_id: g1.grupo_id });
+  post({ action: 'proponer_ia', key: A, plan_id: p1e.plan_id, restricciones: 'x' }); post({ action: 'publicar_plan', key: A, plan_id: p1e.plan_id });
+  const r1e = post({ action: 'reabrir_opciones', key: M, plan_id: p1e.plan_id });
+  chk('2.7.1 el motor no reabre planes de E1', r1e.error === 'solo_e15', r1e);
+  ctx.UrlFetchApp.fetch = fx0; }
 ctx.UrlFetchApp.fetch = fetchViejo; delete PROPS.NOTIFICAR_A;
 
 // 2.5.0: ubicaciones e inventario liviano

@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-15 · El motor puede pedir más opciones (backend 2.7.1)
+- `reabrir_opciones` entra en `MOTOR_ACCIONES`: E1.5 puede abrir una ronda 2 de opciones sin marcar el plan como caído, igual que el mago en E1 (implicación N7 de `ESTADO.md`). Solo en planes de E1.5 (`solo_e15` si el plan es de E1).
+- QA: backend 84 de 84.
+
 ### 2026-11-15 · Plan de mejoras F0–F5 de la revisión visual (frontend 2.7.0 · backend 2.7.0)
 Plan y estado: `claude/revision-visual-consola-2026-11-15.md` (Proyecto).
 - **F0 · Riesgos ante el grupo:** ningún texto con [corchetes] se copia ni se abre en WhatsApp (queda marcado y la consola dice qué falta); /hoy ya no inventa el conteo si nadie se apuntó. «Revocar y purgar» pasa a un menú «⋯» por persona, con confirmación.

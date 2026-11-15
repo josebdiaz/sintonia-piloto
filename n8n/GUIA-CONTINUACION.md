@@ -176,7 +176,7 @@ Resumen en [`ESTADO.md`](../ESTADO.md) §3.1. Sin estos ajustes, E1.5 corre, per
 4. **Eventos (N4).** En lugar de `evento_msg` vacío (I1): W4 usa `msg_checkpoint` y `msg_todos`; W5 usa `msg_en_casa`. Nuevo paso `/hoy` en la mañana del plan con `msg_hoy`. Si no se sabe cuántos se apuntaron, `/hoy` va sin conteo.
 5. **Relojes (N5).** Recordatorio 2 h después de publicar · `/salida` 2 h antes · checkpoint a la hora · `/en_casa` y pulso 3 h después; si el encuentro es desde las 8:00 p. m., al día siguiente a las 10:00. Ajustar W5, que hoy manda siempre `/retro` al día siguiente.
 6. **Pulso por persona (N6).** `/retro` al grupo va sin enlace. W5 entrega en Telegram un enlace `wa.me` por persona con su texto y su enlace de `retro.html?pid=…&plan_id=…`.
-7. **Ronda 2 de opciones (N7).** Requiere `reabrir_opciones` en `MOTOR_ACCIONES` (backend) y deduplicar `e15_planes` por `plan_id` + ronda.
+7. **Ronda 2 de opciones (N7).** Desde el backend 2.7.1 el motor puede llamar `reabrir_opciones` con `MOTOR_KEY` (solo en planes de E1.5; manda `decision` con los conteos y `resultado: 'ninguna'` o `'mas_opciones'`). Falta deduplicar `e15_planes` por `plan_id` + ronda para que W1 vuelva a proponer.
 8. **Paradas completas (N8).** «Normalizar opciones» conserva `tipo` y, por parada, `direccion`, `macro_zona`, `latitud` y `longitud`.
 9. **Medición (N10, N11).** E1 y E1.5 se comparan con los minutos de «Mago in» (abrirlo durante toda revisión en Telegram). `medicion_consola` mide solo el tiempo en la consola. El NASA-TLX de quien revisa sí es comparable; el SUS de E1.5 está por decidir.
 
