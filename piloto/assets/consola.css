@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
- * Sintonía · Consola del mago y panel · capa de marca 2026-11 (frontend 2.5.0)
+ * Sintonía · Consola del mago y panel · capa de marca 2026-11 (frontend 2.6.0)
  * Reemplaza en estas pantallas la firma «radio» del DS 3.0 (selector de banda, interruptor de palanca, luz piloto con
  * resplandor, display LCD, tipografía mono) por el lenguaje de la marca actual: el de la portada y el pitch final.
  *   Papel y crema de fondo · noche para el texto y la barra · naranja para el foco, el progreso y lo que toca ahora ·
@@ -68,7 +68,7 @@ body.consola .btn-sm { min-height: 36px; padding: 6px 14px; font-size: 14px; }
 .s-band [role="radio"][aria-checked="true"] { background: var(--m-noche); box-shadow: none; }
 .s-band [role="radio"][aria-checked="true"] b, .s-band [role="radio"][aria-checked="true"] small { color: var(--m-papel-50); }
 /* Modo prueba: ficha con interruptor; sin el «SÍ/NO» mono */
-.modo-ctl { min-height: 48px; height: auto; padding: 4px 6px 4px 16px; border: 1px solid var(--m-papel-300); border-radius: 999px; background: var(--m-papel-0); }
+.modo-ctl { justify-self: start; width: auto; min-height: 48px; height: auto; padding: 4px 6px 4px 16px; border: 1px solid var(--m-papel-300); border-radius: 999px; background: var(--m-papel-0); }
 .modo-ctl .modo-txt { display: flex; align-items: baseline; gap: 8px; }
 .modo-ctl .modo-txt b { font: 700 15px/1 var(--m-txt); }
 .modo-ctl .modo-txt small { font: 500 13px/1 var(--m-txt); }
@@ -136,19 +136,56 @@ body.consola .card { border-radius: var(--m-r-card); border-color: var(--m-papel
 .c-atajos kbd, .c-ayuda kbd { display: inline-block; min-width: 22px; padding: 1px 6px; border: 1px solid var(--m-papel-300); border-bottom-width: 2px; border-radius: 6px; background: var(--m-papel-0); font: 700 12px/1.5 var(--m-txt); text-align: center; color: var(--m-noche); }
 
 /* Recorrido: barra segmentada naranja (como el pitch) y la lista se pliega */
-.s-plan-list { padding: 16px; border: 1px solid var(--m-papel-300); border-radius: var(--m-r-card); background: var(--m-papel-0); }
-.s-plan-list header b { font: 700 12px/1.3 var(--m-txt); letter-spacing: .12em; color: var(--m-papel-700); }
-.c-seg { display: flex; gap: 3px; margin: 10px 0 4px; }
-.c-seg i { flex: 1; height: 5px; border-radius: 3px; background: var(--m-papel-100); }
-.c-seg i[data-st="hecho"] { background: var(--m-naranja); }
-.c-seg i[data-st="ahora"] { background: var(--m-noche); }
-.s-plan-list .s-progress { display: none; }
-.s-plan-list li { border-radius: 10px; }
-.s-plan-list li[aria-current="step"] { background: var(--m-papel-100); }
-.s-plan-list li[aria-current="step"] em { color: var(--m-naranja-700); }
-.s-plan-list li[data-st="hecho"] .marca { background: var(--m-noche); border-color: var(--m-noche); color: var(--m-papel-0); }
-.s-plan-list li[data-st="hecho"] strong { text-decoration: none; color: var(--m-papel-700); }
-.s-plan-list .grupo-paso { color: var(--m-papel-700); letter-spacing: .12em; }
+/* ── 2.6.0 · Mapa del recorrido: 2 planes × 5 etapas ─────────────────── */
+.c-mapa { margin-bottom: 12px; padding: 16px; border: 1px solid var(--m-papel-300); border-radius: var(--m-r-card); background: var(--m-papel-0); }
+.c-mapa > header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.c-mapa > header h3 { margin: 0; font: 800 15px/1.2 var(--m-txt); letter-spacing: -.01em; }
+.c-mapa > header small { color: var(--m-papel-700); font-size: 13px; }
+.c-fila { display: grid; grid-template-columns: 56px 1fr; gap: 8px; align-items: stretch; }
+.c-fila + .c-fila { margin-top: 6px; }
+.c-fila-n { align-self: center; font: 700 12px/1.2 var(--m-txt); color: var(--m-papel-700); }
+.c-etapas { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.c-etapa { min-width: 0; }
+.c-etapa > button, .c-etapa > div { display: flex; flex-direction: column; gap: 2px; width: 100%; height: 100%; min-height: 52px; padding: 7px 10px; text-align: left;
+  border: 1px solid var(--m-papel-300); border-radius: 12px; background: var(--m-papel-50); color: var(--m-noche); font: inherit; }
+.c-etapa > button { cursor: pointer; transition: border-color .15s var(--m-ease), background .15s var(--m-ease); }
+.c-etapa > button:hover { border-color: var(--m-noche); }
+.c-etapa small { font: 600 10px/1.2 var(--m-txt); letter-spacing: .08em; text-transform: uppercase; color: var(--m-papel-700); }
+.c-etapa b { display: flex; align-items: center; gap: 5px; font: 800 13px/1.2 var(--m-txt); letter-spacing: -.01em; }
+.c-etapa .c-m { display: inline-grid; place-items: center; width: 16px; height: 16px; flex: none; border-radius: 50%; border: 1.5px solid var(--m-papel-300); font-size: 10px; line-height: 1; }
+.c-etapa .c-res { font-size: 12px; line-height: 1.3; color: var(--m-papel-700); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.c-etapa .c-rel { font: 700 11px/1.2 var(--m-txt); color: var(--m-vitral); }
+.c-etapa .c-rel[data-vencido="1"] { color: var(--m-naranja-700); }
+.c-etapa[data-st="hecho"] > * { background: var(--m-papel-0); }
+.c-etapa[data-st="hecho"] .c-m { background: var(--m-naranja); border-color: var(--m-naranja); color: #fff; }
+.c-etapa[data-st="ahora"] > * { background: var(--m-noche); border-color: var(--m-noche); color: var(--m-papel-50); }
+.c-etapa[data-st="ahora"] small, .c-etapa[data-st="ahora"] .c-res { color: var(--m-papel-300); }
+.c-etapa[data-st="ahora"] .c-m { border-color: var(--m-naranja); color: var(--m-naranja); font-size: 9px; }
+.c-etapa[data-st="ahora"] .c-rel { color: var(--m-mostaza); }
+.c-etapa[data-vencido="1"] > * { border-color: var(--m-naranja); }
+.c-etapa[data-st="ahora"][data-vencido="1"] .c-rel { color: var(--m-naranja); }
+.c-etapa[data-st="omitido"] > * { opacity: .55; }
+.c-etapa.c-hueco { display: flex; align-items: center; justify-content: center; border: 1px dashed var(--m-papel-300); border-radius: 12px; font-size: 12px; color: var(--m-papel-700); }
+.c-detalle { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
+.c-detalle li { padding: 5px 12px; border-radius: 999px; font-size: 13px; background: var(--m-papel-100); color: var(--m-papel-700); }
+.c-detalle li[data-st="hecho"]::before { content: '✓ '; color: var(--m-naranja-700); font-weight: 800; }
+.c-detalle li[data-st="ahora"] { background: var(--m-crema); color: var(--m-noche); font-weight: 700; }
+.c-todos { margin-top: 10px; font-size: 13px; }
+.c-todos summary { cursor: pointer; color: var(--m-papel-700); font-weight: 600; min-height: 32px; display: flex; align-items: center; }
+.c-todos ol { margin: 6px 0 0; padding-left: 20px; columns: 2 260px; column-gap: 24px; }
+.c-todos li { break-inside: avoid; margin: 0 0 4px; color: var(--m-papel-700); }
+.c-todos li span { font-weight: 700; color: var(--m-noche); }
+.c-todos li[data-st="hecho"] { text-decoration: line-through; text-decoration-color: var(--m-papel-300); }
+.c-todos li[data-st="ahora"] { color: var(--m-noche); font-weight: 700; }
+.c-momentos .c-etapas li { padding: 0 2px 2px; font: 600 10px/1.2 var(--m-txt); letter-spacing: .08em; text-transform: uppercase; color: var(--m-papel-700); }
+.c-momentos + .c-fila { margin-top: 0; }
+.c-como { margin: 12px 0 0; }
+@media (max-width: 760px) { .c-fila { grid-template-columns: 44px 1fr; gap: 6px; } .c-mapa { padding: 14px 12px; } }
+@media (max-width: 560px) {
+  .c-fila { grid-template-columns: 1fr; gap: 4px; }
+  .c-etapas { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+  .c-etapa.c-hueco, .c-momentos, .c-fila:not([data-actual]) { display: none; }
+}
 
 /* ── Pestañas ─────────────────────────────────────────────────────────── */
 .s-tabs { gap: 4px; border-bottom: 1px solid var(--m-papel-300); margin: 18px 0 12px; }

@@ -5,6 +5,13 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-15 · Mapa del recorrido y revisión visual (frontend 2.6.0)
+Revisión visual completa y plan de mejoras: `claude/revision-visual-consola-2026-11-15.md` (Proyecto).
+- **Mapa del recorrido** arriba de «Lo que toca ahora»: Plan 1 y Plan 2 en cinco etapas (Grupo, Proponer, Decidir, El día, Cierre) bajo los tres momentos (activación, interacción, continuidad). Cada etapa dice si está hecha, si toca ahora o si falta, con un resumen corto («3 de 3 aceptaron», «Ganó: …», «vie 20 · 19:00 · llegaron 3/3», «Pulso 1 de 3»). Tocar una etapa abre su pestaña y su formulario. Debajo, solo los pasos de la etapa actual; la lista completa queda plegada.
+- **Relojes:** se apagan cuando lo que miden ya pasó (llegadas, «en casa», pulso), no solo cuando se marcó el mensaje. En modo prueba no se muestran, porque no hay espera.
+- «Modo prueba» ya no se estira a todo el ancho con la sesión del mago abierta.
+- QA: recorrido 52 de 52 (incluye el mapa); axe-core sin hallazgos.
+
 ### 2026-11-14 · QA visual de la consola (frontend 2.5.1)
 - Los contenedores que pueden partirse en dos líneas (condición, modo prueba, sesión del mago) dejan de ser píldoras: radio de 16 px y la misma altura; los botones internos, 11 px. La sesión del mago queda en una sola línea en escritorio.
 - Modo prueba sin texto repetido (el aviso de abajo ya lo dice); la barra noche flota separada del borde y el contenido ya no asoma por sus esquinas.

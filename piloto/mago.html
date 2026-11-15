@@ -226,6 +226,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   }
   function oList(a) { return a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' o ' + a[a.length - 1]; }
   function cap(s) { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function diaCorto(t) { var d = new Date(t); return ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'][d.getDay()] + ' ' + d.getDate() + ' · ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
   function diaTxt(g) { var d = dispoDe(g); if (!d.dias.length && !d.franjas.length) return ''; var dd = d.dias.map(function (x) { return x === 'entre semana' ? x : 'el ' + x; }); return (dd.length ? oList(dd) : '') + (d.franjas.length ? (dd.length ? ' en la ' : 'la ') + oList(d.franjas) : ''); }
   /** 2.5.0 (QA 14/11): los enlaces de ubicación no abrían el lugar. Ahora se busca por nombre y dirección (Google Maps abre la ficha del lugar);
    *  las coordenadas son respaldo y solo valen si caen en Cali. Una hoja en español puede leer «3.4516» como 34516: se corrige si es posible. */
@@ -369,9 +370,12 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function pasosDe(g) {
     var e15 = g.experimento === 'E2', ps = planesDe(g.grupo_id), n = g.miembros.length, inv = Number(g.n_invitados) || 0, ahora = Date.now(), prueba = g.modo === 'prueba';
     var L = [];
-    function add(grupoPaso, txt, hecho, accion) { L.push({ grupo: grupoPaso, txt: txt, hecho: !!hecho, accion: accion }); }
+    var et = 'grupo', rr = 0, pidAct = '';   // 2.6.0: cada paso sabe su etapa del mapa y su plan
+    L.res = {};
+    function add(grupoPaso, txt, hecho, accion) { L.push({ grupo: grupoPaso, txt: txt, hecho: !!hecho, accion: accion, etapa: et, ronda: rr, plan_id: pidAct }); }
     function env(p, tipo) { return !!(p && p.mensajes && desdePub(p, tipo, p.mensajes[tipo] || []).length); }
     var completo = n >= inv;
+    L.res['0|grupo'] = g.estado === 'reclutando' ? n + ' de ' + inv + ' aceptaron' : n + ' personas';
     add('Grupo', g.estado === 'reclutando' && !completo ? 'Esperar que acepten todos (' + n + ' de ' + inv + ')' : 'Cerrar el reclutamiento', g.estado !== 'reclutando',
       g.estado === 'reclutando' && !completo
         ? { t: 'Ver la invitación', tab: 'grupos', q: '[data-cerrar]', ayuda: 'Mientras esperas, cierra tu sesión con «Mago off»: la consola avisa cuando acepte alguien. Si a las 24 h falta alguien, «Abrir chat con mensaje» le escribe al organizador.' }
@@ -390,17 +394,27 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       var van = g.miembros.filter(function (m) { return st(m).apuntado !== false; }).length, llegaron = g.miembros.filter(function (m) { return st(m).llego; }).length, casa = g.miembros.filter(function (m) { return st(m).casa; }).length;
       var faltanP = p ? g.miembros.filter(function (m) { return (p.retro_pids || []).indexOf(m.pid) < 0; }).length : n;
       var rondas = p && p.decisiones ? p.decisiones.length : 0, G = 'Plan ' + r;
+      rr = r; pidAct = p ? p.plan_id : ''; et = 'proponer';
+      var opsR = []; try { opsR = JSON.parse((p && p.opciones_json) || '[]'); } catch (z) {}
+      var gan = p && p.estado === 'cerrado' && p.elegida !== null && p.elegida !== '' && opsR[Number(p.elegida)] ? opsR[Number(p.elegida)].titulo || '' : '';
+      L.res[r + '|proponer'] = !p ? 'Sin crear' : p.estado === 'borrador' ? 'Sin opciones' : p.estado === 'en_revision' ? 'Opciones en revisión' : (opsR.length || 3) + ' opciones' + (rondas > 1 ? ' · ronda ' + rondas : '');
+      L.res[r + '|decidir'] = !p ? '' : caido ? 'Plan caído' : p.estado === 'votando' ? 'Votando' : cerr ? (gan ? 'Ganó: ' + gan : 'Decidido') : '';
+      L.res[r + '|dia'] = he ? diaCorto(he) + (paso ? ' · llegaron ' + llegaron + '/' + van : '') : '';
+      L.res[r + '|cierre'] = p && cerr && !caido ? 'Pulso ' + (n - faltanP) + ' de ' + n : '';
       if (r === 2) add(G, 'Crear el plan 2 en el mismo grupo', !!p, { t: 'Crear el plan 2', run: 'siguienteRonda', ayuda: 'Con el plan 1 cerrado y el pulso enviado, en el mismo grupo de WhatsApp.' });
       add(G, (e15 ? 'El motor propone y publica las opciones' : 'Pedir opciones a Gemini, revisar y publicar') + (rondas && p && (p.estado === 'borrador' || p.estado === 'en_revision') ? ' (ronda ' + (rondas + 1) + ')' : ''), p && p.estado !== 'borrador' && p.estado !== 'en_revision',
         { t: 'Ir a las opciones', tab: 'planes', q: '#restr', ayuda: 'Pega lo que dijeron en el grupo y pide 3 opciones. Revísalas antes de publicar.' });
       if (!e15) add(G, 'Enviar las opciones y la encuesta', cerr || env(p, 'msg_opciones'), { tpls: ['/opciones', '/opcion_1', '/opcion_2', '/opcion_3', '/encuesta'], ayuda: 'Un mensaje por opción y, al final, la encuesta (pregunta y opciones se copian una por una).' });
+      et = 'decidir';
       add(G, (e15 ? 'Revisar la decisión' : 'Registrar la decisión') + ' y cerrar con día y hora', cerr,
         { t: 'Registrar la decisión', tab: 'planes', q: '#decision', tpls: e15 ? [] : ['/recordatorio', '/empate', '/dia', '/horario'], ayuda: 'Cuando voten, copia los números de la encuesta («Ver votos») y cierra con día y hora. Si a las 2 h faltan votos, un recordatorio con conteo.' });
       if (caido) { add(G, 'Plan caído (' + (p.causa_caida || 'sin causa') + ')', true, {}); return; }
+      et = 'dia';
       if (!e15) add(G, 'Enviar /confirmado y crear el evento del grupo', env(p, 'msg_confirmado') || (paso && llegaron > 0), { tpls: ['/confirmado', '/evento'], ayuda: 'Tres mensajes cortos y el evento de WhatsApp (Adjuntar → Evento): ahí cada persona marca si va.' });
       add(G, 'Día del plan: llegadas (' + llegaron + ' de ' + van + ')', paso && ((van > 0 && llegaron >= van) || ahora > he + 8 * 36e5),
         paso ? { run2: 'llegaron', tpls: e15 ? [] : ['/hoy', '/salida', '/checkpoint', '/todos'], ayuda: 'En la mañana, /hoy; 2 h antes, /salida; a la hora del encuentro, el checkpoint. Registra quién llegó.' + (prueba && he > ahora ? ' Modo prueba: no hace falta esperar la hora.' : '') }
              : { t: 'Ver llegadas', tab: 'registro', q: '.estado-sel', tpls: e15 ? [] : ['/hoy', '/salida'], ayuda: 'Se activa a la hora del encuentro' + (he ? ' (' + S.fecha(he) + ')' : '') + '. Antes: /hoy en la mañana y /salida 2 h antes.' });
+      et = 'cierre';
       add(G, '«Ya en casa» (' + casa + ' de ' + llegaron + ')', paso && ((llegaron > 0 && casa >= llegaron) || env(p, 'msg_en_casa') || ahora > he + 8 * 36e5),
         { run2: 'casa', tpls: e15 ? [] : ['/en_casa'], ayuda: noche ? 'Plan de noche: pregúntalo mañana a las 10:00.' : 'Al terminar el plan. Registra quién respondió «Ya en casa».' });
       add(G, 'Pulso con SEQ y SUS' + (p && cerr ? ' (faltan ' + faltanP + ')' : ''), p && cerr && faltanP === 0,
@@ -412,16 +426,22 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function desdePub(p, tipo, l) { if (!p || !p.t_publicado || ['msg_opciones', 'recordatorio'].indexOf(tipo) < 0) return l; var t0 = new Date(p.t_publicado).getTime() - 5000; return l.filter(function (x) { return new Date(x).getTime() >= t0; }); }
   /** 2.5.0 · Relojes: lo que tiene hora (recordatorio a las 2 h, salida 2 h antes, checkpoint, «en casa» y pulso). */
   function relojesDe(g) {
-    var ps = planesDe(g.grupo_id), p = ps[ps.length - 1], out = [], ahora = Date.now(); if (!p || g.experimento === 'E2') return out;
+    var ps = planesDe(g.grupo_id), p = ps[ps.length - 1], out = [], ahora = Date.now(); if (!p || g.experimento === 'E2' || g.modo === 'prueba') return out;   // 2.6.0: en modo prueba no hay espera, así que no hay relojes
     var hx = hechos(p.plan_id), env = function (t) { return desdePub(p, t, hx[t] || []).length > 0; };
     var he = p.hora_encuentro ? new Date(p.hora_encuentro).getTime() : null, noche = he && new Date(he).getHours() >= 20;
-    if (p.estado === 'votando' && p.t_publicado && !env('recordatorio')) out.push({ txt: 'Recordatorio de votación', t: new Date(p.t_publicado).getTime() + 2 * 36e5 });
-    if (p.estado === 'cerrado' && he) {
-      if (!env('salida_sugerida')) out.push({ txt: 'Hora de salida', t: he - 2 * 36e5 });
-      if (!env('msg_checkpoint')) out.push({ txt: 'Checkpoint de llegada', t: he });
+    if (p.estado === 'votando' && p.t_publicado && !env('recordatorio')) out.push({ etapa: 'decidir', txt: 'Recordatorio de votación', t: new Date(p.t_publicado).getTime() + 2 * 36e5 });
+    var est = p.estado_por_pid || {}, mm = g.miembros || [], van = mm.filter(function (m) { return (est[m.pid] || {}).apuntado !== false; }).length;
+    var lleg = mm.filter(function (m) { return (est[m.pid] || {}).llego; }).length, enCasa = mm.filter(function (m) { return (est[m.pid] || {}).casa; }).length;
+    var llegadasListas = van > 0 && lleg >= van, casaLista = lleg > 0 && enCasa >= lleg, pulsoListo = mm.length && mm.every(function (m) { return (p.retro_pids || []).indexOf(m.pid) >= 0; });
+    if (p.estado === 'cerrado' && he) {   // 2.6.0: un reloj se apaga cuando lo que mide ya pasó (no solo cuando se marcó el mensaje)
+      hx = Object.assign({}, hx); if (lleg > 0) hx.salida_sugerida = [1]; if (llegadasListas) hx.msg_checkpoint = [1];
+      if (casaLista) hx.msg_en_casa = [1];
+      if (pulsoListo) hx.msg_retro = [1];
+      if (!env('salida_sugerida')) out.push({ etapa: 'dia', txt: 'Hora de salida', t: he - 2 * 36e5 });
+      if (!env('msg_checkpoint')) out.push({ etapa: 'dia', txt: 'Checkpoint de llegada', t: he });
       var fin = noche ? new Date(new Date(he).setHours(24 + 10, 0, 0, 0)).getTime() : he + 3 * 36e5;
-      if (!env('msg_en_casa')) out.push({ txt: '«¿Ya en casa?»', t: fin });
-      if (!env('msg_retro')) out.push({ txt: 'Pulso', t: fin });
+      if (!env('msg_en_casa')) out.push({ etapa: 'cierre', txt: '«¿Ya en casa?»', t: fin });
+      if (!env('msg_retro')) out.push({ etapa: 'cierre', txt: 'Pulso', t: fin });
     }
     return out.map(function (x) { x.vencido = ahora >= x.t; return x; }).sort(function (a, b) { return a.t - b.t; });
   }
@@ -467,18 +487,11 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       if (a.tpls && a.tpls.length) { var d = tplData('grupo'); h += '<div class="next-msgs">' + a.tpls.map(function (c) { var k = tplIdx(c); return k < 0 ? '' : tplBox(k, d, 'n'); }).join('') + '</div>'; }
     }
     h += '</div>';
-    var secciones = []; L.forEach(function (s, k) { var u = secciones[secciones.length - 1]; if (!u || u.nombre !== s.grupo) secciones.push(u = { nombre: s.grupo, pasos: [] }); u.pasos.push([s, k]); });
     if (cur) h = h.replace(/<\/div>$/, '') + '<p class="c-atajos">Atajos: <kbd>C</kbd> copiar y marcar el siguiente mensaje · <kbd>N</kbd> ir a la acción · <kbd>M</kbd> mapa · <kbd>?</kbd> todos</p></div>';
-    h += '<div class="s-plan-list" style="margin-top:12px"' + (cur ? '' : ' data-state="done"') + '><header><span style="flex:1"><b>Recorrido del grupo</b><small>Paso ' + Math.min(hechosN + 1, L.length) + ' de ' + L.length + '</small></span></header>' +
-      '<div class="c-seg" aria-hidden="true">' + L.map(function (s, k) { return '<i data-st="' + (s.hecho ? 'hecho' : (cur && k === i ? 'ahora' : '')) + '"></i>'; }).join('') + '</div>';
     var vivo = S.$('#vivo'), anuncio = cur ? 'Lo que toca ahora: ' + cur.grupo + ', ' + cur.txt : ''; if (vivo && vivo.dataset.ultimo !== anuncio) { vivo.textContent = anuncio; vivo.dataset.ultimo = anuncio; }   // 2.5.0: se anuncia el cambio de paso
-    secciones.forEach(function (sec) {
-      var lista = sec.pasos.every(function (y) { return y[0].hecho; });
-      h += '<details class="seccion"' + (lista || (window.innerWidth < 1100 && !sec.pasos.some(function (y) { return cur && y[1] === i; })) ? '' : ' open') + '><summary class="grupo-paso">' + e(sec.nombre) + (lista ? ' · listo ✓' : '') + '</summary><ol>' +
-        sec.pasos.map(function (y) { var s = y[0], k = y[1], now = cur && k === i; return '<li data-st="' + (s.hecho ? 'hecho' : 'pendiente') + '"' + (now ? ' aria-current="step"' : '') + '><span class="marca" aria-hidden="true">' + (s.hecho ? '✓' : '') + '</span><span><strong>' + e(s.txt) + '</strong></span>' + (now ? '<em>Ahora</em>' : '') + '</li>'; }).join('') + '</ol></details>';
-    });
-    h += '<details class="small"><summary>Cómo funciona ' + e(x.nombre) + '</summary><p style="margin:6px 0 0"><b>Qué se prueba.</b> ' + e(x.prueba) + '</p><p style="margin:4px 0 0"><b>El mago.</b> ' + e(x.mago) + '</p><p style="margin:4px 0 0"><b>Se mide.</b> ' + e(x.mide) + '</p></details></div>';
-    el.innerHTML = h;
+    h += mapaHtml(g, L, i, cur, hechosN);
+    h += '</section><details class="small c-como"><summary>Cómo funciona ' + e(x.nombre) + '</summary><p style="margin:6px 0 0"><b>Qué se prueba.</b> ' + e(x.prueba) + '</p><p style="margin:4px 0 0"><b>El mago.</b> ' + e(x.mago) + '</p><p style="margin:4px 0 0"><b>Se mide.</b> ' + e(x.mide) + '</p></details>';
+    var corte = h.indexOf('<section class="c-mapa"'); var fin = h.indexOf('</section>', corte) + 10; el.innerHTML = h.slice(corte, fin) + h.slice(0, corte) + h.slice(fin);   // 2.6.0: el mapa orienta arriba; el paso, debajo
     var b = S.$('#irPaso', el);
     if (b) b.onclick = function () {
       var t = a.run === 'cerrar' ? S.$('[data-cerrar]') : a.run === 'crearPlan' ? S.$('#crearPlan') : a.run === 'siguienteRonda' ? S.$('#siguienteRonda') : null;
@@ -490,6 +503,45 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var tc = S.$('#todosCasa', el); if (tc) tc.onclick = function () { registrarTodos(tc, 'llego_casa', g.miembros.filter(function (m) { var s = est[m.pid] || {}; return s.llego && !s.casa; }).map(function (m) { return m.pid; })); };
     var il = S.$('#irLlegadas', el); if (il) il.onclick = function () { irA('registro', '.estado-sel'); };
     bindTpl(el, tplData('grupo'));
+    S.$$('[data-ir-etapa]', el).forEach(function (b) { b.onclick = function () {
+      var dst = MAPA_IR[b.dataset.irEtapa]; if (b.dataset.plan) sel.plan = b.dataset.plan;
+      renderAll(); irA(dst[0], dst[1]);
+    }; });
+  }
+  /** 2.6.0 · Mapa del recorrido: 5 etapas por plan, ligadas a los tres momentos. Reemplaza la lista de 19 pasos. */
+  var ETAPAS_MAPA = [['grupo', 'Grupo', 'Antes'], ['proponer', 'Proponer', 'Activación'], ['decidir', 'Decidir', 'Activación'], ['dia', 'El día', 'Interacción'], ['cierre', 'Cierre', 'Continuidad']];
+  var MAPA_IR = { grupo: ['grupos', null], proponer: ['planes', '#restr'], decidir: ['planes', '#decision'], dia: ['registro', '.estado-sel'], cierre: ['planes', '#pulsos'] };
+  function mapaHtml(g, L, i, cur, hechosN) {
+    var rel = relojesDe(g), psG = planesDe(g.grupo_id), ultR = psG.length ? Number(psG[psG.length - 1].ronda) : 0;
+    function celda(r, et) {
+      var pasos = L.filter(function (s) { return s.etapa === et[0] && (et[0] === 'grupo' ? true : s.ronda === r); });
+      var ahora = cur && pasos.indexOf(cur) >= 0, st = !pasos.length ? 'omitido' : pasos.every(function (s) { return s.hecho; }) ? 'hecho' : ahora ? 'ahora' : 'pendiente';
+      var res = L.res[(et[0] === 'grupo' ? 0 : r) + '|' + et[0]] || (st === 'hecho' ? 'Listo' : st === 'omitido' ? '—' : '');
+      var rl = r === ultR && st !== 'hecho' ? rel.filter(function (x) { return x.etapa === et[0]; })[0] : null;
+      var pid = (pasos.filter(function (s) { return s.plan_id; })[0] || {}).plan_id || '';
+      var ir = st !== 'omitido' && (et[0] === 'grupo' || pid);
+      var marca = st === 'hecho' ? '✓' : st === 'ahora' ? '●' : '';
+      if (st === 'pendiente') res = '';   // lo que aún no toca no adelanta estados
+      var inner = '<b><span class="c-m" aria-hidden="true">' + marca + '</span>' + e(et[1]) + '</b><span class="c-res">' + e(res) + '</span>' +
+        (rl ? '<span class="c-rel" data-vencido="' + (rl.vencido ? 1 : 0) + '">' + (rl.vencido ? 'Toca ya · ' : '') + e(enCuanto(rl.t)) + '</span>' : '');
+      var lab = 'Plan ' + r + ', ' + et[1] + ' (' + et[2] + '): ' + ({ hecho: 'hecho', ahora: 'toca ahora', pendiente: 'pendiente', omitido: 'no aplica' })[st] + (res && res !== '—' ? ', ' + res : '') + (rl ? ', ' + rl.txt + ' ' + enCuanto(rl.t) : '');
+      return '<li class="c-etapa" data-st="' + st + '"' + (rl && rl.vencido ? ' data-vencido="1"' : '') + (ahora ? ' aria-current="step"' : '') + '>' +
+        (ir ? '<button type="button" data-ir-etapa="' + et[0] + '" data-plan="' + e(pid) + '" aria-label="' + e(lab) + '">' + inner + '</button>' : '<div aria-label="' + e(lab) + '" role="group">' + inner + '</div>') + '</li>';
+    }
+    var h = '<section class="c-mapa"' + (cur ? '' : ' data-state="done"') + ' aria-labelledby="mapaT"><header><h3 id="mapaT">Recorrido del grupo</h3><small>Paso ' + Math.min(hechosN + 1, L.length) + ' de ' + L.length + '</small></header>';
+    h += '<div class="c-fila c-momentos" aria-hidden="true"><span></span><ol class="c-etapas">' + ETAPAS_MAPA.map(function (et) { return '<li>' + e(et[2]) + '</li>'; }).join('') + '</ol></div>';
+    [1, 2].forEach(function (r) {
+      var actual = cur ? (cur.etapa === 'grupo' ? r === 1 : cur.ronda === r) : r === 2;
+      h += '<div class="c-fila"' + (actual ? ' data-actual="1"' : '') + '><span class="c-fila-n">Plan ' + r + '</span><ol class="c-etapas">' + ETAPAS_MAPA.map(function (et) {
+        return et[0] === 'grupo' ? (r === 1 ? celda(r, et) : '<li class="c-etapa c-hueco" aria-hidden="true"><span>Mismo grupo</span></li>') : celda(r, et);
+      }).join('') + '</ol></div>';
+    });
+    if (cur) {
+      var enEt = L.filter(function (s) { return s.etapa === cur.etapa && s.ronda === cur.ronda; });
+      h += '<ol class="c-detalle" aria-label="Pasos de la etapa actual">' + enEt.map(function (s) { var now = s === cur; return '<li data-st="' + (s.hecho ? 'hecho' : now ? 'ahora' : 'pendiente') + '"' + (now ? ' aria-current="step"' : '') + '>' + e(s.txt) + '</li>'; }).join('') + '</ol>';
+    }
+    h += '<details class="c-todos"><summary>Todos los pasos (' + hechosN + ' de ' + L.length + ' hechos)</summary><ol>' + L.map(function (s) { return '<li data-st="' + (s.hecho ? 'hecho' : s === cur ? 'ahora' : 'pendiente') + '"><span>' + e(s.grupo) + '</span> ' + e(s.txt) + '</li>'; }).join('') + '</ol></details>';
+    return h;
   }
   /** 2.2.2 (QA N4): el paso pendiente de cada grupo, para mostrarlo en su fila */
   function pendienteDe(g) { if (g.estado === 'excluido') return ''; var L = pasosDe(g), c = L.filter(function (x) { return !x.hecho; })[0]; return c ? c.grupo + ': ' + c.txt : 'Completo'; }
