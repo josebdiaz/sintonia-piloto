@@ -244,3 +244,23 @@ body.consola .toast { top: auto; bottom: 16px; }
 #magoNudge { margin: 0 0 12px; }
 body.consola .tpl .tpl-text { width: 100% !important; max-width: none !important; display: block; }
 .c-bar .mago-tira #tiraMin, .mago-ctl #magoMin { font-family: var(--m-txt); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+/* 2.5.1 · QA visual: los contenedores que pueden tener dos líneas no son píldoras (se deformaban); los tres controles miden lo mismo */
+.consola-top { grid-template-columns: auto auto minmax(0, 1fr); align-items: stretch; }
+#expbar .s-band, .modo-ctl, .mago-ctl { min-height: 56px; border-radius: 16px; }
+#expbar .s-band { height: 100%; padding: 6px; }
+#expbar .s-band [role="radio"] { height: auto; min-height: 44px; border-radius: 11px; }
+.modo-ctl { padding: 6px 8px 6px 16px; gap: 12px; }
+.modo-ctl .modo-txt small { display: none; }   /* el aviso «Modo prueba activo» de abajo ya lo dice */
+.mago-ctl { flex-wrap: nowrap; padding: 6px 6px 6px 16px; }
+.mago-ctl .mago-estado { flex: 1 1 auto; min-width: 0; }
+.mago-ctl .mago-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mago-ctl input { flex: 0 0 140px; width: 140px; min-height: 44px; border-radius: 11px; }
+.mago-ctl .s-button { flex: 0 0 auto; min-height: 44px; border-radius: 11px; }
+.mago-ctl[data-state="in"] .s-button { border-radius: 11px; }
+@media (max-width: 1100px) { .mago-ctl { flex-wrap: wrap; } }
+@media (max-width: 760px) { .mago-ctl input { flex: 1 1 140px; } .mago-ctl .s-button { flex: 1 1 auto; } }
+/* barra flotante: al ser fija, con esquinas redondas arriba y abajo y separada del borde (el contenido ya no asoma por las esquinas) */
+.c-bar { top: 8px; margin: 8px 0 18px; border-radius: 16px; }
+body.consola .s-quick-replies { display: flex; flex-wrap: wrap; gap: 6px; }
+@media (max-width: 760px) { .c-bar { top: 0; margin: 0 -16px 14px; border-radius: 0 0 16px 16px; } }

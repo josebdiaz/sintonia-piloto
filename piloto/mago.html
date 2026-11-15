@@ -39,7 +39,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     <div class="c-acc">
       <a class="btn btn-sm c-solo-ancho" href="panel.html">Panel</a>
       <button class="btn btn-sm" id="recargar" type="button">↻ Recargar</button>
-      <button class="btn btn-sm" id="verAtajos" type="button" aria-haspopup="dialog">Atajos</button>
+      <button class="btn btn-sm c-solo-ancho" id="verAtajos" type="button" aria-haspopup="dialog">Atajos</button>
       <details class="c-mas"><summary>Más</summary><div class="c-menu">
         <a href="investigadores.html">Mapa de vistas</a>
         <a href="panel.html">Panel del piloto</a>
@@ -515,6 +515,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     b.onclick = function () {
       S.$$('[data-tab]').forEach(function (x) { if (x.getAttribute('role') === 'tab') x.setAttribute('aria-selected', String(x.dataset.tab === b.dataset.tab)); else x.dataset.activa = x === b ? '1' : ''; });   // 2.5.0: solo las pestañas llevan aria-selected
       S.$$('.tab').forEach(function (t) { S.show(t, t.id === 'tab-' + b.dataset.tab); }); var aj = S.$('.c-ajustes'); if (aj) aj.open = false;
+      growAll();   // 2.5.1: los mensajes de una pestaña oculta se medían en 0 px
     };
   });
 

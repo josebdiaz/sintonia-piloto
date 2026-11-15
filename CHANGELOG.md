@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-14 · QA visual de la consola (frontend 2.5.1)
+- Los contenedores que pueden partirse en dos líneas (condición, modo prueba, sesión del mago) dejan de ser píldoras: radio de 16 px y la misma altura; los botones internos, 11 px. La sesión del mago queda en una sola línea en escritorio.
+- Modo prueba sin texto repetido (el aviso de abajo ya lo dice); la barra noche flota separada del borde y el contenido ya no asoma por sus esquinas.
+- Los mensajes de una pestaña oculta ya no aparecen recortados; etiquetas de etapas con separación; «Atajos» se oculta en celular.
+- QA: recorrido 49 de 49; axe-core sin hallazgos.
+
 ### 2026-11-14 · Marca actual, enlaces de ubicación y accesibilidad (frontend 2.5.0 · backend 2.5.0)
 QA de UX, UI y accesibilidad: `claude/qa-ux-ui-a11y-consola-2026-11-14.md` (Proyecto).
 - **Enlaces de ubicación:** se busca por nombre y dirección (Google Maps abre la ficha del lugar); las coordenadas solo valen si caen en Cali y se corrigen si la hoja en español las leyó como miles (3.4516 → 34516); un dato vacío ya no reemplaza uno bueno; «Ver en el mapa» en cada mensaje con ubicación. `probarMontaje()` reporta la calidad de las ubicaciones.
