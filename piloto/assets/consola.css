@@ -97,8 +97,8 @@ body.consola .btn-sm { min-height: 36px; padding: 6px 14px; font-size: 14px; }
 #resumen { margin: 0 0 10px; font-size: 13px; }
 
 /* ── Avisos (banners) planos ──────────────────────────────────────────── */
-body.consola .s-banner { border-radius: 14px; border: 0; box-shadow: inset 4px 0 0 var(--m-mostaza); background: #fbf5de; color: var(--m-noche); }
-body.consola .s-banner[data-type="error"] { box-shadow: inset 4px 0 0 var(--m-rojo); background: #fbefef; color: var(--m-rojo); }
+body.consola .s-banner { border-radius: 14px; border: 0; box-shadow: none; background: #fbf5de; color: var(--m-noche); }
+body.consola .s-banner[data-type="error"] { box-shadow: none; background: #fbefef; color: var(--m-rojo); }
 body.consola .card.warn { background: #fbf5de; border-color: #ecdca8; }
 body.consola .card.soft { background: var(--m-papel-100); border-color: transparent; }
 body.consola .card { border-radius: var(--m-r-card); border-color: var(--m-papel-300); box-shadow: none; }
@@ -109,7 +109,8 @@ body.consola .card { border-radius: var(--m-r-card); border-color: var(--m-papel
 .s-list .s-tuning-row:first-child { border-top: 0; }
 .s-list .s-tuning-row strong { font: 700 15px/1.3 var(--m-txt); }
 .s-list .s-tuning-row small { color: var(--m-papel-700); }
-.s-list .s-tuning-row[aria-current="true"] { background: var(--m-papel-100); box-shadow: inset 4px 0 0 var(--m-naranja); }
+.s-list .s-tuning-row[aria-current="true"] { background: var(--m-crema); box-shadow: none; }
+.s-list .s-tuning-row[aria-current="true"] strong { font-weight: 800; }
 .s-list .s-tuning-row:hover { background: var(--m-papel-50); }
 .s-eyebrow, body.consola .s-eyebrow { font: 700 12px/1.3 var(--m-txt); letter-spacing: .12em; text-transform: uppercase; color: var(--m-naranja-700); }
 /* Estado del grupo: ficha plana con punto sólido (antes, luz piloto con resplandor) */
@@ -189,8 +190,8 @@ body.consola .badge { border-radius: 999px; }
 body.consola .badge.ok { background: var(--m-vitral-soft); color: var(--m-vitral); }
 
 /* ── Confirmaciones y avisos («toast») arriba a la derecha, sin tapar botones ── */
-body.consola .toast { top: 16px; right: 16px; left: auto; bottom: auto; transform: none; max-width: min(420px, calc(100% - 32px)); padding: 12px 16px 12px 18px; border-radius: 14px; background: var(--m-noche); box-shadow: inset 4px 0 0 var(--m-naranja), 0 18px 40px -18px rgba(0,0,0,.5); font: 600 14px/1.4 var(--m-txt); }
-body.consola .toast.err { background: var(--m-rojo); box-shadow: inset 4px 0 0 #ffb4a8, 0 18px 40px -18px rgba(0,0,0,.5); }
+body.consola .toast { top: 16px; right: 16px; left: auto; bottom: auto; transform: none; max-width: min(420px, calc(100% - 32px)); padding: 12px 16px 12px 18px; border-radius: 14px; background: var(--m-noche); box-shadow: 0 18px 40px -18px rgba(0,0,0,.5); font: 600 14px/1.4 var(--m-txt); }
+body.consola .toast.err { background: var(--m-rojo); box-shadow: 0 18px 40px -18px rgba(0,0,0,.5); }
 body.consola dialog.hoja .s-sheet { border-radius: var(--m-r-card); background: var(--m-papel-0); }
 body.consola dialog.hoja .s-sheet::before { display: none; }
 body.consola dialog.hoja h2 { font: 800 22px/1.2 var(--m-txt); letter-spacing: -.02em; }
