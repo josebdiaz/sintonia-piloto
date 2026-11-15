@@ -162,3 +162,30 @@ Solo después del ensayo: publicar W2, W4 y W5, que son programados. Los flujos 
 - [ ] Los 9 flujos (más el nuevo SW · Aprobar) exportados sin credenciales a `n8n/` y revisados.
 - [ ] Aviso v2 aprobado por Néstor (n8n y Telegram como encargados) antes de usar datos reales.
 - [ ] Plan de n8n definido antes del fin de la prueba gratuita (cerca del 8 nov).
+
+## 7. Actualización del 15/11 · lo que cambió en E1 (consola 2.4.0 → 2.7.0) y obliga a cambiar E1.5
+
+Resumen en [`ESTADO.md`](../ESTADO.md) §3.1. Sin estos ajustes, E1.5 corre, pero el grupo vive otra mecánica que en E1 y la comparación deja de ser justa.
+
+1. **Votación con encuesta nativa de WhatsApp (N1).** En E1 el grupo vota en la encuesta (Adjuntar → Encuesta, varias respuestas) y el mago copia los conteos de «Ver votos». En E1.5:
+   - W1 manda `/opciones`, `/opcion_1…3` y la encuesta (pregunta y opciones, cada una para copiar) a quien revisa.
+   - El formulario de W3 pide los conteos (votos por opción, «Cualquiera», «Ninguna», votaron X de Y) y llama `cerrar_plan` con `decision: { votaron, total, votos:[…], cualquiera, ninguna }`. Así E1.5 también deja filas en `decisiones`.
+   - E1.5-01 (voto escrito) queda para SALIR, HUMANO y mensajes sueltos.
+2. **Textos (N2).** La fuente es la lista `TPL` de `piloto/mago.html` (2.7.0), no la sección *Message texts* de `PROMPT-n8n-builder.md`, que quedó desactualizada.
+3. **Sin corchetes (N3).** Antes de «Ya lo pegué», SW · Enviar revisa `/\[[^\]\n]{1,30}\]/`. Si encuentra uno, vuelve a SW · Aprobar con el aviso «Completa [n] antes de enviar». Es la misma regla que la consola.
+4. **Eventos (N4).** En lugar de `evento_msg` vacío (I1): W4 usa `msg_checkpoint` y `msg_todos`; W5 usa `msg_en_casa`. Nuevo paso `/hoy` en la mañana del plan con `msg_hoy`. Si no se sabe cuántos se apuntaron, `/hoy` va sin conteo.
+5. **Relojes (N5).** Recordatorio 2 h después de publicar · `/salida` 2 h antes · checkpoint a la hora · `/en_casa` y pulso 3 h después; si el encuentro es desde las 8:00 p. m., al día siguiente a las 10:00. Ajustar W5, que hoy manda siempre `/retro` al día siguiente.
+6. **Pulso por persona (N6).** `/retro` al grupo va sin enlace. W5 entrega en Telegram un enlace `wa.me` por persona con su texto y su enlace de `retro.html?pid=…&plan_id=…`.
+7. **Ronda 2 de opciones (N7).** Requiere `reabrir_opciones` en `MOTOR_ACCIONES` (backend) y deduplicar `e15_planes` por `plan_id` + ronda.
+8. **Paradas completas (N8).** «Normalizar opciones» conserva `tipo` y, por parada, `direccion`, `macro_zona`, `latitud` y `longitud`.
+9. **Medición (N10, N11).** E1 y E1.5 se comparan con los minutos de «Mago in» (abrirlo durante toda revisión en Telegram). `medicion_consola` mide solo el tiempo en la consola. El NASA-TLX de quien revisa sí es comparable; el SUS de E1.5 está por decidir.
+
+Agregar a §5.1:
+
+| # | Flujo | Prueba | Resultado esperado |
+|---|---|---|---|
+| T13 | W3 | Cerrar con conteos [1, 2, 0] | Fila en `decisiones` con `votos_opciones = [1,2,0]` |
+| T14 | SW · Enviar | Texto con `[n]` | No se envía; vuelve a aprobación |
+| T15 | W1 | «Pedir más opciones» y volver a disparar | Ronda 2 publicada; el plan no queda caído |
+| T16 | W5 | Plan a las 8:00 p. m. | `/en_casa` y pulso al día siguiente a las 10:00 |
+

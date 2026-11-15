@@ -77,7 +77,7 @@
       <h1>Control de guías de implementación</h1>
       <p class="lead">Todas las guías del proyecto en un solo lugar, según su estado: <b>vigente</b> (se usa hoy), <b>hecha</b> (se ejecutó o quedó superada) y <b>pendiente</b> (todavía no se aplica). Cada tarjeta dice para qué sirve, quién la usa y el siguiente paso.</p>
     </div>
-    <div class="meta-top">Revisión del 6/10/2026<br>Piloto en frontend 2.0.7 · backend 2.2.5</div>
+    <div class="meta-top">Revisión del 15/11/2026<br>Piloto en frontend 2.7.0 · backend 2.7.0 (por desplegar)</div>
   </header>
 
   <section class="resumen" aria-label="Resumen por estado" id="resumen"></section>
@@ -100,9 +100,9 @@
   "ambito": "Operación del piloto",
   "titulo": "Onboarding del monitor (mago de E1)",
   "para": "Qué es Sintonía, el estado del piloto, accesos, la consola, el paso a paso de un plan, qué registrar, cómo escribir, contingencias y reglas. Fuente en Markdown para el motor de presentaciones; deck con el walkthrough de la consola en docs/deck-onboarding-monitor.html.",
-  "version": "v1.1 · consola 2.2.2 · 6/11/2026",
+  "version": "v1.1 · consola 2.2.2 · 6/11/2026 · desactualizada frente a la 2.7.0",
   "quien": "Monitor, con José y Katherine",
-  "siguiente": "Inducción y ensayo en modo prueba cuando se confirme el monitor. Si se publica UX Writing v1, revisar las diapositivas 11 a 14.",
+  "siguiente": "Actualizar a la consola 2.7.0 (mapa del recorrido, cola de mensajes, conteo «− n +», día y hora en botones, llegadas en un toque, menú «⋯», pulso del mago) antes del primer grupo real. Ver ESTADO.md §3.2.",
   "archivo": "docs/guias/onboarding-monitor.md",
   "tipo": "md"
  },
@@ -114,19 +114,19 @@
   "para": "Una página para imprimir: qué queremos saber, las cuatro pruebas (ensayo, E1, E1.5 y validación web), cómo medimos, quién participa, roles, calendario y lo que falta antes de arrancar.",
   "version": "v1.1 · 6/11/2026 · calendario propuesto",
   "quien": "Equipo, monitor y Néstor",
-  "siguiente": "Publicar el aviso v2 y pagar n8n. Ajustar el calendario cuando se confirme el monitor.",
+  "siguiente": "Agregar como métricas de contexto el pulso del mago (SUS y NASA-TLX) y la medición de la consola por etapa, y contarlo a Néstor. Publicar el aviso v2 y confirmar el plan de n8n.",
   "archivo": "docs/plan-pruebas-usuario.html",
   "tipo": "html"
  },
  {
   "id": "protocolo-m2",
-  "estado": "vigente",
+  "estado": "hecha",
   "ambito": "Operación del piloto",
   "titulo": "Protocolo de operación M2 (E1 y E2)",
   "para": "Qué hace el mago en cada condición, el ensayo en modo prueba, cómo empezar el piloto real, la asignación W1/W2, las contingencias y el cambio único entre rondas (I4).",
   "version": "Frontend 2.0.7 · backend 2.2.5 · 6/10/2026",
   "quien": "José y Katherine",
-  "siguiente": "Jueves 9/10: ensayo en modo prueba. Después, «⟲ Empezar piloto real». W1: 10–11/10.",
+  "siguiente": "Superado: describe E2 como web app (antes de D1). Lo vigente es el onboarding del monitor y ESTADO.md.",
   "archivo": "docs/protocolo-m2.md",
   "tipo": "md"
  },
@@ -136,9 +136,9 @@
   "ambito": "Backend y publicación",
   "titulo": "Desplegar el backend en Apps Script",
   "para": "Pegar el .gs, correr probarMontaje y publicar como Nueva versión sin cambiar la URL /exec. Propiedades del script que necesita.",
-  "version": "Backend 2.2.5 · 6/10/2026",
+  "version": "Backend 2.7.0 · 15/11/2026",
   "quien": "José (dueño del script)",
-  "siguiente": "Por confirmar: que la implementación en vivo ya sea la 2.2.5 (corregir_plan, minutos, «✓ Hecho»).",
+  "siguiente": "Desplegar la 2.7.0 (crea las hojas pulso_mago y medicion_consola) y confirmar la versión en vivo. En vivo: 2.5.0.",
   "archivo": "backend/README.md",
   "tipo": "md"
  },
@@ -150,7 +150,7 @@
   "para": "GitHub flow, SemVer por componente, tags piloto/vX y backend/vX, publicar.sh y publicar_deck.sh, y la regla de un cambio entre W1 y W2.",
   "version": "README del repositorio · 6/10/2026",
   "quien": "José",
-  "siguiente": "Al día: 2.0.7 y 2.2.5 publicados el 6/10.",
+  "siguiente": "Al día: frontend 2.7.0 publicado el 15/11. Congelar la versión mientras corren los grupos del piloto.",
   "archivo": "README.md",
   "ancla": "cómo-trabajar-github-flow",
   "extra": [

@@ -41,3 +41,5 @@ Entiende: `1` `2` `3` (también «opción 2», «la 2»), `TODAS`, `NINGUNA`, `M
 ### Pendiente
 
 Propuesta y publicación con aprobación (`proponer_ia` → `publicar_plan` → `/opciones`), cierre, recordatorio y `/salida`, y pulso (E15-02 en adelante).
+
+**15/11:** la consola de E1 cambió su mecánica (encuesta nativa, decisión por ronda, textos y relojes). Antes de corregir W0–W5, lee la §7 de [`GUIA-CONTINUACION.md`](GUIA-CONTINUACION.md) y [`ESTADO.md`](../ESTADO.md) §3.1.
