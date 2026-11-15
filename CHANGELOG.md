@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-15 · «Empezar piloto real» conserva los minutos del mago (backend 2.7.2)
+- `operacion` y `sesiones` pasan a la lista de hojas que no se borran: son el registro de horas del monitor. El panel solo cuenta los minutos de grupos en modo piloto, así que los de los ensayos no entran en las métricas.
+- Las sesiones que se cerraron solas en planes que ya no existen dejan de pedir minutos en la consola.
+- La pestaña «⟲ Empezar piloto real» lo explica (la lista de lo que se conserva la manda el backend).
+- QA: backend 85 de 85.
+
 ### 2026-11-15 · El motor puede pedir más opciones (backend 2.7.1)
 - `reabrir_opciones` entra en `MOTOR_ACCIONES`: E1.5 puede abrir una ronda 2 de opciones sin marcar el plan como caído, igual que el mago en E1 (implicación N7 de `ESTADO.md`). Solo en planes de E1.5 (`solo_e15` si el plan es de E1).
 - QA: backend 84 de 84.

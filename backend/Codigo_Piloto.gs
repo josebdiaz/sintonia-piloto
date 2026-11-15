@@ -1,7 +1,9 @@
 /**
- * Sintonía · Piloto v2.7.1 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.7.2 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.7.2 (15/11): «Empezar piloto real» ya no borra 'operacion' ni 'sesiones' (son el registro de horas del monitor; el panel solo
+ *   cuenta los minutos de grupos en modo piloto). Las sesiones que se cerraron solas de planes ya borrados no vuelven a pedir minutos.
  * Versión 2.7.1 (15/11): el motor (MOTOR_KEY) puede llamar reabrir_opciones para pedir más opciones en E1.5 sin marcar el plan como caído,
  *   igual que el mago en E1. Solo en planes de E1.5.
  * Versión 2.7.0 (15/11, revisión visual de la consola, F5 «medir la consola»):
@@ -845,7 +847,8 @@ function vistaMago_(q) {
   ses.forEach(function (r) { if (r.estado === 'abierta' && new Date(r.inicio).getTime() < limite) { updateRow_('sesiones', r._row, { fin: new Date(), minutos: '', estado: 'cerrada_auto' }); r.estado = 'cerrada_auto'; } });
   var sesionesAbiertas = ses.filter(function (r) { return r.estado === 'abierta'; }).map(function (r) {   // v2.3.0
     return { sesion_id: r.sesion_id, mago: r.mago, plan_id: r.plan_id, grupo_id: r.grupo_id, experimento: r.experimento, inicio: r.inicio }; });
-  var sesionesPorRevisar = ses.filter(function (r) { return r.estado === 'cerrada_auto'; }).map(function (r) {
+  var planIds = {}; planes.forEach(function (p) { planIds[p.plan_id] = 1; });   // v2.7.2: no pide minutos de planes borrados al empezar el piloto
+  var sesionesPorRevisar = ses.filter(function (r) { return r.estado === 'cerrada_auto' && (!r.plan_id || planIds[r.plan_id]); }).map(function (r) {
     return { sesion_id: r.sesion_id, mago: r.mago, plan_id: r.plan_id, grupo_id: r.grupo_id, inicio: r.inicio }; });
   return { ok: true, sesiones_abiertas: sesionesAbiertas, sesiones_por_revisar: sesionesPorRevisar, grupos: grupos, planes: planes, inventario: inventario, inventario_pendiente: pendiente, n_inventario: inventarioActivo_().length, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }),
     registros: conteoRegistros_(), conservar_al_limpiar: CONSERVAR_AL_LIMPIAR,
@@ -960,7 +963,7 @@ function resumenUsab_(u, mean) {
  * Antes de borrar copia las pestañas con datos a una hoja de respaldo nueva en el Drive del dueño del script,
  * sin la pestaña contactos (minimización: los nombres y números de los ensayos no se copian).
  */
-var CONSERVAR_AL_LIMPIAR = ['tokens', 'inventario', 'bitacora'];
+var CONSERVAR_AL_LIMPIAR = ['tokens', 'inventario', 'bitacora', 'operacion', 'sesiones'];   // v2.7.2: los minutos y las sesiones del mago son el registro de horas del monitor; no se borran. El panel solo cuenta los de grupos en modo piloto
 var NO_RESPALDAR = ['contactos'];
 var FRASE_LIMPIAR = 'EMPEZAR PILOTO';
 function hojasALimpiar_(conservarCambios) {

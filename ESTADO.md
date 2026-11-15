@@ -8,7 +8,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 | Componente | Versión | Estado |
 |---|---|---|
 | Frontend (consola, panel, páginas de participante) | **2.7.0** | Publicado en https://sintonia.my el 15/11 |
-| Backend (Apps Script) | **2.7.1** | Entregado el 15/11 (2.7.1: el motor puede pedir más opciones). **Despliegue por confirmar.** En vivo está la 2.5.0 (los correos de inscripción ya funcionan) |
+| Backend (Apps Script) | **2.7.2** | Entregado el 15/11 (2.7.1: el motor puede pedir más opciones; 2.7.2: «Empezar piloto real» conserva minutos y sesiones del mago). **Despliegue por confirmar.** En vivo está la 2.5.0 (los correos de inscripción ya funcionan) |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Inventario verificado | Hoja del piloto | Revisión de ubicaciones con `probarMontaje()` (2.5.0): **resultado por reportar** |
 
@@ -83,7 +83,7 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Desplegar el backend 2.7.1 y confirmar la versión en vivo | F5 y N7 | José (dueño del script) |
+| 1 | Desplegar el backend 2.7.2 **antes** de usar «⟲ Empezar piloto real» (con la 2.5.0 en vivo, el botón borra los minutos de Juan José) y confirmar la versión | F5, N7 y horas del monitor | José (dueño del script) |
 | 2 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
 | 3 | Actualizar el onboarding del monitor a la consola 2.7.0 (O1) | Inducción | Equipo |
 | 4 | Publicar el aviso de privacidad v2 | Datos reales | Equipo |

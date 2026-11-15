@@ -1306,14 +1306,14 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   }
 
   /* ---------- 2.0.6 · Empezar el piloto real (backend 2.2.4: limpiar_registros) ----------
-   * Borra los registros de los ensayos en la hoja. Conserva tokens, inventario y bitácora. Antes, el backend hace un respaldo sin contactos. */
+   * Borra los registros de los ensayos en la hoja. Conserva minutos y sesiones del mago (2.7.2), tokens, inventario y bitácora. Antes, el backend hace un respaldo sin contactos. */
   var HOJAS = { participantes: 'Personas inscritas', contactos: 'Nombres y WhatsApp', grupos: 'Grupos', linea_base_grupo: 'Línea base por grupo', linea_base: 'Línea base por persona',
     preferencias: 'Preferencias', planes: 'Planes', votos: 'Votos', eventos: 'Eventos', operacion: 'Minutos del mago', cambios: 'Cambios entre planes', sesiones: 'Sesiones del mago (in / off)', retro: 'Pulsos (retro)', wtp: 'Disposición a pagar', usabilidad: 'Usabilidad (SEQ + SUS)',
     alertas: 'Alertas (archivo)', revisiones: 'Revisiones (archivo)', suscripciones: 'Suscripciones a avisos', avisos: 'Avisos programados',
     tokens: 'Tokens de IA (costo)', inventario: 'Inventario de lugares', bitacora: 'Bitácora de reinicios' };
   var FRASE = 'EMPEZAR PILOTO', ultimoReinicio = null;
   function renderReinicio() {
-    var el = S.$('#tab-reinicio'), reg = D.registros, cons = D.conservar_al_limpiar || ['tokens', 'inventario', 'bitacora'];
+    var el = S.$('#tab-reinicio'), reg = D.registros, cons = D.conservar_al_limpiar || ['tokens', 'inventario', 'bitacora'];   // la lista la manda el backend (2.7.2: + operacion y sesiones)
     if (!reg) { el.innerHTML = '<div class="card warn"><h3>Falta actualizar el backend</h3><p class="small">El backend en vivo todavía no tiene el reinicio. Pega <b>backend/Codigo_Piloto.gs</b> (2.2.4) en Apps Script → Implementar → Administrar implementaciones → editar → <b>Nueva versión</b>. La URL /exec no cambia.</p></div>'; return; }
     var conservarCambios = !!(S.$('#rc-cambios') && S.$('#rc-cambios').checked);
     var borrar = Object.keys(reg).filter(function (n) { return cons.indexOf(n) < 0 && !(conservarCambios && n === 'cambios'); });
@@ -1325,7 +1325,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       (ultimoReinicio.respaldo ? 'Respaldo (sin contactos) en tu Drive: <a href="' + e(ultimoReinicio.respaldo) + '" target="_blank" rel="noopener">abrir la hoja de respaldo ↗</a>.' : 'No había nada que respaldar.') +
       ' La consola quedó en modo <b>Piloto (cuenta)</b>. Ya pueden compartir los enlaces de inscripción reales.</p></div>';
     h += '<div class="card danger"><h3>Empezar el piloto real</h3>' +
-      '<p class="small">Borra todo lo que dejaron los ensayos para que la semana de pruebas arranque en cero: grupos, personas, votos, eventos, minutos y pulsos. <b>Se conservan los tokens</b> (el costo de IA acumulado), el inventario y la bitácora. Antes de borrar, el backend copia las pestañas a una hoja de respaldo nueva en el Drive del dueño del script, <b>sin la pestaña de contactos</b>.</p>' +
+      '<p class="small">Borra todo lo que dejaron los ensayos para que la semana de pruebas arranque en cero: grupos, personas, votos, eventos y pulsos. <b>Se conservan los minutos y las sesiones del mago</b> (el registro de horas del monitor; el panel solo cuenta los de grupos en modo piloto), los tokens (el costo de IA acumulado), el inventario y la bitácora. Antes de borrar, el backend copia las pestañas a una hoja de respaldo nueva en el Drive del dueño del script, <b>sin la pestaña de contactos</b>.</p>' +
       '<p class="small" style="margin:6px 0 0">Hoy hay <b>' + pruebas + '</b> grupo(s) en modo prueba y <b>' + piloto + '</b> en modo piloto. ' + (piloto ? '<b>Ojo:</b> los grupos en modo piloto también se borran.' : '') + '</p></div>' +
       '<div class="grid two"><div class="card"><h3>Se borra (' + S.num(total) + ' registros)</h3><div class="table-scroll"><table><thead><tr><th>Pestaña</th><th style="text-align:right">Filas</th></tr></thead><tbody>' + borrar.map(fila).join('') + '</tbody></table></div></div>' +
       '<div class="card soft"><h3>Se conserva</h3><div class="table-scroll"><table><thead><tr><th>Pestaña</th><th style="text-align:right">Filas</th></tr></thead><tbody>' + cons.concat(conservarCambios ? ['cambios'] : []).filter(function (n) { return n in reg; }).map(fila).join('') + '</tbody></table></div>' +

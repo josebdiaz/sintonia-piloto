@@ -204,8 +204,10 @@ chk('2.5.0 probarMontaje: ubicaciones (regional, fuera de Cali, sin dirección, 
 const liv = get({ view: 'mago', key: A, inv: '0' });
 chk('2.5.0 ?view=mago&inv=0 no envía el inventario y sí cuántos hay', liv.ok && liv.inventario === null && liv.n_inventario >= 1 && Array.isArray(liv.grupos), [liv.inventario, liv.n_inventario]);
 
+const opPre = SHEETS.operacion.rows.length, sesPre = SHEETS.sesiones.rows.length;
 const lim = post({ action: 'limpiar_registros', key: A, confirmar: 'EMPEZAR PILOTO' });
-chk('Empezar piloto real limpia (incluye sesiones y usabilidad)', lim.ok && SHEETS.sesiones.rows.length <= 2 && SHEETS.usabilidad.rows.length <= 2 && SHEETS.inventario.rows.length === 3 && SHEETS.decisiones.rows.length <= 2, lim.borradas);
+chk('2.7.2 Empezar piloto real conserva minutos y sesiones del mago', lim.ok && opPre > 2 && sesPre > 2 && SHEETS.operacion.rows.length === opPre && SHEETS.sesiones.rows.length === sesPre && !('operacion' in lim.borradas), [opPre, sesPre, SHEETS.operacion.rows.length, SHEETS.sesiones.rows.length]);
+chk('Empezar piloto real limpia (incluye usabilidad y decisiones)', lim.ok && SHEETS.usabilidad.rows.length <= 2 && SHEETS.inventario.rows.length === 3 && SHEETS.decisiones.rows.length <= 2, lim.borradas);
 console.log(res.map(r => r.join(' · ')).join('\n'));
 console.log('\n' + res.filter(r => r[0] === 'OK ').length + ' de ' + res.length + ' OK');
 const vmL = get({ view: 'mago', key: A }), pnL = get({ view: 'panel', key: A });
