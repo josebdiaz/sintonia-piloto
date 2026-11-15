@@ -5,6 +5,9 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-15 · Stickers de Sintonía v1
+- `docs/stickers/`: 14 stickers estáticos de marca (512 × 512 WebP de menos de 100 KB y PNG), ícono de paquete 96 × 96, emojis por sticker, hoja de contacto, guía de uso por momento del plan y el generador. Pedido de la prueba de Juan José.
+
 ### 2026-11-15 · Prueba de Juan José con la consola 2.7.0 (frontend 2.7.1 · backend 2.7.3)
 - **Crear el grupo:** WhatsApp no deja crear un grupo vacío. La consola y la guía del monitor dicen ahora: crear el grupo agregando a quien organiza (con «Copiar su número») y mandar el enlace a los demás; «Invitar a…» ya no aparece para quien organiza.
 - **Emojis como «?»:** los mensajes que se abren en WhatsApp (`wa.me`: «Abrir chat», «Enviar a…», invitaciones) van sin emojis; los que se copian los conservan. El saludo pasa a «Hola, Paula. Soy Sintonía…».

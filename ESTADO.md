@@ -16,6 +16,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Versión | Cambio principal | Origen |
 |---|---|---|
+| v1 stickers | 14 stickers de marca en `docs/stickers/` | Prueba de Juan José |
 | 2.4.0 | **Decisión por ronda** (hoja `decisiones`: votos por opción copiados de la encuesta, no voto por persona) y «pedir más opciones» sin plan caído. Gemini propone siempre 3 opciones (exacta, intermedia, diferente) con la disponibilidad del grupo. Mensajes nuevos: encuesta nativa de WhatsApp, `/confirmado` en 3 mensajes, evento de WhatsApp, `/hoy`, `/checkpoint` y `/en_casa` como encuesta, pulso por enlace personal. Modo prueba sin reloj. Correos al equipo | Prueba 2 (14/11) y su grabación |
 | 2.5.0 | Enlaces de Google Maps por nombre y dirección; capa de marca actual; relojes; atajos C, N, M; accesibilidad (axe 0) | QA UX/UI/a11y |
 | 2.6.0 | Mapa del recorrido: 2 planes × 5 etapas (Grupo, Proponer, Decidir, El día, Cierre) | Revisión visual |
@@ -100,7 +101,7 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 |---|---|
 | WhatsApp no deja crear un grupo vacío | Hecho en 2.7.1: se crea con quien organiza y el resto entra por enlace |
 | 👋 sale como «?» en el mensaje prellenado | Hecho en 2.7.1: `wa.me` va sin emojis |
-| Faltan los stickers de Sintonía en el chat | **Pendiente.** Se envían desde el teléfono del número Sintonía: requiere un paquete (3 a 30 stickers WebP de 512 × 512, menos de 100 KB, ícono de 96 × 96) instalado con una app de stickers. Por diseñar |
+| Faltan los stickers de Sintonía en el chat | Hecho: paquete v1 en `docs/stickers/` (14 stickers). **Falta cargarlos** en el WhatsApp del número Sintonía (ver el README de la carpeta) |
 | «Ajustar tono» lo vuelve caleño y no deja dar la instrucción | Hecho en 2.7.1 y 2.7.3 (backend por desplegar) |
 | «Llegó» y «En casa» no se ven hasta recargar | Hecho en 2.7.1 (se ven al instante). Causa exacta en la hoja: **por confirmar** si se repite |
 | «Pulso» no se entiende y su mensaje no está en Mensajes | Hecho en 2.7.1: «Encuesta de cierre», también en Mensajes · Cierre |
