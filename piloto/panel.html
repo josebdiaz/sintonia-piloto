@@ -8,15 +8,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap">
 <link rel="stylesheet" href="assets/sintonia.css">
 <link rel="stylesheet" href="assets/ds3.css">
+<link rel="stylesheet" href="assets/consola.css">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 </head>
-<body>
+<body class="consola">
 <main class="wrap wide">
   <header class="top">
-    <a class="brand" href="panel.html"><span class="brand-mark" aria-hidden="true"></span>Panel del piloto</a>
+    <a class="brand" href="panel.html"><span class="brand-mark" aria-hidden="true"></span><h1 style="font:inherit;margin:0;letter-spacing:inherit">Panel del piloto</h1></a>
     <div class="actions" style="margin:0">
       <a class="btn btn-ghost btn-sm" href="mago.html">← Consola</a>
       <a class="btn btn-ghost btn-sm" href="investigadores.html">Mapa</a>
@@ -95,7 +96,7 @@
       ['Planes cerrados · caídos', function (x) { return x ? x.planes_cerrados + ' · ' + x.planes_caidos : '—'; }]
     ];
     function tabla(tit, rows) {
-      return '<h3 style="margin-top:14px">' + tit + '</h3><div class="table-scroll"><table><thead><tr><th></th><th>' + NOMBRE.E1 + '</th><th>' + NOMBRE.E2 + '</th></tr></thead><tbody>' +
+      return '<h3 style="margin-top:14px">' + tit + '</h3><div class="table-scroll"><table><thead><tr><th><span class="sr-only">Métrica</span></th><th>' + NOMBRE.E1 + '</th><th>' + NOMBRE.E2 + '</th></tr></thead><tbody>' +
         rows.map(function (r) { return '<tr><td>' + e(r[0]) + '</td><td>' + r[1](pe.E1) + '</td><td>' + r[1](pe.E2) + '</td></tr>'; }).join('') + '</tbody></table></div>';
     }
     var sinU = !u(pe.E1) && !u(pe.E2);

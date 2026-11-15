@@ -174,6 +174,12 @@ const rd = post({ action: 'redactar_ia', key: A, plan_id: p4.plan_id, paso: '/re
 chk('2.4.0 «Ajustar con Gemini» usa la indicación del mago', rd.ok && /Indicación del equipo.*grupo de chicas/.test(ultimoPrompt), ultimoPrompt.slice(0, 200));
 ctx.UrlFetchApp.fetch = fetchViejo; delete PROPS.NOTIFICAR_A;
 
+// 2.5.0: ubicaciones e inventario liviano
+const ub = vm.runInContext('revisarUbicaciones_', ctx)([{ id: 'A', direccion: 'Cl 5', latitud: 34516, longitud: -765320 }, { id: 'B', direccion: '', latitud: 3.45, longitud: -76.53 }, { id: 'C', direccion: 'Cra 1', latitud: 4.6, longitud: -74.1 }, { id: 'D', direccion: 'Cra 2', latitud: '', longitud: '' }]);
+chk('2.5.0 probarMontaje: ubicaciones (regional, fuera de Cali, sin dirección, sin coordenadas)', /3 de 4 con dirección/.test(ub) && /1 con coordenadas leídas/.test(ub) && /1 con coordenadas fuera de Cali \(p\. ej\. C\)/.test(ub) && /1 sin coordenadas/.test(ub), ub);
+const liv = get({ view: 'mago', key: A, inv: '0' });
+chk('2.5.0 ?view=mago&inv=0 no envía el inventario y sí cuántos hay', liv.ok && liv.inventario === null && liv.n_inventario >= 1 && Array.isArray(liv.grupos), [liv.inventario, liv.n_inventario]);
+
 const lim = post({ action: 'limpiar_registros', key: A, confirmar: 'EMPEZAR PILOTO' });
 chk('Empezar piloto real limpia (incluye sesiones y usabilidad)', lim.ok && SHEETS.sesiones.rows.length <= 2 && SHEETS.usabilidad.rows.length <= 2 && SHEETS.inventario.rows.length === 3 && SHEETS.decisiones.rows.length <= 2, lim.borradas);
 console.log(res.map(r => r.join(' · ')).join('\n'));

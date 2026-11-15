@@ -1,7 +1,9 @@
 /**
- * Sintonía · Piloto v2.4.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.5.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.5.0 (15/11, QA de UX, UI y accesibilidad): probarMontaje revisa las ubicaciones del inventario; ?view=mago&inv=0 no envía el
+ *   inventario (la consola lo pide una vez y lo guarda): cada actualización pesa una fracción.
  * Versión 2.4.0 (15/11, segunda prueba del 14/11 y su grabación):
  *   - Hoja nueva 'decisiones': el mago registra el resultado de cada ronda de votación (opción ganadora o «ninguna», votaron X de Y y votos por
  *     opción copiados de la encuesta de WhatsApp), no el voto de cada persona. cerrar_plan acepta «decision»; reabrir_opciones devuelve un plan en
@@ -688,7 +690,7 @@ function doGet(e) {
     if (q.view === 'invitacion') return json_(vistaInvitacion_(q));
     if (q.view === 'resolver' && (isMotor_(q.key) || isAdmin_(q.key))) return json_(vistaResolver_(q));   // v2.3.0
     if (!isAdmin_(q.key)) return json_({ ok: false, error: 'no_autorizado' });
-    if (q.view === 'mago') return json_(vistaMago_());
+    if (q.view === 'mago') return json_(vistaMago_(q));
     if (q.view === 'panel') return json_(vistaPanel_());
     return json_({ ok: false, error: 'vista_desconocida' });
   } catch (err) { return json_({ ok: false, error: String(err) }); }
@@ -740,7 +742,8 @@ function vistaPlan_(q) {
     n_invitados: p.n_invitados, n_apuntados: p.n_apuntados, n_votos: votos.length, yo: { apuntado: apuntado, llego: llego, retro: ya_retro, usabilidad: ya_usab } };
 }
 
-function vistaMago_() {
+function vistaMago_(q) {
+  var conInv = !q || String(q.inv) !== '0';   // v2.5.0: la consola pide el inventario una vez y lo guarda
   var nombres = {}; rows_('contactos').forEach(function (c) { nombres[c.pid] = { nombre: c.nombre_pila, whatsapp: c.whatsapp }; });
   var part = rows_('participantes').filter(function (p) { return p.estado === 'activo'; });
   var lbs = {}; rows_('linea_base_grupo').forEach(function (b) { lbs[b.grupo_id] = b; });
@@ -775,7 +778,7 @@ function vistaMago_() {
     return o;
   });
   var copia = function (i) { var o = {}; SHEETS.inventario.concat(['macro_zona', 'latitud', 'longitud', 'franja_horaria']).forEach(function (c) { if (i[c] !== undefined) o[c] = i[c]; }); return o; };   // v2.4.0: + coordenadas para Maps
-  var inventario = inventarioActivo_().map(copia), pendiente = inventarioPendiente_().map(copia);
+  var inventario = conInv ? inventarioActivo_().map(copia) : null, pendiente = conInv ? inventarioPendiente_().map(copia) : null;
   // v2.3.2: una sesión abierta hace más de 4 h se cierra sola SIN sumar minutos (estado cerrada_auto); la consola pide registrar los reales a mano
   var ses = rows_('sesiones'), limite = Date.now() - 4 * 36e5;
   ses.forEach(function (r) { if (r.estado === 'abierta' && new Date(r.inicio).getTime() < limite) { updateRow_('sesiones', r._row, { fin: new Date(), minutos: '', estado: 'cerrada_auto' }); r.estado = 'cerrada_auto'; } });
@@ -783,7 +786,7 @@ function vistaMago_() {
     return { sesion_id: r.sesion_id, mago: r.mago, plan_id: r.plan_id, grupo_id: r.grupo_id, experimento: r.experimento, inicio: r.inicio }; });
   var sesionesPorRevisar = ses.filter(function (r) { return r.estado === 'cerrada_auto'; }).map(function (r) {
     return { sesion_id: r.sesion_id, mago: r.mago, plan_id: r.plan_id, grupo_id: r.grupo_id, inicio: r.inicio }; });
-  return { ok: true, sesiones_abiertas: sesionesAbiertas, sesiones_por_revisar: sesionesPorRevisar, grupos: grupos, planes: planes, inventario: inventario, inventario_pendiente: pendiente, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }),
+  return { ok: true, sesiones_abiertas: sesionesAbiertas, sesiones_por_revisar: sesionesPorRevisar, grupos: grupos, planes: planes, inventario: inventario, inventario_pendiente: pendiente, n_inventario: inventarioActivo_().length, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }),
     registros: conteoRegistros_(), conservar_al_limpiar: CONSERVAR_AL_LIMPIAR,
     bitacora: rows_('bitacora').slice(-5).map(function (b) { return { ts: b.ts, accion: b.accion, detalle: b.detalle, respaldo_url: b.respaldo_url }; }) };
 }
@@ -951,12 +954,30 @@ function probarMontaje() {
   if (notificarA_()) { try { MailApp.sendEmail(notificarA_(), 'Sintonía · prueba de avisos', 'Si te llegó este correo, los avisos de inscripción de la consola del mago funcionan.'); r.push('✅ Avisos por correo a ' + notificarA_() + ' (correo de prueba enviado; cupo diario: ' + MailApp.getRemainingDailyQuota() + ')'); } catch (x) { r.push('❌ Avisos por correo: ' + x); } }
   else r.push('ℹ️ sin NOTIFICAR_A: no se envían avisos de inscripción por correo (opcional)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');
+  if (inv.length) r.push(revisarUbicaciones_(inv));   // v2.5.0
   r.push('Zona horaria del proyecto: ' + Session.getScriptTimeZone() + (Session.getScriptTimeZone() === 'America/Bogota' ? ' ✅' : ' ⚠️ cambiar a America/Bogota'));
   if (prop_('GEMINI_API_KEY', '')) {
     var t0 = Date.now(), g = gemini_('Responde solo: ok', false, '', '', 'prueba_montaje');
     r.push(g.ok ? '✅ Gemini responde en ' + Math.round((Date.now() - t0) / 1000) + ' s' : '❌ Gemini: ' + g.error + ' ' + (g.detail || ''));
   }
   Logger.log(r.join('\n'));
+}
+/** v2.5.0 · Calidad de las ubicaciones del inventario activo (los enlaces de Google Maps se arman con nombre, dirección y coordenadas).
+ *  «Leídas con la configuración regional»: la hoja convirtió 3.4516 en 34516 (en español el punto es de miles). */
+function revisarUbicaciones_(inv) {
+  var sinDir = 0, sinCoord = 0, regional = 0, fuera = 0, ej = [];
+  var leer = function (v, min, max) { var n = Number(String(v === undefined ? '' : v).replace(/\s/g, '').replace(',', '.')); if (!isFinite(n) || n === 0) return 'vacia'; if (n >= min && n <= max) return 'ok';
+    for (var k = 0; k < 8 && Math.abs(n) > Math.max(Math.abs(min), Math.abs(max)); k++) { n = n / 10; if (n >= min && n <= max) return 'regional'; } return 'fuera'; };
+  inv.forEach(function (i) {
+    if (!String(i.direccion || '').trim()) sinDir++;
+    var a = leer(i.latitud, 3.2, 3.6), b = leer(i.longitud, -76.7, -76.3);
+    if (a === 'vacia' || b === 'vacia') sinCoord++; else if (a === 'fuera' || b === 'fuera') { fuera++; if (ej.length < 3) ej.push(i.id); } else if (a === 'regional' || b === 'regional') regional++;
+  });
+  var t = (sinDir || fuera || regional ? '⚠️ ' : '✅ ') + 'Ubicaciones: ' + (inv.length - sinDir) + ' de ' + inv.length + ' con dirección';
+  if (regional) t += ' · ' + regional + ' con coordenadas leídas con la configuración regional (la consola las corrige; para arreglarlo en la hoja, formato de número con punto decimal)';
+  if (fuera) t += ' · ' + fuera + ' con coordenadas fuera de Cali (p. ej. ' + ej.join(', ') + '): se ignoran';
+  if (sinCoord) t += ' · ' + sinCoord + ' sin coordenadas (se busca por nombre y dirección)';
+  return t;
 }
 function borrarDatosEstudio() {
   var ui = SpreadsheetApp.getUi();

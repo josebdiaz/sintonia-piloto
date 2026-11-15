@@ -125,7 +125,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible, .chip:focus-wit
 .linkbox { display: flex; gap: 8px; align-items: center; background: var(--surface-2); border-radius: var(--radius-sm); padding: 10px 12px; font-size: .88rem; word-break: break-all; }
 .hidden { display: none !important; }
 footer.foot { margin-top: 28px; font-size: .8rem; color: var(--muted); text-align: center; }
-footer.foot a { color: var(--muted); }
+footer.foot a { color: var(--muted); display: inline-block; padding: 6px 2px; }   /* 2.5.0: área táctil de 24 px (WCAG 2.5.8) */
 
 /* Consola y panel (pantallas del equipo) */
 .tabs { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 4px; margin: 8px 0 4px; }

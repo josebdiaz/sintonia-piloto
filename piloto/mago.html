@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap">
 <link rel="stylesheet" href="assets/sintonia.css">
 <link rel="stylesheet" href="assets/ds3.css">
+<link rel="stylesheet" href="assets/consola.css">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -29,16 +30,22 @@
 details.etapa > summary { cursor: pointer; font-size: 1rem; }
 </style>
 </head>
-<body>
+<body class="consola">
 <main class="wrap wide">
-  <header class="top">
-    <a class="brand" href="mago.html"><span class="brand-mark" aria-hidden="true"></span><span class="wm" aria-label="Sintonía">sinton<span class="i">ı</span>a</span><span class="sep">/</span>Consola del mago <span class="tag">E1 · E1.5</span></a>
-    <div class="actions" style="margin:0">
-      <a class="btn btn-ghost btn-sm" href="investigadores.html" title="Todas las vistas, por fase">Mapa</a>
-      <a class="btn btn-ghost btn-sm" href="panel.html">Panel →</a>
-      <button class="btn btn-ghost btn-sm" id="recargar" type="button">↻ Recargar</button>
-      <button class="btn btn-ghost btn-sm" id="cfg" type="button" title="URL del backend">⚙ Backend</button>
-      <button class="btn btn-ghost btn-sm" id="salir" type="button">Salir</button>
+  <header class="c-bar">
+    <a class="c-id" href="mago.html" aria-label="Sintonía · inicio de la consola"><span class="brand-mark" aria-hidden="true"></span><span class="wm" aria-hidden="true">sinton<span class="i">ı</span>a</span></a>
+    <h1>Consola del mago</h1><span class="ver" id="verConsola"></span>
+    <div class="mago-tira" id="magoTira" hidden role="status"></div>
+    <div class="c-acc">
+      <a class="btn btn-sm c-solo-ancho" href="panel.html">Panel</a>
+      <button class="btn btn-sm" id="recargar" type="button">↻ Recargar</button>
+      <button class="btn btn-sm" id="verAtajos" type="button" aria-haspopup="dialog">Atajos</button>
+      <details class="c-mas"><summary>Más</summary><div class="c-menu">
+        <a href="investigadores.html">Mapa de vistas</a>
+        <a href="panel.html">Panel del piloto</a>
+        <button id="cfg" type="button">URL del backend</button>
+        <button id="salir" type="button">Salir</button>
+      </div></details>
     </div>
   </header>
 
@@ -51,22 +58,23 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     </form>
   </section>
 
-  <div class="mago-tira" id="magoTira" hidden role="status"></div>
   <section id="consola" class="hidden">
+    <p class="sr-only" id="vivo" aria-live="polite"></p>
     <p class="small muted" id="resumen"></p>
     <div class="consola-top"><div id="expbar"></div><div id="modobox"></div><div id="magobar"></div></div>
+    <div id="magoNudge"></div>
     <div class="consola-mid"><div id="glist"></div><div id="siguiente"></div></div>
-    <nav class="s-tabs" role="tablist" aria-label="Operación">
+    <div class="c-tabbar"><nav class="s-tabs" role="tablist" aria-label="Operación">
       <button role="tab" data-tab="grupos" aria-selected="true">Grupo</button>
       <button role="tab" data-tab="planes">Plan</button>
       <button role="tab" data-tab="mensajes">Mensajes</button>
       <button role="tab" data-tab="registro">Llegadas y tiempo</button>
-      <details class="ajustes"><summary>Ajustes ▾</summary><div class="menu">
-        <button role="tab" data-tab="inventario">Inventario</button>
-        <button role="tab" data-tab="cambios">Cambios entre planes</button>
-        <button role="tab" data-tab="reinicio">⟲ Empezar piloto real</button>
-      </div></details>
     </nav>
+    <details class="c-ajustes"><summary>Ajustes ▾</summary><div class="c-menu">
+      <button type="button" data-tab="inventario">Inventario</button>
+      <button type="button" data-tab="cambios">Cambios entre planes</button>
+      <button type="button" data-tab="reinicio">⟲ Empezar piloto real</button>
+    </div></details></div>
     <div id="tab-grupos" class="tab"></div>
     <div id="tab-planes" class="tab hidden"></div>
     <div id="tab-mensajes" class="tab hidden"></div>
@@ -91,16 +99,18 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   S.$('#gateForm').addEventListener('submit', function (ev) { ev.preventDefault(); S.SS.set('sintonia_admin_key', S.$('#key').value.trim()); S.busy(S.$('#entrar'), load); });
   S.$('#salir').onclick = function () { S.forgetKey(); location.reload(); };
   S.$('#cfg').onclick = S.configBackend;
-  S.$('#recargar').onclick = function () { S.busy(this, load); };
+  S.$('#recargar').onclick = function () { S.busy(this, function () { return load(true); }); };
 
   var cargaN = 0;   // 2.3.0 (test drive 13/11): una respuesta vieja no pisa una más nueva (los estados «retrocedían»)
-  function load() {
+  var invCache = null, invTs = 0;   // 2.5.0: el inventario (lo más pesado) se pide una vez cada 10 min o con «Recargar»
+  function load(forzar) {
     key = S.adminKey(false);
     if (!key) { gate(true); return Promise.resolve(); }
-    var mia = ++cargaN;
-    return S.get({ view: 'mago', key: key }).then(function (r) {
+    var mia = ++cargaN, conInv = forzar === true || !invCache || Date.now() - invTs > 10 * 6e4;
+    return S.get(conInv ? { view: 'mago', key: key } : { view: 'mago', key: key, inv: '0' }).then(function (r) {
       if (mia !== cargaN) return;
       if (!r || !r.ok) { if (r && r.error === 'no_autorizado') { S.forgetKey(); gate(true); } S.toast(S.errMsg(r), true); return; }
+      if (r.inventario) { invCache = { a: r.inventario, p: r.inventario_pendiente }; invTs = Date.now(); } else if (invCache) { r.inventario = invCache.a; r.inventario_pendiente = invCache.p; }
       avisarNovedades(r);
       D = r; ultimaCarga = new Date(); gate(false); renderAll();
     });
@@ -139,6 +149,33 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     if (b.dataset.waTa) { var t2 = document.getElementById(b.dataset.waTa); if (t2) window.open(S.wa(b.dataset.wa, t2.value), '_blank', 'noopener'); }
     if (b.dataset.cpm) marcar(b.dataset.cpm, b);
   });
+  // 2.5.0 · Atajos de teclado (no actúan mientras escribes)
+  document.addEventListener('keydown', function (ev) {
+    if (!D || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    var t = ev.target; if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return; if (S.$('#hoja') && S.$('#hoja').open) return;
+    var k = ev.key.toLowerCase(), sg = S.$('#siguiente'), b = null;
+    if (k === 'c') b = S.$('[data-cpm]', sg) || S.$('[data-marca]', sg) || S.$('[data-cp-ta]', sg);
+    else if (k === 'n') b = S.$('#irPaso', sg) || S.$('#todosLlegaron', sg) || S.$('#todosCasa', sg);
+    else if (k === 'm') b = S.$('a[href*="google.com/maps"]', sg);
+    else if (k === '?' || (k === '/' && ev.shiftKey)) { ev.preventDefault(); return verAtajos(); }
+    if (b) { ev.preventDefault(); b.focus({ preventScroll: true }); b.click(); }
+  });
+  function verAtajos() {
+    var d = S.$('#hoja'); if (!d || typeof d.showModal !== 'function') return;
+    d.innerHTML = '<div class="s-sheet c-ayuda" role="document"><small>Atajos de teclado</small><h2>Opera sin soltar el teclado</h2>' +
+      '<dl><dt><kbd>C</kbd></dt><dd>Copia el siguiente mensaje de «Lo que toca ahora» y lo marca como enviado</dd><dt><kbd>N</kbd></dt><dd>Hace la acción del paso (cerrar reclutamiento, crear plan, «Llegaron todos»…)</dd>' +
+      '<dt><kbd>M</kbd></dt><dd>Abre el mapa del lugar para revisarlo antes de enviarlo</dd><dt><kbd>?</kbd></dt><dd>Muestra esta ayuda</dd><dt><kbd>Tab</kbd></dt><dd>Recorre los botones; Enter los activa</dd></dl>' +
+      '<p class="tiny" style="margin-top:12px">Los atajos no actúan mientras escribes en un campo.</p><div class="s-actions"><button type="button" class="s-button" id="hojaNo">Listo</button></div></div>';
+    S.$('#hojaNo', d).onclick = function () { d.close(); }; d.showModal(); S.$('#hojaNo', d).focus();
+  }
+  S.$('#verAtajos').onclick = verAtajos;
+  /** 2.5.0 · Después de redibujar, si el foco quedó en el vacío, vuelve a la acción del paso actual (teclado y lectores de pantalla no pierden el lugar). */
+  function devolverFoco() {
+    var a = document.activeElement; if (a && a !== document.body && document.contains(a)) return;
+    if (Date.now() - lastAct > 3000) return;   // solo justo después de una acción de la persona
+    var b = S.$('#siguiente [data-cpm]') || S.$('#siguiente #irPaso') || S.$('#siguiente .acciones button') || S.$('#siguiente [data-marca]');
+    if (b) b.focus({ preventScroll: true });
+  }
   function act(btn, payload, okMsg) {
     return S.busy(btn, function () { return S.post(Object.assign({ key: key }, payload)); }).then(function (r) {
       if (!r || !r.ok) { S.toast(S.errMsg(r), true); return r; }
@@ -163,7 +200,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     trasRestaurar(); growAll();
   }
   function olvidarForm(pref) { Object.keys(formCache).forEach(function (k) { if (k.indexOf(scopeDom + '|' + (pref || '')) === 0) delete formCache[k]; }); }
-  function redibujar(fn, olvidar) { guardarForm(); if (olvidar) olvidarForm(olvidar); fn(); restaurarForm(); }
+  function redibujar(fn, olvidar) { guardarForm(); if (olvidar) olvidarForm(olvidar); fn(); restaurarForm(); devolverFoco(); }
   var trasRestaurar = function () {};
   function fv(k) { var v = formCache[(sel.plan || sel.grupo) + '|' + k]; return v === undefined ? '' : v; }
   function growAll() { S.$$('.tpl-text').forEach(function (ta) { ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 4) + 'px'; }); }
@@ -190,10 +227,24 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function oList(a) { return a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' o ' + a[a.length - 1]; }
   function cap(s) { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); }
   function diaTxt(g) { var d = dispoDe(g); if (!d.dias.length && !d.franjas.length) return ''; var dd = d.dias.map(function (x) { return x === 'entre semana' ? x : 'el ' + x; }); return (dd.length ? oList(dd) : '') + (d.franjas.length ? (dd.length ? ' en la ' : 'la ') + oList(d.franjas) : ''); }
-  function mapaDe(s) {
-    if (!s) return ''; var la = String(s.latitud || '').replace(',', '.'), lo = String(s.longitud || '').replace(',', '.');
-    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(la && lo && !isNaN(la) && !isNaN(lo) ? la + ',' + lo : [s.nombre, s.direccion, 'Cali'].filter(Boolean).join(', '));
+  /** 2.5.0 (QA 14/11): los enlaces de ubicación no abrían el lugar. Ahora se busca por nombre y dirección (Google Maps abre la ficha del lugar);
+   *  las coordenadas son respaldo y solo valen si caen en Cali. Una hoja en español puede leer «3.4516» como 34516: se corrige si es posible. */
+  function coordCali(v, min, max) {
+    var n = Number(String(v === undefined || v === null ? '' : v).trim().replace(/\s/g, '').replace(',', '.'));
+    if (!isFinite(n) || n === 0) return null;
+    for (var k = 0; k < 8 && (n < min || n > max) && Math.abs(n) > Math.max(Math.abs(min), Math.abs(max)); k++) n = n / 10;
+    return n >= min && n <= max ? Math.round(n * 1e6) / 1e6 : null;
   }
+  function ubicacionDe(s) {
+    if (!s) return { ok: false };
+    var la = coordCali(s.latitud, 3.2, 3.6), lo = coordCali(s.longitud, -76.7, -76.3), dir = String(s.direccion || '').trim(), nom = String(s.nombre || '').trim();
+    if (nom || dir) return { ok: true, q: [nom, dir, 'Cali, Valle del Cauca'].filter(Boolean).join(', '), coords: la !== null && lo !== null };
+    if (la !== null && lo !== null) return { ok: true, q: la + ',' + lo, coords: true };
+    return { ok: false };
+  }
+  function mapaDe(s) { var u = ubicacionDe(s); return u.ok ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(u.q) : ''; }
+  /** un dato vacío nunca reemplaza uno bueno al combinar la parada con el inventario */
+  function mezcla(a, b) { var o = Object.assign({}, a || {}); Object.keys(b || {}).forEach(function (k) { if (b[k] !== '' && b[k] !== null && b[k] !== undefined) o[k] = b[k]; }); return o; }
   function horasFranja(g) { var f = dispoDe(g).franjas[0] || 'tarde'; return f === 'mañana' ? ['9:00 a. m.', '10:00 a. m.', '11:00 a. m.'] : f === 'noche' ? ['7:00 p. m.', '8:00 p. m.', '9:00 p. m.'] : ['3:00 p. m.', '4:00 p. m.', '5:00 p. m.']; }
   function poll(q, ops, multi) { return { q: q, ops: ops, multi: !!multi }; }
   function porPersona(x) { x = String(x || ''); return x ? x + (/por persona/i.test(x) ? '' : ' por persona') : ''; }
@@ -260,10 +311,11 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function rondaLabel(p) { return 'Plan ' + p.ronda + (Number(p.ronda) > 2 ? ' (extra)' : ''); }
   function gruposVista(todos) { var ar = archivados(); return (D.grupos || []).filter(function (g) { return g.experimento === vexp && (filtro === 'todos' || g.modo === filtro) && (todos || verOcultos || (g.estado !== 'excluido' && ar.indexOf(g.grupo_id) < 0)); }); }   // 2.4.0: sin archivados ni desestimados
   function linkInscripcion() { return S.link('index.html', filtro === 'prueba' ? { exp: vexp, modo: 'prueba' } : { exp: vexp }); }
+  function suave() { return window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'; }   // 2.5.0
   function irA(tab, q) {   // 2.2.0: abre la pestaña y, si se indica, lleva al elemento y lo resalta
     var b = S.$('[data-tab="' + tab + '"]'); if (b) b.click();
     if (!q) return;
-    setTimeout(function () { var t = S.$('#tab-' + tab + ' ' + q) || S.$(q); if (!t) return; t.scrollIntoView({ behavior: 'smooth', block: 'center' }); t.classList.remove('resalta'); void t.offsetWidth; t.classList.add('resalta'); }, 60);
+    setTimeout(function () { var t = S.$('#tab-' + tab + ' ' + q) || S.$(q); if (!t) return; t.scrollIntoView({ behavior: suave(), block: 'center' }); t.classList.remove('resalta'); void t.offsetWidth; t.classList.add('resalta'); }, 60);
   }
   /* ---------- 2.2.0 · Barra superior con componentes DS 3.0 ----------
    * Selector de banda (E1 / E1.5) · Interruptor de palanca (modo prueba) · Presione para hablar + Display de señal (mago in / mago off). */
@@ -301,7 +353,8 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     if (!gs.length) h += '<div class="s-empty"><strong>Todavía no hay grupos aquí</strong><p class="small muted" style="margin:0">Comparte el enlace de inscripción con un organizador.</p></div>';
     else h += '<div class="s-list">' + gs.map(function (g) {
       var ps = planesDe(g.grupo_id), p = ps[ps.length - 1], s = senal(g, p), n = g.miembros.length, inv = Number(g.n_invitados) || 0;
-      return '<button type="button" class="s-tuning-row" data-state="' + s[0] + '" data-g="' + e(g.grupo_id) + '"' + (g.grupo_id === sel.grupo ? ' aria-current="true"' : '') + '><span><strong>' + e(grupoNom(g)) + '</strong><small>' + e(pendienteDe(g)) + '</small></span><span class="s-pilot" data-state="' + s[0] + '">' + e(s[1]) + '</span><span class="chev" aria-hidden="true">›</span></button>';
+      var venc = relojesDe(g).filter(function (x) { return x.vencido; }).length;
+      return '<button type="button" class="s-tuning-row" data-state="' + s[0] + '" data-g="' + e(g.grupo_id) + '"' + (g.grupo_id === sel.grupo ? ' aria-current="true"' : '') + '><span><strong>' + e(grupoNom(g)) + (venc ? ' <span class="c-toca">Toca ya</span>' : '') + '</strong><small>' + e(pendienteDe(g)) + '</small></span><span class="s-pilot" data-state="' + s[0] + '">' + e(s[1]) + '</span><span class="chev" aria-hidden="true">›</span></button>';
     }).join('') + '</div>';
     var ocultos = gruposVista(true).length - gs.length;
     if (ocultos || verOcultos) h += '<button type="button" class="btn btn-ghost btn-sm" id="verOcultos" style="margin-top:6px">' + (verOcultos ? 'Ocultar archivados y desestimados' : 'Ver archivados y desestimados (' + ocultos + ')') + '</button>';
@@ -357,6 +410,29 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   }
   /** 2.4.0: tras «pedir más opciones», la encuesta y el recordatorio se vuelven a enviar: cuentan solo las marcas posteriores a la última publicación. */
   function desdePub(p, tipo, l) { if (!p || !p.t_publicado || ['msg_opciones', 'recordatorio'].indexOf(tipo) < 0) return l; var t0 = new Date(p.t_publicado).getTime() - 5000; return l.filter(function (x) { return new Date(x).getTime() >= t0; }); }
+  /** 2.5.0 · Relojes: lo que tiene hora (recordatorio a las 2 h, salida 2 h antes, checkpoint, «en casa» y pulso). */
+  function relojesDe(g) {
+    var ps = planesDe(g.grupo_id), p = ps[ps.length - 1], out = [], ahora = Date.now(); if (!p || g.experimento === 'E2') return out;
+    var hx = hechos(p.plan_id), env = function (t) { return desdePub(p, t, hx[t] || []).length > 0; };
+    var he = p.hora_encuentro ? new Date(p.hora_encuentro).getTime() : null, noche = he && new Date(he).getHours() >= 20;
+    if (p.estado === 'votando' && p.t_publicado && !env('recordatorio')) out.push({ txt: 'Recordatorio de votación', t: new Date(p.t_publicado).getTime() + 2 * 36e5 });
+    if (p.estado === 'cerrado' && he) {
+      if (!env('salida_sugerida')) out.push({ txt: 'Hora de salida', t: he - 2 * 36e5 });
+      if (!env('msg_checkpoint')) out.push({ txt: 'Checkpoint de llegada', t: he });
+      var fin = noche ? new Date(new Date(he).setHours(24 + 10, 0, 0, 0)).getTime() : he + 3 * 36e5;
+      if (!env('msg_en_casa')) out.push({ txt: '«¿Ya en casa?»', t: fin });
+      if (!env('msg_retro')) out.push({ txt: 'Pulso', t: fin });
+    }
+    return out.map(function (x) { x.vencido = ahora >= x.t; return x; }).sort(function (a, b) { return a.t - b.t; });
+  }
+  function enCuanto(t) {
+    var m = Math.round((t - Date.now()) / 6e4), a = Math.abs(m), txt = a < 60 ? a + ' min' : a < 36 * 60 ? Math.floor(a / 60) + ' h' + (a % 60 ? ' ' + (a % 60) + ' min' : '') : Math.round(a / 1440) + ' días';
+    return m >= 0 ? 'en ' + txt : 'hace ' + txt;
+  }
+  function relojesHtml(g) {
+    var r = relojesDe(g).slice(0, 3); if (!r.length) return '';
+    return '<ul class="c-relojes" aria-label="Lo que tiene hora">' + r.map(function (x) { return '<li data-vencido="' + (x.vencido ? 1 : 0) + '">' + (x.vencido ? 'Toca ya: ' : '') + e(x.txt) + ' · <b>' + (x.vencido ? enCuanto(x.t) : enCuanto(x.t) + ' (' + horaTxt(new Date(x.t)) + ')') + '</b></li>'; }).join('') + '</ul>';
+  }
   function pulsoBotones(g) {
     var p = plan(sel.plan); if (!p || p.estado !== 'cerrado') return '';
     return '<div class="actions" style="flex-wrap:wrap;margin-top:8px">' + g.miembros.map(function (m) {
@@ -372,14 +448,14 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   }
   function renderSiguiente() {
     var el = S.$('#siguiente'), g = grupo(sel.grupo);
-    if (!g) { el.innerHTML = '<div class="s-next"><p class="s-eyebrow" style="margin:0">Lo que toca ahora</p><h3 style="margin:0">Elige un grupo</h3><p style="margin:0">O inscribe uno nuevo con el enlace de la izquierda.</p></div>'; return; }
+    if (!g) { el.innerHTML = '<div class="s-next"><p class="s-eyebrow" style="margin:0">Lo que toca ahora</p><h2 class="c-paso" style="margin:0">Elige un grupo</h2><p style="margin:0">O inscribe uno nuevo con el enlace de la izquierda.</p></div>'; return; }
     var L = pasosDe(g), i = L.findIndex(function (x) { return !x.hecho; }), cur = g.estado === 'excluido' || i < 0 ? null : L[i], hechosN = L.filter(function (x) { return x.hecho; }).length;
     var x = EXP[g.experimento], ses = D.sesiones_abiertas === undefined ? true : miSesion(), a = cur ? cur.accion : {};
     var h = '<div class="s-next"><p class="s-eyebrow" style="margin:0">Lo que toca ahora · ' + e(grupoNom(g)) + '</p>';
-    if (g.estado === 'excluido') h += '<h3 style="margin:0">Este grupo quedó desestimado</h3><p style="margin:0">' + e(g.motivo || 'Retiro o consentimiento incompleto') + '. No hay nada más que hacer con él.</p>';
-    else if (!cur) h += '<h3 style="margin:0">Grupo completo: 2 planes y sus pulsos</h3><p style="margin:0">Si ya no vas a operar otro grupo, cierra tu sesión con «Mago off».</p>';
+    if (g.estado === 'excluido') h += '<h2 class="c-paso" style="margin:0">Este grupo quedó desestimado</h2><p style="margin:0">' + e(g.motivo || 'Retiro o consentimiento incompleto') + '. No hay nada más que hacer con él.</p>';
+    else if (!cur) h += '<h2 class="c-paso" style="margin:0">Grupo completo: 2 planes y sus pulsos</h2><p style="margin:0">Si ya no vas a operar otro grupo, cierra tu sesión con «Mago off».</p>';
     else {
-      h += '<h3 style="margin:0">' + e(cur.grupo) + ' · ' + e(cur.txt) + '</h3><p style="margin:0">' + e(a.ayuda || '') + '</p>';
+      h += '<h2 class="c-paso" style="margin:0">' + e(cur.grupo) + ' · ' + e(cur.txt) + '</h2><p style="margin:0">' + e(a.ayuda || '') + '</p>';
       if (!ses) h += '<div class="s-banner" data-type="progress"><span><strong>Abre «Mago in» antes de seguir</strong>Sin sesión abierta, este trabajo no cuenta en los minutos humanos' + (g.experimento === 'E2' ? ' de la revisión del motor.' : '.') + '</span></div>';
       var bt = '';
       if (a.t) bt += '<button type="button" class="s-button" data-size="sm" id="irPaso">' + e(a.t) + (a.run ? '' : ' →') + '</button>';
@@ -387,15 +463,18 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       if (a.run2 === 'casa') bt += '<button type="button" class="s-button" data-size="sm" id="todosCasa" data-busy="Registrando…">Todos en casa</button><button type="button" class="s-button" data-size="sm" data-style="secondary" id="irLlegadas">Uno por uno →</button>';
       if (bt) h += '<div class="acciones">' + bt + '</div>';
       if (a.pulso) h += pulsoBotones(g);
+      h += relojesHtml(g);
       if (a.tpls && a.tpls.length) { var d = tplData('grupo'); h += '<div class="next-msgs">' + a.tpls.map(function (c) { var k = tplIdx(c); return k < 0 ? '' : tplBox(k, d, 'n'); }).join('') + '</div>'; }
     }
     h += '</div>';
     var secciones = []; L.forEach(function (s, k) { var u = secciones[secciones.length - 1]; if (!u || u.nombre !== s.grupo) secciones.push(u = { nombre: s.grupo, pasos: [] }); u.pasos.push([s, k]); });
-    h += '<div class="s-plan-list" style="margin-top:12px"' + (cur ? '' : ' data-state="done"') + '><header><span style="flex:1"><b>Recorrido del grupo</b><small>' + hechosN + ' de ' + L.length + ' pasos</small></span></header>' +
-      '<div class="s-progress"><i style="--p:' + Math.round(hechosN / L.length * 100) + '%"></i></div>';
+    if (cur) h = h.replace(/<\/div>$/, '') + '<p class="c-atajos">Atajos: <kbd>C</kbd> copiar y marcar el siguiente mensaje · <kbd>N</kbd> ir a la acción · <kbd>M</kbd> mapa · <kbd>?</kbd> todos</p></div>';
+    h += '<div class="s-plan-list" style="margin-top:12px"' + (cur ? '' : ' data-state="done"') + '><header><span style="flex:1"><b>Recorrido del grupo</b><small>Paso ' + Math.min(hechosN + 1, L.length) + ' de ' + L.length + '</small></span></header>' +
+      '<div class="c-seg" aria-hidden="true">' + L.map(function (s, k) { return '<i data-st="' + (s.hecho ? 'hecho' : (cur && k === i ? 'ahora' : '')) + '"></i>'; }).join('') + '</div>';
+    var vivo = S.$('#vivo'), anuncio = cur ? 'Lo que toca ahora: ' + cur.grupo + ', ' + cur.txt : ''; if (vivo && vivo.dataset.ultimo !== anuncio) { vivo.textContent = anuncio; vivo.dataset.ultimo = anuncio; }   // 2.5.0: se anuncia el cambio de paso
     secciones.forEach(function (sec) {
       var lista = sec.pasos.every(function (y) { return y[0].hecho; });
-      h += '<details class="seccion"' + (lista ? '' : ' open') + '><summary class="grupo-paso">' + e(sec.nombre) + (lista ? ' · listo ✓' : '') + '</summary><ol>' +
+      h += '<details class="seccion"' + (lista || (window.innerWidth < 1100 && !sec.pasos.some(function (y) { return cur && y[1] === i; })) ? '' : ' open') + '><summary class="grupo-paso">' + e(sec.nombre) + (lista ? ' · listo ✓' : '') + '</summary><ol>' +
         sec.pasos.map(function (y) { var s = y[0], k = y[1], now = cur && k === i; return '<li data-st="' + (s.hecho ? 'hecho' : 'pendiente') + '"' + (now ? ' aria-current="step"' : '') + '><span class="marca" aria-hidden="true">' + (s.hecho ? '✓' : '') + '</span><span><strong>' + e(s.txt) + '</strong></span>' + (now ? '<em>Ahora</em>' : '') + '</li>'; }).join('') + '</ol></details>';
     });
     h += '<details class="small"><summary>Cómo funciona ' + e(x.nombre) + '</summary><p style="margin:6px 0 0"><b>Qué se prueba.</b> ' + e(x.prueba) + '</p><p style="margin:4px 0 0"><b>El mago.</b> ' + e(x.mago) + '</p><p style="margin:4px 0 0"><b>Se mide.</b> ' + e(x.mide) + '</p></details></div>';
@@ -425,13 +504,18 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var ps = planesDe(sel.grupo); if (!sel.plan || !plan(sel.plan) || plan(sel.plan).grupo_id !== sel.grupo) sel.plan = ps.length ? ps[ps.length - 1].plan_id : '';
     scopeDom = sel.plan || sel.grupo;   // 2.4.0: lo escrito se repone en el plan al que pertenece
     renderExpbar(); renderMagobar(); renderGlist(); renderSiguiente(); renderGrupos(); renderPlanes(); renderMensajes(); renderRegistro(); renderCambios(); renderInventario(); renderReinicio();
-    restaurarForm();
+    restaurarForm(); devolverFoco();
+    var venc = (D.grupos || []).filter(function (g) { return g.estado === 'activo' && relojesDe(g).some(function (x) { return x.vencido; }); }).length;
+    document.title = (venc ? '(' + venc + ') ' : '') + (miSesion() ? '● ' : '') + 'Consola del mago · Sintonía';   // 2.5.0: lo que toca ya, en la pestaña del navegador
     if (!hashUsado) { hashUsado = true; var hh = location.hash.replace('#', ''); if (hh && S.$('[data-tab="' + hh + '"]')) irA(hh); }
   }
 
   /* ---------- Pestañas ---------- */
   S.$$('[data-tab]').forEach(function (b) {
-    b.onclick = function () { S.$$('[data-tab]').forEach(function (x) { x.setAttribute('aria-selected', String(x === b)); }); S.$$('.tab').forEach(function (t) { S.show(t, t.id === 'tab-' + b.dataset.tab); }); var aj = S.$('.s-tabs .ajustes'); if (aj) aj.open = false; };
+    b.onclick = function () {
+      S.$$('[data-tab]').forEach(function (x) { if (x.getAttribute('role') === 'tab') x.setAttribute('aria-selected', String(x.dataset.tab === b.dataset.tab)); else x.dataset.activa = x === b ? '1' : ''; });   // 2.5.0: solo las pestañas llevan aria-selected
+      S.$$('.tab').forEach(function (t) { S.show(t, t.id === 'tab-' + b.dataset.tab); }); var aj = S.$('.c-ajustes'); if (aj) aj.open = false;
+    };
   });
 
   /* ---------- 2.2.0 · Mago in / mago off (Presione para hablar + Display de señal) ----------
@@ -454,7 +538,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       el.innerHTML = '<div class="mago-ctl" data-state="in" role="status" aria-live="polite">' +
         '<div class="mago-estado"><span class="mago-led" aria-hidden="true"></span><div><p class="mago-titulo">En línea · <b id="magoMin">' + hm(Date.now() - ini) + '</b></p><p class="mago-meta">' + e(nom) + ' · desde las ' + hhmmL(ses.inicio) + (ps ? ' · ' + e(rondaLabel(ps)) : ' · sin plan') + '</p></div></div>' +
         '<button type="button" class="s-button" data-style="danger" id="magoOff" data-busy="Cerrando…">■ Mago off</button></div>' +
-        (largo ? '<div class="s-banner" data-type="progress" style="margin-top:8px"><span><strong>Llevas más de 2 h en línea</strong>Si ya no estás operando, cierra la sesión: a las 4 h se cierra sola sin sumar minutos.</span></div>' : '') + '<div id="magoNudge"></div>' + aviso;
+        (largo ? '<div class="s-banner" data-type="progress" style="margin-top:8px"><span><strong>Llevas más de 2 h en línea</strong>Si ya no estás operando, cierra la sesión: a las 4 h se cierra sola sin sumar minutos.</span></div>' : '') + aviso;
       if (tira) { tira.hidden = false; tira.innerHTML = '<span class="mago-led" aria-hidden="true"></span><span><b>Mago en línea</b> · <b id="tiraMin">' + hm(Date.now() - ini) + '</b> <span class="tiny">· ' + e(nom) + (ps ? ' · ' + e(rondaLabel(ps)) : '') + '</span></span><button type="button" class="s-button" data-size="sm" data-style="danger" id="tiraOff">■ Mago off</button>'; }
       var nudge = function () { var nz = S.$('#magoNudge'); if (nz) nz.innerHTML = Date.now() - lastAct > 10 * 6e4 ? '<div class="s-banner" data-type="progress" style="margin-top:8px"><span><strong>¿Sigues atendiendo?</strong>Si estás esperando respuestas, cierra con «Mago off»: la consola te avisa cuando haya novedades y los minutos quedan bien medidos.</span></div>' : ''; };
       reloj = setInterval(function () { var t = hm(Date.now() - ini), m = S.$('#magoMin'), m2 = S.$('#tiraMin'); if (m) m.textContent = t; if (m2) m2.textContent = t; nudge(); }, 15000);   // 2.4.0: aviso tras 10 min sin actividad
@@ -557,7 +641,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var el = S.$('#tab-planes'), gs = gruposVista(), g = grupo(sel.grupo), p = plan(sel.plan);
     if (!gs.length) { el.innerHTML = '<div class="card empty"><p class="muted">No hay grupos de ' + e(EXP[vexp].nombre) + ' en este modo.</p></div>'; return; }
     var h = '<div class="card"><div class="row"><div class="field" style="margin:0;display:none"><label for="selG">Grupo</label><select id="selG">' + opts(gs.map(function (x) { return [x.grupo_id, grupoLabel(x) + ' · ' + x.estado]; }), sel.grupo) + '</select></div>' +
-      '<div class="field" style="margin:0"><span class="label">Plan</span>' + (planesDe(sel.grupo).length ? '<div class="s-quick-replies" role="radiogroup" aria-label="Plan">' + planesDe(sel.grupo).map(function (x) { return '<button type="button" class="s-quick-reply" role="radio" aria-pressed="' + (x.plan_id === sel.plan) + '" aria-checked="' + (x.plan_id === sel.plan) + '" data-plan="' + e(x.plan_id) + '">' + e(rondaLabel(x)) + ' · ' + e(x.estado) + '</button>'; }).join('') + '</div>' : '<p class="small muted" style="margin:4px 0 0">Sin planes todavía.</p>') + '</div></div>' +
+      '<div class="field" style="margin:0"><span class="label">Plan</span>' + (planesDe(sel.grupo).length ? '<div class="s-quick-replies" role="radiogroup" aria-label="Plan">' + planesDe(sel.grupo).map(function (x) { return '<button type="button" class="s-quick-reply" role="radio" aria-checked="' + (x.plan_id === sel.plan) + '" data-plan="' + e(x.plan_id) + '">' + e(rondaLabel(x)) + ' · ' + e(x.estado) + '</button>'; }).join('') + '</div>' : '<p class="small muted" style="margin:4px 0 0">Sin planes todavía.</p>') + '</div></div>' +
       '<div class="actions">' + (function () {
         var enCurso = planesDe(sel.grupo).filter(function (x) { return ['borrador', 'en_revision', 'votando'].indexOf(x.estado) >= 0; })[0];   // 2.0.7 (R7): un plan a la vez
         if (!g || g.estado !== 'activo') return '<span class="small muted">Solo se crean planes en grupos activos.</span>';
@@ -590,6 +674,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       h += borrador.map(function (o, i) {
         return '<div class="option" data-op="' + i + '"><div class="actions" style="margin:0;justify-content:space-between"><b>Opción ' + (i + 1) + (o.tipo && TIPO[o.tipo] ? ' <span class="badge">' + TIPO[o.tipo] + '</span>' : '') + '</b><button class="btn btn-ghost btn-sm" data-quitar="' + i + '">Quitar</button></div>' +
           '<div class="field"><label>Título (máx. 30 caracteres: va en la encuesta)</label><input type="text" data-f="titulo" data-keep="op|' + i + '|titulo" maxlength="60" value="' + e(o.titulo) + '"></div>' +
+          (function () { var u = mapaDe(invById(o.ids[0])); return u ? '<p class="tiny" style="margin:0 0 6px"><a target="_blank" rel="noopener" href="' + e(u) + '">Ver la parada 1 en el mapa ↗</a></p>' : ''; })() +
           '<div class="row"><div class="field"><label>Parada 1</label><select data-f="id0" data-keep="op|' + i + '|id0">' + invOptions(o.ids[0]) + '</select></div><div class="field"><label>Parada 2 (opcional)</label><select data-f="id1" data-keep="op|' + i + '|id1">' + invOptions(o.ids[1]) + '</select></div></div>' +
           '<div class="row"><div class="field"><label>Salida sugerida (referencia)</label><input type="text" data-f="hora_salida" data-keep="op|' + i + '|hora_salida" maxlength="40" value="' + e(o.hora_salida) + '"></div><div class="field"><label>Presupuesto aprox.</label><input type="text" data-f="presupuesto_aprox" data-keep="op|' + i + '|presupuesto_aprox" maxlength="40" value="' + e(o.presupuesto_aprox) + '"></div></div>' +
           '<div class="field"><label>Qué van a hacer (una frase)</label><textarea data-f="por_que" data-keep="op|' + i + '|por_que" maxlength="200" style="min-height:60px">' + e(o.por_que) + '</textarea></div></div>';
@@ -783,7 +868,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       salida: w.hora_salida || (hd ? salidaDe(hd) : '[hora de salida]'), dir: dir, presupuesto: w.presupuesto_aprox || '',
       aviso: S.link('aviso.html', {}), humano: S.LS.get('sintonia_mago_nombre') || '[tu nombre]',
       n: ops.length || 3, plan: w.titulo || '[plan elegido]', lugar: (w.paradas || []).map(function (s) { return s.nombre + (s.zona ? ' (' + s.zona + ')' : ''); }).join(' → ') || '[lugar]',
-      lugarCorto: s0 ? s0.nombre : '[lugar]', mapa: s0 ? mapaDe(Object.assign({}, i0, s0)) : '',
+      lugarCorto: s0 ? s0.nombre : '[lugar]', mapa: s0 ? mapaDe(mezcla(i0, s0)) : '',
       hora: hd ? S.fecha(hd) : '[día y hora]', horaSola: hd ? horaTxt(hd) : '[hora]', fecha: hd ? hd.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' }) : '[fecha]',
       retro: persona && p ? linkRetro(persona.pid, p.plan_id) : '', apuntados: apuntados || '[n]', dia: diaTxt(g), dias: dispoDe(g).dias,
       p: p, g: g, persona: persona, nom: persona ? persona.nombre : '', noLlegan: noLlegan
@@ -803,7 +888,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     ['/dia', 'Día · solo si marcaron varios días', 'grupo', 'preguntar qué día les queda mejor', function (d) { return d.dias.length > 1 ? { poll: poll('¿Qué día les queda mejor?', d.dias.map(cap), true) } : null; }],
     ['/horario', 'Hora del encuentro · encuesta (horas de encuentro, no de salida)', 'grupo', 'preguntar a qué hora les queda mejor', function (d) { return { poll: poll('¿A qué hora nos encontramos?', d.horas, true) }; }],
     ['/confirmado', 'Plan cerrado · tres mensajes cortos', 'grupo', 'confirmar el plan elegido con lugar, hora y salida', function (d) { return d.p && d.p.estado === 'cerrado' ? { txts: ['¡Hay plan! ' + d.plan + ' 🙌\nDónde: ' + d.lugar + (d.dir ? '\n' + d.dir : ''), 'Cuándo: ' + d.hora + '\nSalida sugerida: ' + d.salida + (d.presupuesto ? '\nAprox. ' + porPersona(d.presupuesto) : ''), (d.mapa ? 'Cómo llegar: ' + d.mapa + '\n' : '') + 'En el evento del grupo marquen si van.'] } : null; }],
-    ['/evento', 'Evento del grupo (WhatsApp: Adjuntar → Evento)', 'grupo', 'datos del evento del grupo', function (d) { return d.p && d.p.estado === 'cerrado' ? { evento: { titulo: corto(d.plan, 40), descripcion: d.lugar + ' · salida sugerida ' + d.salida, fecha: cap(d.fecha), hora: d.horaSola, ubicacion: [d.lugarCorto, d.dir].filter(Boolean).join(', ') } } : null; }],
+    ['/evento', 'Evento del grupo (WhatsApp: Adjuntar → Evento)', 'grupo', 'datos del evento del grupo', function (d) { return d.p && d.p.estado === 'cerrado' ? { evento: { titulo: corto(d.plan, 40), descripcion: d.lugar + ' · salida sugerida ' + d.salida, fecha: cap(d.fecha), hora: d.horaSola, ubicacion: [d.lugarCorto, d.dir].filter(Boolean).join(', '), mapa: d.mapa } } : null; }],
     ['/asistencia', 'Asistencia · solo si no creaste el evento', 'grupo', 'pregunta y opciones de la encuesta de asistencia', function () { return { poll: poll('¿Van?', ['Me apunto', 'No puedo'], false) }; }],
     ['/reprogramar', 'Si alguien no puede · otro día u otra hora', 'grupo', 'proponer con calma buscar otro día u otra hora, sin señalar a nadie', function () { return { txt: 'A parte del parche no le cuadra. Busquemos algo que nos sirva a todos.', poll: poll('¿Qué les sirve más?', ['Otro día', 'Otra hora', 'Así está bien'], false) }; }],
     ['/hoy', 'Día del plan · en la mañana', 'grupo', 'recordar que hoy es el plan, con el conteo de confirmados', function (d) { return d.p && d.p.estado === 'cerrado' ? '¡Es hoy! Van ' + d.apuntados + ' confirmados. Nos vemos a las ' + d.horaSola + ' en ' + d.lugarCorto + '. Salida sugerida: ' + d.salida + ' 🙌' : null; }],
@@ -819,7 +904,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function opcionTxt(d, i) {
     var o = d.ops[i]; if (!o) return null; var s0 = (o.paradas || [])[0];
     return 'Opción ' + (i + 1) + ' · ' + corto(o.titulo) + '\nDónde: ' + (o.paradas || []).map(function (s) { return s.nombre + (s.zona ? ' (' + s.zona + ')' : ''); }).join(' → ') +
-      (o.presupuesto_aprox ? '\nAprox. ' + porPersona(o.presupuesto_aprox) : '') + (o.por_que ? '\n' + o.por_que : '') + (s0 ? '\nMapa: ' + mapaDe(Object.assign({}, invById(s0.id) || {}, s0)) : '');
+      (o.presupuesto_aprox ? '\nAprox. ' + porPersona(o.presupuesto_aprox) : '') + (o.por_que ? '\n' + o.por_que : '') + (s0 && mapaDe(mezcla(invById(s0.id), s0)) ? '\nMapa: ' + mapaDe(mezcla(invById(s0.id), s0)) : '');
   }
   var ETAPAS = [['grupo', 'Grupo', ['/ingreso']], ['votacion', 'Votación', ['/opciones', '/opcion_1', '/opcion_2', '/opcion_3', '/encuesta', '/recordatorio', '/empate', '/dia', '/horario']],
     ['confirmacion', 'Confirmación', ['/confirmado', '/evento', '/asistencia', '/reprogramar']], ['dia', 'Día del plan', ['/hoy', '/salida', '/checkpoint', '/no_llega', '/todos']],
@@ -845,15 +930,18 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       var id = 'ta-' + w + '-' + i + '-' + k, val = k === 0 && ajustes[i + '|' + dd] ? ajustes[i + '|' + dd] : txt;
       h += (o.txts.length > 1 ? '<p class="tiny muted" style="margin:8px 0 2px">Mensaje ' + (k + 1) + ' de ' + o.txts.length + '</p>' : '') +
         '<textarea class="tpl-text" id="' + id + '" data-keep="tpl|' + i + '|' + dd + '|' + k + '" aria-label="Texto de ' + e(t[0]) + '">' + e(val) + '</textarea>' +
-        '<div class="actions" style="margin-top:4px">' + (d.persona ? '<button type="button" class="btn btn-primary btn-sm" data-wa-ta="' + id + '" data-wa="' + e(d.persona.whatsapp) + '">Abrir chat con ' + e(d.persona.nombre) + '</button>'
-          : '<button type="button" class="btn ' + (uno ? 'btn-primary' : 'btn-ghost') + ' btn-sm" data-cp-ta="' + id + '"' + (uno ? ' data-cpm="' + mk + '" data-busy="Guardando…">Copiar y marcar enviado' : '>Copiar') + '</button>') + '</div>';
+        (o.txts.length === 1 && !d.persona ? '' : '<div class="actions" style="margin-top:4px">' + (d.persona ? '<button type="button" class="btn btn-primary btn-sm" data-wa-ta="' + id + '" data-wa="' + e(d.persona.whatsapp) + '">Abrir chat con ' + e(d.persona.nombre) + '</button>'
+          : '<button type="button" class="btn ' + (uno ? 'btn-primary' : 'btn-ghost') + ' btn-sm" data-cp-ta="' + id + '"' + (uno ? ' data-cpm="' + mk + '" data-busy="Guardando…">Copiar y marcar enviado' : '>Copiar') + '</button>') + '</div>');
     });
+    var copiaUnica = o.txts.length === 1 && !d.persona ? '<button type="button" class="btn ' + (uno ? 'btn-primary' : 'btn-ghost') + ' btn-sm" data-cp-ta="ta-' + w + '-' + i + '-0"' + (uno ? ' data-cpm="' + mk + '" data-busy="Guardando…">Copiar y marcar enviado' : '>Copiar') + '</button>' : '';   // 2.5.0: una sola fila de acciones
     if (o.poll) h += '<div class="poll"><p class="tiny" style="margin:0 0 6px"><b>Encuesta en WhatsApp</b> · Adjuntar → Encuesta · ' + (o.poll.multi ? 'activa «Permitir varias respuestas»' : 'deja <b>una sola respuesta</b>') + '</p>' +
       '<div class="poll-row"><span><span class="tiny muted">Pregunta</span><br>' + e(o.poll.q) + '</span><button type="button" class="btn btn-ghost btn-sm" data-cp="' + e(o.poll.q) + '">Copiar</button></div>' +
       o.poll.ops.map(function (op, k) { return '<div class="poll-row"><span><span class="tiny muted">Opción ' + (k + 1) + '</span><br>' + e(op) + '</span><button type="button" class="btn btn-ghost btn-sm" data-cp="' + e(op) + '">Copiar</button></div>'; }).join('') + '</div>';
     if (o.evento) h += '<div class="poll"><p class="tiny" style="margin:0 0 6px"><b>Evento del grupo en WhatsApp</b> · Adjuntar → Evento. Ahí cada persona marca si va; regístralo en Llegadas y tiempo («Se apuntó»).</p>' +
       [['Nombre del evento', o.evento.titulo], ['Descripción', o.evento.descripcion], ['Fecha', o.evento.fecha], ['Hora de inicio', o.evento.hora], ['Ubicación', o.evento.ubicacion]].map(function (f) { return '<div class="poll-row"><span><span class="tiny muted">' + e(f[0]) + '</span><br>' + e(f[1]) + '</span><button type="button" class="btn btn-ghost btn-sm" data-cp="' + e(f[1]) + '">Copiar</button></div>'; }).join('') + '</div>';
-    var pie = (o.txts.length ? '<button type="button" class="btn btn-honey btn-sm" data-ia="' + i + '" data-w="' + w + '" data-busy="Redactando…">✨ Ajustar con Gemini</button>' : '') +
+    var mapaU = (o.txts.join(' ').match(/https:\/\/www\.google\.com\/maps\/[^\s]+/) || [])[0] || (o.evento && o.evento.mapa) || '';
+    var pie = copiaUnica + (mapaU ? '<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="' + e(mapaU) + '">Ver en el mapa ↗</a>' : '') +
+      (o.txts.length ? '<button type="button" class="btn btn-honey btn-sm" data-ia="' + i + '" data-w="' + w + '" data-busy="Redactando…">✨ Ajustar con Gemini</button>' : '') +
       (ajustes[i + '|' + dd] ? '<button type="button" class="btn btn-ghost btn-sm" data-orig="' + i + '">Volver al texto base</button>' : '') +
       (mk && !uno ? '<button type="button" class="btn btn-sm ' + (env ? 'btn-ghost' : 'btn-primary') + '" data-marca="' + mk + '" data-busy="Guardando…">' + (env ? 'Marcar otra vez' : 'Marcar como enviado') + '</button>' : '');
     return h + (pie ? '<div class="actions" style="margin-top:6px">' + pie + '</div>' : '') + '</div>';
@@ -905,7 +993,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     el.innerHTML = h;
     growAll();
     bindTpl(el, d);
-    S.$$('[data-etapa]', el).forEach(function (b) { b.onclick = function () { var s = S.$('#etapa-' + b.dataset.etapa, el); if (!s) return S.toast('No hay mensajes de esa etapa para este destinatario.', true); s.open = true; s.scrollIntoView({ behavior: 'smooth', block: 'start' }); }; });
+    S.$$('[data-etapa]', el).forEach(function (b) { b.onclick = function () { var s = S.$('#etapa-' + b.dataset.etapa, el); if (!s) return S.toast('No hay mensajes de esa etapa para este destinatario.', true); s.open = true; s.scrollIntoView({ behavior: suave(), block: 'start' }); }; });
     S.$('#dest', el).onchange = function () { dest = this.value; redibujar(renderMensajes); };
     S.$('#tono', el).onchange = function () { S.LS.set('sintonia_mago_tono', this.value); };
     S.$('#magoNombre', el).onchange = function () { S.LS.set('sintonia_mago_nombre', this.value.trim()); redibujar(renderMensajes); };

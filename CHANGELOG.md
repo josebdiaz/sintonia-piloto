@@ -5,6 +5,16 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-14 · Marca actual, enlaces de ubicación y accesibilidad (frontend 2.5.0 · backend 2.5.0)
+QA de UX, UI y accesibilidad: `claude/qa-ux-ui-a11y-consola-2026-11-14.md` (Proyecto).
+- **Enlaces de ubicación:** se busca por nombre y dirección (Google Maps abre la ficha del lugar); las coordenadas solo valen si caen en Cali y se corrigen si la hoja en español las leyó como miles (3.4516 → 34516); un dato vacío ya no reemplaza uno bueno; «Ver en el mapa» en cada mensaje con ubicación. `probarMontaje()` reporta la calidad de las ubicaciones.
+- **Capa de marca 2026-11** (`piloto/assets/consola.css`) en la consola y el panel: reemplaza la firma «radio» del DS 3.0 (selector de banda, interruptor de palanca, luz piloto, mono) por el lenguaje de la portada y el pitch final. Barra noche fija con la sesión del mago; un solo sistema de botones; tarjetas de mensaje con una fila de acciones; recorrido segmentado; trazo de onda.
+- **Media pantalla y celular:** la acción va primero por debajo de 1100 px.
+- **Relojes** (recordatorio, salida, checkpoint, en casa, pulso) con «Toca ya» en la lista y en el título de la pestaña. **Atajos** C, N, M y ?.
+- **Accesibilidad:** sin hallazgos de axe-core (WCAG 2.2 AA) en consola, panel y páginas de participantes; foco que vuelve a la acción del paso; cambio de paso anunciado; avisos que no tapan botones; «reducir movimiento».
+- **Carga liviana:** `?view=mago&inv=0`; el inventario se pide una vez cada 10 min o con «Recargar».
+- QA: backend 78 de 78; recorrido completo 49 de 49.
+
 ### 2026-11-15 · El mago como usuario (frontend 2.4.0 · backend 2.4.0)
 Ajustes de la segunda prueba (14/11) y su grabación de pantalla. Plan: `claude/plan-ejecucion-ajustes-2026-11-15.md` (Proyecto).
 - **Lo que toca ahora** es la pantalla de trabajo: cada paso trae sus mensajes adentro, con «Copiar y marcar enviado», y botones directos (cerrar reclutamiento, crear plan, «Llegaron todos», «Todos en casa», pulso por persona).
