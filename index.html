@@ -104,8 +104,15 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
 .keys i.on{opacity:1;transform:scale(1)}
 
 @media (max-width:720px){
-  .cover{grid-template-columns:1fr;justify-items:start;align-content:center}
-  .glyph{width:min(56vw,240px)}
+  /* celular: el glifo arriba al centro y el texto centrado, con más aire a los lados */
+  .cover{grid-template-columns:1fr;justify-items:center;align-content:start;text-align:center;
+    gap:clamp(32px,6vh,56px);padding:calc(clamp(40px,9vh,88px) + env(safe-area-inset-top,0px)) 12px calc(120px + env(safe-area-inset-bottom,0px))}
+  .glyph{width:min(54vw,230px)}
+  .cover > div:last-child{max-width:34ch}
+  .eyebrow{margin-bottom:14px}
+  h1{font-size:clamp(40px,11.5vw,64px)}
+  .lede{margin:24px auto 0;font-size:clamp(17px,4.6vw,20px);max-width:28ch}
+  .logo{left:50%;right:auto;transform:translateX(-50%)}
   .foot{display:none}
 }
 @media (prefers-reduced-motion:reduce){
