@@ -6,7 +6,7 @@ Las fechas son de 2026 (hora de Colombia).
 ## Repositorio
 
 ### 2026-11-17 · Portada del home en celular
-- El glifo va arriba al centro y el texto centrado, con 28 px de margen a los lados y más aire entre bloques; el wordmark baja al centro. Escritorio sin cambios. QA del código secreto: 20 de 20.
+- El glifo va arriba al centro; el texto sigue alineado a la izquierda, con 28 px de margen a los lados y más aire entre bloques; el wordmark baja al centro. Escritorio sin cambios. QA del código secreto: 20 de 20.
 
 ### 2026-11-17 · El home al día con el repo y el código secreto en celular
 - **Home generado:** las tarjetas del menú «Detrás de escena» salen de `home.json` y del repo con `tools/home.py`. Hay una tarjeta nueva, «Estado del repo», con las versiones, el último cambio, la fecha de `ESTADO.md` y sus tres primeros pendientes. `--check` revisa enlaces rotos, decks sin listar y versiones que no estén en `ESTADO.md` o en este archivo. La acción `.github/workflows/home.yml` lo regenera y lo revisa en cada push a `main`. Protocolo: `docs/protocolo-home.md`; notas para trabajar el repo: `CLAUDE.md`.
