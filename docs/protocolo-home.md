@@ -41,6 +41,8 @@ python3 tools/home.py --check   # no escribe; falla si algo no cuadra
 
 Antes de cada push a `main`: `python3 tools/home.py --check` tiene que terminar en ✓.
 
+**El Proyecto de Claude** (Sintonía, en claude.ai) guarda una copia del estado. Cuando cambie `ESTADO.md`, súbela como `claude/estado-piloto-AAAA-MM-DD.md`; manda la de fecha más reciente. Las instrucciones del Proyecto (prompt maestro) se actualizan cuando cambian la arquitectura, el glosario o las decisiones (última: v3.1, 17/11).
+
 ## 4. Reglas
 
 - `ESTADO.md` es el punto de partida del proyecto. Su título lleva la fecha del último cambio: «# Estado del proyecto · 17 nov 2026».
