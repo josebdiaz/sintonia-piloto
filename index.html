@@ -104,14 +104,14 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
 .keys i.on{opacity:1;transform:scale(1)}
 
 @media (max-width:720px){
-  /* celular: el glifo arriba al centro y el texto centrado, con más aire a los lados */
-  .cover{grid-template-columns:1fr;justify-items:center;align-content:start;text-align:center;
+  /* celular: el glifo arriba al centro; el texto alineado a la izquierda, con más aire a los lados */
+  .cover{grid-template-columns:1fr;justify-items:center;align-content:start;
     gap:clamp(32px,6vh,56px);padding:calc(clamp(40px,9vh,88px) + env(safe-area-inset-top,0px)) 12px calc(120px + env(safe-area-inset-bottom,0px))}
   .glyph{width:min(54vw,230px)}
-  .cover > div:last-child{max-width:34ch}
+  .cover > div:last-child{justify-self:stretch;max-width:34ch}
   .eyebrow{margin-bottom:14px}
   h1{font-size:clamp(40px,11.5vw,64px)}
-  .lede{margin:24px auto 0;font-size:clamp(17px,4.6vw,20px);max-width:28ch}
+  .lede{margin:24px 0 0;font-size:clamp(17px,4.6vw,20px);max-width:28ch}
   .logo{left:50%;right:auto;transform:translateX(-50%)}
   .foot{display:none}
 }
@@ -171,7 +171,7 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
         <span class="tag">Estado del repo · 17 nov 2026</span>
         <h3>En qué va</h3>
         <p class="versiones"><b>Frontend 2.7.1</b> · <b>Backend 2.7.3</b></p>
-        <p class="muted">Último cambio: 2026-11-17 · El home al día con el repo y el código secreto en celular</p>
+        <p class="muted">Último cambio: 2026-11-17 · Portada del home en celular</p>
         <p class="muted" style="margin-top:6px">Pendientes que siguen:</p>
         <ol class="pend"><li>Confirmar el calendario del piloto: el propuesto el 6/11 ponía el plan 1 del 11 al 15/11 y el plan 2 del 16 al 22/11. [Por confirmar] qué grupos reales arrancaron y con qué versión de la consola</li><li>Publicar el aviso de privacidad v2</li><li>Actualizar el onboarding del monitor a la consola 2.7.1 (O1; hoy tiene una nota de cambios arriba)</li></ol>
         <ul><li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/ESTADO.md" target="_blank" rel="noopener">Estado del proyecto</a> <span class="muted">· todo el detalle</span></li></ul>
