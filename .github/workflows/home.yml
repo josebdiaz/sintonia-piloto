@@ -1,0 +1,30 @@
+# Mantiene el home (index.html) al día con el estado del repo. Protocolo: docs/protocolo-home.md
+name: Home al día
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: home-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  home:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Regenerar las tarjetas del menú desde home.json, ESTADO.md, CHANGELOG.md y las versiones
+        run: python3 tools/home.py || true
+      - name: Publicar el home regenerado (solo en main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          if git diff --quiet -- index.html; then echo "El home ya estaba al día."; exit 0; fi
+          git config user.name "sintonia-home[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "chore(home): tarjetas al día con el estado del repo"
+          git push
+      - name: Verificar enlaces, decks y versiones
+        run: python3 tools/home.py --check

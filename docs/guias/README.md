@@ -4,15 +4,16 @@ Todas las guías del proyecto, por estado. **Vigente**: se usa hoy. **Hecha**: s
 
 Vista en tarjetas (GitHub Pages): https://josebdiaz.github.io/sintonia-piloto/docs/guias/
 
-Es una visual de control: no se conecta al piloto, a la consola ni a los paneles. Revisión del 15/11/2026 · piloto en frontend 2.7.0 y backend 2.7.2 (desplegado el 15/11). Estado general e implicaciones: [`ESTADO.md`](../../ESTADO.md).
+Es una visual de control: no se conecta al piloto, a la consola ni a los paneles. Revisión del 17/11/2026 · piloto en frontend 2.7.1 y backend 2.7.3. Estado general e implicaciones: [`ESTADO.md`](../../ESTADO.md).
 
-## Vigente (8)
+## Vigente (9)
 
 | Guía | Ámbito | Versión | Siguiente paso | Archivo |
 |---|---|---|---|---|
 | **Onboarding del monitor (mago de E1)** · Contexto, accesos, consola, paso a paso, registro, voz, contingencias y reglas. Fuente en Markdown para el motor de presentaciones. | Operación del piloto | v1.1 · consola 2.2.2 · 6/11/2026 · **desactualizada frente a la 2.7.0** | Actualizar a la consola 2.7.0 (mapa, cola de mensajes, conteo de votos, llegadas en un toque, menú «⋯», pulso del mago) antes del primer grupo real. | [`docs/guias/onboarding-monitor.md`](onboarding-monitor.md) · [deck](../deck-onboarding-monitor.html) |
 | **Plan de pruebas de usuario (one-sheet)** · Preguntas, pruebas, métricas, participantes, roles, calendario y pendientes en una página. | Operación del piloto | v1.1 · 6/11/2026 · calendario propuesto | Agregar como contexto el pulso del mago (SUS y NASA-TLX) y la medición por etapa; contarlo a Néstor. Publicar el aviso v2 y confirmar el plan de n8n. | [`docs/plan-pruebas-usuario.html`](../plan-pruebas-usuario.html) |
 | **Desplegar el backend en Apps Script** · Pegar el .gs, correr probarMontaje y publicar como Nueva versión sin cambiar la URL /exec. Propiedades del script que necesita. | Backend y publicación | Backend 2.7.2 · 15/11/2026 | Al día: 2.7.2 desplegado el 15/11 (con `pulso_mago`, `medicion_consola` y reinicio que conserva los minutos). | [`backend/README.md`](../../backend/README.md) |
+| **Protocolo del home (sintonia.my)** · El menú «Detrás de escena» se genera desde `home.json` y el estado del repo con `tools/home.py`; `--check` revisa enlaces, decks y versiones; la acción «Home al día» lo corre en cada push a `main`. | Backend y publicación | 17/11/2026 | Antes de cada push: `python3 tools/home.py` y `--check` en ✓. | [`docs/protocolo-home.md`](../protocolo-home.md) |
 | **Publicar versiones y llevar el historial** · GitHub flow, SemVer por componente, tags piloto/vX y backend/vX, publicar.sh y publicar_deck.sh, y la regla de un cambio entre W1 y W2. | Backend y publicación | README del repositorio · 6/10/2026 | Al día: frontend 2.7.0 publicado el 15/11. Congelar la versión mientras corren los grupos del piloto. | [`README.md`](../../README.md#cómo-trabajar-github-flow) |
 | **Cumplimiento legal de datos personales** · Ley 1581 de 2012: consentimiento, minimización, separación de contactos, retiro y borrado al cerrar el estudio. Qué cambia en producción. | Datos y ética | 3/10/2026 · correo de contacto activo desde 2.0.6 | Piloto cubierto (aviso, retiro en dos pasos desde 2.0.7). Producción (H2): revisión legal y aval del comité. | [`docs/guias/cumplimiento-datos.md`](cumplimiento-datos.md) |
 | **Inventario de lugares y ronda de llamadas** · Regla de estado (activo / por confirmar): solo lo activo entra en un plan (I6). Qué confirmar por teléfono antes de cada fin de semana. | Operación del piloto | Regla de la v1 (3/10) · la hoja manda: v3, 17 activos | Ronda de llamadas antes del 9/10 y antes de cada fin de semana. | [`docs/guias/inventario-ronda-de-llamadas.md`](inventario-ronda-de-llamadas.md) |

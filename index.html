@@ -21,6 +21,9 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%}
+html{overscroll-behavior:none}
+/* en celular, mientras el menú está cerrado y la portada cabe en la pantalla, los deslizamientos son del código (no recargan ni desplazan) */
+html.codigo body{touch-action:pinch-zoom}
 body{margin:0;background:var(--crema);color:var(--noche);font-family:var(--f-txt);-webkit-font-smoothing:antialiased;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 
@@ -87,6 +90,9 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
 .card.now a{text-decoration-color:var(--naranja-700)}
 .muted{color:var(--papel-300);font-size:14px;font-weight:400}
 .card.now .muted{color:#47494d}
+.card.estado{border-color:var(--naranja-700)}
+.card .versiones{font-size:18px}
+.card ol.pend{margin:4px 0 0;padding-left:20px;display:grid;gap:6px;font-size:15px;line-height:1.4;color:var(--papel-50)}
 .note{margin-top:28px;color:var(--papel-300);font-size:14px}
 .menu .stagger > *{opacity:0;transform:translateY(16px);transition:opacity 600ms var(--ease-enter),transform 600ms var(--ease-enter)}
 .menu.open .stagger > *{opacity:1;transform:none}
@@ -144,12 +150,24 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
     <div class="top"><span class="wm">sinton<span class="i">ı</span>a</span><button class="close" id="close" type="button">Cerrar · Esc</button></div>
     <h2 id="menuTitle">Detrás de escena.</h2>
     <p class="sub">Piloto académico de la Maestría en Gestión de la Innovación de la Universidad Icesi. Grupos de amigos que ya existen, del «deberíamos vernos» a un plan que sí pasa.</p>
+<!-- home:inicio · generado por tools/home.py desde home.json; no editar a mano -->
     <div class="cards stagger">
       <section class="card now">
         <span class="tag">Piloto en curso</span>
         <h3>¿Te invitaron?</h3>
         <p>Abre el enlace que te envió quien organiza tu parche o el equipo de Sintonía. Desde ahí aceptas, votas y nos cuentas cómo les fue.</p>
-        <ul><li><a href="piloto/aviso.html">Aviso de privacidad</a></li></ul>
+        <ul>
+          <li><a href="piloto/aviso.html">Aviso de privacidad</a></li>
+        </ul>
+      </section>
+      <section class="card team estado">
+        <span class="tag">Estado del repo · 17 nov 2026</span>
+        <h3>En qué va</h3>
+        <p class="versiones"><b>Frontend 2.7.1</b> · <b>Backend 2.7.3</b></p>
+        <p class="muted">Último cambio: 2026-11-17 · El home al día con el repo y el código secreto en celular</p>
+        <p class="muted" style="margin-top:6px">Pendientes que siguen:</p>
+        <ol class="pend"><li>Confirmar el calendario del piloto: el propuesto el 6/11 ponía el plan 1 del 11 al 15/11 y el plan 2 del 16 al 22/11. [Por confirmar] qué grupos reales arrancaron y con qué versión de la consola</li><li>Publicar el aviso de privacidad v2</li><li>Actualizar el onboarding del monitor a la consola 2.7.1 (O1; hoy tiene una nota de cambios arriba)</li></ol>
+        <ul><li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/ESTADO.md" target="_blank" rel="noopener">Estado del proyecto</a> <span class="muted">· todo el detalle</span></li></ul>
       </section>
       <section class="card team">
         <span class="tag">Equipo · operar</span>
@@ -160,7 +178,7 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
           <li><a href="piloto/panel.html">Panel del piloto</a></li>
           <li><a href="docs/plan-pruebas-usuario.html">Plan de pruebas de usuario</a> <span class="muted">· <a href="docs/plan-pruebas-usuario.pdf">PDF</a></span></li>
           <li><a href="docs/deck-onboarding-monitor.html">Onboarding del monitor</a></li>
-          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/protocolo-m2.md">Protocolo de operación</a></li>
+          <li><a href="docs/stickers/hoja-de-contacto.png">Stickers de Sintonía</a> <span class="muted">· 14, para el WhatsApp del número</span> <span class="muted">· <a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/stickers/README.md" target="_blank" rel="noopener">cómo usarlos</a></span></li>
         </ul>
       </section>
       <section class="card team">
@@ -181,13 +199,14 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
       <section class="card team">
         <span class="tag">Equipo · documentos</span>
         <h3>Documentación</h3>
-        <p class="muted">Guías por estado, textos fuente y versiones.</p>
+        <p class="muted">Estado, guías por estado, textos fuente y versiones.</p>
         <ul>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/ESTADO.md" target="_blank" rel="noopener">Estado del proyecto</a> <span class="muted">· empieza aquí</span></li>
           <li><a href="docs/guias/">Control de guías</a> <span class="muted">· vigentes, hechas y pendientes</span></li>
-          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/guias/onboarding-monitor.md">Onboarding del monitor (Markdown)</a></li>
-          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/GUIA-CONTINUACION.md">Motor n8n · guía de continuación</a></li>
-          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/CHANGELOG.md">Motor n8n · cambios</a></li>
-          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md">Versiones (CHANGELOG)</a> <span class="muted" id="ver"></span></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/guias/onboarding-monitor.md" target="_blank" rel="noopener">Onboarding del monitor (Markdown)</a></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/GUIA-CONTINUACION.md" target="_blank" rel="noopener">Motor n8n · guía de continuación</a></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/CHANGELOG.md" target="_blank" rel="noopener">Motor n8n · cambios</a></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Versiones (CHANGELOG)</a> <span class="muted" id="ver">· frontend v2.7.1 · backend v2.7.3</span></li>
         </ul>
       </section>
       <section class="card arch">
@@ -197,18 +216,19 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
           <li><a href="archivo/p4-pre-pivote/researchers/index.html">Periodo 4 · H1–H4 e investigadores</a> <span class="muted">antes del pivote</span></li>
           <li><a href="archivo/piloto-m1-claude/index.html">Piloto 1.0.0 («M1»)</a></li>
           <li><a href="docs/deck-induccion-monitor.html">Inducción del monitor v1</a> <span class="muted">reemplazada por el onboarding</span></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/protocolo-m2.md" target="_blank" rel="noopener">Protocolo de operación M2</a> <span class="muted">superado: describe E2 como web app</span></li>
           <li><a href="archivo/">Todo el archivo</a></li>
         </ul>
       </section>
     </div>
     <p class="note">Las versiones archivadas del piloto no envían datos: se conservan como registro del proceso de diseño.</p>
+    <!-- home:fin -->
   </div>
 </div>
 
 <script src="piloto/assets/sintonia.js"></script>
 <script>
 (function(){
-  try { if (window.CONFIG && CONFIG.FRONTEND_VERSION) document.getElementById('ver').textContent = '· frontend v' + CONFIG.FRONTEND_VERSION; } catch (e) {}
 
   const SEQ = ['up','up','down','down','left','right','left','right'];
   const KEY = {ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
@@ -216,28 +236,29 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
   keys.innerHTML = '<i></i>'.repeat(SEQ.length);
   const dots = [...keys.children];
   let pos = 0, timer = null, lastFocus = null;
+  const vibra = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} };
 
   function show(n){ dots.forEach((d,i) => d.classList.toggle('on', i < n)); }
   function reset(){ pos = 0; show(0); }
-  function step(dir){
-    if (!menu.hidden && menu.classList.contains('open')) return;
-    if (dir === SEQ[pos]) { pos++; } else { pos = (dir === SEQ[0]) ? 1 : 0; }
+  function step(dir, tactil){
+    if (!menu.hidden) return;
+    if (dir === SEQ[pos]) { pos++; if (tactil && pos < SEQ.length) vibra(8); } else { pos = (dir === SEQ[0]) ? 1 : 0; }
     show(pos);
-    clearTimeout(timer); timer = setTimeout(reset, 2500);
-    if (pos === SEQ.length) { reset(); open(); }
+    clearTimeout(timer); timer = setTimeout(reset, tactil ? 4500 : 2500);   // en celular cada deslizamiento toma más tiempo
+    if (pos === SEQ.length) { if (tactil) vibra([18, 40, 18]); reset(); open(); }
   }
   function open(){
     const g = document.querySelector('.glyph').getBoundingClientRect();
     menu.style.setProperty('--cx', (g.left + g.width/2) + 'px');
     menu.style.setProperty('--cy', (g.top + g.height/2) + 'px');
     lastFocus = document.activeElement;
-    menu.hidden = false;
+    menu.hidden = false; modoCodigo();
     requestAnimationFrame(() => requestAnimationFrame(() => menu.classList.add('open')));
     document.getElementById('close').focus({preventScroll:true});
   }
   function close(){
     menu.classList.remove('open');
-    const done = () => { menu.hidden = true; menu.removeEventListener('transitionend', done); };
+    const done = () => { menu.hidden = true; modoCodigo(); menu.removeEventListener('transitionend', done); };
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) done(); else menu.addEventListener('transitionend', done);
     if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true});
   }
@@ -249,15 +270,28 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
   });
   document.getElementById('close').addEventListener('click', close);
 
-  // En pantallas táctiles, la misma secuencia con deslizamientos
-  let sx = 0, sy = 0;
-  document.addEventListener('touchstart', e => { const t = e.touches[0]; sx = t.clientX; sy = t.clientY; }, {passive:true});
-  document.addEventListener('touchend', e => {
-    if (!menu.hidden) return;
-    const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
-    step(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+  // Celular: la misma secuencia con deslizamientos (↑ ↑ ↓ ↓ ← → ← →).
+  // · El navegador no se los roba: sin recargar al bajar (overscroll), sin desplazar la página, y se ignoran los bordes
+  //   (atrás en iOS y Android, barra de inicio abajo).
+  // · Basta un trazo de 30 px y que se note la dirección; los puntos naranjas muestran el avance y el teléfono vibra.
+  function cabe(){ return document.documentElement.scrollHeight <= window.innerHeight + 2; }
+  function modoCodigo(){ document.documentElement.classList.toggle('codigo', menu.hidden && cabe()); }
+  modoCodigo(); window.addEventListener('resize', modoCodigo); window.addEventListener('orientationchange', modoCodigo);
+  const BORDE = 24;
+  let sx = 0, sy = 0, vivo = false;
+  document.addEventListener('touchstart', e => {
+    if (!menu.hidden || e.touches.length > 1) { vivo = false; return; }
+    const t = e.touches[0]; sx = t.clientX; sy = t.clientY;
+    vivo = sx > BORDE && sx < window.innerWidth - BORDE && sy < window.innerHeight - 34;
   }, {passive:true});
+  document.addEventListener('touchmove', e => { if (vivo && menu.hidden && cabe() && e.cancelable) e.preventDefault(); }, {passive:false});
+  document.addEventListener('touchend', e => {
+    if (!vivo || !menu.hidden) return; vivo = false;
+    const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy, ax = Math.abs(dx), ay = Math.abs(dy);
+    if (Math.max(ax, ay) < 30 || Math.max(ax, ay) < Math.min(ax, ay) * 1.3) return;   // muy corto o en diagonal
+    step(ax > ay ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'), true);
+  }, {passive:true});
+  document.addEventListener('touchcancel', () => { vivo = false; }, {passive:true});
 })();
 </script>
 </body>

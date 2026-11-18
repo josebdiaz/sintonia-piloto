@@ -1,4 +1,4 @@
-# Estado del proyecto · 15 nov 2026
+# Estado del proyecto · 17 nov 2026
 
 Sintonía · piloto en WhatsApp con grupos que ya existen en Cali. Dos condiciones: **E1** (WhatsApp + mago) y **E1.5** (WhatsApp automatizado con n8n, con una persona que aprueba y pega; valor interno `E2`).
 Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `docs/guias/`, 6/11 en el Proyecto). Historial detallado: [`CHANGELOG.md`](CHANGELOG.md).
@@ -8,21 +8,25 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 | Componente | Versión | Estado |
 |---|---|---|
 | Frontend (consola, panel, páginas de participante) | **2.7.1** | Publicado en https://sintonia.my el 15/11 (ajustes de la prueba de Juan José) |
-| Backend (Apps Script) | **2.7.2 en vivo** · 2.7.3 entregada | 2.7.2 desplegado el 15/11. **2.7.3** (Gemini sigue la indicación y usa español neutro) **por desplegar** |
+| Backend (Apps Script) | **2.7.3** | Desplegado el 15/11 (incluye 2.7.0 a 2.7.2). Correos de inscripción verificados |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
+| Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
+| Tags | `piloto/v2.7.0` · `backend/v2.7.2` | Creados el 15/11. **Faltan** `piloto/v2.7.1` y `backend/v2.7.3` |
 | Inventario verificado | Hoja del piloto | Revisión de ubicaciones con `probarMontaje()` (2.5.0): **resultado por reportar** |
 
-## 2. Qué cambió desde el 6/11 (consola 2.3.1 → 2.7.0, backend 2.3.x → 2.7.0)
+## 2. Qué cambió desde el 6/11 (consola 2.3.1 → 2.7.1, backend 2.3.x → 2.7.3)
 
 | Versión | Cambio principal | Origen |
 |---|---|---|
+| Home 17/11 | Menú del home generado desde el repo (estado, versiones, último cambio, pendientes) y acción «Home al día»; código secreto usable en celular | Protocolo del home |
+| 2.7.1 · 2.7.3 | Grupo de WhatsApp con quien organiza, `wa.me` sin emojis, Gemini con indicación y sin jerga, llegadas al instante, «Encuesta de cierre», escala de Desempeño | Prueba de Juan José (15/11) |
 | v1 stickers | 14 stickers de marca en `docs/stickers/` | Prueba de Juan José |
 | 2.4.0 | **Decisión por ronda** (hoja `decisiones`: votos por opción copiados de la encuesta, no voto por persona) y «pedir más opciones» sin plan caído. Gemini propone siempre 3 opciones (exacta, intermedia, diferente) con la disponibilidad del grupo. Mensajes nuevos: encuesta nativa de WhatsApp, `/confirmado` en 3 mensajes, evento de WhatsApp, `/hoy`, `/checkpoint` y `/en_casa` como encuesta, pulso por enlace personal. Modo prueba sin reloj. Correos al equipo | Prueba 2 (14/11) y su grabación |
 | 2.5.0 | Enlaces de Google Maps por nombre y dirección; capa de marca actual; relojes; atajos C, N, M; accesibilidad (axe 0) | QA UX/UI/a11y |
 | 2.6.0 | Mapa del recorrido: 2 planes × 5 etapas (Grupo, Proponer, Decidir, El día, Cierre) | Revisión visual |
 | 2.7.0 | Plan F0–F5: marcadores `[n]` bloqueados, cola de mensajes, conteo de votos «− n +», día y hora en botones, llegadas en un toque, color semántico, teléfonos enmascarados, sin «Trabajo» en la inscripción. **Medición de la consola** (hojas `medicion_consola` y `pulso_mago`: SUS y NASA-TLX de quien opera) | Revisión visual (`claude/revision-visual-consola-2026-11-15.md`, Proyecto) |
 
-QA al 15/11: backend 82 de 82 · recorrido completo 52 de 52 · F0–F5 22 de 22 · axe-core 0 · sin scroll horizontal a 390 px.
+QA al 17/11: backend 85 de 85 · recorrido completo 52 de 52 · F0–F5 y 2.7.1 25 de 25 · código secreto 20 de 20 (iPhone, Pixel, escritorio) · axe-core 0 · sin scroll horizontal a 390 px.
 
 ## 3. Implicaciones para las otras etapas
 
@@ -82,18 +86,23 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 
 ## 4. Pendientes, en orden
 
+El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden de prioridad (protocolo en `docs/protocolo-home.md`).
+
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | ~~Desplegar el backend 2.7.2~~ **Hecho el 15/11.** «⟲ Empezar piloto real» ya conserva minutos y sesiones del mago | — | José |
-| 2 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
-| 3 | Actualizar el onboarding del monitor a la consola 2.7.0 (O1) | Inducción | Equipo |
-| 4 | Publicar el aviso de privacidad v2 | Datos reales | Equipo |
-| 5 | Decidir N1 (encuesta nativa también en E1.5) y N11 (SUS del revisor) | Diseño de E1.5 | Equipo, con Néstor |
-| 6 | ~~Agregar `reabrir_opciones` a `MOTOR_ACCIONES` (N7)~~ Hecho en el backend 2.7.1; falta la deduplicación por ronda en W1 | Ronda 2 en E1.5 | Equipo (n8n) |
-| 7 | Corregir n8n: B1–B5, I2–I3 y N2–N8; después T1–T12 y el ensayo de 2 planes | E1.5 | Equipo |
-| 8 | Confirmar el plan de pago de n8n y la decisión C14 (Evolution o asistida) | E1.5 | Equipo |
-| 9 | D4 · viabilidad técnica del motor (sin respuesta de Moncada) | Cierre metodológico | Equipo |
-| 10 | Confirmar el calendario: el propuesto el 6/11 tenía el plan 1 del 11 al 15/11. `[Por confirmar]` si sigue vigente | Piloto | Equipo |
+| 1 | Confirmar el calendario del piloto: el propuesto el 6/11 ponía el plan 1 del 11 al 15/11 y el plan 2 del 16 al 22/11. `[Por confirmar]` qué grupos reales arrancaron y con qué versión de la consola | Piloto y análisis (23–25/11) | Equipo |
+| 2 | Publicar el aviso de privacidad v2 | Datos reales | Equipo |
+| 3 | Actualizar el onboarding del monitor a la consola 2.7.1 (O1; hoy tiene una nota de cambios arriba) | Inducción | Equipo |
+| 4 | Cargar los stickers en el WhatsApp del número Sintonía (`docs/stickers/README.md`) | — | Equipo |
+| 5 | Confirmar con Juan José su respuesta de Desempeño en la encuesta del mago (escala anterior) y corregir `pulso_mago` si hace falta | Dato del mago | José |
+| 6 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
+| 7 | Decidir N1 (encuesta nativa también en E1.5) y N11 (SUS del revisor) | Diseño de E1.5 | Equipo, con Néstor |
+| 8 | Corregir n8n: B1, B5, I5 y N1–N8 (incluida la deduplicación por ronda en W1); después T1–T16 y el ensayo de 2 planes | E1.5 | Equipo |
+| 9 | Confirmar el plan de pago de n8n y la decisión C14 (Evolution o asistida) | E1.5 | Equipo |
+| 10 | D4 · viabilidad técnica del motor (sin respuesta de Moncada) | Cierre metodológico | Equipo |
+| 11 | Crear los tags `piloto/v2.7.1` y `backend/v2.7.3` (desde esta sesión GitHub no deja subir tags) | Historial | José |
+| 12 | ~~Desplegar el backend 2.7.2 y 2.7.3~~ Hecho el 15/11 | — | José |
+| 13 | ~~`reabrir_opciones` en `MOTOR_ACCIONES` (N7)~~ Hecho en el backend 2.7.1 | — | — |
 
 ## 4.1 Prueba de Juan José (15/11, consola 2.7.0)
 
@@ -102,7 +111,7 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 | WhatsApp no deja crear un grupo vacío | Hecho en 2.7.1: se crea con quien organiza y el resto entra por enlace |
 | 👋 sale como «?» en el mensaje prellenado | Hecho en 2.7.1: `wa.me` va sin emojis |
 | Faltan los stickers de Sintonía en el chat | Hecho: paquete v1 en `docs/stickers/` (14 stickers). **Falta cargarlos** en el WhatsApp del número Sintonía (ver el README de la carpeta) |
-| «Ajustar tono» lo vuelve caleño y no deja dar la instrucción | Hecho en 2.7.1 y 2.7.3 (backend por desplegar) |
+| «Ajustar tono» lo vuelve caleño y no deja dar la instrucción | Hecho en 2.7.1 y 2.7.3 (desplegado el 15/11) |
 | «Llegó» y «En casa» no se ven hasta recargar | Hecho en 2.7.1 (se ven al instante). Causa exacta en la hoja: **por confirmar** si se repite |
 | «Pulso» no se entiende y su mensaje no está en Mensajes | Hecho en 2.7.1: «Encuesta de cierre», también en Mensajes · Cierre |
 | Desempeño (encuesta del mago) con los extremos al revés | Hecho en 2.7.1. La respuesta que Juan José ya guardó se hizo con la escala anterior: **confirmar con él** qué quiso marcar y, si hace falta, corregir `tlx_desempeno` y `tlx_raw` en la hoja `pulso_mago` |

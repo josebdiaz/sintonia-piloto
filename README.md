@@ -4,7 +4,7 @@ Proyecto de la Maestría en Gestión de la Innovación (Universidad Icesi) · Jo
 Sintonía es un sistema que coordina planes para grupos de amigos que ya existen en Cali («el quinto amigo del parche»).
 El piloto compara dos condiciones en WhatsApp: **E1**, con un mago humano (Mago de Oz), y **E1.5**, automatizada con n8n y una persona que aprueba y pega (valor interno `E2`). Las dos usan el mismo backend.
 
-**Estado actual, versiones e implicaciones pendientes: [`ESTADO.md`](ESTADO.md)** (15/11/2026 · frontend 2.7.1 · backend 2.7.2 en vivo).
+**Estado actual, versiones e implicaciones pendientes: [`ESTADO.md`](ESTADO.md)** (17/11/2026 · frontend 2.7.1 · backend 2.7.3 en vivo). El menú del home se genera desde el repo: [`docs/protocolo-home.md`](docs/protocolo-home.md).
 
 Sitio publicado (GitHub Pages, rama `main`): https://sintonia.my
 
@@ -12,9 +12,14 @@ Sitio publicado (GitHub Pages, rama `main`): https://sintonia.my
 
 ```
 /
-├─ index.html            Portal del proyecto (no es una página de participantes)
+├─ index.html            Portal del proyecto. Las tarjetas del menú oculto se generan (tools/home.py); no editarlas a mano
+├─ home.json             Contenido editorial del menú del home (enlaces, decks, documentos)
+├─ ESTADO.md             Estado del proyecto: versiones, implicaciones y pendientes (empieza aquí)
+├─ CLAUDE.md             Notas para trabajar el repo con Claude (versiones, home, privacidad)
+├─ tools/                home.py (genera y revisa el home) · qa-home.js (código secreto en celular)
+├─ .github/workflows/    home.yml: regenera y revisa el home en cada push a main
 ├─ 404.html              Redirige las URLs anteriores (M2-Claude/, researchers/, …) a su nueva ubicación
-├─ piloto/               Frontend EN USO · E1 + E2 · versión en piloto/assets/sintonia.js (FRONTEND_VERSION)
+├─ piloto/               Frontend EN USO · E1 y E1.5 · versión en piloto/assets/sintonia.js (FRONTEND_VERSION)
 │  ├─ index.html         Inscripción del organizador (?exp=E1 | ?exp=E2, &modo=prueba para ensayos)
 │  ├─ unirse.html        Consentimiento de cada miembro (?inv=CÓDIGO)
 │  ├─ plan.html          Votación y plan cerrado (?pid=…)
@@ -28,7 +33,8 @@ Sitio publicado (GitHub Pages, rama `main`): https://sintonia.my
 │  └─ Codigo_Piloto.gs   Versión en el encabezado del archivo y en el tag backend/vX.Y.Z
 ├─ datos/                Datos de referencia sin información personal
 │  └─ Inventario_Planes_Cali.csv
-├─ docs/                 Protocolo, textos, storyboard y deck del pivote
+├─ docs/                 Decks, plan de pruebas, protocolos y textos
+│  ├─ stickers/        Stickers de Sintonía v1 (WebP, PNG, guía de uso)
 │  └─ guias/           Control de guías de implementación (vigente · hecha · pendiente); no se conecta al piloto
 ├─ archivo/              Versiones que ya no se usan (solo lectura, sin conexión al backend del piloto)
 │  ├─ p4-pre-pivote/     Experimentos H1–H4 del Periodo 4 y panel de investigadores
@@ -63,8 +69,8 @@ Cada componente tiene su propia versión [SemVer](https://semver.org/lang/es/) y
 
 | Componente | Versión actual | Dónde se declara | Tag |
 |---|---|---|---|
-| Frontend del piloto | 2.0.7 («M2») | `piloto/assets/sintonia.js` → `FRONTEND_VERSION` (se ve en el pie de página) | `piloto/v2.0.7` |
-| Backend (Apps Script) | 2.2.5 | Encabezado de `backend/Codigo_Piloto.gs` | `backend/v2.2.5` |
+| Frontend del piloto | 2.7.1 | `piloto/assets/sintonia.js` → `FRONTEND_VERSION` (se ve en el pie de página) | `piloto/v2.7.0` (falta `v2.7.1`) |
+| Backend (Apps Script) | 2.7.3 | Encabezado de `backend/Codigo_Piloto.gs` | `backend/v2.7.2` (falta `v2.7.3`) |
 | Inventario | 3 (4/10/2026 · 17 activos) | `datos/Inventario_Planes_Cali.csv` (la hoja manda) | sin tag (v1 y v2 tienen tag) |
 
 - **MAYOR**: cambia el diseño del experimento o rompe compatibilidad (p. ej. M1 → M2).
@@ -79,7 +85,7 @@ Historial anterior conservado como tags: `p4/final` (cierre de P4, antes del piv
 1. `main` es lo publicado: lo que entra a `main` sale en GitHub Pages en 1–2 minutos.
 2. Cada cambio va en una rama corta desde `main`: `feat/…`, `fix/…`, `docs/…`. Las ramas se borran después de integrarse.
 3. Mensajes de commit con [Conventional Commits](https://www.conventionalcommits.org/es/): `feat(piloto): …`, `fix(backend): …`, `docs: …`.
-4. Para publicar una versión: subir `FRONTEND_VERSION` o el encabezado del `.gs`, agregar la entrada en `CHANGELOG.md`, integrar a `main` y crear el tag (`git tag -a piloto/v2.0.1 -m "…"` y `git push --tags`).
+4. Para publicar una versión: subir `FRONTEND_VERSION` o el encabezado del `.gs`, agregar la entrada en `CHANGELOG.md`, actualizar `ESTADO.md` §1, correr `python3 tools/home.py` (y `--check`), integrar a `main` y crear el tag (`git tag -a piloto/v2.0.1 -m "…"` y `git push --tags`).
 5. Backend: pegar `backend/Codigo_Piloto.gs` en el editor de Apps Script → Implementar → Administrar implementaciones → editar la implementación actual → **Nueva versión**. Así la URL `/exec` no cambia. Anotar en el CHANGELOG el número de versión de la implementación.
 6. Entre W1 y W2 solo se permite **un** cambio por condición (I4): registrarlo también en la consola del mago (pestaña Cambios).
 

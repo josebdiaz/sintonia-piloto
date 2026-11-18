@@ -77,7 +77,7 @@
       <h1>Control de guías de implementación</h1>
       <p class="lead">Todas las guías del proyecto en un solo lugar, según su estado: <b>vigente</b> (se usa hoy), <b>hecha</b> (se ejecutó o quedó superada) y <b>pendiente</b> (todavía no se aplica). Cada tarjeta dice para qué sirve, quién la usa y el siguiente paso.</p>
     </div>
-    <div class="meta-top">Revisión del 15/11/2026<br>Piloto en frontend 2.7.0 · backend 2.7.2 (desplegado)</div>
+    <div class="meta-top">Revisión del 17/11/2026<br>Piloto en frontend 2.7.1 · backend 2.7.3</div>
   </header>
 
   <section class="resumen" aria-label="Resumen por estado" id="resumen"></section>
@@ -140,6 +140,18 @@
   "quien": "José (dueño del script)",
   "siguiente": "Al día: 2.7.2 desplegado el 15/11 (pulso_mago, medicion_consola y reinicio que conserva los minutos).",
   "archivo": "backend/README.md",
+  "tipo": "md"
+ },
+ {
+  "id": "home",
+  "estado": "vigente",
+  "ambito": "Backend y publicación",
+  "titulo": "Protocolo del home (sintonia.my)",
+  "para": "El menú «Detrás de escena» se genera desde home.json y el estado del repo con tools/home.py; --check revisa enlaces, decks y versiones; la acción «Home al día» lo corre en cada push a main. Incluye el código secreto en celular.",
+  "version": "17/11/2026",
+  "quien": "Quien publique en main",
+  "siguiente": "Antes de cada push: python3 tools/home.py y --check en ✓.",
+  "archivo": "docs/protocolo-home.md",
   "tipo": "md"
  },
  {

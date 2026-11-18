@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-17 · El home al día con el repo y el código secreto en celular
+- **Home generado:** las tarjetas del menú «Detrás de escena» salen de `home.json` y del repo con `tools/home.py`. Hay una tarjeta nueva, «Estado del repo», con las versiones, el último cambio, la fecha de `ESTADO.md` y sus tres primeros pendientes. `--check` revisa enlaces rotos, decks sin listar y versiones que no estén en `ESTADO.md` o en este archivo. La acción `.github/workflows/home.yml` lo regenera y lo revisa en cada push a `main`. Protocolo: `docs/protocolo-home.md`; notas para trabajar el repo: `CLAUDE.md`.
+- **Código secreto en celular:** ↑ ↑ ↓ ↓ ← → ← → con deslizamientos. La portada ya no se desplaza ni recarga al deslizar; se ignoran los bordes (gesto de «atrás») y la franja de abajo; hay 4,5 s entre deslizamientos (antes 2,5 s) y el teléfono vibra con cada acierto. Prueba: `tools/qa-home.js` (iPhone 13, Pixel 7 y escritorio, 20 de 20).
+- La versión que aparece junto a «Versiones» ya se veía vacía (leía una variable que no existe); ahora la escribe el generador, con frontend y backend.
+- Enlaces del menú: entran «Estado del proyecto» y «Stickers»; el protocolo M2 pasa al archivo (superado).
+
 ### 2026-11-15 · Stickers de Sintonía v1
 - `docs/stickers/`: 14 stickers estáticos de marca (512 × 512 WebP de menos de 100 KB y PNG), ícono de paquete 96 × 96, emojis por sticker, hoja de contacto, guía de uso por momento del plan y el generador. Pedido de la prueba de Juan José.
 
@@ -167,8 +173,10 @@ Ensayo interno del 13/11 en modo prueba (Juan José como mago). Todavía no hay 
 
 Desde la 2.3.0, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
-### [2.7.0] · 2026-11-15 · Plan de mejoras F0–F5 · **en vivo**
-Marcadores `[n]` bloqueados, menú «⋯» por persona, cola de mensajes, mapa en la columna izquierda, pestañas flotantes, votos «− n +», día y hora en botones, llegadas en un toque, color semántico, teléfonos enmascarados, sin «Trabajo» en la inscripción, pulso del mago y medición de la consola. Tag `piloto/v2.7.0` por crear (desde esta sesión no se pueden subir tags).
+### [2.7.1] · 2026-11-15 · Prueba de Juan José · **en vivo**
+Grupo con quien organiza, `wa.me` sin emojis, Gemini con indicación, llegadas al instante, «Encuesta de cierre», escala de Desempeño. Tag `piloto/v2.7.1` por crear.
+### [2.7.0] · 2026-11-15 · Plan de mejoras F0–F5
+Marcadores `[n]` bloqueados, menú «⋯» por persona, cola de mensajes, mapa en la columna izquierda, pestañas flotantes, votos «− n +», día y hora en botones, llegadas en un toque, color semántico, teléfonos enmascarados, sin «Trabajo» en la inscripción, pulso del mago y medición de la consola. Tag `piloto/v2.7.0` (creado el 15/11).
 ### [2.6.0] · 2026-11-15 · Mapa del recorrido (2 planes × 5 etapas) y relojes que se apagan
 ### [2.5.1] · 2026-11-14 · QA visual (radios y alturas, barra flotante, mensajes recortados)
 ### [2.5.0] · 2026-11-14 · Marca actual, enlaces de Google Maps, relojes, atajos y accesibilidad (axe 0)
@@ -294,8 +302,10 @@ Marcadores `[n]` bloqueados, menú «⋯» por persona, cola de mensajes, mapa e
 
 Desde la 2.3.3, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
-### [2.7.2] · 2026-11-15 · «Empezar piloto real» conserva `operacion` y `sesiones` · **desplegado el 15/11**
-Tag `backend/v2.7.2` por crear. QA: 85 de 85. Incluye 2.7.0 y 2.7.1.
+### [2.7.3] · 2026-11-15 · Gemini pone primero la indicación del mago y usa español neutro · **desplegado el 15/11**
+Tag `backend/v2.7.3` por crear. QA: 85 de 85.
+### [2.7.2] · 2026-11-15 · «Empezar piloto real» conserva `operacion` y `sesiones` · desplegado el 15/11
+Tag `backend/v2.7.2` (creado el 15/11). QA: 85 de 85. Incluye 2.7.0 y 2.7.1.
 ### [2.7.1] · 2026-11-15 · `reabrir_opciones` en `MOTOR_ACCIONES` (solo planes de E1.5)
 ### [2.7.0] · 2026-11-15 · Hojas `pulso_mago` y `medicion_consola`; panel «La consola del mago»
 ### [2.5.0] · 2026-11-14 · Revisión de ubicaciones en `probarMontaje`; `?view=mago&inv=0`
