@@ -262,6 +262,8 @@ code{font-family:var(--f-mono);font-size:.9em}
 .s-papel .wtp span{background:var(--papel-100)}
 .wt{display:grid;grid-template-columns:1fr 600px;gap:56px;margin-top:34px;flex:1;min-height:0}
 .wt.map{grid-template-columns:1fr 560px}
+.shotw{min-height:0;height:100%;display:flex}
+.shot{display:block;width:100%;height:100%;object-fit:cover;object-position:top center;border-radius:22px;border:2px solid var(--papel-300);box-shadow:0 20px 60px rgba(14,17,22,.25);background:var(--papel-0)}
 /* ventana de la consola */
 .cw{position:relative;background:var(--papel-50);color:var(--noche);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;font-size:20px;line-height:1.3;box-shadow:0 30px 80px rgba(0,0,0,.45);align-self:start}
 .s-papel .cw{box-shadow:0 20px 60px rgba(14,17,22,.18);border:2px solid var(--papel-300)}
@@ -444,9 +446,9 @@ h2{font-size:76px}
     <p class="eyebrow in" style="--i:0">La idea</p>
     <h2 class="in" style="--i:1">Tu +1 de confianza, dentro del chat del parche.</h2>
     <div class="cards4">
-      <div class="cd in" style="--i:2;--c:var(--mostaza)"><b>Propone</b><span>1 a 3 planes, solo del inventario verificado de Cali</span></div>
-      <div class="cd in" style="--i:3;--c:var(--salvia)"><b>Concilia</b><span>Votación con 1, 2, 3, TODAS o NINGUNA</span></div>
-      <div class="cd in" style="--i:4;--c:var(--vitral);--t:var(--papel-0)"><b>Cierra</b><span>Día, hora, dirección y salida sugerida</span></div>
+      <div class="cd in" style="--i:2;--c:var(--mostaza)"><b>Propone</b><span>3 planes del inventario verificado de Cali, para fechas concretas</span></div>
+      <div class="cd in" style="--i:3;--c:var(--salvia)"><b>Concilia</b><span>Encuestas de WhatsApp: el plan y, si hace falta, el día</span></div>
+      <div class="cd in" style="--i:4;--c:var(--vitral);--t:var(--papel-0)"><b>Cierra</b><span>Día, hora, salida sugerida y plazo para confirmar</span></div>
       <div class="cd in" style="--i:5;--c:var(--coral)"><b>Acompaña</b><span>Llegada, «ya en casa» y encuesta corta</span></div>
     </div>
   </div>
@@ -460,12 +462,12 @@ h2{font-size:76px}
     <div class="cmp2">
       <table class="tb in" style="--i:2">
         <tr><th></th><th class="hl">E1 · WhatsApp + mago <em>Aquí entras tú</em></th><th>E1.5 · WhatsApp automatizado</th></tr>
-        <tr><td>Quién opera</td><td class="hl"><b>Tú</b>, desde la consola</td><td>Un motor en n8n; una persona aprueba</td></tr>
+        <tr><td>Quién opera</td><td class="hl"><b>Tú</b>, desde la consola</td><td>Un motor en n8n; una persona aprueba. <b>Aplazada</b> (19/11) hasta que las pruebas manuales dejen de fallar</td></tr>
         <tr><td>Grupos</td><td class="hl">2</td><td>2</td></tr>
         <tr><td>Planes por grupo</td><td class="hl">2</td><td>2</td></tr>
       </table>
       <div class="measure in" style="--i:3">
-        <p class="mini">Más 1 grupo de reserva.</p>
+        <p class="mini">Más 1 grupo de reserva. Próxima prueba: un grupo de Cali, el viernes 27/11.</p>
         <h3>Qué medimos</h3>
         <p><b>Principal:</b> facilidad por momento (SEQ, 1 a 7) y usabilidad (SUS, 0 a 100).</p>
         <p><b>De contexto:</b> llegaron / invitadas, minutos humanos por plan y «¿Repetimos con este parche?».</p>
@@ -535,229 +537,132 @@ h2{font-size:76px}
     <h2 class="in" style="--i:1">Un turno, de principio a fin.</h2>
     <ol class="flow5">
       <li class="hot in" style="--i:2"><i>1</i><b>▶ Mago in</b><span>antes de tocar nada</span></li>
-      <li class="in" style="--i:3"><i>2</i><b>Abre</b><span>el grupo y el plan en la consola</span></li>
-      <li class="in" style="--i:4"><i>3</i><b>Haz el paso</b><span>que la consola marca como siguiente</span></li>
+      <li class="in" style="--i:3"><i>2</i><b>Elige</b><span>el grupo: «Toca ya» marca lo vencido</span></li>
+      <li class="in" style="--i:4"><i>3</i><b>Haz lo que toca</b><span>el botón y la cola, en orden</span></li>
       <li class="in" style="--i:5"><i>4</i><b>Registra</b><span>lo que respondió el grupo</span></li>
-      <li class="hot in" style="--i:6"><i>5</i><b>■ Mago off</b><span>al terminar</span></li>
+      <li class="hot in" style="--i:6"><i>5</i><b>■ Mago off</b><span>cada vez que dejas de atender</span></li>
     </ol>
     <p class="warn in" style="--i:7">A las 2 h la consola te avisa. A las 4 h cierra la sesión sola y <b>sin minutos</b>: si pasa, anota los reales en «Llegadas y tiempo» → Registro manual.</p>
   </div>
 </section>
 
 <!-- 10 · Mapa de la consola -->
-<section class="slide s-papel" data-chap="Walkthrough" data-title="Mapa de la consola" data-notes="Este es el mapa. La única regla para no perderse: mirar «Lo que toca ahora» y usar su botón. Te lleva a la pestaña correcta y resalta el campo. Debajo está el recorrido del grupo con los pasos hechos y el que sigue.">
+<section class="slide s-papel" data-chap="Operación" data-title="Paso 0 · Quién manda qué" data-notes="En la prueba externa, quien organiza no entendió que tenía que compartir la invitación y el grupo se quedó en «1 de 3». Por eso su pantalla final dice «Falta un paso» y tú tienes el botón de recordatorio. Un solo recordatorio, sin presión. El equipo no le escribe a quien organiza: si algo se traba, lo resuelves con la consola.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Antes de que exista el grupo</p>
+    <h2 class="in" style="--i:1">Paso 0 · Quién manda qué.</h2>
+    <table class="tb">
+      <tr><th>#</th><th>Quién</th><th>Qué</th><th>Desde dónde</th></tr>
+      <tr class="in" style="--i:2"><td>1</td><td><b>Tú</b></td><td>Bienvenida con el enlace de inscripción, a quien organiza</td><td>«Inscribir un grupo nuevo» → «Copiar mensaje», desde el número Sintonía</td></tr>
+      <tr class="in" style="--i:3"><td>2</td><td><b>Quien organiza</b></td><td>Reenvía la invitación a su parche</td><td>Su pantalla «Falta un paso» → «Enviar la invitación por WhatsApp»</td></tr>
+      <tr class="in" style="--i:4"><td>3</td><td><b>Cada persona</b></td><td>Acepta desde su enlace</td><td>Su celular</td></tr>
+      <tr class="in" style="--i:5"><td>4</td><td><b>Tú</b></td><td>Si en 2 h no acepta nadie más: un recordatorio</td><td>«Recordar a … que comparta la invitación»</td></tr>
+      <tr class="in" style="--i:6"><td>5</td><td><b>Tú</b></td><td>Cuando aceptan todos: cerrar y crear el grupo de WhatsApp</td><td>Grupo (3 pasos)</td></tr>
+    </table>
+    <p class="warn dark in" style="--i:7"><b>Sintonía no tiene los números del parche.</b> Cada persona entra por su propio enlace; a ti te llega un correo por cada aceptación.</p>
+  </div>
+</section>
+<section class="slide s-papel" data-chap="Walkthrough" data-title="Mapa de la consola" data-notes="Esta es la consola 2.8.1. La única regla para no perderse: mirar «Lo que toca ahora» y usar su botón. A la izquierda, el recorrido del grupo: 2 planes por 5 etapas, bajo los tres momentos. Nada con corchetes se puede copiar: primero se completa el dato.">
   <div class="content">
     <p class="eyebrow in" style="--i:0">Walkthrough · la consola por dentro</p>
     <h2 class="in" style="--i:1">Así se ve la consola.</h2>
     <div class="wt map">
-      <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
-      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
-      <div class="cw-top"><div class="hs" data-n="1" style="--n:1"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div></div><div class="hs" data-n="2" style="--n:2"><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div></div><div class="hs" style="margin-left:auto;--n:3" data-n="3" style="--n:3"><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div></div>
-      <div class="cw-tabs"><span class="on">Grupo</span><span class="">Plan</span><span class="hs" data-n="4" style="--n:4;padding:0"><span class="">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
-      <div class="cw-body"><div class="cw-split">
-  <div class="hs" data-n="5" style="--n:5"><div class="gl">
-  <div class="gr on"><span><b>amigos · a3f91c</b><small>Grupo: Cerrar el reclutamiento</small></span><span class="pl srch">Reclutando</span></div>
-  <div class="gr"><span><b>familia · 7be20d</b><small>Plan 1: Registrar votos (faltan 2)</small></span><span class="pl live">Votación</span></div>
-  <div class="gr"><span><b>trabajo · c41a88</b><small>Plan 1: Enviar /confirmado</small></span><span class="pl fix">Fijado</span></div>
-</div></div>
-  <div class="cc next hs" data-n="6" style="--n:6"><span class="ey">Lo que toca ahora · amigos · a3f91c</span><h4>Grupo · Cerrar el reclutamiento</h4><span class="mut">Aceptaron todos: cierra el reclutamiento para activar el grupo.</span><div class="row"><span class="btn">Ir a cerrar el reclutamiento →</span></div>
-    <div class="bar" style="margin-top:6px"><i style="width:8%"></i></div><span class="mut">Recorrido del grupo · 1 de 14 pasos</span></div>
-</div></div>
-    </div></div>
-      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Condición</b><span>Siempre <b>E1</b>.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Modo prueba</b><span><b>SÍ</b> en ensayos · <b>NO</b> con grupos reales.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Mago in / Mago off</b><span>Verde: tus minutos cuentan.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Pestañas</b><span>Usas cuatro. «Ajustes» no se toca.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Lista de grupos</b><span>Cada fila dice qué le falta.</span></div></li><li class="in" data-n="6" style="--i:8"><i>6</i><div><b>Lo que toca ahora</b><span>Su botón → te lleva al sitio exacto.</span></div></li></ol></div>
+      <div class="in shotw" style="--i:2"><img class="shot" src="deck-onboarding-monitor/01-consola.jpg" alt="La consola 2.8.1: barra con Mago in, lista de grupos, recorrido del grupo (2 planes × 5 etapas) y «Lo que toca ahora» con su botón." loading="lazy"></div>
+      <div class="wsc"><ol class="ws tight"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Barra de arriba</b><span>▶ Mago in / ■ Mago off con tu nombre, Recargar y Atajos.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Grupos</b><span>Lista del modo (Piloto o Prueba). «Toca ya» y «Aceptó alguien más».</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Recorrido del grupo</b><span>2 planes × 5 etapas. Tocar una etapa lleva a donde se hace.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Lo que toca ahora</b><span>El paso, su botón y la cola de mensajes, en orden.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Pestañas</b><span>Grupo, Plan, Mensajes, Llegadas y tiempo. Ajustes: solo el equipo.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Atajos:</b> C copia y marca · N acción · M mapa · ? todos.</p></div></div>
     </div>
   </div>
 </section>
 
 <!-- 11 · Walkthrough 1 · Entrar -->
-<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 1 · Entrar" data-notes="La clave se entrega en persona y nunca se escribe en un chat. Si «Mago in» no aparece, el backend es anterior a la 2.3.0: avisa al equipo y registra los minutos a mano en Llegadas y tiempo. El ritmo de cada turno: Mago in, abrir el grupo, hacer el paso que marca la consola, registrar, Mago off.">
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 1 · Entrar y esperar" data-notes="La clave se entrega en persona y nunca se escribe en un chat. El Paso 0 es el que falló en la prueba externa: quien organiza no entendió que debía compartir la invitación. Por eso su pantalla final dice «Falta un paso» y tú tienes el botón de recordatorio. Mientras esperas, cierra la sesión: los minutos de espera no son trabajo.">
   <div class="content">
-    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 1 de 7</p><div class="wtp"><span class="cur">1 · Entrar</span><span class="">2 · Grupo e /ingreso</span><span class="">3 · Opciones</span><span class="">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
-    <h2 class="in" style="--i:1">Entra y abre tu sesión.</h2>
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 1 de 7</p><div class="wtp"><span class="cur">1 · Entrar y esperar</span><span class="">2 · Grupo e /ingreso</span><span class="">3 · Opciones</span><span class="">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Encuestas y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Entra, abre tu sesión y espera al parche.</h2>
     <div class="wt">
-      <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
-      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
-      <div class="cw-top"><div class="hs" data-n="2" style="--n:2"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div></div><div class="hs" data-n="3" style="--n:3"><div class="swc on"><div><b>Modo prueba</b><small>Activo: no cuenta en el panel</small></div><span class="k"></span><span class="v">SÍ</span></div></div><div class="hs" style="margin-left:auto;--n:4" data-n="4" style="--n:4"><div class="mg"><span class="led"></span><span class="inp" style="min-width:150px">Katherine</span><span class="btn or">▶ Mago in</span></div></div></div>
-      <div class="cw-tabs"><span class="on">Grupo</span><span class="">Plan</span><span class="">Mensajes</span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
-      <div class="cw-body"><div class="cw-split">
-  <div class="cc hs" data-n="1" style="--n:1"><h4>Entrar a la consola</h4><span class="mut">La clave se guarda en esta pestaña y se borra al cerrarla.</span><div class="fld"><label>ADMIN_KEY</label><span class="inp">●●●●●●●●●●</span></div><span class="btn" style="justify-content:center">Entrar</span></div>
-  <div class="cc next hs" data-n="5" style="--n:5"><span class="ey">Lo que toca ahora · amigos · a3f91c</span><h4>Grupo · Cerrar el reclutamiento</h4><span class="mut">Aceptaron todos: cierra el reclutamiento para activar el grupo.</span>
-    <div class="cc warn" style="padding:10px 12px"><b style="font-size:15px">Abre «Mago in» antes de seguir</b><span class="mut" style="font-size:14px">Sin sesión abierta, este trabajo no cuenta en los minutos humanos.</span></div>
-    <div class="row"><span class="btn">Ir a cerrar el reclutamiento →</span></div></div>
-</div></div>
-    </div></div>
-      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Entra con la clave</b><span>Pega la ADMIN_KEY → <b>Entrar</b>.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Elige E1</b><span>Arriba a la izquierda.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Modo prueba</b><span>Ensayo: <b>SÍ</b>. Grupos reales: <b>NO</b>.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>▶ Mago in</b><span>Tu nombre y abrir. Se pone verde.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Sigue el recuadro</b><span>«Lo que toca ahora» dice qué sigue.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Si te pierdes:</b> usa el botón de «Lo que toca ahora».</p></div>
+      <div class="in shotw" style="--i:2"><img class="shot" src="deck-onboarding-monitor/02-recordar.jpg" alt="Lo que toca ahora: «Esperar que acepten todos (2 de 4)», con el botón «Recordar a Paula que comparta la invitación» y un reloj a las 2 h." loading="lazy"></div>
+      <div class="wsc"><ol class="ws tight"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Clave y ▶ Mago in</b><span>La clave se entrega en persona. Escribe tu nombre y abre la sesión.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Bienvenida a quien organiza<em class="wa">En WhatsApp</em></b><span>«Inscribir un grupo nuevo» → «Copiar mensaje», desde el número Sintonía.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Ella invita a su parche</b><span>Sintonía no tiene esos números: cada persona acepta desde su enlace.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>¿2 h sin aceptaciones?<em class="wa">En WhatsApp</em></b><span>«Recordar a … que comparta la invitación». Un solo recordatorio.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>■ Mago off mientras esperas</b><span>Te llega un correo por cada aceptación y la fila dice «Aceptó alguien más».</span></div></li></ol><p class="wtip in" style="--i:9"><b>Quien organiza invita, no tú.</b> Si no acepta nadie más, recuérdaselo una vez.</p></div>
     </div>
   </div>
 </section>
 
 <!-- 12 · Walkthrough 2 · Grupo e /ingreso -->
-<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 2 · Grupo e /ingreso" data-notes="Si el quórum no está completo (por ejemplo 4 de 5) y cierras, el grupo queda excluido por la regla I9. Si a las 24 h falta alguien, «Abrir chat con mensaje» le escribe al organizador. WhatsApp no deja crear el grupo automáticamente: se hace a mano. En Mensajes, escribe tu nombre en «Quién atiende hoy»: firma el /humano.">
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 2 · Grupo e /ingreso" data-notes="Si cierras con el quórum incompleto (por ejemplo 3 de 4), el grupo queda desestimado por la regla I9. WhatsApp no deja crear un grupo vacío ni agregar a quien no está en tus contactos: se repitió en dos pruebas. Con el plan B nunca escribes un mensaje a mano. Cuando entre la primera persona, envía /ingreso.">
   <div class="content">
-    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 2 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="cur">2 · Grupo e /ingreso</span><span class="">3 · Opciones</span><span class="">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
-    <h2 class="in" style="--i:1">Activa el grupo y da la bienvenida.</h2>
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 2 de 7</p><div class="wtp"><span class="ok">1 · Entrar y esperar</span><span class="cur">2 · Grupo e /ingreso</span><span class="">3 · Opciones</span><span class="">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Encuestas y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Crea el grupo de WhatsApp en 3 pasos.</h2>
     <div class="wt">
-      <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
-      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
-      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
-      <div class="cw-tabs"><span class="on">Grupo</span><span class="">Plan</span><span class="hs" data-n="4" style="--n:4;--n:4;padding:0"><span class="">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
-      <div class="cw-body"><div class="cw-split">
-  <div class="hs" data-n="1" style="--n:1"><div class="gl">
-  <div class="gr on"><span><b>amigos · a3f91c</b><small>Grupo: Cerrar el reclutamiento</small></span><span class="pl srch">Reclutando</span></div>
-  <div class="gr"><span><b>familia · 7be20d</b><small>Plan 1: Registrar votos (faltan 2)</small></span><span class="pl live">Votación</span></div>
-  <div class="gr"><span><b>trabajo · c41a88</b><small>Plan 1: Enviar /confirmado</small></span><span class="pl fix">Fijado</span></div>
-</div></div>
-  <div class="cc"><h4>amigos · a3f91c <span class="pl srch" style="margin:0">reclutando</span></h4>
-    <span class="hs" data-n="1" style="--n:1;display:block;padding:2px 4px"><span style="font-size:16px">Quórum: <b>5 / 5</b> consintieron</span><div class="bar" style="margin-top:6px"><i style="width:100%"></i></div></span>
-    <div class="row"><span class="btn gh">Copiar invitación</span><span class="btn hs" data-n="2" style="--n:2">Cerrar reclutamiento</span></div>
-    <div class="mem"><b>Ana</b><span class="mut">organizador · +57 3•• ••• ••12</span><span class="btn gh">Abrir chat con mensaje</span></div>
-    <div class="cc soft" style="padding:10px 12px"><b style="font-size:15px">Crear el grupo del plan en WhatsApp</b><span class="mut" style="font-size:14px">Créalo a mano desde el número Sintonía con estas 5 personas.</span><span class="btn gh hs" data-n="3" style="--n:3;align-self:flex-start">Copiar nombres y números</span></div>
-  </div>
-</div></div><div class="sheet"><small>Confirmar</small><b>Cerrar reclutamiento</b><p>Consintieron 5 de 5. El grupo pasa a ACTIVO. ¿Cerrar reclutamiento?</p><div class="row" style="justify-content:flex-end"><span class="btn gh">Cancelar</span><span class="btn">Sí, confirmar</span></div></div>
-    </div></div>
-      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Elige el grupo y mira el quórum</b><span>Debe decir <b>5 / 5</b>.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Cerrar reclutamiento</b><span>Y en la hoja: <b>Sí, confirmar</b>.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Copia nombres y crea el grupo<em class="wa">En WhatsApp</em></b><span>A mano, desde el número Sintonía.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Mensajes → /ingreso</b><span>Para: Todo el grupo → <b>Copiar</b>.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Pega y marca como enviado<em class="wa">En WhatsApp</em></b><span>Queda «✓ Enviado» con la hora.</span></div></li></ol><p class="wtip in" style="--i:9"><b>¿4 de 5?</b> No cierres. Avisa al equipo.</p></div>
+      <div class="in shotw" style="--i:2"><img class="shot" src="deck-onboarding-monitor/03-crear-grupo.jpg" alt="Bloque «Crear el grupo del plan en WhatsApp» con los 3 pasos, el enlace del grupo, «Invitar a» cada persona y el plan B para quien organiza." loading="lazy"></div>
+      <div class="wsc"><ol class="ws tight"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Cerrar reclutamiento</b><span>Solo con todas las aceptaciones; si falta alguien, el grupo queda desestimado.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Guarda a quien organiza<em class="wa">En WhatsApp</em></b><span>Como contacto en el teléfono Sintonía: «Copiar nombre y número».</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Crea el grupo con ella<em class="wa">En WhatsApp</em></b><span>Solo administradores agregan; sin mensajes temporales.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Pega el enlace y «Invitar a…»<em class="wa">En WhatsApp</em></b><span>A cada persona. Plan B: «Invitar a» quien organiza.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>/ingreso<em class="wa">En WhatsApp</em></b><span>Bienvenida, transparencia y aviso de privacidad. Copiar y marcar enviado.</span></div></li></ol><p class="wtip in" style="--i:9"><b>WhatsApp solo agrega contactos guardados.</b> Por eso el paso 1.</p></div>
     </div>
   </div>
 </section>
 
 <!-- 13 · Walkthrough 3 · Opciones -->
-<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 3 · Opciones" data-notes="Gemini ya recibe lo que el parche contó al inscribirse. Si trae un lugar cerrado o un horario dudoso, quítalo y usa «+ Opción manual» con un lugar del inventario activo. Cada opción necesita título y al menos una parada.">
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 3 · Opciones" data-notes="Gemini ya recibe lo que el parche contó al inscribirse y sus fechas concretas. /opciones dice la fecha: «para el sábado 29 de noviembre en la tarde». Si hay varias fechas, la encuesta «¿Qué día?» va antes de la del plan. El precio es uno solo por persona, el punto medio del rango.">
   <div class="content">
-    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 3 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="ok">2 · Grupo e /ingreso</span><span class="cur">3 · Opciones</span><span class="">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
-    <h2 class="in" style="--i:1">Pide opciones y publica.</h2>
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 3 de 7</p><div class="wtp"><span class="ok">1 · Entrar y esperar</span><span class="ok">2 · Grupo e /ingreso</span><span class="cur">3 · Opciones</span><span class="">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Encuestas y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Pide opciones, publica y envía la cola.</h2>
     <div class="wt">
-      <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
-      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
-      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
-      <div class="cw-tabs"><span class="">Grupo</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="on">Plan</span></span><span class="">Mensajes</span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
-      <div class="cw-body"><div class="cc"><h4>Plan 1 <span class="pl srch" style="margin:0">borrador</span></h4>
-  <div class="cc soft" style="padding:8px 12px"><b style="font-size:15px">Lo que contó el parche al inscribirse</b><span class="mut" style="font-size:14px">Gemini ya lo recibe; no hace falta copiarlo.</span></div>
-  <div class="fld hs" data-n="2" style="--n:2"><label>Lo de este plan para Gemini (día, hora, zona, presupuesto)</label><span class="inp">sábado en la tarde, máx. $40.000, sur u oeste</span></div>
-  <div class="row"><span class="btn hn hs" data-n="3" style="--n:3">✨ Pedir opciones a Gemini</span><span class="btn gh">+ Opción manual</span></div>
-  <div class="cc hs" data-n="4" style="--n:4;padding:10px 12px;gap:6px"><div class="row" style="justify-content:space-between"><b style="font-size:16px">Opción 1</b><span class="btn gh">Quitar</span></div>
-    <div class="row"><div class="fld"><label>Título</label><span class="inp">Café y caminata</span></div><div class="fld"><label>Parada 1</label><span class="inp sel">L07 · Café de barrio (Oeste)</span></div></div>
-</div>
-  <div class="row"><span class="btn hs" data-n="5" style="--n:5">Publicar plan al grupo</span><span class="mut">+ 2 opciones más abajo</span></div></div></div>
-    </div></div>
-      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Plan → + Crear plan</b><span>Un plan a la vez por grupo.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Escribe lo de este plan</b><span>Día, hora, zona y presupuesto.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>✨ Pedir opciones a Gemini</b><span>Hasta 3, solo del inventario.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Revisa cada opción</b><span>¿Abierto, horario y costo bien?</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Publicar plan al grupo</b><span>Y <b>Sí, confirmar</b>.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Publicar no escribe en el chat.</b> Eso viene después.</p></div>
+      <div class="in shotw" style="--i:2"><img class="shot" src="deck-onboarding-monitor/06-cola-opciones.jpg" alt="La cola de «Enviar las opciones y la encuesta»: /opciones, una tarjeta por opción en 4 líneas con un solo precio, y la encuesta «¿Qué día?»." loading="lazy"></div>
+      <div class="wsc"><ol class="ws tight"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Plan → pega el chat</b><span>Lo que dijeron en el grupo, y «Pedir 3 opciones a Gemini». Solo inventario activo.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Revisa y publica</b><span>Si algo está raro, quítalo o usa «+ Opción manual».</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>/opciones y una por opción<em class="wa">En WhatsApp</em></b><span>Cada opción en 4 líneas, con un solo precio y su mapa.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>«¿Qué día?»<em class="wa">En WhatsApp</em></b><span>Si el grupo marcó varias fechas, antes de la encuesta del plan.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>Encuesta del plan<em class="wa">En WhatsApp</em></b><span>Adjuntar → Encuesta, varias respuestas. «Marcar como enviado».</span></div></li></ol><p class="wtip in" style="--i:9"><b>La cola va en orden.</b> Solo el siguiente mensaje va abierto.</p></div>
     </div>
   </div>
 </section>
 
 <!-- 14 · Walkthrough 4 · Votos y cierre -->
-<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 4 · Votos y cierre" data-notes="Si alguien cambia su voto, se registra otra vez: el último reemplaza al anterior. «Voy tarde» o «no sé» no es un voto: se pregunta con calma. Sin día y hora la consola no deja cerrar. Causas de caída: tráfico, lluvia, agenda, costo, desinterés, imprevisto u otro.">
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 4 · Votos y cierre" data-notes="No se registra quién votó qué: solo los números de la encuesta de WhatsApp. «Cualquiera me sirve» suma a todas. Si el plan no se dio, «Si el plan no se dio» → causa → marcar como caído. Cerrar no avisa al grupo: el aviso es /confirmado.">
   <div class="content">
-    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 4 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="cur">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
-    <h2 class="in" style="--i:1">Registra votos y cierra el plan.</h2>
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 4 de 7</p><div class="wtp"><span class="ok">1 · Entrar y esperar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="cur">4 · Votos y cierre</span><span class="">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Encuestas y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Anota los votos y cierra con día y hora.</h2>
     <div class="wt">
-      <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
-      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
-      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
-      <div class="cw-tabs"><span class="">Grupo</span><span class="on">Plan</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
-      <div class="cw-body"><div class="cc"><h4>Plan 1 <span class="pl live" style="margin:0">votando</span></h4>
-  <div class="cc warn hs" data-n="2" style="--n:2;display:block;padding:8px 12px;font-size:16px">Publicado hace <b>2,1 h</b> · faltan <b>2</b> voto(s): Caro, Pipe</div>
-  <b style="font-size:17px">Votos por persona</b>
-  <div class="mem"><b>Ana</b><span class="mut">opción 2</span><span class="inp sel" style="min-width:200px">Registrar voto…</span></div>
-  <div class="mem"><b>Caro</b><span class="mut">sin voto</span><span class="inp sel hs" data-n="3" style="--n:3;min-width:200px">Registrar voto…</span></div>
-  <div class="cc soft" style="gap:8px;padding:10px 12px"><b style="font-size:16px">Cerrar votación</b>
-    <div class="row"><div class="fld"><label>Opción ganadora</label><span class="inp sel">2. Asado en el parque</span></div><div class="fld"><label>Encuentro (día y hora)</label><span class="inp">sáb 14/11 · 4:00 p. m.</span></div><div class="fld"><label>Salida sugerida</label><span class="inp">3:15 p. m.</span></div></div>
-    <div class="row"><span class="btn hs" data-n="4" style="--n:4">Cerrar plan</span><span class="inp sel" style="margin-left:auto;min-width:140px">Causa…</span><span class="btn dg hs" data-n="5" style="--n:5">Marcar como caído</span></div></div>
-</div></div>
-    </div></div>
-      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Mensajes → /opciones<em class="wa">En WhatsApp</em></b><span>Copiar, pegar y marcar como enviado.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>¿2 h y faltan votos?</b><span>Un solo <code>/recordatorio</code>.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Registrar voto…</b><span>Por cada voto: 1, 2, 3, TODAS o NINGUNA.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Cerrar votación</b><span>Ganadora, día, hora y salida → <b>Cerrar plan</b>.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>¿No se dio?</b><span>Causa → <b>Marcar como caído</b>.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Cerrar no avisa al grupo.</b> El aviso es /confirmado.</p></div>
+      <div class="in shotw" style="--i:2"><img class="shot" src="deck-onboarding-monitor/07-decision.jpg" alt="Formulario «Registrar la decisión»: votos con − y +, «Va ganando», botones de fecha y hora, salida sugerida y «Cerrar el plan con esta decisión»." loading="lazy"></div>
+      <div class="wsc"><ol class="ws tight"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Copia «Ver votos»</b><span>Con − n + por opción, «Cualquiera», «Ninguna» y cuántos votaron.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>¿2 h y faltan votos?<em class="wa">En WhatsApp</em></b><span>Un solo /recordatorio, con conteo. Desaparece cuando votan todos.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Día y hora</b><span>Botones con las fechas del grupo; la salida se calcula sola.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Cerrar el plan</b><span>Sin día y hora no se puede.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>¿Ninguna convence?</b><span>«Pedir más opciones»: otra ronda, no un plan caído.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Mientras votan, nada de «¡Hay plan!».</b> Los mensajes de cierre se bloquean.</p></div>
     </div>
   </div>
 </section>
 
 <!-- 15 · Walkthrough 5 · Confirmar -->
-<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 5 · Confirmar" data-notes="Si un texto muestra algo entre corchetes, falta un dato: revisa que el plan esté cerrado y seleccionado. Si el grupo cambia la hora: Plan → «Corregir hora del encuentro» (no cambia las métricas). La /salida también se marca en Llegadas y tiempo → Mensajes del mago al grupo.">
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 5 · Confirmar" data-notes="Si un texto tiene algo entre corchetes, no se puede copiar: falta un dato. El plazo para confirmar responde a lo que pidió quien organiza en la prueba externa: más tiempo para decir si puede ir. Corregir la hora no cambia las métricas.">
   <div class="content">
-    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 5 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="ok">4 · Votos y cierre</span><span class="cur">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
-    <h2 class="in" style="--i:1">Confirma y avisa la salida.</h2>
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 5 de 7</p><div class="wtp"><span class="ok">1 · Entrar y esperar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="ok">4 · Votos y cierre</span><span class="cur">5 · Confirmar</span><span class="">6 · Día del plan</span><span class="">7 · Encuestas y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Confirma el plan y el plazo para decir si van.</h2>
     <div class="wt">
-      <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
-      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
-      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
-      <div class="cw-tabs"><span class="">Grupo</span><span class="">Plan</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="on">Mensajes</span></span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
-      <div class="cw-body"><div class="cc"><div class="row"><div class="fld"><label>Para</label><span class="inp sel">Todo el grupo (pegar en el grupo del plan)</span></div></div></div>
-<div class="cc"><h4>/confirmado <span class="mut" style="font-weight:500">Plan cerrado</span></h4>
-  <span class="inp ta hs" data-n="2" style="--n:2">¡Quedó! Ruta clara, ganas intactas:
-📍 Asado en el parque — Parque del barrio (Oeste)
-📌 Dirección: entrada principal del parque
-🕒 Encuentro: sáb 14/11 · 4:00 p. m. · 🚗 Salida sugerida: 3:15 p. m.
-💰 Presupuesto aprox.: $25.000 por persona
-Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
-  <div class="row"><span class="btn hs" data-n="3" style="--n:3">Copiar</span><span class="btn hn">✨ Ajustar con Gemini</span><span class="btn ok">✓ Enviado 18:42</span></div></div>
-<div class="cc"><h4>/salida <span class="mut" style="font-weight:500">Hora de salida (2 h antes)</span></h4><div class="row"><span class="btn hs" data-n="4" style="--n:4">Copiar</span></div></div></div>
-    </div></div>
-      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Mensajes → /confirmado</b><span>Sale de primero en la lista.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Revisa el texto</b><span>Sin <code>[corchetes]</code> vacíos.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Copiar, pegar y marcar<em class="wa">En WhatsApp</em></b><span><b>Marcar como enviado</b>.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>2 h antes: /salida<em class="wa">En WhatsApp</em></b><span>Copiar y pegar en el grupo.</span></div></li></ol><p class="wtip in" style="--i:9"><b>ME APUNTO o NO PUEDO</b> se registra en Llegadas y tiempo.</p></div>
+      <div class="in shotw" style="--i:2"><img class="shot" src="deck-onboarding-monitor/08-confirmado.jpg" alt="/confirmado en 3 mensajes: «¡Hay plan!» con lugar, cuándo con salida y precio, y cómo llegar con el plazo para marcar si van." loading="lazy"></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>/confirmado<em class="wa">En WhatsApp</em></b><span>3 mensajes: lugar, cuándo y cómo llegar. Igual a la opción votada.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Evento del grupo<em class="wa">En WhatsApp</em></b><span>Adjuntar → Evento: cada persona marca si va.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>El plazo</b><span>La víspera a las 6:00 p. m.; en menos de 24 h, 2 h antes; en menos de 4 h, «ahora».</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Registra quién se apunta</b><span>En Llegadas y tiempo. Antes del plazo no hay /hoy ni /salida.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Si el grupo cambia la hora:</b> Plan → «Corregir hora del encuentro».</p></div>
     </div>
   </div>
 </section>
 
 <!-- 16 · Walkthrough 6 · Día del plan -->
-<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 6 · Día del plan" data-notes="No se pide ubicación. Una marca por persona. Si alguien no responde después del plan, se deja como está; no se inventa.">
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 6 · Día del plan" data-notes="Una marca por persona. Si alguien no responde después del plan, se deja como está: no se inventa. Los relojes de la consola avisan /salida, el checkpoint y «¿ya en casa?»; en modo prueba no hay relojes.">
   <div class="content">
-    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 6 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="ok">4 · Votos y cierre</span><span class="ok">5 · Confirmar</span><span class="cur">6 · Día del plan</span><span class="">7 · Pulso y plan 2</span></div></div>
-    <h2 class="in" style="--i:1">El día del plan.</h2>
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 6 de 7</p><div class="wtp"><span class="ok">1 · Entrar y esperar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="ok">4 · Votos y cierre</span><span class="ok">5 · Confirmar</span><span class="cur">6 · Día del plan</span><span class="">7 · Encuestas y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">El día del plan, de la mañana a la llegada.</h2>
     <div class="wt">
-      <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
-      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
-      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="mg in"><span class="led"></span><p>En línea · 12 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div>
-      <div class="cw-tabs"><span class="">Grupo</span><span class="">Plan</span><span class="hs" data-n="1" style="--n:1;--n:1;padding:0"><span class="">Mensajes</span></span><span class="on">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
-      <div class="cw-body"><div class="cc"><h4>Estado de cada persona <span class="mut" style="font-weight:500">· Plan 1 · cerrado</span></h4>
-  <span class="mut">El menú <b>registra</b>; no le envía nada a nadie.</span>
-  <div class="mem"><b>Ana</b><span class="mut"><span class="stt ca">En casa</span></span><span class="inp sel" style="min-width:180px">Cambiar a…</span></div>
-  <div class="mem"><b>Luis</b><span class="mut"><span class="stt ll">Llegó</span></span><span class="inp sel" style="min-width:180px">Cambiar a…</span></div>
-  <div class="mem" style="position:relative"><b>Sofi</b><span class="mut"><span class="stt ap">Se apuntó</span></span><span class="inp sel hs" data-n="2" style="--n:2;min-width:180px">Cambiar a…</span>
-    <div class="menu" style="right:0;top:42px"><span>Se apuntó (actual)</span><span>No puede</span><span class="on">Llegó</span><span>En casa</span></div></div>
-  <div class="mem"><b>Caro</b><span class="mut"><span class="stt ap">Se apuntó</span></span><span class="inp sel" style="min-width:180px">Cambiar a…</span></div>
-  <div class="mem"><b>Pipe</b><span class="mut"><span class="stt">No puede</span></span><span class="inp sel" style="min-width:180px">Cambiar a…</span></div>
-</div>
-<div class="cc soft hs" data-n="3" style="--n:3;padding:10px 12px"><span style="font-size:15px">Todavía no registran llegada: <b>Caro</b>. Elige a la persona en «Para» y usa <b>/no_llega</b> → <b>Abrir chat con Caro</b>.</span></div></div>
-    </div></div>
-      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>/checkpoint al grupo<em class="wa">En WhatsApp</em></b><span>«¿Ya llegaron?»</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Registra cada «LLEGUÉ»</b><span>Cambiar a… → <b>Llegó</b>.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>¿Alguien no llega?<em class="wa">En WhatsApp</em></b><span>Para: esa persona → <code>/no_llega</code>.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Registra cada «ya en casa»</b><span>Cambiar a… → <b>En casa</b>.</span></div></li></ol><p class="wtip in" style="--i:9"><b>El menú registra; no le escribe a nadie.</b></p></div>
+      <div class="in shotw" style="--i:2"><img class="shot" src="deck-onboarding-monitor/09-dia.jpg" alt="Paso «Día del plan: llegadas» con los botones «Llegaron todos» y «Uno por uno», y la cola /hoy, /salida, /checkpoint." loading="lazy"></div>
+      <div class="wsc"><ol class="ws tight"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>/hoy<em class="wa">En WhatsApp</em></b><span>En la mañana, con el conteo de confirmados.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>/salida<em class="wa">En WhatsApp</em></b><span>2 h antes del encuentro (lluvia o trancón: antes).</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>/checkpoint<em class="wa">En WhatsApp</em></b><span>A la hora del encuentro: «¿Ya llegaron?».</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Llegaron todos</b><span>En un toque, o uno por uno. Se ve al instante.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>¿Alguien no llega?<em class="wa">En WhatsApp</em></b><span>/no_llega a esa persona, con cuidado.</span></div></li></ol><p class="wtip in" style="--i:9"><b>No se pide ubicación.</b> Lo que no se sabe, no se marca.</p></div>
     </div>
   </div>
 </section>
 
 <!-- 17 · Walkthrough 7 · Pulso y plan 2 -->
-<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 7 · Pulso y plan 2" data-notes="El pulso trae SEQ y SUS y dura unos 4 minutos; se abre en el mismo celular del registro. Sin pulso, el plan se queda sin su métrica principal. Después del plan 2 la consola muestra «Grupo completo». Quien organiza ve, además, el bloque de disposición a pagar (4 preguntas de precio y la opción de apartar un cupo). Hoy no se cobra nada.">
+<section class="slide s-noche" data-chap="Walkthrough" data-title="Walkthrough 7 · Encuestas y plan 2" data-notes="La encuesta de cierre trae SEQ y SUS: sin ella, el plan se queda sin su métrica principal. Quien organiza ve además 4 preguntas de precio; hoy no se cobra nada. La pregunta de continuidad aparece desde el plan 2. Tu encuesta como mago ya no se pierde: queda como paso del recorrido y la hoja sabe si la respondiste.">
   <div class="content">
-    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 7 de 7</p><div class="wtp"><span class="ok">1 · Entrar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="ok">4 · Votos y cierre</span><span class="ok">5 · Confirmar</span><span class="ok">6 · Día del plan</span><span class="cur">7 · Pulso y plan 2</span></div></div>
-    <h2 class="in" style="--i:1">Pulso, plan 2 y Mago off.</h2>
+    <div class="wth in" style="--i:0"><p class="eyebrow" style="margin:0">Walkthrough · etapa 7 de 7</p><div class="wtp"><span class="ok">1 · Entrar y esperar</span><span class="ok">2 · Grupo e /ingreso</span><span class="ok">3 · Opciones</span><span class="ok">4 · Votos y cierre</span><span class="ok">5 · Confirmar</span><span class="ok">6 · Día del plan</span><span class="cur">7 · Encuestas y plan 2</span></div></div>
+    <h2 class="in" style="--i:1">Encuesta de cierre, tu encuesta y el plan 2.</h2>
     <div class="wt">
-      <div class="in" style="--i:2"><div class="cw">
-      <div class="cw-bar"><i></i><i></i><i></i><code>sintonia.my/piloto/mago.html</code></div>
-      <div class="cw-hd">Consola del mago <em>E1 · E1.5</em><span class="r"><span class="btn gh">↻ Recargar</span><span class="btn gh">Salir</span></span></div>
-      <div class="cw-top"><div class="band"><span class="on">E1<small>WhatsApp + mago</small></span><span>E1.5<small>automatizado</small></span></div><div class="swc"><div><b>Modo prueba</b><small>Operando el piloto real</small></div><span class="k"></span><span class="v">NO</span></div><div class="hs" style="margin-left:auto;--n:5" data-n="5" style="--n:5"><div class="mg in"><span class="led"></span><p>En línea · 38 min<small>Katherine · Plan 1</small></p><span class="btn dg">■ Mago off</span></div></div></div>
-      <div class="cw-tabs"><span class="">Grupo</span><span class="on">Plan</span><span class="">Mensajes</span><span class="">Llegadas y tiempo</span><span class="aj">Ajustes ▾</span></div>
-      <div class="cw-body"><div class="cc"><h4>Plan 1 <span class="pl fix" style="margin:0">cerrado</span> <span class="mut" style="font-weight:500">· llegaron 4 de 5</span></h4>
-  <b style="font-size:17px" class="hs" data-n="1" style="--n:1">Enlaces personales al pulso</b>
-  <div class="mem"><b>Ana</b><span class="mut">llegó · en casa · pulso ✓ · usabilidad ✓</span><span class="btn gh">Copiar</span><span class="btn gh">Enviar por WhatsApp</span></div>
-  <div class="mem"><b>Luis</b><span class="mut">llegó · en casa</span><span class="btn gh">Copiar</span><span class="btn gh hs" data-n="2" style="--n:2">Enviar por WhatsApp</span></div>
-  <div class="mem"><b>Sofi</b><span class="mut">llegó · pulso ✓ · usabilidad pendiente</span><span class="btn gh hs" data-n="3" style="--n:3">Enviar complemento</span></div>
-  <div class="cc soft" style="padding:10px 12px"><span style="font-size:15px"><b>¿El plan ya pasó?</b> Cada grupo hace 2 planes: crea el plan 2 en <b>el mismo grupo de WhatsApp</b>.</span><span class="btn hs" data-n="4" style="--n:4;align-self:flex-start">+ Crear plan 2 para este grupo</span></div>
-</div></div><div class="toast">Mago off · 38 min sumados al plan</div>
-    </div></div>
-      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>Plan → Enlaces al pulso</b><span>Uno personal por persona.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Enviar por WhatsApp<em class="wa">En WhatsApp</em></b><span>Abre su chat con el texto listo.</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Revisa «pulso ✓»</b><span>¿Falta usabilidad? Enviar complemento.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>+ Crear plan 2</b><span>Mismo grupo. Vuelves a la etapa 3.</span></div></li><li class="in" data-n="5" style="--i:7"><i>5</i><div><b>■ Mago off</b><span>Tus minutos se suman solos al plan.</span></div></li></ol><p class="wtip in" style="--i:9"><b>Sin pulso no hay métrica.</b> A quien organiza el pulso le muestra, además, 4 preguntas de precio.</p></div>
+      <div class="in shotw" style="--i:2"><img class="shot" src="deck-onboarding-monitor/10-encuesta.jpg" alt="Encuesta de cierre: un botón «Enviar a …» por persona, con su enlace privado y cuántas faltan." loading="lazy"></div>
+      <div class="wsc"><ol class="ws"><li class="in" data-n="1" style="--i:3"><i>1</i><div><b>«Ya en casa»</b><span>Todos en casa en un toque. Plan de noche: al día siguiente a las 10:00.</span></div></li><li class="in" data-n="2" style="--i:4"><i>2</i><div><b>Encuesta de cierre<em class="wa">En WhatsApp</em></b><span>A cada persona por privado, con «Enviar a …».</span></div></li><li class="in" data-n="3" style="--i:5"><i>3</i><div><b>Tu encuesta como mago</b><span>2 min: SUS y carga de trabajo. Es un paso: el plan no queda completo sin ella.</span></div></li><li class="in" data-n="4" style="--i:6"><i>4</i><div><b>Plan 2 y ■ Mago off</b><span>En el mismo grupo de WhatsApp. Después del plan 2: «Grupo completo».</span></div></li></ol><p class="wtip in" style="--i:9"><b>Tu encuesta compara E1 con E1.5.</b> Respóndela el mismo día.</p></div>
     </div>
   </div>
 </section>
 
 <!-- 18 · Lo que escribe el grupo -->
-<section class="slide s-papel" data-chap="En el chat" data-title="Lo que escribe el grupo" data-notes="«voy tarde» o «no sé si pueda» no son ME APUNTO ni NO PUEDO. Se pregunta con calma o se deja sin marcar.">
+<section class="slide s-papel" data-chap="En el chat" data-title="Lo que escribe el grupo" data-notes="No se registra quién votó qué: solo los números de la encuesta. «Voy tarde» o «no sé si pueda» no son un «Voy» ni un «No voy»: se pregunta con calma o se deja sin marcar.">
   <div class="content">
-    <p class="eyebrow in" style="--i:0">Lo que escribe el grupo</p>
+    <p class="eyebrow in" style="--i:0">Lo que pasa en el chat</p>
     <h2 class="in" style="--i:1">Cada palabra tiene un registro.</h2>
-    <div class="words"><div class="wh"><span>Si escriben…</span><span>Tú registras…</span></div><div class="wr in" style="--i:2"><b>1, 2 o 3</b><span>El voto de esa persona (si cambia, se reemplaza)</span></div><div class="wr in" style="--i:3"><b>TODAS</b><span>Le sirve cualquiera</span></div><div class="wr in" style="--i:4"><b>NINGUNA</b><span>Veto: propones otra ronda de opciones</span></div><div class="wr in" style="--i:5"><b>ME APUNTO / NO PUEDO</b><span>Asistencia en «Llegadas y tiempo»</span></div><div class="wr in" style="--i:6"><b>LLEGUÉ · «ya en casa»</b><span>Llegada · en casa</span></div><div class="wr in" style="--i:7"><b>HUMANO</b><span>Envías /humano y te presentas con tu nombre</span></div><div class="wr in" style="--i:8"><b>SALIR</b><span>Avisas al equipo de inmediato</span></div></div>
+    <div class="words"><div class="wh"><span>Si pasa en el chat…</span><span>Tú registras…</span></div><div class="wr in" style="--i:2"><b>Votan en la encuesta</b><span>Los números de «Ver votos»: por opción, «Cualquiera», «Ninguna» y cuántos votaron</span></div><div class="wr in" style="--i:3"><b>Gana «Ninguna me sirve»</b><span>«Pedir más opciones»: otra ronda, sin plan caído</span></div><div class="wr in" style="--i:4"><b>«Voy» / «No voy» en el evento</b><span>Se apuntó / No puede, en «Llegadas y tiempo»</span></div><div class="wr in" style="--i:5"><b>«Ya llegué» · «ya en casa»</b><span>Llegó · En casa (se ve al instante)</span></div><div class="wr in" style="--i:6"><b>HUMANO</b><span>Envías /humano y te presentas con tu nombre</span></div><div class="wr in" style="--i:7"><b>SALIR</b><span>Avisas al equipo de inmediato</span></div></div>
     <p class="warn dark in" style="--i:9">Si un mensaje no encaja en la tabla, <b>no lo interpretes</b>: pregunta o escala.</p>
   </div>
 </section>
@@ -776,7 +681,8 @@ Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
           <li><b>Máximo un emoji</b>, y solo si suma.</li>
           <li><b>Al grupo, no a una persona</b>, salvo /no_llega y /humano.</li>
           <li><b>Nada inventado:</b> ni lugares, ni precios, ni horarios.</li>
-          <li><b>Tono de +1 de confianza:</b> cercano, sin presión. No es app de citas ni terapia.</li>
+          <li><b>Tono de +1 de confianza:</b> cercano, sin presión, español neutro. No es app de citas ni terapia.</li>
+          <li><b>«Ajustar con Gemini»:</b> escribe la indicación y revisa antes de copiar.</li>
         </ul>
       </div>
       <div class="examples">
@@ -793,7 +699,7 @@ Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
     <p class="eyebrow in" style="--i:0">Contingencias</p>
     <h2 class="in" style="--i:1">Si algo falla, anota y avisa.</h2>
     <table class="tb dark">
-      <tr><th>Situación</th><th>Qué haces</th><th>Qué queda registrado</th></tr><tr class="in" style="--i:2"><td><b>Alguien escribe SALIR</b></td><td>Avisas al equipo ya: «Revocar y purgar» en menos de 15 min y salida del grupo</td><td><code>Grupo desestimado</code></td></tr><tr class="in" style="--i:3"><td><b>Un lugar cerró o cambió de horario</b></td><td>Avisas al equipo. Si el plan ya cerró: «Marcar como caído»</td><td><code>Causa de la caída</code></td></tr><tr class="in" style="--i:4"><td><b>Lluvia, trancón o agenda tumban el plan</b></td><td>Cierras como caído, con su causa</td><td><code>trafico · lluvia · agenda · costo…</code></td></tr><tr class="in" style="--i:5"><td><b>Gemini no responde</b></td><td>«+ Opción manual» con lugares del inventario activo</td><td><code>falla_tecnica</code></td></tr><tr class="in" style="--i:6"><td><b>WhatsApp o la consola no funcionan</b></td><td>Avisas al equipo. No registras en otro lado</td><td><code>falla_tecnica</code></td></tr><tr class="in" style="--i:7"><td><b>Riesgo para la seguridad de alguien</b></td><td>/humano. Si es grave, llamas al 123</td><td><code>seguridad</code></td></tr>
+      <tr><th>Situación</th><th>Qué haces</th><th>Qué queda registrado</th></tr><tr class="in" style="--i:2"><td><b>Alguien escribe SALIR</b></td><td>Avisas al equipo ya: «Revocar y purgar» en menos de 15 min y salida del grupo</td><td><code>Grupo desestimado</code></td></tr><tr class="in" style="--i:3"><td><b>Un lugar cerró o cambió de horario</b></td><td>Avisas al equipo. Si el plan ya cerró: «Marcar como caído»</td><td><code>Causa de la caída</code></td></tr><tr class="in" style="--i:4"><td><b>Lluvia, trancón o agenda tumban el plan</b></td><td>Cierras como caído, con su causa</td><td><code>trafico · lluvia · agenda · costo…</code></td></tr><tr class="in" style="--i:5"><td><b>Gemini no responde</b></td><td>«+ Opción manual» con lugares del inventario activo</td><td><code>falla_tecnica</code></td></tr><tr class="in" style="--i:6"><td><b>No pudiste agregar a quien organiza</b></td><td>«Invitar a» ella (plan B), con el mismo texto</td><td><code>—</code></td></tr><tr class="in" style="--i:6"><td><b>WhatsApp o la consola no funcionan</b></td><td>Avisas al equipo. No registras en otro lado</td><td><code>falla_tecnica</code></td></tr><tr class="in" style="--i:7"><td><b>Riesgo para la seguridad de alguien</b></td><td>/humano. Si es grave, llamas al 123</td><td><code>seguridad</code></td></tr>
     </table>
   </div>
 </section>
@@ -803,7 +709,7 @@ Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
   <div class="content">
     <p class="eyebrow in" style="--i:0">Reglas</p>
     <h2 class="in" style="--i:1">Lo que nunca haces.</h2>
-    <div class="rules"><div class="rule in" style="--i:2"><b>Inventar</b><span>un plan. Solo opciones del inventario activo.</span></div><div class="rule in" style="--i:3"><b>Sacar</b><span>datos del chat. Nada de capturas, listas o copias en tu celular.</span></div><div class="rule in" style="--i:4"><b>Escribir</b><span>la clave en un chat, un correo o una nota.</span></div><div class="rule in" style="--i:5"><b>Tocar</b><span>«Empezar piloto real». Borra los registros del piloto.</span></div><div class="rule in" style="--i:6"><b>Insistir</b><span>más de una vez. Un solo recordatorio por plan.</span></div><div class="rule in" style="--i:7"><b>Presentar</b><span>Sintonía como app de citas o terapia.</span></div></div>
+    <div class="rules"><div class="rule in" style="--i:2"><b>Inventar</b><span>un plan. Solo opciones del inventario activo.</span></div><div class="rule in" style="--i:3"><b>Sacar</b><span>datos del chat. Nada de capturas, listas o copias en tu celular.</span></div><div class="rule in" style="--i:4"><b>Escribir</b><span>la clave en un chat, un correo o una nota.</span></div><div class="rule in" style="--i:5"><b>Tocar</b><span>«Empezar piloto real» (Ajustes). Lo corre el equipo, una sola vez.</span></div><div class="rule in" style="--i:6"><b>Insistir</b><span>más de una vez. Un solo recordatorio por plan.</span></div><div class="rule in" style="--i:7"><b>Presentar</b><span>Sintonía como app de citas o terapia.</span></div></div>
   </div>
 </section>
 
@@ -828,7 +734,7 @@ Respondan ME APUNTO si van o NO PUEDO si no alcanzan.</span>
   <div class="content">
     <p class="eyebrow in" style="--i:0">Antes de empezar</p>
     <h2 class="in" style="--i:1">Preguntas frecuentes.</h2>
-    <div class="faq"><div class="fq in" style="--i:2"><b>¿Y si nadie vota?</b><span>Un solo /recordatorio a las 2 h. Si no avanza, avisas al equipo.</span></div><div class="fq in" style="--i:3"><b>¿Y si votan por WhatsApp algo que no es 1, 2 o 3?</b><span>Preguntas con calma o escalas. No adivinas.</span></div><div class="fq in" style="--i:4"><b>¿Puedo cambiar un texto de la consola?</b><span>Solo para llenar un dato entre corchetes. El resto va igual en todos los grupos.</span></div><div class="fq in" style="--i:5"><b>¿Qué pasa si me equivoco al registrar?</b><span>Avisas al equipo; se corrige con nota. No borres nada.</span></div><div class="fq in" style="--i:6"><b>¿A quién escribo?</b><span>Escribes al grupo del proyecto, donde están Jose y Katherine.</span></div></div>
+    <div class="faq"><div class="fq in" style="--i:2"><b>¿Y si nadie vota?</b><span>Un solo /recordatorio a las 2 h. Si no avanza, avisas al equipo.</span></div><div class="fq in" style="--i:3"><b>¿Y si responden algo que no está en la encuesta?</b><span>Preguntas con calma o escalas. No adivinas.</span></div><div class="fq in" style="--i:4"><b>¿Puedo cambiar un texto de la consola?</b><span>Para llenar un dato entre [corchetes] o ajustar el tono con Gemini. Si escribes algo a mano, anótalo.</span></div><div class="fq in" style="--i:5"><b>¿Qué pasa si me equivoco al registrar?</b><span>Avisas al equipo; se corrige con nota. No borres nada.</span></div><div class="fq in" style="--i:6"><b>¿A quién escribo?</b><span>Escribes al grupo del proyecto, donde están Jose y Katherine.</span></div></div>
   </div>
 </section>
 
