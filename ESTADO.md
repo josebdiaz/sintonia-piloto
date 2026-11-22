@@ -99,7 +99,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | 2 | Cargar los stickers en el número Sintonía (el correo del monitor ya está en `NOTIFICAR_A`) | Prueba con Cali | José |
 | 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
 | 4 | Landing pública y QR para el material POP (prompt 8); impresos este fin de semana | Material POP | Equipo |
-| 5 | Guion de la prueba con un grupo de Cali (prompt 9) | Prueba con Cali | Equipo |
+| 5 | Guion de la prueba con Cali: **hecho** (`docs/guias/prueba-cali.md`). Faltan sus decisiones: confirmar el grupo y el modo (se recomienda piloto, con «Empezar piloto real» el jueves 26), qué encuesta de cierre se usa (prompt 6 antes del miércoles 25 o la actual) y fecha del plan a más tardar el 30/11 | Prueba con Cali | Equipo |
 | 6 | Publicar el aviso de privacidad v2 | Datos reales | Equipo |
 | 7 | Actualizar el onboarding del monitor a la consola 2.8 completa (hoy tiene las notas de 2.7.1 y 2.8.0 arriba de la guía 2.2.2) | Inducción | Equipo |
 | 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |

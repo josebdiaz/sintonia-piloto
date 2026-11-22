@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Guion de la prueba con Cali (prompt 9)
+- `docs/guias/prueba-cali.md`: decisiones previas, con modo piloto recomendado y «Empezar piloto real» el jueves; lista de verificación de 12 puntos; quién manda qué en el Paso 0; roles y plantilla de observación por momento con hora; Mago in / Mago off; qué se hace después; tabla de hallazgos para comparar con la prueba externa; criterios A1–A6 para retomar la automatización; riesgos en las 5 dimensiones.
+- Entra en el control de guías y en el menú del home.
+
 ### 2026-11-22 · Correcciones de la auditoría E2E (frontend 2.8.1 · backend 2.8.1)
 Plan en `docs/plan-correcciones-2.8.1.md`. Se corrigen los 4 graves y 5 de los medios y bajos.
 - **Plazo para confirmar (G1):** depende de cuánto falta para el plan, medido desde el cierre.

@@ -6,10 +6,11 @@ Vista en tarjetas (GitHub Pages): https://josebdiaz.github.io/sintonia-piloto/do
 
 Es una visual de control: no se conecta al piloto, a la consola ni a los paneles. Revisión del 17/11/2026 · piloto en frontend 2.7.1 y backend 2.7.3. Estado general e implicaciones: [`ESTADO.md`](../../ESTADO.md).
 
-## Vigente (9)
+## Vigente (10)
 
 | Guía | Ámbito | Versión | Siguiente paso | Archivo |
 |---|---|---|---|---|
+| **Guion de la prueba con un grupo de Cali** · Decisiones previas (modo piloto, encuesta, fecha), lista de verificación, quién manda qué, qué anotar por momento con hora, después, tabla de hallazgos comparada con la prueba externa y criterios para pasar a la automatización. | Operación del piloto | v1 · 22/11/2026 · consola y backend 2.8.1 | Confirmar el grupo y el modo; ensayo el miércoles 25; congelar el jueves 26; prueba el viernes 27. | [`docs/guias/prueba-cali.md`](prueba-cali.md) |
 | **Onboarding del monitor (mago de E1)** · Contexto, accesos, consola, paso a paso, registro, voz, contingencias y reglas. Fuente en Markdown para el motor de presentaciones. | Operación del piloto | v1.1 · consola 2.2.2 · 6/11/2026 · **desactualizada frente a la 2.7.0** | Actualizar a la consola 2.7.0 (mapa, cola de mensajes, conteo de votos, llegadas en un toque, menú «⋯», pulso del mago) antes del primer grupo real. | [`docs/guias/onboarding-monitor.md`](onboarding-monitor.md) · [deck](../deck-onboarding-monitor.html) |
 | **Plan de pruebas de usuario (one-sheet)** · Preguntas, pruebas, métricas, participantes, roles, calendario y pendientes en una página. | Operación del piloto | v1.1 · 6/11/2026 · calendario propuesto | Agregar como contexto el pulso del mago (SUS y NASA-TLX) y la medición por etapa; contarlo a Néstor. Publicar el aviso v2 y confirmar el plan de n8n. | [`docs/plan-pruebas-usuario.html`](../plan-pruebas-usuario.html) |
 | **Desplegar el backend en Apps Script** · Pegar el .gs, correr probarMontaje y publicar como Nueva versión sin cambiar la URL /exec. Propiedades del script que necesita. | Backend y publicación | Backend 2.7.2 · 15/11/2026 | Al día: 2.7.2 desplegado el 15/11 (con `pulso_mago`, `medicion_consola` y reinicio que conserva los minutos). | [`backend/README.md`](../../backend/README.md) |

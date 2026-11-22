@@ -115,6 +115,11 @@
           "nota": "empieza aquí"
         },
         {
+          "texto": "Guion de la prueba con Cali (27 nov)",
+          "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/guias/prueba-cali.md",
+          "nota": "22 nov"
+        },
+        {
           "texto": "Plan de correcciones 2.8.1 (auditoría E2E)",
           "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/plan-correcciones-2.8.1.md",
           "nota": "22 nov"
