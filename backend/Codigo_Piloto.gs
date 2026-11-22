@@ -1,7 +1,8 @@
 /**
- * Sintonía · Piloto v2.7.3 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.7.4 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.7.4 (22/11): Gemini se presenta como «el +1 de confianza» del parche.
  * Versión 2.7.3 (15/11, prueba de Juan José): «Ajustar con Gemini» pone primero la indicación del mago y pide español neutro, sin jerga caleña.
  * Versión 2.7.2 (15/11): «Empezar piloto real» ya no borra 'operacion' ni 'sesiones' (son el registro de horas del monitor; el panel solo
  *   cuenta los minutos de grupos en modo piloto). Las sesiones que se cerraron solas de planes ya borrados no vuelven a pedir minutos.
@@ -374,7 +375,7 @@ function proponerIA_(d) {
   var prefs = rows_('preferencias').filter(function (r) { return r.grupo_id === p.grupo_id; }).map(function (r) { return '- ' + r.resumen; }).join('\n') || '- (sin preferencias declaradas)';
   var lb = findOne_('linea_base_grupo', 'grupo_id', p.grupo_id), dispo = lb && lb.disponibilidad ? String(lb.disponibilidad) : 'sin dato';   // v2.4.0
   var prompt =
-    'Eres Sintonía, el "quinto amigo" que coordina planes de grupos que ya existen en Cali, Colombia. Tu única tarea es proponer planes.\n' +
+    'Eres Sintonía, «el +1 de confianza» del parche, que coordina planes de grupos que ya existen en Cali, Colombia. Tu única tarea es proponer planes.\n' +
     'Arma EXACTAMENTE 3 opciones USANDO SOLO lugares del INVENTARIO (por id). Prohibido inventar lugares, eventos, precios u horarios.\n' +
     'Las 3 opciones deben ser distintas entre sí y no repetir lugares: (A) "exacta": la que cumple todo lo que pidió el grupo; ' +
     '(B) "intermedia": cumple lo principal y cambia una cosa; (C) "diferente": saca al grupo de la rutina sin romper sus restricciones de presupuesto, zona ni horario.\n' +
@@ -566,7 +567,7 @@ function redactarIA_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = d.plan_id ? findOne_('planes', 'plan_id', d.plan_id) : null;
   var prompt =
-    'Eres Sintonía, el "quinto amigo" de un grupo de amigos. Redacta UN mensaje de WhatsApp (máx. 60 palabras) para el paso: ' + str_(d.paso, 40) + '.\n' +
+    'Eres Sintonía, «el +1 de confianza» de un grupo de amigos. Redacta UN mensaje de WhatsApp (máx. 60 palabras) para el paso: ' + str_(d.paso, 40) + '.\n' +
     (d.indicacion ? 'LO MÁS IMPORTANTE · indicación del equipo, aplícala tal cual si no contradice las reglas: ' + str_(d.indicacion, 200) + '\n' : '') +   // v2.4.0 · v2.7.3: la indicación manda
     'Tono: ' + str_(d.tono || 'plan tranqui', 40) + '. Español neutro de Colombia, cercano, sin culpa ni presión, máximo un emoji. ' +
     'No uses jerga regional ni caleña (nada de «parce», «mor», «ve», «oís», «pues») salvo que la indicación lo pida.\n' +

@@ -29,7 +29,7 @@ Esta biblioteca contiene **16 prompts maestros altamente calibrados** para gener
 ---
 
 ### Los 4 Arquetipos de Pareidolia de Radio
-1. **Avatar A: "El Quinto Amigo" (Mediador / Empático · Baquelita 1940s):** Chasis curvo de resina miel/ámbar, dos perillas circulares amables como ojos expresivos y tres ranuras horizontales de altavoz como una sonrisa serena.
+1. **Avatar A: "El +1 de confianza" (Mediador / Empático · Baquelita 1940s):** Chasis curvo de resina miel/ámbar, dos perillas circulares amables como ojos expresivos y tres ranuras horizontales de altavoz como una sonrisa serena.
 2. **Avatar B: "El Mago Logístico" (Racional / Preciso · Braun 1960s / Dieter Rams):** Carcasa geométrica en verde pino mate, un dial circular grande asimétrico como monóculo observador y rejilla de micro-puntos troquelados.
 3. **Avatar C: "El Resonador / Conciliador" (Armonizador · Hi-Fi 1970s):** Gabinete de aluminio anodizado grafito con laterales de madera noble y dos vúmetros VU iluminados en ámbar con agujas analógicas como ojos que buscan el equilibrio armónico (*least misery*).
 4. **Avatar D: "El Convocador / La Antena" (Dinámico / Enérgico · Transistor 1950s):** Cuerpo liviano marfil con manija, ojos vivaces de perilla cromada y una antena telescópica de la que brotan suaves ondas concéntricas de pulso.
@@ -50,11 +50,11 @@ Inspirado en la animación japonesa de robots y compañeros mecánicos retro (es
 └────────────────────────────────────────────────────────┘
 ```
 
-#### Prompt 1.1 · Avatar A: "El Quinto Amigo" (Cell Shaded)
+#### Prompt 1.1 · Avatar A: "El +1 de confianza" (Cell Shaded)
 > **Prompt en inglés (para Midjourney / Imagen / Gemini):**  
 > `Vibrant cel-shaded anime character portrait of a friendly anthropomorphic vintage radio avatar, inspired by 1940s curved bakelite radios. The character has a rounded honey-amber polished resin chassis (#D4A373) with bold clean black ink line-art. Two large circular ribbed tuning knobs form warm expressive cartoon eyes with geometric white highlights, and three curved speaker grille slots form a gentle welcoming smile. Pine green (#2D6A4F) subtle trim details. Clean flat 2-tone cel shading, no gradients, retro Japanese animation aesthetic, charming mecha-chibi personality. Centered square composition, minimalist solid warm ivory background (#FDFBF7), high contrast, masterwork 2D illustration. --ar 1:1 --no text, letters, watermarks, human skin`
 >
-> *Explicación en español:* Retrato cel-shaded estilo anime del avatar 'El Quinto Amigo', con chasis redondeado de baquelita color miel, contornos de tinta negra nítidos, perillas como ojos caricaturescos cálidos y sonrisa en ranuras de altavoz.
+> *Explicación en español:* Retrato cel-shaded estilo anime del avatar 'El +1 de confianza', con chasis redondeado de baquelita color miel, contornos de tinta negra nítidos, perillas como ojos caricaturescos cálidos y sonrisa en ranuras de altavoz.
 
 #### Prompt 1.2 · Avatar B: "El Mago Logístico" (Cell Shaded)
 > **Prompt en inglés:**  
@@ -91,11 +91,11 @@ Modelado y renderizado 3D de personajes en miniatura elaborados con **fieltro de
 └────────────────────────────────────────────────────────┘
 ```
 
-#### Prompt 2.1 · Avatar A: "El Quinto Amigo" (Fluffy 3D)
+#### Prompt 2.1 · Avatar A: "El +1 de confianza" (Fluffy 3D)
 > **Prompt en inglés:**  
 > `Ultra-detailed 3D macro photography of a cute fluffy plush toy avatar sculpted as a 1940s vintage radio. The character's body is made of dense, fuzzy honey-amber felt and soft combed wool fiber (#D4A373) with visible handcrafted stitching. Two glossy round vintage bakelite buttons serve as warm, curious eyes, and three curved stitched grooves in dark pine green yarn create an affectionate smiling mouth. Soft pine-green wool handle on top. Warm studio lighting with delicate rim light highlighting the soft fuzz, gentle tilt-shift shallow depth of field, tactile artisanal needle-felted sculpture, charming cozy mood. Centered 1:1 square portrait on a seamless soft linen background. --ar 1:1 --no text, letters, smooth plastic, human face`
 >
-> *Explicación en español:* Fotografía macro 3D de 'El Quinto Amigo' como un tierno muñeco de fieltro de lana peinada color miel, con costuras visibles, ojos de botón de baquelita y sonrisa bordada en hilo verde.
+> *Explicación en español:* Fotografía macro 3D de 'El +1 de confianza' como un tierno muñeco de fieltro de lana peinada color miel, con costuras visibles, ojos de botón de baquelita y sonrisa bordada en hilo verde.
 
 #### Prompt 2.2 · Avatar B: "El Mago Logístico" (Fluffy 3D)
 > **Prompt en inglés:**  
@@ -132,11 +132,11 @@ Inspirado en la cultura gráfica de **Ed Roth (Rat Fink), Robert Crumb, Gary Bas
 └────────────────────────────────────────────────────────┘
 ```
 
-#### Prompt 3.1 · Avatar A: "El Quinto Amigo" (Lowbrow 2D)
+#### Prompt 3.1 · Avatar A: "El +1 de confianza" (Lowbrow 2D)
 > **Prompt en inglés:**  
 > `Weird and lovable Lowbrow pop-surrealism 2D character portrait of an anthropomorphic 1940s bakelite radio, inspired by Gary Baseman and vintage underground comix. The radio has a warped dripping amber-caramel resin chassis (#D4A373) with eccentric organic black dip-pen linework. Two mismatched wobbly tuning knobs serve as wide mischievous cartoon eyes with squiggly pupils, and a grinning toothy speaker mouth behind cracked vintage speaker cloth. Retro halftone dot textures, muted olive and deep pine green color washes (#1B4332), weathered aged pulp paper texture with slight coffee-stain patina. Quirky irreverent urban personality, centered 1:1 square composition, underground street-art character design. --ar 1:1 --no text, letters, clean vectors, photographic skin`
 >
-> *Explicación en español:* Retrato en estilo Pop Surrealismo / Lowbrow del 'Quinto Amigo', con chasis curvo de baquelita caramelo, tinta china orgánica, perillas como ojos pícaros y sonrisa ancha con tramas de semitono retro.
+> *Explicación en español:* Retrato en estilo Pop Surrealismo / Lowbrow del '+1 de confianza', con chasis curvo de baquelita caramelo, tinta china orgánica, perillas como ojos pícaros y sonrisa ancha con tramas de semitono retro.
 
 #### Prompt 3.2 · Avatar B: "El Mago Logístico" (Lowbrow 2D)
 > **Prompt en inglés:**  
@@ -176,11 +176,11 @@ Tras analizar la personalidad de marca de Sintonía (*"Cerca, corto y posible"*,
 └────────────────────────────────────────────────────────┘
 ```
 
-#### Prompt 5.1 · Avatar A: "El Quinto Amigo" (Designer Art Toy 3D)
+#### Prompt 5.1 · Avatar A: "El +1 de confianza" (Designer Art Toy 3D)
 > **Prompt en inglés:**  
 > `Studio product photograph of a limited-edition designer vinyl art toy character, sculpted as an anthropomorphic 1940s bakelite radio. The collectible figurine features a seamless, tactile semi-matte honey-amber cast resin body (#D4A373) with smooth rounded contours. Two sculpted circular rotary knobs with fine knurled edges act as stylized, soulfully friendly eyes with subtle recessed gloss. Three elegantly debossed curved speaker slots form a calm, welcoming mouth. Minimalist deep pine green (#2D6A4F) accent base. High-end collector toy aesthetic like Superplastic and Coarse, physical weight and tangible volume, crisp raytraced ambient occlusion, soft continuous studio lighting with subtle warm reflections. Flawlessly centered 1:1 square composition on a warm bone-cream pedestal (#FDFBF7). --ar 1:1 --no text, letters, watermarks, human face, cheap plastic shine`
 >
-> *Explicación en español:* Fotografía de estudio de 'El Quinto Amigo' como una figura de colección de arte en vinilo mate y baquelita color miel, con masa física, sombras limpias y mirada afable de perillas estriadas.
+> *Explicación en español:* Fotografía de estudio de 'El +1 de confianza' como una figura de colección de arte en vinilo mate y baquelita color miel, con masa física, sombras limpias y mirada afable de perillas estriadas.
 
 #### Prompt 5.2 · Avatar B: "El Mago Logístico" (Designer Art Toy 3D)
 > **Prompt en inglés:**  

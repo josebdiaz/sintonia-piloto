@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Voz: «Tu +1 de confianza» (frontend 2.7.3 · backend 2.7.4)
+- Sintonía se presenta como **«tu +1 de confianza»** cuando le habla a una persona y como **«su +1 de confianza»** cuando le habla al grupo. Reemplaza «el quinto amigo» y la fórmula «amigo n + 1» de la 2.7.2.
+- Cambia en la bienvenida a quien organiza, el primer mensaje a cada persona y /ingreso (constantes `MARCA_TU` y `MARCA_SU`), en los prompts de Gemini (backend 2.7.4: proponer y redactar), en el texto de E1.5 (`n8n/PROMPT-n8n-builder.md`), en E3 y en la demo del DS. También en el README, la guía y el deck del monitor, el business case y los prompts de avatares.
+- Los decks históricos (pivote, status y método P7, pitch técnico, inducción v1) conservan la frase de su momento.
+
 ### 2026-11-22 · Repo público con controles y «el amigo n + 1» (frontend 2.7.2)
 - **Seguridad:** el repositorio sigue público, como excepción documentada en `docs/seguridad-repo.md`: en el plan Free, Pages no publica desde repos privados, y aun con Pro el sitio seguiría siendo público. Hay una revisión automática nueva de claves, correos y teléfonos (`tools/revisar-datos.py`, acción «Seguridad de datos») y un `SECURITY.md`; el WhatsApp personal de un integrante sale de la página archivada del P4 (sigue en el historial de git).
 - **Voz:** «el quinto amigo» no tenía un sustento fijo. Ahora Sintonía es el amigo n + 1 del parche según cuántos son (3 → «el cuarto amigo»), y en pareja o sin saber el tamaño, «el amigo extra». Cambia en la bienvenida al grupo, en el primer mensaje a cada persona y en la invitación a inscribirse; el texto de E1.5 en `n8n/PROMPT-n8n-builder.md` también.
@@ -184,7 +189,9 @@ Ensayo interno del 13/11 en modo prueba (Juan José como mago). Todavía no hay 
 
 Desde la 2.3.0, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
-### [2.7.2] · 2026-11-22 · «El amigo n + 1» en los mensajes · **en vivo**
+### [2.7.3] · 2026-11-22 · Voz «Tu +1 de confianza» · **en vivo**
+Tag `piloto/v2.7.3` por crear.
+### [2.7.2] · 2026-11-22 · «El amigo n + 1» en los mensajes
 Tag `piloto/v2.7.2` por crear.
 ### [2.7.1] · 2026-11-15 · Prueba de Juan José
 Grupo con quien organiza, `wa.me` sin emojis, Gemini con indicación, llegadas al instante, «Encuesta de cierre», escala de Desempeño. Tag `piloto/v2.7.1` por crear.
@@ -315,7 +322,9 @@ Marcadores `[n]` bloqueados, menú «⋯» por persona, cola de mensajes, mapa e
 
 Desde la 2.3.3, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
-### [2.7.3] · 2026-11-15 · Gemini pone primero la indicación del mago y usa español neutro · **desplegado el 15/11**
+### [2.7.4] · 2026-11-22 · Gemini se presenta como «el +1 de confianza» · **por desplegar**
+Tag `backend/v2.7.4` por crear.
+### [2.7.3] · 2026-11-15 · Gemini pone primero la indicación del mago y usa español neutro · desplegado el 15/11
 Tag `backend/v2.7.3` por crear. QA: 85 de 85.
 ### [2.7.2] · 2026-11-15 · «Empezar piloto real» conserva `operacion` y `sesiones` · desplegado el 15/11
 Tag `backend/v2.7.2` (creado el 15/11). QA: 85 de 85. Incluye 2.7.0 y 2.7.1.

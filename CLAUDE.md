@@ -9,4 +9,4 @@
   4. `python3 tools/home.py`.
 - **Backend:** se despliega a mano (pegar en Apps Script, `probarMontaje()` si hay hojas nuevas, «Nueva versión»). QA: `node backend/qa/qa_backend.js`.
 - **Privacidad:** el repo es público (excepción documentada en `docs/seguridad-repo.md`). Nada de claves (ADMIN_KEY, MOTOR_KEY, tokens), correos personales, notas internas ni datos de participantes. Antes de commitear: `python3 tools/revisar-datos.py --staged` en ✓; la acción «Seguridad de datos» lo revisa en cada push.
-- **Voz de Sintonía** en textos para participantes: una idea por mensaje, conteos y nunca nombres, máximo un emoji, nada inventado. Sintonía es «el amigo n + 1» del parche (3 personas → «el cuarto amigo»); en pareja o si no se sabe el tamaño, «el amigo extra» (función `amigoN` de la consola).
+- **Voz de Sintonía** en textos para participantes: una idea por mensaje, conteos y nunca nombres, máximo un emoji, nada inventado. Sintonía es «tu +1 de confianza» (a una persona) o «su +1 de confianza» (al grupo); constantes `MARCA_TU` y `MARCA_SU` de la consola.

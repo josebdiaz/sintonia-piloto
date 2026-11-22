@@ -102,7 +102,7 @@
   // Mismo inventario y contenido que las pantallas de Figma
   const S = {
     'A · Activación (organiza)': [
-      ['A1', 'Bienvenida y tipo de grupo', 'tipo_grupo', { head: S1(), items: [P.ai('¡Hola! Soy Sintonía (IA), el quinto amigo de tu parche. Te ayudo a armar un plan cerca, corto y posible. Una persona del equipo revisa todo.', '9:00'), P.ai('Para empezar, ¿con quién quieres salir?', '9:00')], comp: P.comp([['Amigos'], ['Familia'], ['Compañeros']], W) }],
+      ['A1', 'Bienvenida y tipo de grupo', 'tipo_grupo', { head: S1(), items: [P.ai('¡Hola! Soy Sintonía (IA), tu +1 de confianza. Te ayudo a armar un plan cerca, corto y posible. Una persona del equipo revisa todo.', '9:00'), P.ai('Para empezar, ¿con quién quieres salir?', '9:00')], comp: P.comp([['Amigos'], ['Familia'], ['Compañeros']], W) }],
       ['A2', 'Tamaño del grupo', 'tamano_grupo', { head: S1(), items: [P.ai('Para empezar, ¿con quién quieres salir?', '9:00'), P.me('Amigos', '9:01'), P.ai('¡Buenísimo! ¿Cuántos serían, contándote a ti?', '9:01')], comp: P.comp([['2 a 3'], ['4 a 5'], ['6 o más']], W) }],
       ['A3', 'Historia y quién organiza', 'planes_realizados_mes · planes_fallidos_mes · quien_organiza', { head: S1(), items: [P.me('Somos 4', '9:01'), P.ai('En el último mes, ¿cuántos planes armaron y cuántos se cayeron?', '9:02'), P.me('Hicimos 1 y se cayeron 2', '9:02'), P.ai('¿Y quién suele organizar?', '9:02')], comp: P.comp([['Yo, siempre'], ['Nos turnamos'], ['Nadie: se cae solo']], W) }],
       ['A4', 'Fatiga previa', 'fatiga_previa_org', { head: S1(), items: [P.me('Yo, siempre', '9:03'), P.ai('Organizar a veces cansa. ¿Con cuánta energía llegas a armar este plan?', '9:03'), P.att(P.energy('¿Con cuánta energía llegas?', 2))], comp: P.comp([], W) }],

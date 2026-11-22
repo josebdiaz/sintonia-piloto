@@ -67,7 +67,7 @@ Visual: dos cifras gigantes lado a lado (96 en naranja, 89 en negro). La fuente,
 
 ---
 
-## El quinto amigo del parche, dentro del chat
+## Tu +1 de confianza, dentro del chat del parche
 
 Etiqueta: La idea
 
@@ -77,7 +77,7 @@ Etiqueta: La idea
 
 Visual: cuatro tarjetas de color, una por verbo. Fondo noche.
 
-> Notas: En este piloto, el «quinto amigo» eres tú. La gente sabe que una persona del equipo revisa todo; lo dice el primer mensaje del grupo.
+> Notas: En este piloto, el «+1 de confianza» eres tú. La gente sabe que una persona del equipo revisa todo; lo dice el primer mensaje del grupo.
 
 ---
 
@@ -273,7 +273,7 @@ La consola trae casi todos los textos. Cuando tengas que escribir algo propio:
 - **Máximo un emoji**, y solo si suma.
 - **Al grupo, no a una persona**, salvo /no_llega y /humano.
 - **Nada inventado:** ni lugares, ni precios, ni horarios.
-- **Tono de quinto amigo:** cercano, sin presión. No es app de citas ni terapia.
+- **Tono de +1 de confianza:** cercano, sin presión. No es app de citas ni terapia.
 
 Visual: lista con viñetas cortas; a la derecha, un ejemplo de mensaje «Así sí» y otro «Así no».
 

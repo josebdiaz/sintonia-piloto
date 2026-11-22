@@ -25,7 +25,7 @@
 | Activación · cierre | El **orden de los mensajes se rompió**: «Ya tenemos plan» salió antes de terminar la votación, después llegó «Van 2 de 3 votos» y al final «¡Hay plan!». | Sesión | Emergente |
 | Interacción · asistencia | Quien organiza pidió **más tiempo para decir si puede ir** antes de que se cierre. El test pasó de «¡Hay plan!» a las preguntas de cierre en minutos. | Respuesta de quien organiza | Emergente |
 | Continuidad · cierre | Las preguntas de feedback se escribieron **a mano** en el chat y **sin disposición a pagar**, que Katherine considera indispensable para la sustentación. | Sesión y notas P8c | Robusto (falta en el instrumento) |
-| Voz | El monitor cambió «quinto amigo» por «cuarto amigo» (eran 3). **Resuelto el 22/11:** «el amigo n + 1» (consola 2.7.2). | Sesión | Emergente |
+| Voz | El monitor cambió «quinto amigo» por «cuarto amigo» (eran 3). **Resuelto el 22/11:** «tu +1 de confianza» (consola 2.7.3). | Sesión | Emergente |
 | Stickers | El monitor tuvo que mandarse el sticker a su chat personal para usarlo: **el paquete no está cargado** en el número Sintonía. | Hilo | Robusto |
 | Lo que funcionó | El recorrido de la consola se entiende; las opciones y la encuesta se enviaron; el grupo votó y se cerró un plan. | Audio «Feedback monitor 2»: «en general está súper bien» | Emergente |
 
@@ -147,8 +147,8 @@ Haz esto en piloto/mago.html (TPL, opcionTxt, pasosDe):
    - /recordatorio se oculta cuando ya votaron todos.
 3. Asistencia: /confirmado y /evento dicen hasta cuándo marcar si van (por ejemplo, «hasta mañana a las 6:00 p. m.»).
    La consola no ofrece el día del plan ni la encuesta de cierre antes de ese plazo, salvo en modo prueba.
-4. Marca (resuelto el 22/11, consola 2.7.2): Sintonía es «el amigo n + 1» según el tamaño del parche, o «el amigo extra»
-   en pareja o sin saber el tamaño (función amigoN). Úsala en cualquier texto nuevo.
+4. Marca (resuelta el 22/11, consola 2.7.3): Sintonía es «tu +1 de confianza» (a una persona) o «su +1 de confianza»
+   (al grupo); constantes MARCA_TU y MARCA_SU. Úsala en cualquier texto nuevo.
 Criterio: el chat de una prueba completa se lee en orden, sin mensajes de más.
 ```
 

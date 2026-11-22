@@ -82,7 +82,7 @@ const EXPLICA = 'WhatsApp: te aviso del plan también por fuera de la app. Nombr
 
 const PASOS = {
   /* Entrada */
-  A0: { voz: 'quinto', say: c => [`¡Hola${c.yo.sugerido ? ', ' + c.yo.sugerido : ''}! Soy Sintonía (IA), el quinto amigo de tu parche. Te ayudo a armar un plan cerca, corto y posible. Una persona del equipo revisa todo.`, '¿Vas a organizar un plan o te invitaron a uno?'],
+  A0: { voz: 'quinto', say: c => [`¡Hola${c.yo.sugerido ? ', ' + c.yo.sugerido : ''}! Soy Sintonía (IA), tu +1 de confianza. Te ayudo a armar un plan cerca, corto y posible. Una persona del equipo revisa todo.`, '¿Vas a organizar un plan o te invitaron a uno?'],
     input: { type: 'chips', options: ['Quiero organizar', 'Tengo un código'] }, next: (c, v) => v === 'Tengo un código' ? 'B0' : 'A1' },
   B0: { voz: 'quinto', say: ['Escríbeme el código del parche (son 6 letras o números).'], input: { type: 'text' },
     save: async (c, v) => { const code = String(v).toUpperCase().replace(/[^A-Z0-9]/g, ''); const p = await Store.get('parches/' + code).catch(() => null); if (!p) { await S1.decir(['No encuentro ese código. Revísalo y escríbelo otra vez.']); return 'stay'; } c.ans.pid = code; S1.st.pid = code; S1.st.parche = { nombre: p.nombre, org: p.orgNombre }; },

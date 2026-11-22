@@ -7,8 +7,8 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Componente | Versión | Estado |
 |---|---|---|
-| Frontend (consola, panel, páginas de participante) | **2.7.2** | Publicado en https://sintonia.my (2.7.2 el 22/11: «el amigo n + 1» en los mensajes) |
-| Backend (Apps Script) | **2.7.3** | Desplegado el 15/11 (incluye 2.7.0 a 2.7.2). Correos de inscripción verificados |
+| Frontend (consola, panel, páginas de participante) | **2.7.3** | Publicado en https://sintonia.my el 22/11 (voz «Tu +1 de confianza») |
+| Backend (Apps Script) | **2.7.3 en vivo** · 2.7.4 entregada | **2.7.4** (Gemini se presenta como «el +1 de confianza») **por desplegar**; no trae hojas nuevas |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
 | Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main` |
@@ -92,7 +92,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
 | 1 | Ola A de mejoras antes de la próxima prueba (prompts 1 a 5): invitar al parche sin pérdida, crear el grupo sin chocar con los contactos, fecha concreta, mensajes en orden y avisos al monitor | Prueba con Cali (viernes) | José |
-| 2 | Agregar el correo del monitor a la propiedad `NOTIFICAR_A` del script y cargar los stickers en el número Sintonía | Prueba con Cali | José |
+| 2 | Desplegar el backend 2.7.4 (voz de Gemini). Agregar el correo del monitor a la propiedad `NOTIFICAR_A` del script y cargar los stickers en el número Sintonía | Prueba con Cali | José |
 | 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
 | 4 | Landing pública y QR para el material POP (prompt 8); impresos este fin de semana | Material POP | Equipo |
 | 5 | Guion de la prueba con un grupo de Cali (prompt 9) | Prueba con Cali | Equipo |
@@ -103,7 +103,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | 10 | Control de compromisos de los periodos 8 y 9: archivo interno consolidado al cierre; escribir a soporte por las fechas | Seguimiento de la maestría | José |
 | 11 | n8n y licencias: **aplazados** (19/11) hasta tener más pruebas manuales. Cuando se retomen: N1–N11, B1, B5, I5 y C14 | E1.5 | Equipo |
 | 12 | Activar en GitHub *secret scanning*, *push protection* y la protección de `main` (`docs/seguridad-repo.md` §3) | Seguridad del repo | José |
-| 13 | Crear los tags `piloto/v2.7.1`, `piloto/v2.7.2` y `backend/v2.7.3` | Historial | José |
+| 13 | Crear los tags `piloto/v2.7.1` a `piloto/v2.7.3` y `backend/v2.7.3` y `backend/v2.7.4` | Historial | José |
 
 ## 4.2 Prueba externa (semana del 15/11, n = 1, modo prueba)
 
