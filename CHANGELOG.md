@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Documentación al día con la 2.8.1
+- **Guía del monitor v1.2** (`docs/guias/onboarding-monitor.md`): reescrita para la consola 2.8.1. Diapositivas nuevas: «Paso 0 · Quién manda qué» y «Lo que toca ahora, y el resto en cuatro pestañas». También se actualizaron el paso a paso de los planes (grupo en 3 pasos, fechas, «¿Qué día?», plazo, encuesta del mago), lo que se registra del chat, la voz, las contingencias y las preguntas frecuentes. Se quitaron las notas de actualización de la 2.7.1 y la 2.8.0. Falta regenerar el deck.
+- **Control de guías:** revisión del 22/11 con frontend y backend 2.8.1; el guion de la prueba con Cali, vigente.
+- **Prompt maestro v3.2** en el Proyecto (`claude/prompt-maestro-v3.2.md`), para pegarlo en las instrucciones. Incluye versiones, evidencia nueva, calendario real, decisiones del 19/11 y del 22/11, y datos sensibles.
+
 ### 2026-11-22 · Guion de la prueba con Cali (prompt 9)
 - `docs/guias/prueba-cali.md`: decisiones previas, con modo piloto recomendado y «Empezar piloto real» el jueves; lista de verificación de 12 puntos; quién manda qué en el Paso 0; roles y plantilla de observación por momento con hora; Mago in / Mago off; qué se hace después; tabla de hallazgos para comparar con la prueba externa; criterios A1–A6 para retomar la automatización; riesgos en las 5 dimensiones.
 - Entra en el control de guías y en el menú del home.
