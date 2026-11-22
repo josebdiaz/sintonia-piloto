@@ -8,7 +8,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 | Componente | Versión | Estado |
 |---|---|---|
 | Frontend (consola, panel, páginas de participante) | **2.7.3** | Publicado en https://sintonia.my el 22/11 (voz «Tu +1 de confianza») |
-| Backend (Apps Script) | **2.7.3 en vivo** · 2.7.4 entregada | **2.7.4** (Gemini se presenta como «el +1 de confianza») **por desplegar**; no trae hojas nuevas |
+| Backend (Apps Script) | **2.7.4** | Desplegado el 22/11 (Gemini se presenta como «el +1 de confianza») |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
 | Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main` |
@@ -92,7 +92,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
 | 1 | Ola A de mejoras antes de la próxima prueba (prompts 1 a 5): invitar al parche sin pérdida, crear el grupo sin chocar con los contactos, fecha concreta, mensajes en orden y avisos al monitor | Prueba con Cali (viernes) | José |
-| 2 | Desplegar el backend 2.7.4 (voz de Gemini). Agregar el correo del monitor a la propiedad `NOTIFICAR_A` del script y cargar los stickers en el número Sintonía | Prueba con Cali | José |
+| 2 | Agregar el correo del monitor a la propiedad `NOTIFICAR_A` del script y cargar los stickers en el número Sintonía | Prueba con Cali | José |
 | 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
 | 4 | Landing pública y QR para el material POP (prompt 8); impresos este fin de semana | Material POP | Equipo |
 | 5 | Guion de la prueba con un grupo de Cali (prompt 9) | Prueba con Cali | Equipo |
