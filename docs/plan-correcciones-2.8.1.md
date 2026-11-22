@@ -2,6 +2,7 @@
 
 **Fecha:** 22 de noviembre de 2026.
 **Origen:** auditoría de punta a punta de la consola y el backend 2.8.0. Fue una prueba simulada en modo prueba: se usó el código real sobre una hoja simulada, sin WhatsApp real ni personas reales (n = 0). Resultado: 48 revisiones bien, 4 hallazgos graves, 8 medios y 2 bajos.
+**Estado (22/11):** G1–G4, M5–M7, M11 y B1 hechos en la consola y el backend 2.8.1 (ver CHANGELOG). Falta desplegar el backend y seguir el calendario desde el martes. Decisión del 22/11: «no toma alcohol» es una restricción del plan, no un dato de salud.
 **Meta:** que la prueba con el grupo de Cali del viernes 27 corra sobre una versión sin los hallazgos graves.
 **Regla vigente:** durante la prueba con Cali, la consola no cambia. Todo lo de este plan entra antes del jueves 26 o queda para después.
 

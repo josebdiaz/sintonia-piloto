@@ -7,8 +7,8 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Componente | Versión | Estado |
 |---|---|---|
-| Frontend (consola, panel, páginas de participante) | **2.8.0** | Publicado en https://sintonia.my el 22/11 (ola A de la prueba externa: invitar, crear el grupo, fechas, orden, avisos) |
-| Backend (Apps Script) | **2.8.0** | Desplegado el 22/11 (aviso por cada aceptación, hora de aceptación y fechas para Gemini); NOTIFICAR_A con el correo del monitor |
+| Frontend (consola, panel, páginas de participante) | **2.8.1** | Publicado en https://sintonia.my el 22/11 (correcciones de la auditoría E2E sobre la ola A) |
+| Backend (Apps Script) | **2.8.0** en vivo · 2.8.1 entregada | **Desplegar la 2.8.1**: datos sensibles fuera de la hoja y marca de la encuesta del mago. La consola 2.8.1 funciona con la 2.8.0 |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
 | Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main` |
@@ -19,6 +19,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Versión | Cambio principal | Origen |
 |---|---|---|
+| 2.8.1 | Plazo para confirmar que nunca queda en el pasado, /confirmado igual a la opción votada, datos sensibles frenados en el formulario y omitidos en el backend, encuesta del mago como paso del recorrido | Auditoría E2E (`docs/plan-correcciones-2.8.1.md`) |
 | 2.8.0 | «Falta un paso: invita a tu parche», recordar a quien organiza, grupo en 3 pasos con plan B, fechas concretas y encuesta «¿Qué día?», opciones de 4 líneas con un precio, mensajes de cierre bloqueados mientras votan, plazo para confirmar, aviso por cada aceptación | Prueba externa (ola A) |
 | Home 17/11 | Menú del home generado desde el repo (estado, versiones, último cambio, pendientes) y acción «Home al día»; código secreto usable en celular | Protocolo del home |
 | 2.7.1 · 2.7.3 | Grupo de WhatsApp con quien organiza, `wa.me` sin emojis, Gemini con indicación y sin jerga, llegadas al instante, «Encuesta de cierre», escala de Desempeño | Prueba de Juan José (15/11) |
@@ -28,6 +29,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 | 2.6.0 | Mapa del recorrido: 2 planes × 5 etapas (Grupo, Proponer, Decidir, El día, Cierre) | Revisión visual |
 | 2.7.0 | Plan F0–F5: marcadores `[n]` bloqueados, cola de mensajes, conteo de votos «− n +», día y hora en botones, llegadas en un toque, color semántico, teléfonos enmascarados, sin «Trabajo» en la inscripción. **Medición de la consola** (hojas `medicion_consola` y `pulso_mago`: SUS y NASA-TLX de quien opera) | Revisión visual (`claude/revision-visual-consola-2026-11-15.md`, Proyecto) |
 
+QA al 22/11 (2.8.1): backend 95 de 95 · recorrido completo 57 de 57 · F0–F5 26 de 26 · auditoría E2E 59 OK y 0 graves.
 QA al 22/11 (2.8.0): backend 90 de 90 · recorrido completo 57 de 57 · ola A 22 de 22 · F0–F5 25 de 25 · axe sin hallazgos nuevos.
 QA al 17/11: backend 85 de 85 · recorrido completo 52 de 52 · F0–F5 y 2.7.1 25 de 25 · código secreto 20 de 20 (iPhone, Pixel, escritorio) · axe-core 0 · sin scroll horizontal a 390 px.
 
@@ -93,7 +95,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Correcciones 2.8.1 de la auditoría E2E (`docs/plan-correcciones-2.8.1.md`): plazo que puede quedar en el pasado, /confirmado que contradice la opción, datos de salud de terceros en preferencias, encuesta del mago que se pierde. Lunes 23 código, martes 24 despliegue y teléfono real, miércoles 25 ensayo con WhatsApp real, jueves 26 congelar | Prueba con Cali (viernes) | Claude y José |
+| 1 | Desplegar el backend 2.8.1; probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1 | Prueba con Cali (viernes) | José |
 | 2 | Cargar los stickers en el número Sintonía (el correo del monitor ya está en `NOTIFICAR_A`) | Prueba con Cali | José |
 | 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
 | 4 | Landing pública y QR para el material POP (prompt 8); impresos este fin de semana | Material POP | Equipo |
