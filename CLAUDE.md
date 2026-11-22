@@ -8,5 +8,5 @@
   3. `ESTADO.md` §1 y su fecha en el título.
   4. `python3 tools/home.py`.
 - **Backend:** se despliega a mano (pegar en Apps Script, `probarMontaje()` si hay hojas nuevas, «Nueva versión»). QA: `node backend/qa/qa_backend.js`.
-- **Privacidad:** nada de claves (ADMIN_KEY, MOTOR_KEY, tokens), correos personales ni datos de participantes en el repo; el sitio es público.
-- **Voz de Sintonía** en textos para participantes: una idea por mensaje, conteos y nunca nombres, máximo un emoji, nada inventado.
+- **Privacidad:** el repo es público (excepción documentada en `docs/seguridad-repo.md`). Nada de claves (ADMIN_KEY, MOTOR_KEY, tokens), correos personales, notas internas ni datos de participantes. Antes de commitear: `python3 tools/revisar-datos.py --staged` en ✓; la acción «Seguridad de datos» lo revisa en cada push.
+- **Voz de Sintonía** en textos para participantes: una idea por mensaje, conteos y nunca nombres, máximo un emoji, nada inventado. Sintonía es «el amigo n + 1» del parche (3 personas → «el cuarto amigo»); en pareja o si no se sabe el tamaño, «el amigo extra» (función `amigoN` de la consola).

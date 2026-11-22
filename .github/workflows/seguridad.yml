@@ -1,0 +1,16 @@
+# El repositorio es público (GitHub Pages en el plan Free). Esta revisión impide que entren claves o datos personales.
+# Reglas y excepción documentada: docs/seguridad-repo.md
+name: Seguridad de datos
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  datos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Claves y datos personales en los archivos versionados
+        run: python3 tools/revisar-datos.py

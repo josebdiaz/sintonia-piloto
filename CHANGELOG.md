@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Repo público con controles y «el amigo n + 1» (frontend 2.7.2)
+- **Seguridad:** el repositorio sigue público, como excepción documentada en `docs/seguridad-repo.md`: en el plan Free, Pages no publica desde repos privados, y aun con Pro el sitio seguiría siendo público. Hay una revisión automática nueva de claves, correos y teléfonos (`tools/revisar-datos.py`, acción «Seguridad de datos») y un `SECURITY.md`; el WhatsApp personal de un integrante sale de la página archivada del P4 (sigue en el historial de git).
+- **Voz:** «el quinto amigo» no tenía un sustento fijo. Ahora Sintonía es el amigo n + 1 del parche según cuántos son (3 → «el cuarto amigo»), y en pareja o sin saber el tamaño, «el amigo extra». Cambia en la bienvenida al grupo, en el primer mensaje a cada persona y en la invitación a inscribirse; el texto de E1.5 en `n8n/PROMPT-n8n-builder.md` también.
+
 ### 2026-11-22 · Aprendizajes de la prueba externa y prompts de mejora
 - `docs/prompts-mejoras-prueba-externa.md`: hallazgos por momento de la prueba externa (n = 1, modo prueba, Emergente), decisiones de la reunión P8c del 19/11 y 9 prompts en 4 olas (antes de la prueba con Cali, sustentación, material POP y guion de la prueba).
 - `ESTADO.md` §4 se reordena con esas prioridades; n8n y licencias quedan aplazados.
@@ -180,7 +184,9 @@ Ensayo interno del 13/11 en modo prueba (Juan José como mago). Todavía no hay 
 
 Desde la 2.3.0, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
-### [2.7.1] · 2026-11-15 · Prueba de Juan José · **en vivo**
+### [2.7.2] · 2026-11-22 · «El amigo n + 1» en los mensajes · **en vivo**
+Tag `piloto/v2.7.2` por crear.
+### [2.7.1] · 2026-11-15 · Prueba de Juan José
 Grupo con quien organiza, `wa.me` sin emojis, Gemini con indicación, llegadas al instante, «Encuesta de cierre», escala de Desempeño. Tag `piloto/v2.7.1` por crear.
 ### [2.7.0] · 2026-11-15 · Plan de mejoras F0–F5
 Marcadores `[n]` bloqueados, menú «⋯» por persona, cola de mensajes, mapa en la columna izquierda, pestañas flotantes, votos «− n +», día y hora en botones, llegadas en un toque, color semántico, teléfonos enmascarados, sin «Trabajo» en la inscripción, pulso del mago y medición de la consola. Tag `piloto/v2.7.0` (creado el 15/11).

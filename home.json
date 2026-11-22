@@ -120,6 +120,11 @@
           "nota": "22 nov"
         },
         {
+          "texto": "Seguridad del repositorio",
+          "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/seguridad-repo.md",
+          "nota": "qué puede ser público"
+        },
+        {
           "texto": "Control de guías",
           "href": "docs/guias/",
           "nota": "vigentes, hechas y pendientes"
