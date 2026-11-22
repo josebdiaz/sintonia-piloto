@@ -39,8 +39,8 @@
       <div class="field"><label for="wa">Tu WhatsApp</label><div class="prefix"><span>+57</span><input id="wa" type="tel" inputmode="tel" maxlength="16" autocomplete="tel-national" placeholder="300 123 4567" required></div><span class="hint">Lo usamos solo para coordinar los planes de tu grupo.</span></div>
       <div class="field">
         <label for="prefs">¿Qué te gusta y qué no te sirve? <span class="counter" id="prefsN"></span></label>
-        <textarea id="prefs" maxlength="400" placeholder="Ej.: prefiero planes de día, no más de $30.000, me queda fácil el sur."></textarea>
-        <span class="hint">Opcional. No incluyas teléfonos ni datos de salud, religión o política.</span>
+        <p class="hint" id="prefsPista" style="margin:0 0 6px">Opcional. Sin detalles de nadie: nada de salud, religión, política ni teléfonos. Si algo importa, dilo en general, por ejemplo «hay una restricción de comida» o «no tomo alcohol».</p>
+        <textarea id="prefs" maxlength="400" aria-describedby="prefsPista" placeholder="Ej.: prefiero planes de día, no más de $30.000, me queda fácil el sur."></textarea>
       </div>
       <div class="field"><span class="label" id="fatigaLbl">Hoy, ¿qué tan desgastante es cuadrar un plan con este grupo?</span><div id="fatiga" aria-labelledby="fatigaLbl"></div></div>
       <div id="consent"></div>
@@ -98,6 +98,7 @@
     if (wa.length !== 10 || wa.charAt(0) !== '3') return S.toast('Escribe tu celular de 10 dígitos (empieza por 3).', true);
     if (!fatiga.value()) return S.toast('Marca qué tan desgastante es cuadrar un plan (1 a 5).', true);
     if (!cons.valid()) return S.toast('Para participar necesitamos las 4 autorizaciones.', true);
+    if (!S.revisarSensible(S.$('#prefs'))) return;   // 2.8.1 (auditoría): datos sensibles
     var payload = Object.assign({
       action: 'registrar', codigo_invitacion: inv, nombre_pila: nombre, whatsapp: '+57' + wa,
       preferencias: S.$('#prefs').value.trim(), fatiga_previa: fatiga.value(), consent_metodo: cons.metodo(), aviso_version: S.CONFIG.AVISO_VERSION

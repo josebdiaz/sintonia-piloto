@@ -5,6 +5,26 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Correcciones de la auditoría E2E (frontend 2.8.1 · backend 2.8.1)
+Plan en `docs/plan-correcciones-2.8.1.md`. Se corrigen los 4 graves y 5 de los medios y bajos.
+- **Plazo para confirmar (G1):** depende de cuánto falta para el plan, medido desde el cierre.
+  - Más de 24 h: la víspera a las 6:00 p. m.
+  - De 4 a 24 h: 2 h antes del encuentro.
+  - Menos de 4 h: sin hora, «marquen si van ahora».
+  - Nunca queda en el pasado; sin plazo, la consola no bloquea /hoy ni /salida. También se quitó el doble punto «p. m..».
+- **/confirmado y /evento repiten la opción votada (G2):** mismo título corto, la zona una vez y el mismo precio que /opcion_N (`dondeTxt`, `precioUno`). Backend: los títulos de Gemini se cortan en la última palabra completa que cabe en 30 caracteres.
+- **Datos sensibles (G3), en dos capas:**
+  - Inscripción y unirse: si el texto menciona salud, religión, política u orientación sexual, no se puede avanzar y la página explica cómo decirlo en general.
+  - Backend: esa frase se guarda como «[dato sensible omitido]», aunque alguien se salte el formulario, y la consola marca la preferencia.
+  - La lista es la misma en `sintonia.js` (`S.SENSIBLE`) y en el backend (`TERMINOS_SENSIBLES_`). Decisión del 22/11: el alcohol y la comida no están en ella, porque «no toma alcohol» es una restricción del plan.
+- **Encuesta del mago (G4):** es un paso del recorrido después de la encuesta de cierre de cada plan, incluso si se cayó. El backend dice por plan si ya hay respuesta (`pulso_mago`), así que tampoco se pierde al cambiar de navegador.
+- **Arreglos pequeños:**
+  - La pestaña Plan muestra las fechas concretas.
+  - La página de unirse trae la pista nueva sobre datos sensibles.
+  - «Ya aceptó 1 de 3» va en singular.
+  - /recordatorio no lleva «[n]» si no hay votos anotados.
+- QA: backend 95 de 95, recorrido completo 57 de 57, F0–F5 26 de 26, ola A 21 de 21 (más la comparación con la versión anterior, que ya no aplica), auditoría E2E 59 OK con 0 graves. Quedan los 3 medios aplazados del plan: la disposición a pagar sin plan, el largo de la encuesta de cierre y «Aceptó alguien más» con el grupo abierto (así por diseño).
+
 ### 2026-11-22 · Auditoría E2E de la 2.8.0 y plan de correcciones
 - `docs/plan-correcciones-2.8.1.md`: una prueba completa simulada en modo prueba (código real, hoja simulada, n = 0 personas reales) dio 48 revisiones bien y 14 hallazgos. Hay 4 graves: el plazo para confirmar puede quedar en el pasado, /confirmado contradice la opción votada, los datos de salud de terceros llegan a la hoja y la encuesta del mago se pierde. El plan trae la causa en el código, la solución, el criterio de aceptación y el calendario hasta la prueba con Cali.
 
@@ -209,7 +229,9 @@ Ensayo interno del 13/11 en modo prueba (Juan José como mago). Todavía no hay 
 
 Desde la 2.3.0, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
-### [2.8.0] · 2026-11-22 · Ola A de la prueba externa (invitar, crear el grupo, fechas, orden, avisos) · **en vivo**
+### [2.8.1] · 2026-11-22 · Correcciones de la auditoría E2E · **en vivo**
+Tag `piloto/v2.8.1` por crear (al congelar, el jueves 26).
+### [2.8.0] · 2026-11-22 · Ola A de la prueba externa (invitar, crear el grupo, fechas, orden, avisos)
 Tag `piloto/v2.8.0` por crear.
 ### [2.7.3] · 2026-11-22 · Voz «Tu +1 de confianza»
 Tag `piloto/v2.7.3` por crear.
@@ -344,7 +366,9 @@ Marcadores `[n]` bloqueados, menú «⋯» por persona, cola de mensajes, mapa e
 
 Desde la 2.3.3, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
-### [2.8.0] · 2026-11-22 · Aviso por cada aceptación, hora de aceptación y fechas para Gemini · **desplegado el 22/11**
+### [2.8.1] · 2026-11-22 · Datos sensibles fuera de la hoja, marca de la encuesta del mago, títulos en palabra completa · **por desplegar**
+Tag `backend/v2.8.1` por crear. QA: 95 de 95. La consola 2.8.1 funciona con el backend 2.8.0; sin desplegar, falta el filtro de datos sensibles en el backend (el formulario ya lo frena) y la marca de la encuesta del mago entre navegadores.
+### [2.8.0] · 2026-11-22 · Aviso por cada aceptación, hora de aceptación y fechas para Gemini · desplegado el 22/11
 Tag `backend/v2.8.0` por crear. QA: 90 de 90.
 ### [2.7.4] · 2026-11-22 · Gemini se presenta como «el +1 de confianza» · desplegado el 22/11
 Tag `backend/v2.7.4` por crear.

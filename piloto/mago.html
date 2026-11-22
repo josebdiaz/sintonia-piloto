@@ -261,12 +261,18 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function fechaCortaTxt(x) { return cap(DSL[x.getDay()].slice(0, 3)) + ' ' + x.getDate() + ' ' + MSL[x.getMonth()].slice(0, 3); }
   function isoDia(x) { return x.getFullYear() + '-' + pad2(x.getMonth() + 1) + '-' + pad2(x.getDate()); }
   /** 2.8.0 (ola A, prompt 4): hasta cuándo marcan si van. La víspera a las 6:00 p. m.; si el plan es muy pronto, 3 h antes del encuentro. */
+  // 2.8.1 (auditoría): con el plan en 90 min, «3 h antes» daba una hora vencida. Ahora: más de 24 h → la víspera a las 6:00 p. m.;
+  // de 4 a 24 h → 2 h antes; menos de 4 h → sin plazo («marquen ahora si van»). Se mide desde el cierre del plan.
   function plazoDe(p) {
     var he = aFecha(p && p.hora_encuentro); if (!he) return null;
+    var base = aFecha(p.t_cerrado) || new Date(), d = he.getTime() - base.getTime();
+    if (d <= 4 * 36e5) return null;
+    if (d <= 24 * 36e5) return new Date(he.getTime() - 2 * 36e5);
     var t = new Date(he); t.setDate(t.getDate() - 1); t.setHours(18, 0, 0, 0);
-    var base = aFecha(p.t_cerrado) || new Date();
-    return t.getTime() - base.getTime() < 3 * 36e5 ? new Date(he.getTime() - 3 * 36e5) : t;
+    return t.getTime() - base.getTime() < 2 * 36e5 ? new Date(he.getTime() - 2 * 36e5) : t;
   }
+  /** «, hasta el viernes 27 a las 6:00 p. m.» o « ahora» (sin plazo); nunca deja doble punto. */
+  function plazoFrase(d) { return d.plazo ? ', hasta ' + d.plazo : ' ahora'; }
   function plazoTxt(t) { return t ? 'el ' + DSL[t.getDay()] + ' ' + t.getDate() + ' a las ' + horaTxt(t) : ''; }
   /** «el sábado 29 de noviembre en la tarde» o «el sábado 29 de noviembre o el sábado 6 de diciembre en la tarde». Sin fechas, como antes. */
   function cuandoTxt(g) {
@@ -333,7 +339,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var org = organizador(g), n = g.miembros.length, inv = Number(g.n_invitados) || n, esOrg = m.rol === 'organizador';
     var hola = 'Hola, ' + (m.nombre || '') + '. Soy Sintonía, ' + MARCA_TU + ' para que el plan sí se dé.';
     if (g.estado === 'reclutando') return esOrg
-      ? hola + ' Van ' + n + ' de ' + inv + ' en tu parche. Yo no tengo los números de los demás: reenvíales este enlace para que cada quien acepte. ' + S.link('unirse.html', { inv: g.codigo_invitacion })   // 2.8.0 (ola A, prompt 1)
+      ? hola + (n === 1 ? ' Ya aceptó 1 de ' : ' Ya aceptaron ' + n + ' de ') + inv + ' en tu parche. Yo no tengo los números de los demás: reenvíales este enlace para que cada quien acepte. ' + S.link('unirse.html', { inv: g.codigo_invitacion })   // 2.8.0 (ola A, prompt 1)
       : hola + ' Ya quedaste en el parche de ' + (org ? org.nombre : 'tu grupo') + '. Cuando acepten todos, te escribimos para armar el plan.';
     return esOrg
       ? hola + ' ¡Ya aceptaron las ' + n + ' personas de tu parche! En unos minutos creo el grupo del plan por aquí con todos. En este piloto una persona del equipo revisa lo que propongo.'
@@ -468,7 +474,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       et = 'decidir';
       add(G, (e15 ? 'Revisar la decisión' : 'Registrar la decisión') + ' y cerrar con día y hora', cerr,
         { t: 'Registrar la decisión', tab: 'planes', q: '#decision', tpls: e15 ? [] : ['/recordatorio', '/empate'].concat(variasF ? [] : ['/dia']).concat(['/horario']), ayuda: 'Cuando voten, copia los números de la encuesta («Ver votos») y cierra con día y hora' + (variasF ? ' (el día que ganó en «¿Qué día?»)' : '') + '. Si a las 2 h faltan votos, un recordatorio con conteo.' });
-      if (caido) { add(G, 'Plan caído (' + (p.causa_caida || 'sin causa') + ')', true, {}); return; }
+      if (caido) { add(G, 'Plan caído (' + (p.causa_caida || 'sin causa') + ')', true, {}); et = 'cierre'; add(G, 'Responder tu encuesta como mago (2 min)', pulsoMagoHecho(p.plan_id), { t: 'Responder mi encuesta', run: 'pulsoMago', plan_id: p.plan_id, ayuda: 'SUS y carga de trabajo de quien operó este plan, aunque se haya caído: es el dato que compara E1 con E1.5.' }); return; }   // 2.8.1
       et = 'dia';
       if (!e15) add(G, 'Enviar /confirmado y crear el evento del grupo', env(p, 'msg_confirmado') || (paso && llegaron > 0), { tpls: ['/confirmado', '/evento'], ayuda: 'Tres mensajes cortos y el evento de WhatsApp (Adjuntar → Evento): ahí cada persona marca si va.' });
       var plz = p && p.estado === 'cerrado' ? plazoDe(p) : null, antesPlazo = plz && !prueba && ahora < plz.getTime();   // 2.8.0 (ola A, prompt 4)
@@ -481,6 +487,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
         { run2: 'casa', tpls: e15 ? [] : ['/en_casa'], ayuda: noche ? 'Plan de noche: pregúntalo mañana a las 10:00.' : 'Al terminar el plan. Registra quién respondió «Ya en casa».' });
       add(G, 'Enviar la encuesta de cierre (SEQ y SUS)' + (p && cerr ? ' (faltan ' + faltanP + ')' : ''), p && cerr && faltanP === 0,
         { pulso: true, tpls: e15 ? [] : ['/retro'], ayuda: e15 ? 'Lo envía el motor; usa los enlaces solo si falla.' : (noche ? 'Plan de noche: mañana a las 10:00. ' : '') + 'Envía a cada persona su enlace con su botón y, si quieres, el aviso al grupo.' });
+      if (p && cerr) add(G, 'Responder tu encuesta como mago (2 min)', pulsoMagoHecho(p.plan_id), { t: 'Responder mi encuesta', run: 'pulsoMago', plan_id: p.plan_id, ayuda: 'SUS y carga de trabajo de quien operó este plan. Es el dato que compara E1 con E1.5: respóndela antes de pasar al siguiente plan.' });   // 2.8.1 (auditoría): ya no se pierde
     });
     return L;
   }
@@ -574,8 +581,8 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       h += relojesHtml(g);
       if (a.tpls && a.tpls.length) h += colaHtml(a.tpls, tplData('grupo'), cur);
     }
-    var pUlt = planesDe(g.grupo_id).slice(-1)[0];
-    if (pUlt && (a.pulso || !cur) && (pUlt.estado === 'cerrado' || pUlt.estado === 'caido') && !pulsoMagoHecho(pUlt.plan_id) && g.estado !== 'excluido')
+    var pUlt = planesDe(g.grupo_id).filter(function (x) { return (x.estado === 'cerrado' || x.estado === 'caido') && !pulsoMagoHecho(x.plan_id); })[0];   // 2.8.1: cualquier plan cerrado sin encuesta del mago
+    if (pUlt && a.run !== 'pulsoMago' && g.estado !== 'excluido')
       h += '<p class="c-sin-sesion"><span>Al terminar, responde <b>tu encuesta como mago</b> de ' + e(rondaLabel(pUlt)) + ' (2 minutos).</span> <button type="button" class="btn btn-ghost btn-sm" id="irPulsoMago" data-plan="' + e(pUlt.plan_id) + '">Responder</button></p>';   // 2.7.0 (F5)
     h += '</div>';
     if (cur) h = h.replace(/<\/div>$/, '') + '<p class="c-atajos">Atajos: <kbd>C</kbd> copiar y marcar el siguiente mensaje · <kbd>N</kbd> ir a la acción · <kbd>M</kbd> mapa · <kbd>?</kbd> todos</p></div>';
@@ -590,6 +597,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var abS = S.$('#abrirSesion', el); if (abS) abS.onclick = function () { var q = S.$('#magoQuien'), mi = S.$('#magoIn'); var t = q && !q.value ? q : mi; if (t) { t.scrollIntoView({ behavior: suave(), block: 'center' }); t.focus(); } };
     var b = S.$('#irPaso', el);
     if (b) b.onclick = function () {
+      if (a.run === 'pulsoMago') { sel.plan = a.plan_id; renderAll(); irA('registro', '#pulsoMago'); setTimeout(function () { var d = S.$('#pulsoMago'); if (d && 'open' in d) d.open = true; }, 80); return; }   // 2.8.1
       var t = a.run === 'cerrar' ? S.$('[data-cerrar]') : a.run === 'crearPlan' ? S.$('#crearPlan') : a.run === 'siguienteRonda' ? S.$('#siguienteRonda') : null;
       if (t) return t.click();
       irA(a.tab || (a.run === 'cerrar' ? 'grupos' : 'planes'), a.q);
@@ -630,7 +638,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   var TLX = [['mental', 'Exigencia mental', '¿Cuánto tuviste que pensar, decidir y recordar?', 'Muy baja', 'Muy alta'], ['fisica', 'Exigencia física', '¿Cuánta actividad física requirió (clics, escribir, moverte)?', 'Muy baja', 'Muy alta'],
     ['temporal', 'Presión de tiempo', '¿Qué tanto te apuró el ritmo del grupo o los relojes?', 'Muy baja', 'Muy alta'], ['desempeno', 'Desempeño', '¿Qué tan bien crees que lo hiciste?', 'Fracaso', 'Perfecto', true],
     ['esfuerzo', 'Esfuerzo', '¿Cuánto te tuviste que esforzar para lograrlo?', 'Muy bajo', 'Muy alto'], ['frustracion', 'Frustración', '¿Qué tan inseguro, irritado o estresado te sentiste?', 'Muy baja', 'Muy alta']];
-  function pulsoMagoHecho(pid) { return !!S.LS.get('sintonia_pulso_mago_' + pid); }
+  function pulsoMagoHecho(pid) { var pl = plan(pid); return !!S.LS.get('sintonia_pulso_mago_' + pid) || !!(pl && pl.pulso_mago); }   // 2.8.1: también lo que dice la hoja
   function pulsoMagoHtml(p) {
     if (!p || p.estado !== 'cerrado' && p.estado !== 'caido') return '';
     if (pulsoMagoHecho(p.plan_id)) return '<div class="card soft small" id="pulsoMago">Tu encuesta como mago de ' + e(rondaLabel(p)) + ' ya quedó registrado. Gracias.</div>';
@@ -902,10 +910,10 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var h = '<div class="card"><div class="actions" style="margin:0 0 6px;justify-content:space-between"><h3 style="margin:0">' + e(rondaLabel(p)) + '</h3><span>' + badge(p.estado) + '</span></div>';
     if (p.estado === 'borrador' || p.estado === 'en_revision') {
       if (!borrador.length && ops.length) borrador = ops.map(function (o) { return { tipo: o.tipo || '', titulo: o.titulo, hora_salida: o.hora_salida, presupuesto_aprox: o.presupuesto_aprox, por_que: o.por_que, ids: (o.paradas || []).map(function (s) { return s.id; }) }; });
-      var prefs = (g && g.preferencias) || [], dt = diaTxt(g);
+      var prefs = (g && g.preferencias) || [], dt = g ? cuandoTxt(g) : '';   // 2.8.1: las mismas fechas que /opciones
       h += '<div class="card soft small" style="margin:8px 0"><b>Lo que contó el parche al inscribirse</b> <span class="muted">(Gemini ya lo recibe)</span>' +
         '<p style="margin:6px 0 0"><b>Cuándo pueden:</b> ' + (dt ? e(cap(dt)) : '<span class="muted">sin dato</span>') + '</p>' +
-        (prefs.length ? '<ul style="margin:6px 0 0;padding-left:18px">' + prefs.map(function (x) { return '<li>' + e(x) + '</li>'; }).join('') + '</ul>' : '<p class="muted" style="margin:6px 0 0">Nadie escribió gustos o restricciones.</p>') + '</div>';
+        (prefs.length ? '<ul style="margin:6px 0 0;padding-left:18px">' + prefs.map(function (x) { return '<li>' + e(x) + (/\[dato sensible omitido\]/.test(x) ? ' <span class="badge">Se omitió un dato sensible</span>' : '') + '</li>'; }).join('') + '</ul>' : '<p class="muted" style="margin:6px 0 0">Nadie escribió gustos o restricciones.</p>') + '</div>';
       if (ultDec) h += '<div class="card warn small" style="margin:8px 0"><b>Ronda ' + (decs.length + 1) + ' de opciones.</b> En la anterior, ' + e(resumenDecision(ultDec)) + '. Pega lo que dijeron en el grupo para que Gemini proponga otras.</div>';
       h += '<div class="field"><label for="restr">Lo que dijeron en el grupo para este plan</label><textarea id="restr" data-keep="restr" maxlength="1500" placeholder="Pega aquí los mensajes del chat tal cual, o escribe: sábado en la tarde, máx. $40.000, sur u oeste."></textarea><span class="hint">Gemini lo usa junto con lo del registro. Sin esto solo tiene lo del registro y suele proponer menos.</span></div>' +
         '<div class="actions"><button class="btn btn-ia btn-sm" id="pedirIA" data-busy="Gemini pensando…">' + (borrador.length ? 'Pedir otras 3 opciones' : 'Pedir 3 opciones a Gemini') + '</button><button class="btn btn-ghost btn-sm" id="addOp">+ Opción manual</button></div>' +
@@ -1131,7 +1139,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       lugarCorto: s0 ? s0.nombre : '[lugar]', mapa: s0 ? mapaDe(mezcla(i0, s0)) : '',
       hora: hd ? S.fecha(hd) : '[día y hora]', horaSola: hd ? horaTxt(hd) : '[hora]', fecha: hd ? hd.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' }) : '[fecha]',
       retro: persona && p ? linkRetro(persona.pid, p.plan_id) : '', apuntados: apuntados || '[n]', apuntadosN: apuntados, dia: g ? cuandoTxt(g) : '', dias: dispoDe(g).dias,
-      fechas: g ? fechasDe(g).lista : [], plazo: p && p.hora_encuentro ? plazoTxt(plazoDe(p)) : '[plazo]', votando: !!(p && p.estado === 'votando'),   // 2.8.0 (ola A, prompts 3 y 4)
+      fechas: g ? fechasDe(g).lista : [], plazo: p && p.hora_encuentro ? plazoTxt(plazoDe(p)) : '[plazo]', lugarZ: w.paradas ? dondeTxt(w.paradas) : '[lugar]', precio1: precioUno(w.presupuesto_aprox), planCorto: w.titulo ? corto(w.titulo) : '[plan elegido]', votando: !!(p && p.estado === 'votando'),   // 2.8.0 (ola A, prompts 3 y 4)
       p: p, g: g, persona: persona, nom: persona ? persona.nombre : '', noLlegan: noLlegan
     };
   }
@@ -1144,12 +1152,12 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     ['/opcion_2', 'Opción 2', 'grupo', 'presentar una opción del plan con lo que van a hacer', function (d) { return opcionTxt(d, 1); }],
     ['/opcion_3', 'Opción 3', 'grupo', 'presentar una opción del plan con lo que van a hacer', function (d) { return opcionTxt(d, 2); }],
     ['/encuesta', 'Encuesta para votar', 'grupo', 'pregunta y opciones de la encuesta de votación', function (d) { return d.ops.length ? { poll: poll('¿Cuál les suena más?', d.ops.map(function (o) { return corto(o.titulo); }).concat(['Cualquiera me sirve', 'Ninguna me sirve']), true) } : null; }],
-    ['/recordatorio', 'Recordatorio de votación (al grupo a las 2 h; a una persona solo si a las 24 h falta su voto)', 'ambos', 'recordar que falta votar, sin presión', function (d) { if (!d.votando || (!d.persona && d.votaron !== '[n]' && Number(d.votaron) >= Number(d.total))) return null; return d.persona ? d.nom + ', ¿cuál te suena más del plan? Puedes votar en la encuesta del grupo. Con tu voto cerramos los detalles.' : 'Van ' + d.votaron + ' de ' + d.total + ' votos. ¿Cuál les suena más? Pueden votar en la encuesta de arriba ⏳'; }],
+    ['/recordatorio', 'Recordatorio de votación (al grupo a las 2 h; a una persona solo si a las 24 h falta su voto)', 'ambos', 'recordar que falta votar, sin presión', function (d) { if (!d.votando || (!d.persona && d.votaron !== '[n]' && Number(d.votaron) >= Number(d.total))) return null; return d.persona ? d.nom + ', ¿cuál te suena más del plan? Puedes votar en la encuesta del grupo. Con tu voto cerramos los detalles.' : (d.votaron === '[n]' ? '' : 'Van ' + d.votaron + ' de ' + d.total + ' votos. ') + '¿Cuál les suena más? Pueden votar en la encuesta de arriba ⏳'; }],   // 2.8.1: sin votos anotados, sin conteo
     ['/empate', 'Empate · encuesta solo con las empatadas', 'grupo', 'desempatar con una encuesta rápida', function (d) { return d.empatadas.length ? { txt: 'Quedó empate. Desempatemos rápido 👇', poll: poll('¿Cuál va?', d.empatadas, false) } : null; }],
     ['/dia', 'Día · encuesta con las fechas posibles', 'grupo', 'preguntar qué día les queda mejor', function (d) { return d.fechas.length > 1 ? { poll: poll('¿Qué día les queda mejor?', d.fechas.map(fechaCortaTxt), true) } : d.dias.length > 1 ? { poll: poll('¿Qué día les queda mejor?', d.dias.map(cap), true) } : null; }],   // 2.8.0: fechas concretas
     ['/horario', 'Hora del encuentro · encuesta (horas de encuentro, no de salida)', 'grupo', 'preguntar a qué hora les queda mejor', function (d) { return { poll: poll('¿A qué hora nos encontramos?', d.horas, true) }; }],
-    ['/confirmado', 'Plan cerrado · tres mensajes cortos', 'grupo', 'confirmar el plan elegido con lugar, hora y salida', function (d) { return d.p && d.p.estado === 'cerrado' ? { txts: ['¡Hay plan! ' + d.plan + ' 🙌\nDónde: ' + d.lugar + (d.dir ? '\n' + d.dir : ''), 'Cuándo: ' + d.hora + '\nSalida sugerida: ' + d.salida + (d.presupuesto ? '\nAprox. ' + porPersona(d.presupuesto) : ''), (d.mapa ? 'Cómo llegar: ' + d.mapa + '\n' : '') + 'En el evento del grupo marquen si van, hasta ' + d.plazo + '.'] } : null; }],
-    ['/evento', 'Evento del grupo (WhatsApp: Adjuntar → Evento)', 'grupo', 'datos del evento del grupo', function (d) { return d.p && d.p.estado === 'cerrado' ? { evento: { titulo: corto(d.plan, 40), descripcion: d.lugar + ' · salida sugerida ' + d.salida + ' · marquen si van hasta ' + d.plazo, fecha: cap(d.fecha), hora: d.horaSola, ubicacion: [d.lugarCorto, d.dir].filter(Boolean).join(', '), mapa: d.mapa } } : null; }],
+    ['/confirmado', 'Plan cerrado · tres mensajes cortos', 'grupo', 'confirmar el plan elegido con lugar, hora y salida', function (d) { return d.p && d.p.estado === 'cerrado' ? { txts: ['¡Hay plan! ' + d.planCorto + ' 🙌\nDónde: ' + d.lugarZ + (d.dir ? '\n' + d.dir : ''), 'Cuándo: ' + d.hora + '\nSalida sugerida: ' + d.salida + (d.precio1 ? '\nAprox. ' + d.precio1 + ' por persona' : ''), (d.mapa ? 'Cómo llegar: ' + d.mapa + '\n' : '') + 'En el evento del grupo marquen si van' + plazoFrase(d) + (/\.$/.test(plazoFrase(d)) ? '' : '.')] } : null; }],
+    ['/evento', 'Evento del grupo (WhatsApp: Adjuntar → Evento)', 'grupo', 'datos del evento del grupo', function (d) { return d.p && d.p.estado === 'cerrado' ? { evento: { titulo: d.planCorto, descripcion: d.lugarZ + ' · salida sugerida ' + d.salida + (d.plazo ? ' · marquen si van hasta ' + d.plazo : ''), fecha: cap(d.fecha), hora: d.horaSola, ubicacion: [d.lugarCorto, d.dir].filter(Boolean).join(', '), mapa: d.mapa } } : null; }],
     ['/asistencia', 'Asistencia · solo si no creaste el evento', 'grupo', 'pregunta y opciones de la encuesta de asistencia', function () { return { poll: poll('¿Van?', ['Me apunto', 'No puedo'], false) }; }],
     ['/reprogramar', 'Si alguien no puede · otro día u otra hora', 'grupo', 'proponer con calma buscar otro día u otra hora, sin señalar a nadie', function () { return { txt: 'A parte del parche no le cuadra. Busquemos algo que nos sirva a todos.', poll: poll('¿Qué les sirve más?', ['Otro día', 'Otra hora', 'Así está bien'], false) }; }],
     ['/hoy', 'Día del plan · en la mañana', 'grupo', 'recordar que hoy es el plan, con el conteo de confirmados', function (d) { return d.p && d.p.estado === 'cerrado' ? '¡Es hoy! ' + (d.apuntadosN ? 'Van ' + d.apuntadosN + ' confirmados. ' : '') + 'Nos vemos a las ' + d.horaSola + ' en ' + d.lugarCorto + '. Salida sugerida: ' + d.salida + ' 🙌' : null; }],
@@ -1165,10 +1173,14 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   /** 2.8.0 (ola A, prompt 4): máximo 4 líneas: título, qué van a hacer, dónde (zona una sola vez) con un solo precio, y el mapa aparte. */
   function opcionTxt(d, i) {
     var o = d.ops[i]; if (!o) return null; var ps = o.paradas || [], s0 = ps[0];
-    var zonas = ps.map(function (s) { return String(s.zona || '').trim(); }).filter(function (z, k, a) { return z && a.indexOf(z) === k; });
-    var donde = ps.map(function (s) { return corto(s.nombre, 32); }).join(' → ') + (zonas.length ? ' (' + zonas.join(' / ') + ')' : ''), precio = precioUno(o.presupuesto_aprox);
+    var donde = dondeTxt(ps), precio = precioUno(o.presupuesto_aprox);
     var mapa = s0 ? mapaDe(mezcla(invById(s0.id), s0)) : '';
     return 'Opción ' + (i + 1) + ' · ' + corto(o.titulo) + (o.por_que ? '\n' + o.por_que : '') + '\nDónde: ' + donde + (precio ? ' · aprox. ' + precio + ' por persona' : '') + (mapa ? '\nMapa: ' + mapa : '');
+  }
+  /** 2.8.1: «Lugar → Lugar (Zona)», la zona una sola vez. Lo usan la opción, /confirmado y /evento. */
+  function dondeTxt(ps) {
+    var zonas = (ps || []).map(function (s) { return String(s.zona || '').trim(); }).filter(function (z, k, a) { return z && a.indexOf(z) === k; });
+    return (ps || []).map(function (s) { return corto(s.nombre, 32); }).join(' → ') + (zonas.length ? ' (' + zonas.join(' / ') + ')' : '');
   }
   /** Un solo valor por persona: el punto medio del rango, redondeado a miles («$80.000 – $148.000» → «$114.000»). Con un valor, ese valor.
    *  Se elige el punto medio y no el mínimo para no prometer un plan más barato de lo que suele salir. Si no hay números, el texto tal cual. */

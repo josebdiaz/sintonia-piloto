@@ -181,6 +181,7 @@
     b.addEventListener('click', function () {
       var n = Number(b.dataset.next), cur = Number(b.closest('[data-step]').dataset.step);
       if (n > cur && cur === 1) { var e = valida1(); if (e) return S.toast(e, true); }
+      if (n > cur && cur === 2 && !S.revisarSensible(S.$('#prefs'))) return;   // 2.8.1 (auditoría): datos sensibles
       go(n);
     });
   });
@@ -193,6 +194,7 @@
     if (!nombre) return S.toast('Escribe tu nombre de pila.', true);
     if (wa.length !== 10 || wa.charAt(0) !== '3') return S.toast('Escribe tu celular de 10 dígitos (empieza por 3).', true);
     if (!cons.valid()) return S.toast('Para participar necesitamos las 4 autorizaciones.', true);
+    if (!S.revisarSensible(S.$('#prefs'))) { go(2); S.revisarSensible(S.$('#prefs')); return; }   // 2.8.1
     var payload = Object.assign({
       action: 'registrar', experimento: exp, modo: modo, tipo_grupo: tipo.value(), nombre_grupo: S.$('#nomGrupo').value.trim(), n_invitados: int('#ninv'), disponibilidad: disponibilidad(), origen: S.param('origen') || '',
       planes_realizados_mes: int('#realizados'), planes_fallidos_mes: 5 - int('#realizados'),   /* 2.3.0: de los últimos 5 planes (antes, conteo del último mes) */ quien_organiza: S.$('#quien').value.trim(),

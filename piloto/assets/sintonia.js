@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.8.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.8.1',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
@@ -229,7 +229,27 @@
     location.reload();
   }
 
-  window.S = { CONFIG: CONFIG, LS: LS, SS: SS, post: post, get: get, errMsg: errMsg, $: $, $$: $$, esc: esc, param: param, show: show, toast: toast, busy: busy,
+  /** 2.8.1 · Datos sensibles (Ley 1581): salud, religión, política u orientación sexual. Misma lista que TERMINOS_SENSIBLES_ del backend.
+   *  El alcohol y la comida no están: «no toma» o «vegetarianos» son restricciones del plan. Devuelve el término encontrado o ''. */
+  var SENSIBLE = ['diabet', 'hipertens', 'cancer', 'vih', 'sida', 'epilep', 'asma', 'depresi', 'ansiedad', 'bipolar', 'esquizofren', 'autis', 'tdah',
+    'embaraz', 'enferm', 'diagnost', 'medicament', 'pastilla', 'terapia', 'psiquiatr', 'psicolog', 'alergi', 'alergic', 'celiac', 'cirugi', 'operad', 'discapacid',
+    'religi', 'catolic', 'cristiano', 'cristiana', 'evangel', 'adventist', 'judi', 'musulman', 'testigo de jehov', 'mormon', 'ateo', 'atea',
+    'politic', 'petrist', 'uribist', 'partido liberal', 'partido conservador', 'pacto historico', 'centro democratico',
+    'gay', 'lesbi', 'bisexual', 'homosex', 'orientacion sexual', 'lgbt', 'trans'];
+  function sensible(txt) {
+    var t = ' ' + String(txt || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9ñ ]/g, ' ') + ' ';
+    for (var i = 0; i < SENSIBLE.length; i++) { var k = SENSIBLE[i]; if (t.indexOf(' ' + k) >= 0 && (k !== 'trans' || / trans /.test(t))) return k; }
+    return '';
+  }
+  /** Marca el campo y explica cómo decirlo sin detalle. true si se puede seguir. */
+  function revisarSensible(ta) {
+    var k = sensible(ta.value), box = ta.parentNode.querySelector('.c-sensible');
+    if (!box) { box = document.createElement('p'); box.className = 'c-sensible'; box.setAttribute('role', 'alert'); ta.insertAdjacentElement('afterend', box); }
+    box.hidden = !k; ta.toggleAttribute('aria-invalid', !!k);
+    if (k) { box.textContent = 'Parece que mencionas un dato de salud, religión, política u orientación de alguien. Escríbelo en general, sin decir quién ni qué: por ejemplo «hay una restricción de comida» o «alguien no puede caminar mucho». «No toma alcohol» sí sirve.'; ta.focus(); }
+    return !k;
+  }
+  window.S = { CONFIG: CONFIG, sensible: sensible, revisarSensible: revisarSensible, LS: LS, SS: SS, post: post, get: get, errMsg: errMsg, $: $, $$: $$, esc: esc, param: param, show: show, toast: toast, busy: busy,
     link: link, wa: wa, waShare: waShare, phone: phone, copy: copy, scale: scale, chips: chips, consent: consent, counter: counter,
     pct: pct, num: num, cop: cop, usd: usd, fecha: fecha, me: me, saveMe: saveMe, adoptPid: adoptPid, inicio: inicio, adminKey: adminKey, forgetKey: forgetKey, configBackend: configBackend, dosPasos: dosPasos };
   window.CONFIG = CONFIG;

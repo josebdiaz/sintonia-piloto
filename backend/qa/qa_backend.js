@@ -218,6 +218,21 @@ ctx.UrlFetchApp.fetch = fetchViejo; delete PROPS.NOTIFICAR_A;
   chk('2.8.0 Gemini recibe la fecha concreta del plan', /Fecha\(s\) concreta\(s\) del plan: sábado 28 de noviembre/.test(pr8) && /fechas: 2026\/11\/28/.test(pr8), pr8.slice(0, 120));
   ctx.UrlFetchApp.fetch = fx8; delete PROPS.NOTIFICAR_A; }
 
+// 2.8.1 (auditoría E2E): datos sensibles, títulos cortos y marca de la encuesta del mago
+{ const s1 = post(Object.assign({ action: 'registrar', experimento: 'E1', modo: 'prueba', tipo_grupo: 'amigos', n_invitados: 2, nombre_pila: 'Lu', whatsapp: '+573009990051', preferencias: 'Algo tranqui en el oeste. Ana es diabética y no toma, su cel es 3157778899' }, cons));
+  const r1 = SHEETS.preferencias.rows.filter(r => r[1] === s1.pid).map(r => r[3]).join('');
+  chk('2.8.1 la frase con un dato de salud no llega a la hoja; el resto sí', !/diab/i.test(r1) && /\[dato sensible omitido\]/.test(r1) && /tranqui en el oeste/.test(r1) && !/3157778899/.test(r1), r1);
+  post(Object.assign({ action: 'registrar', codigo_invitacion: s1.codigo_invitacion, nombre_pila: 'Cristian', whatsapp: '+573009990052', preferencias: 'No toma alcohol; Cristian no puede caminar mucho' }, cons));
+  const r2 = SHEETS.preferencias.rows.slice(-1)[0][3];
+  chk('2.8.1 «no toma alcohol» y un nombre como Cristian se conservan', r2 === 'No toma alcohol; Cristian no puede caminar mucho', r2);
+  chk('2.8.1 religión y política también se omiten', vm.runInContext('quitarSensibles_', ctx)('Uno es evangélico, otra es petrista. Plan tranqui') === '[dato sensible omitido]. Plan tranqui', vm.runInContext('quitarSensibles_', ctx)('Uno es evangélico, otra es petrista. Plan tranqui'));
+  chk('2.8.1 título de Gemini cortado en palabra completa (≤ 30)', vm.runInContext('tituloCorto_', ctx)('Atardecer panorámico con hamburguesas en la azotea del barrio') === 'Atardecer panorámico', vm.runInContext('tituloCorto_', ctx)('Atardecer panorámico con hamburguesas en la azotea del barrio'));
+  post({ action: 'cerrar_reclutamiento', key: A, grupo_id: s1.grupo_id }); const ps1 = post({ action: 'crear_plan', key: A, grupo_id: s1.grupo_id });
+  const sus = {}; for (let i = 1; i <= 10; i++) sus['sus_' + String(i).padStart(2, '0')] = 3; const tlx = { tlx_mental: 50, tlx_fisica: 10, tlx_temporal: 40, tlx_desempeno: 20, tlx_esfuerzo: 50, tlx_frustracion: 10 };
+  post(Object.assign({ action: 'pulso_mago', key: A, plan_id: ps1.plan_id, mago: 'QA' }, sus, tlx));
+  const vp = get({ view: 'mago', key: A }).planes.filter(x => x.plan_id === ps1.plan_id)[0];
+  chk('2.8.1 la vista del mago dice si ya hay encuesta del mago por plan', vp && vp.pulso_mago === true && get({ view: 'mago', key: A }).planes.filter(x => x.plan_id !== ps1.plan_id).every(x => x.pulso_mago === false || x.pulso_mago === true), vp && vp.pulso_mago); }
+
 // 2.5.0: ubicaciones e inventario liviano
 const ub = vm.runInContext('revisarUbicaciones_', ctx)([{ id: 'A', direccion: 'Cl 5', latitud: 34516, longitud: -765320 }, { id: 'B', direccion: '', latitud: 3.45, longitud: -76.53 }, { id: 'C', direccion: 'Cra 1', latitud: 4.6, longitud: -74.1 }, { id: 'D', direccion: 'Cra 2', latitud: '', longitud: '' }]);
 chk('2.5.0 probarMontaje: ubicaciones (regional, fuera de Cali, sin dirección, sin coordenadas)', /3 de 4 con dirección/.test(ub) && /1 con coordenadas leídas/.test(ub) && /1 con coordenadas fuera de Cali \(p\. ej\. C\)/.test(ub) && /1 sin coordenadas/.test(ub), ub);

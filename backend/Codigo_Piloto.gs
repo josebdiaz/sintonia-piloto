@@ -1,7 +1,13 @@
 /**
- * Sintonía · Piloto v2.8.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.8.1 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.8.1 (23/11, auditoría E2E de la 2.8.0):
+ *   - Minimización (Ley 1581): las preferencias que mencionen salud, religión, política u orientación sexual se guardan sin esa frase
+ *     («[dato sensible omitido]»). Lista cerrada en TERMINOS_SENSIBLES_ (la misma que revisa el formulario). «No toma alcohol» sí se guarda:
+ *     es una restricción del plan, no un dato de salud.
+ *   - ?view=mago: cada plan trae pulso_mago (si quien operó ya respondió su encuesta), para que la consola no la pierda al cambiar de navegador.
+ *   - Los títulos de Gemini se cortan en la última palabra que cabe en 30 caracteres (antes, a 60 y a media palabra).
  * Versión 2.8.0 (22/11, ola A de la prueba externa):
  *   - Aviso al equipo por cada aceptación nueva («Aceptó 1 persona más: 2 de 3»), sin nombres ni números. Se apaga con la propiedad
  *     AVISO_POR_ACEPTACION = no. Cuando acepta la última persona sigue llegando solo «ya aceptaron todos».
@@ -238,6 +244,21 @@ function telEnGrupo_(gid, tel) {
   return rows_('contactos').some(function (c) { return act[c.pid] && String(c.whatsapp).replace(/\D/g, '').slice(-10) === t; });
 }
 function escala_(v) { var n = int_(v); return (n !== '' && n >= 1 && n <= 5) ? n : ''; }   // escalas 1–5; fuera de rango queda vacío
+/** v2.8.1: términos que delatan datos sensibles (salud, religión, política, orientación sexual). Se compara sin tildes y por inicio de palabra.
+ *  El alcohol y la comida no están: «no toma», «vegetariano» o «sin alcohol» son restricciones del plan. Debe coincidir con S.SENSIBLE (sintonia.js). */
+var TERMINOS_SENSIBLES_ = ['diabet', 'hipertens', 'cancer', 'vih', 'sida', 'epilep', 'asma', 'depresi', 'ansiedad', 'bipolar', 'esquizofren', 'autis', 'tdah',
+  'embaraz', 'enferm', 'diagnost', 'medicament', 'pastilla', 'terapia', 'psiquiatr', 'psicolog', 'alergi', 'alergic', 'celiac', 'cirugi', 'operad', 'discapacid',
+  'religi', 'catolic', 'cristiano', 'cristiana', 'evangel', 'adventist', 'judi', 'musulman', 'testigo de jehov', 'mormon', 'ateo', 'atea',
+  'politic', 'petrist', 'uribist', 'partido liberal', 'partido conservador', 'pacto historico', 'centro democratico',
+  'gay', 'lesbi', 'bisexual', 'homosex', 'orientacion sexual', 'lgbt', 'trans'];
+function sinTildes_(s) { return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+function esSensible_(frase) { var t = ' ' + sinTildes_(frase).replace(/[^a-z0-9ñ ]/g, ' ') + ' '; return TERMINOS_SENSIBLES_.some(function (k) { return t.indexOf(' ' + k) >= 0 && (k !== 'trans' || / trans /.test(t)); }); }
+/** v2.8.1: la frase (entre comas, puntos o saltos de línea) que mencione un dato sensible se reemplaza; el resto de la preferencia se conserva. */
+function quitarSensibles_(s) {
+  var partes = String(s).split(/([.,;:!?\n]+)/), out = [], omitida = false;
+  partes.forEach(function (x) { if (/^[.,;:!?\n]+$/.test(x)) { out.push(x); return; } if (x.trim() && esSensible_(x)) { if (!omitida) out.push(' [dato sensible omitido]'); omitida = true; } else { out.push(x); omitida = false; } });
+  return out.join('').replace(/\s+([.,;:])/g, '$1').replace(/[,;:]+\s*([.!?])/g, '$1').replace(/([.,;:])\1+/g, '$1').trim();
+}
 /** Minimización: las preferencias no deben traer correos, teléfonos ni documentos. */
 function limpiar_(s) {
   return String(s).replace(/[^\s@]+@[^\s@]+/g, '[correo]')
@@ -315,7 +336,7 @@ function registrar_(d) {
     if (gg && van >= Number(gg.n_invitados)) avisarEquipo_('Sintonía · ya aceptaron todos', 'Ya aceptaron todas las personas del grupo «' + (gg.nombre || gg.tipo_grupo) + '». Cierra el reclutamiento y crea el grupo de WhatsApp: https://sintonia.my/piloto/mago.html');
   }
   if (int_(d.fatiga_previa) !== '') append_('linea_base', { pid: pid, grupo_id: grupo.grupo_id, fatiga_previa: int_(d.fatiga_previa) });
-  if (d.preferencias) append_('preferencias', { pid: pid, grupo_id: grupo.grupo_id, resumen: limpiar_(str_(d.preferencias, 400)) });
+  if (d.preferencias) append_('preferencias', { pid: pid, grupo_id: grupo.grupo_id, resumen: quitarSensibles_(limpiar_(str_(d.preferencias, 400))) });   // v2.8.1: + datos sensibles
   return { ok: true, pid: pid, rol: rol, grupo_id: grupo.grupo_id, experimento: grupo.experimento,
     codigo_invitacion: rol === 'organizador' ? grupo.codigo_invitacion : undefined };
 }
@@ -409,7 +430,7 @@ function proponerIA_(d) {
     var vistos = {};
     ops = crudo.slice(0, 3).map(function (o) {
       var ids = (o.paradas_ids || []).filter(function (x) { if (byId[x]) return true; descartadas++; return false; }).slice(0, 2);
-      return { tipo: ['exacta', 'intermedia', 'diferente'].indexOf(String(o.tipo)) >= 0 ? String(o.tipo) : '', titulo: str_(o.titulo, 60), hora_salida: str_(o.hora_salida, 40), presupuesto_aprox: str_(o.presupuesto_aprox, 40), por_que: str_(o.por_que, 200),
+      return { tipo: ['exacta', 'intermedia', 'diferente'].indexOf(String(o.tipo)) >= 0 ? String(o.tipo) : '', titulo: tituloCorto_(o.titulo), hora_salida: str_(o.hora_salida, 40), presupuesto_aprox: str_(o.presupuesto_aprox, 40), por_que: str_(o.por_que, 200),
         paradas: ids.map(function (x) { return parada_(byId[x]); }) };
     }).filter(function (o) { var k = o.paradas.map(function (q) { return q.id; }).join('+'); if (!o.paradas.length || vistos[k]) return false; vistos[k] = 1; return true; });
   }
@@ -417,6 +438,8 @@ function proponerIA_(d) {
   return { ok: true, opciones: ops, ids_descartados: descartadas, tokens: usos };
 }
 
+/** v2.8.1: título de hasta 30 caracteres, cortado en la última palabra completa (va en la encuesta de WhatsApp). */
+function tituloCorto_(t) { t = str_(t, 120).trim(); if (t.length <= 30) return t; var c = t.slice(0, 31), k = c.lastIndexOf(' '); return (k > 10 ? c.slice(0, k) : t.slice(0, 30)).replace(/[\s,;:·—-]+$/, '').replace(/\s+(con|de|del|en|y|a|al|la|el|los|las|para|por|o)$/i, ''); }
 /** v2.4.0: lo que se guarda de cada parada (sirve para el mensaje, la ubicación del evento y el enlace de Google Maps). */
 function parada_(i) { return { id: i.id, nombre: i.nombre, zona: i.zona, macro_zona: i.macro_zona || '', direccion: i.direccion || '', latitud: i.latitud || '', longitud: i.longitud || '', costo_aprox: i.costo_aprox, horario: i.horario }; }
 
@@ -831,11 +854,12 @@ function vistaMago_(q) {
         return { pid: p.pid, rol: p.rol, ts: p.ts, nombre: (nombres[p.pid] || {}).nombre || '', whatsapp: (nombres[p.pid] || {}).whatsapp || '' }; }),   // v2.8.0: + ts (hora en que aceptó)
       preferencias: rows_('preferencias').filter(function (r) { return r.grupo_id === g.grupo_id; }).map(function (r) { return r.resumen; }) };
   });
-  var votos = rows_('votos'), evs = rows_('eventos'), oper = rows_('operacion'), rts = rows_('retro'), usb = rows_('usabilidad'), decs = rows_('decisiones');
+  var votos = rows_('votos'), evs = rows_('eventos'), oper = rows_('operacion'), rts = rows_('retro'), usb = rows_('usabilidad'), decs = rows_('decisiones'), pmg = rows_('pulso_mago');
   var planes = rows_('planes').map(function (p) {
     var o = {}; SHEETS.planes.forEach(function (c) { o[c] = p[c]; });
     o.decisiones = decs.filter(function (x) { return x.plan_id === p.plan_id; }).map(function (x) { return { ronda_votacion: x.ronda_votacion, resultado: x.resultado, votaron: x.votaron, total: x.total, votos_opciones: x.votos_opciones, cualquiera: x.cualquiera, ninguna: x.ninguna, ts: x.ts }; });   // v2.4.0
     // v2.2.6: quién ya respondió el pulso y la usabilidad (para enviar el complemento de W1 solo a quien falta)
+    o.pulso_mago = pmg.some(function (x) { return x.plan_id === p.plan_id; });   // v2.8.1
     o.retro_pids = rts.filter(function (r) { return r.plan_id === p.plan_id; }).map(function (r) { return r.pid; });
     o.usabilidad_pids = usb.filter(function (r) { return r.plan_id === p.plan_id; }).map(function (r) { return r.pid; });
     // v2.2.1: la consola ve el conteo y el estado de cada persona (para registrar lo que pasa en el chat del E1)
