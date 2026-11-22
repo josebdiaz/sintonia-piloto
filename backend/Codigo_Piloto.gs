@@ -1,7 +1,13 @@
 /**
- * Sintonía · Piloto v2.7.4 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.8.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.8.0 (22/11, ola A de la prueba externa):
+ *   - Aviso al equipo por cada aceptación nueva («Aceptó 1 persona más: 2 de 3»), sin nombres ni números. Se apaga con la propiedad
+ *     AVISO_POR_ACEPTACION = no. Cuando acepta la última persona sigue llegando solo «ya aceptaron todos».
+ *   - ?view=mago: cada miembro trae la hora en que aceptó (ts), para el reloj «recordar a quien organiza» de la consola.
+ *   - proponer_ia recibe «fechas» (las fechas concretas del plan) y las pone en el prompt, para respetar el día de la semana y el horario de cada lugar.
+ *   - disponibilidad admite «· fechas: AAAA/MM/DD, …» (la inscripción 2.8.0 pide fechas concretas).
  * Versión 2.7.4 (22/11): Gemini se presenta como «el +1 de confianza» del parche.
  * Versión 2.7.3 (15/11, prueba de Juan José): «Ajustar con Gemini» pone primero la indicación del mago y pide español neutro, sin jerga caleña.
  * Versión 2.7.2 (15/11): «Empezar piloto real» ya no borra 'operacion' ni 'sesiones' (son el registro de horas del monitor; el panel solo
@@ -101,7 +107,8 @@
  *   COSTO_HORA_HUMANA_COP (valor de referencia para costear minutos del mago; opcional),
  *   AVISO_VERSION (p. ej. v1-2026-10),
  *   TOLERANCIA_MIN (minutos de gracia para contar una llegada "a tiempo"; por defecto 15)
- *   NOTIFICAR_A (opcional, v2.4.0: correo del equipo para avisar inscripciones; sin datos personales)
+ *   NOTIFICAR_A (opcional, v2.4.0: correo(s) del equipo para avisar inscripciones, separados por coma; sin datos personales)
+ *   AVISO_POR_ACEPTACION (opcional, v2.8.0: «no» apaga el aviso por cada aceptación; por defecto se envía)
  *
  * Zona horaria: en Configuración del proyecto, poner America/Bogota. La hora_encuentro se interpreta en esa zona.
  */
@@ -301,9 +308,11 @@ function registrar_(d) {
     aviso_version: prop_('AVISO_VERSION', 'v1'), estado: 'activo',
     consent_metodo: d.consent_metodo === 'boton_todo' ? 'boton_todo' : 'individual' });   // v2.2.1: queda registro de si usó "Marcar todo"
   append_('contactos', { pid: pid, nombre_pila: str_(d.nombre_pila, 40), whatsapp: str_(d.whatsapp, 20).replace(/[^\d+]/g, '') });
-  if (rol === 'miembro') {   // v2.4.0: aviso cuando aceptan todos
-    var gg = findOne_('grupos', 'grupo_id', grupo.grupo_id);
-    if (gg && activos_(gg.grupo_id).length >= Number(gg.n_invitados)) avisarEquipo_('Sintonía · ya aceptaron todos', 'Ya aceptaron todas las personas del grupo «' + (gg.nombre || gg.tipo_grupo) + '». Cierra el reclutamiento y crea el grupo de WhatsApp: https://sintonia.my/piloto/mago.html');
+  if (rol === 'miembro') {   // v2.4.0: aviso cuando aceptan todos · v2.8.0: y por cada aceptación nueva (se apaga con AVISO_POR_ACEPTACION = no)
+    var gg = findOne_('grupos', 'grupo_id', grupo.grupo_id), van = gg ? activos_(gg.grupo_id).length : 0, nombreG = gg ? (gg.nombre || gg.tipo_grupo) : '';
+    if (gg && van < Number(gg.n_invitados) && String(prop_('AVISO_POR_ACEPTACION', 'si')).toLowerCase() !== 'no')
+      avisarEquipo_('Sintonía · aceptó 1 persona más (' + van + ' de ' + gg.n_invitados + ')', 'Aceptó 1 persona más en «' + nombreG + '»: ' + van + ' de ' + gg.n_invitados + '. Consola del mago: https://sintonia.my/piloto/mago.html');
+    if (gg && van >= Number(gg.n_invitados)) avisarEquipo_('Sintonía · ya aceptaron todos', 'Ya aceptaron todas las personas del grupo «' + (gg.nombre || gg.tipo_grupo) + '». Cierra el reclutamiento y crea el grupo de WhatsApp: https://sintonia.my/piloto/mago.html');
   }
   if (int_(d.fatiga_previa) !== '') append_('linea_base', { pid: pid, grupo_id: grupo.grupo_id, fatiga_previa: int_(d.fatiga_previa) });
   if (d.preferencias) append_('preferencias', { pid: pid, grupo_id: grupo.grupo_id, resumen: limpiar_(str_(d.preferencias, 400)) });
@@ -385,6 +394,7 @@ function proponerIA_(d) {
     '(5) "titulo": máximo 30 caracteres, sin emojis (va como opción de una encuesta de WhatsApp); ' +
     '"por_que": una frase, máximo 120 caracteres, sobre qué van a hacer.\n\n' +
     'Disponibilidad del grupo (días y franjas que marcó quien organiza): ' + str_(dispo, 200) + '\n' +
+    (d.fechas ? 'Fecha(s) concreta(s) del plan: ' + str_(d.fechas, 200) + '. Cada lugar tiene que estar abierto ese día de la semana y en esa franja (mira su horario).\n' : '') +   // v2.8.0
     'Lo que dijeron para este plan (puede ser el chat pegado): ' + str_(d.restricciones, 1500) + '\n' +
     'Preferencias del grupo (resumidas):\n' + prefs + '\n\n' +
     'INVENTARIO (id | categoría | nombre | zona | costo | horario | franja | duración | apto para):\n' + invTxt + '\n\n' +
@@ -818,7 +828,7 @@ function vistaMago_(q) {
       tipo_grupo: g.tipo_grupo, n_invitados: g.n_invitados, codigo_invitacion: g.codigo_invitacion, nombre: g.nombre || '',
       disponibilidad: (lbs[g.grupo_id] || {}).disponibilidad || '',   // v2.4.0
       miembros: part.filter(function (p) { return p.grupo_id === g.grupo_id; }).map(function (p) {
-        return { pid: p.pid, rol: p.rol, nombre: (nombres[p.pid] || {}).nombre || '', whatsapp: (nombres[p.pid] || {}).whatsapp || '' }; }),
+        return { pid: p.pid, rol: p.rol, ts: p.ts, nombre: (nombres[p.pid] || {}).nombre || '', whatsapp: (nombres[p.pid] || {}).whatsapp || '' }; }),   // v2.8.0: + ts (hora en que aceptó)
       preferencias: rows_('preferencias').filter(function (r) { return r.grupo_id === g.grupo_id; }).map(function (r) { return r.resumen; }) };
   });
   var votos = rows_('votos'), evs = rows_('eventos'), oper = rows_('operacion'), rts = rows_('retro'), usb = rows_('usabilidad'), decs = rows_('decisiones');

@@ -41,7 +41,7 @@
 
 | Ola | Para cuándo | Prompts |
 |---|---|---|
-| **A · Antes de la próxima prueba** (viernes) | Lo que hizo fallar el flujo con quien organiza | 1, 2, 3, 4, 5 |
+| **A · Antes de la próxima prueba** (viernes) | Lo que hizo fallar el flujo con quien organiza | 1, 2, 3, 4, 5 · **hechos el 22/11** (consola y backend 2.8.0; ver CHANGELOG) |
 | **B · Para la sustentación** (4/12) | Instrumento y modelo de negocio | 6, 7 |
 | **C · Material POP y landing** (este fin de semana) | QR y página pública | 8 |
 | **D · Protocolo de la prueba con Cali** | El día de la prueba | 9 |

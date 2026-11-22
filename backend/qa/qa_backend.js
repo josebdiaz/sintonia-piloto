@@ -198,6 +198,26 @@ chk('2.7.0 panel resume la consola por condición', pnC.ok && pnC.por_experiment
   ctx.UrlFetchApp.fetch = fx0; }
 ctx.UrlFetchApp.fetch = fetchViejo; delete PROPS.NOTIFICAR_A;
 
+// 2.8.0 (ola A): aviso por cada aceptación, hora de aceptación, fechas concretas
+{ const c8 = []; ctx.MailApp = { sendEmail: (to, a, b) => c8.push([to, a, b]), getRemainingDailyQuota: () => 100 }; PROPS.NOTIFICAR_A = 'equipo@qa,monitor@qa';
+  const o8 = post(Object.assign({ action: 'registrar', experimento: 'E1', modo: 'prueba', tipo_grupo: 'amigos', n_invitados: 3, nombre_grupo: 'Ocho', disponibilidad: 'dias: sabado · franjas: tarde · fechas: 2026/11/28, 2026/12/05', nombre_pila: 'Luz', whatsapp: '+573009990041' }, cons));
+  post(Object.assign({ action: 'registrar', codigo_invitacion: o8.codigo_invitacion, nombre_pila: 'Mar', whatsapp: '+573009990042' }, cons));
+  chk('2.8.0 aviso por cada aceptación (2 de 3), a varios correos, sin nombres ni números', c8.length === 2 && /2 de 3/.test(c8[1][1] + c8[1][2]) && c8[1][0] === 'equipo@qa,monitor@qa' && !/Luz|Mar\b|300999/.test(c8[1][1] + c8[1][2]), c8);
+  post(Object.assign({ action: 'registrar', codigo_invitacion: o8.codigo_invitacion, nombre_pila: 'Sol', whatsapp: '+573009990043' }, cons));
+  chk('2.8.0 con la última aceptación llega solo «ya aceptaron todos»', c8.length === 3 && /aceptaron todos/.test(c8[2][1]), c8.map(c => c[1]));
+  PROPS.AVISO_POR_ACEPTACION = 'no';
+  const q8 = post(Object.assign({ action: 'registrar', experimento: 'E1', modo: 'prueba', tipo_grupo: 'amigos', n_invitados: 3, nombre_pila: 'Ra', whatsapp: '+573009990044' }, cons));
+  post(Object.assign({ action: 'registrar', codigo_invitacion: q8.codigo_invitacion, nombre_pila: 'Re', whatsapp: '+573009990045' }, cons));
+  chk('2.8.0 AVISO_POR_ACEPTACION = no apaga el aviso por aceptación', c8.length === 4, c8.map(c => c[1]));
+  delete PROPS.AVISO_POR_ACEPTACION;
+  const v8 = get({ view: 'mago', key: A }).grupos.filter(x => x.grupo_id === o8.grupo_id)[0];
+  chk('2.8.0 la vista del mago trae la hora de aceptación y las fechas intactas', v8 && v8.miembros.every(m => m.ts) && /fechas: 2026\/11\/28, 2026\/12\/05/.test(v8.disponibilidad), v8 && v8.disponibilidad);
+  post({ action: 'cerrar_reclutamiento', key: A, grupo_id: o8.grupo_id }); const pl8 = post({ action: 'crear_plan', key: A, grupo_id: o8.grupo_id });
+  let pr8 = ''; const fx8 = ctx.UrlFetchApp.fetch; ctx.UrlFetchApp.fetch = (u, o) => { pr8 = JSON.parse(o.payload).contents[0].parts[0].text; return resp([{ tipo: 'exacta', titulo: 'A', paradas_ids: ['INV-01'] }, { tipo: 'intermedia', titulo: 'B', paradas_ids: ['INV-02'] }, { tipo: 'diferente', titulo: 'C', paradas_ids: ['INV-03'] }]); };
+  post({ action: 'proponer_ia', key: A, plan_id: pl8.plan_id, restricciones: 'x', fechas: 'sábado 28 de noviembre' });
+  chk('2.8.0 Gemini recibe la fecha concreta del plan', /Fecha\(s\) concreta\(s\) del plan: sábado 28 de noviembre/.test(pr8) && /fechas: 2026\/11\/28/.test(pr8), pr8.slice(0, 120));
+  ctx.UrlFetchApp.fetch = fx8; delete PROPS.NOTIFICAR_A; }
+
 // 2.5.0: ubicaciones e inventario liviano
 const ub = vm.runInContext('revisarUbicaciones_', ctx)([{ id: 'A', direccion: 'Cl 5', latitud: 34516, longitud: -765320 }, { id: 'B', direccion: '', latitud: 3.45, longitud: -76.53 }, { id: 'C', direccion: 'Cra 1', latitud: 4.6, longitud: -74.1 }, { id: 'D', direccion: 'Cra 2', latitud: '', longitud: '' }]);
 chk('2.5.0 probarMontaje: ubicaciones (regional, fuera de Cali, sin dirección, sin coordenadas)', /3 de 4 con dirección/.test(ub) && /1 con coordenadas leídas/.test(ub) && /1 con coordenadas fuera de Cali \(p\. ej\. C\)/.test(ub) && /1 sin coordenadas/.test(ub), ub);

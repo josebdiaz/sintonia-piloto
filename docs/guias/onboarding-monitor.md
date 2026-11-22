@@ -197,8 +197,16 @@ Visual: secuencia horizontal de cinco pasos con flechas; el primero y el último
 
 ---
 
+> **Actualización 22/11 · consola 2.8.0** (ola A de la prueba externa):
+> - **Quién manda qué al empezar.** Tú le mandas a quien organiza el mensaje de bienvenida con el enlace de inscripción («Inscribir un grupo nuevo»). Ella reenvía la invitación a su parche: Sintonía no tiene esos números. Si en 2 h no acepta nadie más, la consola te muestra un reloj y el botón **«Recordar a … que comparta la invitación»**, con el mensaje listo.
+> - **Crear el grupo de WhatsApp, en 3 pasos.** (1) Guarda a quien organiza como contacto en el teléfono Sintonía («Copiar nombre y número»): WhatsApp solo deja agregar a un grupo a quien está en tus contactos. (2) Crea el grupo agregándola. (3) Pega el enlace del grupo y manda «Invitar a…» a los demás. Si no la pudiste agregar, **«Invitar a <quien organiza>»** está abajo como plan B. Ya no hace falta escribir ningún mensaje a mano. *(Corrige la nota de la 2.7.1, que quitaba ese botón.)*
+> - **Fechas concretas.** La inscripción pide fechas («sáb 29 nov»). /opciones dice la fecha y, si hay varias, la cola agrega la encuesta **«¿Qué día?»** antes de la del plan. El cierre trae la fecha precargada.
+> - **Orden de los mensajes.** Mientras el grupo vota, /confirmado, /hoy, /todos y la encuesta de cierre no se pueden copiar. /recordatorio desaparece cuando ya votaron todos.
+> - **Plazo para confirmar.** /confirmado y el evento dicen hasta cuándo marcar si van (la víspera a las 6:00 p. m.). Antes de ese plazo la consola no ofrece /hoy ni /salida (en modo prueba sí).
+> - **Avisos.** Te llega un correo por cada aceptación si tu correo está en la propiedad NOTIFICAR_A del script (pídeselo a José). En la lista, «Aceptó alguien más» queda en la fila del grupo hasta que lo abres.
+
 > **Actualización 15/11 · consola 2.7.1** (prueba de Juan José). Esta guía describe la consola 2.2.2; mientras se actualiza completa, valen estos cambios:
-> - El grupo de WhatsApp se crea agregando a quien organiza; a los demás se les manda el enlace.
+> - ~~El grupo de WhatsApp se crea agregando a quien organiza; a los demás se les manda el enlace.~~ Ver la actualización 2.8.0: primero se guarda como contacto.
 > - «Pulso» ahora se llama **Encuesta de cierre** y está también en Mensajes · Cierre, con un mensaje por persona.
 > - «Ajustar con Gemini» abre un campo para escribir la indicación («más corto», «tono entre amigas»); Gemini usa español neutro, sin jerga caleña.
 > - «Llegó» y «En casa» se ven al instante, sin recargar.
@@ -210,7 +218,7 @@ Etiqueta: Paso a paso · 1 de 2
 
 | # | Dónde | Qué haces |
 |---|---|---|
-| 1 | Grupo | Con todas las aceptaciones: cerrar reclutamiento y crear el grupo desde el número de Sintonía **agregando a quien organiza** (WhatsApp no deja crear un grupo vacío). Pegar el enlace del grupo y enviárselo a los demás con «Invitar a…» |
+| 1 | Grupo | Con todas las aceptaciones: cerrar reclutamiento. **Guardar a quien organiza como contacto** en el teléfono Sintonía, crear el grupo agregándola (WhatsApp no deja crear un grupo vacío ni agregar a quien no está en tus contactos), pegar el enlace del grupo y enviárselo a los demás con «Invitar a…». Plan B: «Invitar a <quien organiza>» |
 | 2 | Mensajes | Enviar **/ingreso**: bienvenida, transparencia y aviso de privacidad |
 | 3 | Plan | Crear el plan 1. Pedir opciones (solo inventario activo), revisarlas y publicar |
 | 4 | Mensajes | Pegar **/opciones**. Si a las 2 h faltan votos: **un solo /recordatorio** |

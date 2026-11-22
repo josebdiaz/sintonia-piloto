@@ -7,8 +7,8 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Componente | Versión | Estado |
 |---|---|---|
-| Frontend (consola, panel, páginas de participante) | **2.7.3** | Publicado en https://sintonia.my el 22/11 (voz «Tu +1 de confianza») |
-| Backend (Apps Script) | **2.7.4** | Desplegado el 22/11 (Gemini se presenta como «el +1 de confianza») |
+| Frontend (consola, panel, páginas de participante) | **2.8.0** | Publicado en https://sintonia.my el 22/11 (ola A de la prueba externa: invitar, crear el grupo, fechas, orden, avisos) |
+| Backend (Apps Script) | **2.7.4** en vivo · 2.8.0 entregada | **Desplegar la 2.8.0**: aviso por cada aceptación, hora de aceptación (reloj de 2 h) y fechas para Gemini. Sin ella, la consola 2.8.0 funciona, sin esas tres cosas |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
 | Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main` |
@@ -19,6 +19,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Versión | Cambio principal | Origen |
 |---|---|---|
+| 2.8.0 | «Falta un paso: invita a tu parche», recordar a quien organiza, grupo en 3 pasos con plan B, fechas concretas y encuesta «¿Qué día?», opciones de 4 líneas con un precio, mensajes de cierre bloqueados mientras votan, plazo para confirmar, aviso por cada aceptación | Prueba externa (ola A) |
 | Home 17/11 | Menú del home generado desde el repo (estado, versiones, último cambio, pendientes) y acción «Home al día»; código secreto usable en celular | Protocolo del home |
 | 2.7.1 · 2.7.3 | Grupo de WhatsApp con quien organiza, `wa.me` sin emojis, Gemini con indicación y sin jerga, llegadas al instante, «Encuesta de cierre», escala de Desempeño | Prueba de Juan José (15/11) |
 | v1 stickers | 14 stickers de marca en `docs/stickers/` | Prueba de Juan José |
@@ -27,6 +28,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 | 2.6.0 | Mapa del recorrido: 2 planes × 5 etapas (Grupo, Proponer, Decidir, El día, Cierre) | Revisión visual |
 | 2.7.0 | Plan F0–F5: marcadores `[n]` bloqueados, cola de mensajes, conteo de votos «− n +», día y hora en botones, llegadas en un toque, color semántico, teléfonos enmascarados, sin «Trabajo» en la inscripción. **Medición de la consola** (hojas `medicion_consola` y `pulso_mago`: SUS y NASA-TLX de quien opera) | Revisión visual (`claude/revision-visual-consola-2026-11-15.md`, Proyecto) |
 
+QA al 22/11 (2.8.0): backend 90 de 90 · recorrido completo 57 de 57 · ola A 22 de 22 · F0–F5 25 de 25 · axe sin hallazgos nuevos.
 QA al 17/11: backend 85 de 85 · recorrido completo 52 de 52 · F0–F5 y 2.7.1 25 de 25 · código secreto 20 de 20 (iPhone, Pixel, escritorio) · axe-core 0 · sin scroll horizontal a 390 px.
 
 ## 3. Implicaciones para las otras etapas
@@ -91,13 +93,13 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Ola A de mejoras antes de la próxima prueba (prompts 1 a 5): invitar al parche sin pérdida, crear el grupo sin chocar con los contactos, fecha concreta, mensajes en orden y avisos al monitor | Prueba con Cali (viernes) | José |
+| 1 | Desplegar el backend 2.8.0 y probar en un teléfono real el enlace corto de Maps de una opción. La ola A (prompts 1 a 5) está hecha en la consola 2.8.0 | Prueba con Cali (viernes) | José |
 | 2 | Agregar el correo del monitor a la propiedad `NOTIFICAR_A` del script y cargar los stickers en el número Sintonía | Prueba con Cali | José |
 | 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
 | 4 | Landing pública y QR para el material POP (prompt 8); impresos este fin de semana | Material POP | Equipo |
 | 5 | Guion de la prueba con un grupo de Cali (prompt 9) | Prueba con Cali | Equipo |
 | 6 | Publicar el aviso de privacidad v2 | Datos reales | Equipo |
-| 7 | Actualizar el onboarding del monitor a la consola 2.7.x | Inducción | Equipo |
+| 7 | Actualizar el onboarding del monitor a la consola 2.8 completa (hoy tiene las notas de 2.7.1 y 2.8.0 arriba de la guía 2.2.2) | Inducción | Equipo |
 | 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |
 | 9 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
 | 10 | Control de compromisos de los periodos 8 y 9: archivo interno consolidado al cierre; escribir a soporte por las fechas | Seguimiento de la maestría | José |
@@ -107,7 +109,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 ## 4.2 Prueba externa (semana del 15/11, n = 1, modo prueba)
 
-Hallazgos y prompts: `docs/prompts-mejoras-prueba-externa.md`. Los que más pesan: quien organiza no entendió que debía compartir la invitación; WhatsApp no deja agregar a quien no está en los contactos; faltó la fecha concreta; los mensajes salieron en desorden; faltó la disposición a pagar.
+Hallazgos y prompts: `docs/prompts-mejoras-prueba-externa.md`. **Ola A (prompts 1 a 5): hecha en la consola 2.8.0 el 22/11**; el backend 2.8.0 falta desplegarlo. Los que más pesan: quien organiza no entendió que debía compartir la invitación; WhatsApp no deja agregar a quien no está en los contactos; faltó la fecha concreta; los mensajes salieron en desorden; faltó la disposición a pagar.
 
 **Decisiones del 19/11 (P8c):** se aplazan las licencias y la automatización hasta tener más pruebas manuales con grupos de Cali; la próxima prueba es con un grupo de Cali y el equipo observa sin intervenir; la disposición a pagar entra en las respuestas de los usuarios; el material POP se imprime este fin de semana, con un QR a una landing pública; la entrega final es el 4/12.
 

@@ -5,6 +5,23 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Ola A de la prueba externa (frontend 2.8.0 · backend 2.8.0)
+Prompts 1 a 5 de `docs/prompts-mejoras-prueba-externa.md`, para la prueba con el grupo de Cali. Evidencia: una sola prueba en modo prueba (n = 1, Emergente).
+- **Invitar al parche (prompt 1).** La pantalla final de la inscripción ya no dice «¡Listo!»: dice «Falta un paso: invita a tu parche», explica que Sintonía no tiene los números y el botón principal es «Enviar la invitación por WhatsApp» (recibe el foco). En la consola, «Esperar que acepten» trae «Recordar a <quien organiza> que comparta la invitación», con el mensaje listo, y un reloj a las 2 h sin aceptaciones nuevas (fuera de modo prueba).
+- **Crear el grupo de WhatsApp (prompt 2).** Tres pasos: guardar a quien organiza como contacto («Copiar nombre y número»), crear el grupo agregándola y mandar «Invitar a…» a los demás. «Invitar a <quien organiza>» vuelve como plan B. Corrige la 2.7.1, que lo había quitado. La guía del monitor se actualizó.
+- **Fecha concreta (prompt 3).** La inscripción pide «¿Qué fechas les sirven?» (botones de las próximas 2 semanas en los días marcados, hasta 4) y las guarda como `fechas: AAAA/MM/DD` en la disponibilidad. /opciones dice la fecha («para el sábado 29 de noviembre en la tarde»). Con varias fechas, la cola de Proponer agrega la encuesta «¿Qué día?» antes de la del plan. El cierre precarga la fecha. Gemini recibe la fecha concreta. Los grupos inscritos antes ven las próximas 3 fechas que caen en sus días.
+- **Mensajes cortos y en orden (prompt 4).**
+  - Cada opción cabe en 4 líneas: título, qué van a hacer, dónde (la zona una sola vez) con un solo precio y el mapa.
+  - El precio es el punto medio del rango, redondeado a miles («$80.000 – $148.000» → «aprox. $114.000 por persona»). Se eligió el punto medio para no prometer un plan más barato de lo que suele salir.
+  - El enlace de Maps lleva al mismo lugar, pero es más corto: espacios como «+», comas sin codificar y sin el departamento. **Falta probarlo en un teléfono real.**
+  - Mientras el grupo vota no se pueden copiar /confirmado, /evento, /hoy, /salida, /todos ni la encuesta de cierre. /recordatorio desaparece cuando ya votaron todos.
+  - /confirmado y el evento dicen hasta cuándo marcar si van (la víspera a las 6:00 p. m., o 3 h antes si el plan es muy pronto). Antes de ese plazo, la consola no ofrece /hoy ni /salida, salvo en modo prueba.
+- **Avisos y preferencias (prompt 5).**
+  - Backend 2.8.0: un correo por cada aceptación nueva («Aceptó 1 persona más: 2 de 3»), sin nombres ni números. Se apaga con `AVISO_POR_ACEPTACION = no`. `backend/README.md` explica que `NOTIFICAR_A` acepta varios correos separados por coma y que el del monitor va en las propiedades del script.
+  - En la consola, «Aceptó alguien más» queda en la fila del grupo hasta que lo abres.
+  - El paso 2 de la inscripción pide describir al grupo en general. La pista sobre datos sensibles va arriba del campo, con un ejemplo: «hay una restricción de alcohol».
+- QA: backend 90 de 90, recorrido completo 57 de 57, ola A 22 de 22 (inscripción en iPhone 13 con capturas antes y después), F0–F5 25 de 25, axe sin hallazgos nuevos.
+
 ### 2026-11-22 · Voz: «Tu +1 de confianza» (frontend 2.7.3 · backend 2.7.4)
 - Sintonía se presenta como **«tu +1 de confianza»** cuando le habla a una persona y como **«su +1 de confianza»** cuando le habla al grupo. Reemplaza «el quinto amigo» y la fórmula «amigo n + 1» de la 2.7.2.
 - Cambia en la bienvenida a quien organiza, el primer mensaje a cada persona y /ingreso (constantes `MARCA_TU` y `MARCA_SU`), en los prompts de Gemini (backend 2.7.4: proponer y redactar), en el texto de E1.5 (`n8n/PROMPT-n8n-builder.md`), en E3 y en la demo del DS. También en el README, la guía y el deck del monitor, el business case y los prompts de avatares.
@@ -189,7 +206,9 @@ Ensayo interno del 13/11 en modo prueba (Juan José como mago). Todavía no hay 
 
 Desde la 2.3.0, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
-### [2.7.3] · 2026-11-22 · Voz «Tu +1 de confianza» · **en vivo**
+### [2.8.0] · 2026-11-22 · Ola A de la prueba externa (invitar, crear el grupo, fechas, orden, avisos) · **en vivo**
+Tag `piloto/v2.8.0` por crear.
+### [2.7.3] · 2026-11-22 · Voz «Tu +1 de confianza»
 Tag `piloto/v2.7.3` por crear.
 ### [2.7.2] · 2026-11-22 · «El amigo n + 1» en los mensajes
 Tag `piloto/v2.7.2` por crear.
@@ -322,7 +341,9 @@ Marcadores `[n]` bloqueados, menú «⋯» por persona, cola de mensajes, mapa e
 
 Desde la 2.3.3, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
-### [2.7.4] · 2026-11-22 · Gemini se presenta como «el +1 de confianza» · **desplegado el 22/11**
+### [2.8.0] · 2026-11-22 · Aviso por cada aceptación, hora de aceptación y fechas para Gemini · **por desplegar**
+Tag `backend/v2.8.0` por crear. QA: 90 de 90. La consola 2.8.0 funciona con el backend 2.7.4; sin desplegar, no llegan los correos por aceptación, el reloj de 2 h no se activa y Gemini no recibe la fecha.
+### [2.7.4] · 2026-11-22 · Gemini se presenta como «el +1 de confianza» · desplegado el 22/11
 Tag `backend/v2.7.4` por crear.
 ### [2.7.3] · 2026-11-15 · Gemini pone primero la indicación del mago y usa español neutro · desplegado el 15/11
 Tag `backend/v2.7.3` por crear. QA: 85 de 85.

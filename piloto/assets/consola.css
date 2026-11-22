@@ -120,6 +120,8 @@ body.consola .card { border-radius: var(--m-r-card); border-color: var(--m-papel
 .s-pilot[data-state="searching"] { background: #f7ecc9; color: #6b4e00; } .s-pilot[data-state="searching"]::before { background: #b58300; }
 .s-pilot[data-state="fixed"] { background: var(--m-vitral); color: var(--m-papel-0); } .s-pilot[data-state="fixed"]::before { background: var(--m-papel-0); }
 .s-pilot[data-state="off"] { background: var(--m-papel-100); color: var(--m-papel-700); } .s-pilot[data-state="off"]::before { background: var(--m-papel-300); }
+.c-toca.c-nueva { background: var(--m-verde-700, #1f6b4a); }
+.tpl-bloq { opacity: .75; }
 .c-toca { display: inline-flex; align-items: center; gap: 6px; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: var(--m-naranja-700); color: var(--m-papel-0); font: 700 11px/1.4 var(--m-txt); letter-spacing: .02em; vertical-align: middle; }
 
 /* ── Lo que toca ahora ────────────────────────────────────────────────── */

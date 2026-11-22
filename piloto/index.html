@@ -61,6 +61,8 @@
           <label class="chip"><input type="checkbox" value="entre_semana"><span>Entre semana</span></label><label class="chip"><input type="checkbox" value="viernes"><span>Viernes</span></label><label class="chip"><input type="checkbox" value="sabado"><span>Sábado</span></label><label class="chip"><input type="checkbox" value="domingo"><span>Domingo</span></label></div></div>
         <div class="field"><span class="label" id="franjasLbl">¿A qué hora les queda mejor?</span><div class="chips" id="franjas" role="group" aria-labelledby="franjasLbl">
           <label class="chip"><input type="checkbox" value="manana"><span>Mañana</span></label><label class="chip"><input type="checkbox" value="tarde"><span>Tarde</span></label><label class="chip"><input type="checkbox" value="noche"><span>Noche</span></label></div><span class="hint">Marca todas las que apliquen.</span></div>
+        <!-- 2.8.0 (ola A, prompt 3): fechas concretas de las próximas 2 semanas, según los días marcados -->
+        <div class="field" id="fechasCampo" hidden><span class="label" id="fechasLbl">¿Qué fechas les sirven?</span><div class="chips" id="fechas" role="group" aria-labelledby="fechasLbl"></div><span class="hint">Hasta 4. Así el plan llega con día concreto y nadie tiene que preguntar «¿cuándo es esto?».</span></div>
         <div class="field"><label for="realizados">De los últimos 5 planes que propusieron en el chat del parche, ¿cuántos se hicieron?</label><select id="realizados" required><option value="">Elige…</option><option value="0">Ninguno</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">Los 5</option></select><span class="hint">Un cálculo aproximado está bien.</span></div>
         <div class="field"><label for="quien">¿Quién suele organizar?</label><input id="quien" type="text" maxlength="40" placeholder="Por ejemplo: yo, mi hermana, nadie fijo"></div>
         <div class="field"><span class="label" id="fatigaLbl">Hoy, ¿qué tan desgastante es para ti cuadrar un plan con este grupo?</span><div id="fatiga" aria-labelledby="fatigaLbl"></div></div>
@@ -70,11 +72,11 @@
       <!-- Paso 2 · Preferencias -->
       <fieldset class="card hidden" data-step="2" style="border:0">
         <h2>¿Qué le gusta a tu parche?</h2>
-        <p class="small muted">Cuéntalo como se lo dirías a un amigo: presupuesto aproximado, zona de Cali, horarios y lo que no les sirve.</p>
+        <p class="small muted">Describe al grupo en general, a ojo: presupuesto aproximado, zona de Cali y lo que no les sirve. No hace falta preguntarle a cada persona.</p>
         <div class="field">
-          <label for="prefs">Gustos y restricciones <span class="counter" id="prefsN"></span></label>
-          <textarea id="prefs" maxlength="400" placeholder="Ej.: algo tranqui por el oeste, máximo $40.000 por persona, mejor de tarde, a dos no les gusta la rumba."></textarea>
-          <span class="hint">No incluyas teléfonos ni datos de salud, religión o política. Si algo así es importante, basta con decir "tenemos una restricción".</span>
+          <label for="prefs">Cómo es el parche <span class="counter" id="prefsN"></span></label>
+          <p class="hint" style="margin:0 0 6px" id="prefsPista">Sin detalles de nadie: nada de salud, religión, política ni teléfonos. Si algo importa, dilo en general, por ejemplo «hay una restricción de alcohol» o «alguien no puede caminar mucho».</p>
+          <textarea id="prefs" maxlength="400" aria-describedby="prefsPista" placeholder="Ej.: algo tranqui por el oeste, máximo $40.000 por persona, a la mayoría no le gusta la rumba."></textarea>
         </div>
         <div class="actions split"><button class="btn btn-ghost" type="button" data-next="1">Atrás</button><button class="btn btn-primary" type="button" data-next="3">Seguir</button></div>
       </fieldset>
@@ -92,14 +94,16 @@
 
   <!-- Éxito -->
   <section id="vistaOk" class="hidden">
-    <div class="card soft">
-      <h2 id="okTitulo">¡Listo! Tu grupo quedó creado.</h2>
-      <p class="small">Ahora cada persona del parche acepta por sí misma desde este enlace. <b>Ya contamos contigo: faltan <span id="okN"></span></b>. Si alguien no acepta, este grupo no podrá participar en la prueba.</p>
+    <!-- 2.8.0 (ola A, prompt 1): no es un «¡Listo!»: falta que quien organiza mande la invitación -->
+    <div class="card soft c-falta-paso">
+      <p class="eyebrow" style="margin:0">Tu grupo quedó creado</p>
+      <h2 id="okTitulo">Falta un paso: invita a tu parche</h2>
+      <p>Sintonía no tiene los números de tu parche. Cada persona acepta desde su propio enlace.</p>
+      <a class="btn btn-primary btn-block" id="okWa" target="_blank" rel="noopener">Enviar la invitación por WhatsApp</a>
+      <p class="small" style="margin:12px 0 0" id="okAvance"><b>Ya cuentas tú: faltan <span id="okN"></span>.</b> Si alguien no acepta, el grupo no puede participar en la prueba.</p>
       <div class="linkbox" id="okLink"></div>
-      <div class="actions split">
-        <button class="btn btn-ghost" type="button" id="okCopiar">Copiar enlace</button>
-        <a class="btn btn-primary" id="okWa" target="_blank" rel="noopener">Compartir por WhatsApp</a>
-      </div>
+      <div class="actions"><button class="btn btn-ghost btn-sm" type="button" id="okCopiar">Copiar enlace</button></div>
+      <p class="tiny muted" style="margin:6px 0 0">Puedes volver a este enlace cuando quieras y reenviarlo a quien falte.</p>
     </div>
     <div class="card hidden" id="okE2">
       <h3>Tu acceso personal al plan</h3>
@@ -107,8 +111,8 @@
       <div class="actions"><a class="btn btn-ghost btn-block" id="okPlan" href="#">Abrir mi plan</a></div>
     </div>
     <div class="card hidden" id="okE1">
-      <h3>¿Y ahora?</h3>
-      <p class="small muted">Cuando todos acepten, te escribimos desde el WhatsApp de Sintonía para armar el plan en un grupo con tu parche.</p>
+      <h3>¿Y después?</h3>
+      <p class="small muted">Cuando acepten todos, te escribimos desde el WhatsApp de Sintonía para armar el plan en un grupo con tu parche.</p>
       <div class="actions"><a class="btn btn-ghost btn-block" id="okPlanE1" href="#">Ver quién ya aceptó</a></div>
     </div>
   </section>
@@ -148,12 +152,27 @@
   function int(id) { var v = S.$(id).value; return v === '' ? '' : parseInt(v, 10); }
   // 2.1.0: disponibilidad del organizador (días y franjas), varias opciones
   function marcados(id) { return S.$$('#' + id + ' input:checked').map(function (x) { return x.value; }); }
-  function disponibilidad() { var d = marcados('dias'), f = marcados('franjas'); return d.length || f.length ? 'dias: ' + d.join(', ') + ' · franjas: ' + f.join(', ') : ''; }
+  function disponibilidad() { var d = marcados('dias'), f = marcados('franjas'), x = marcados('fechas'); return d.length || f.length ? 'dias: ' + d.join(', ') + ' · franjas: ' + f.join(', ') + (x.length ? ' · fechas: ' + x.join(', ') : '') : ''; }
+  // 2.8.0 (ola A, prompt 3): las fechas de las próximas 2 semanas que caen en los días marcados (desde mañana). Se guardan como AAAA/MM/DD:
+  // el backend borra secuencias largas de dígitos (teléfonos), y con «/» la fecha no se confunde con un número.
+  var DOW = { entre_semana: [1, 2, 3, 4], viernes: [5], sabado: [6], domingo: [0] }, DS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'], MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function pintarFechas() {
+    var antes = marcados('fechas'), dias = marcados('dias'), w = [], hoy = new Date(); hoy.setHours(12, 0, 0, 0);
+    dias.forEach(function (d) { w = w.concat(DOW[d] || []); });
+    var h = '';
+    for (var k = 1; k <= 14; k++) { var x = new Date(hoy.getTime() + k * 864e5); if (w.indexOf(x.getDay()) < 0) continue; var v = x.getFullYear() + '/' + pad(x.getMonth() + 1) + '/' + pad(x.getDate());
+      h += '<label class="chip"><input type="checkbox" value="' + v + '"' + (antes.indexOf(v) >= 0 ? ' checked' : '') + '><span>' + DS[x.getDay()] + ' ' + x.getDate() + ' ' + MS[x.getMonth()] + '</span></label>'; }
+    S.$('#fechas').innerHTML = h; S.$('#fechasCampo').hidden = !h;
+  }
+  S.$('#dias').addEventListener('change', pintarFechas);
+  S.$('#fechas').addEventListener('change', function (ev) { if (ev.target.checked && marcados('fechas').length > 4) { ev.target.checked = false; S.toast('Marca hasta 4 fechas.', true); } });
   function valida1() {
     if (!tipo.value()) return 'Elige qué tipo de grupo es.';
     var n = int('#ninv');
     if (n === '' || n < 2 || n > 8) return 'Al plan van entre 2 y 8 personas, contándote.';
     if (!marcados('dias').length || !marcados('franjas').length) return 'Marca al menos un día y una franja en que suelen poder salir.';
+    if (S.$('#fechas input') && !marcados('fechas').length) return 'Marca al menos una fecha en que les sirve el plan.';
     if (int('#realizados') === '') return 'Cuéntanos cuántos de los últimos 5 planes se hicieron (puede ser ninguno).';
     if (!fatiga.value()) return 'Marca qué tan desgastante es cuadrar un plan (1 a 5).';
     return '';
@@ -184,15 +203,15 @@
       if (!r || !r.ok) return S.toast(S.errMsg(r), true);
       S.saveMe({ pid: r.pid, grupo_id: r.grupo_id, rol: 'organizador', exp: r.experimento, nombre: nombre });
       var inv = S.link('unirse.html', { inv: r.codigo_invitacion });
-      S.$('#okTitulo').textContent = '¡Listo, ' + nombre + '! Tu grupo quedó creado.';
+      S.$('#okTitulo').textContent = 'Falta un paso, ' + nombre + ': invita a tu parche';
       var faltan = payload.n_invitados - 1;   // 2.0.7 (R11): el organizador ya cuenta
       S.$('#okN').textContent = faltan === 1 ? '1 persona más' : 'las otras ' + faltan + ' personas';
       S.$('#okLink').textContent = inv;
       S.$('#okCopiar').onclick = function () { S.copy(inv); };
-      S.$('#okWa').href = S.waShare('¡Parche! Estoy probando Sintonía para que el plan sí se dé. Únete aquí (toma 2 minutos): ' + inv);
+      S.$('#okWa').href = S.waShare('¡Parche! Estoy probando Sintonía, nuestro +1 de confianza para que el plan sí se dé. Acepta aquí (toma 2 minutos): ' + inv);
       S.$('#okPlan').href = S.link('plan.html', { pid: r.pid }); S.$('#okPlanE1').href = S.link('plan.html', { pid: r.pid });
       S.show('#okE2', false); S.show('#okE1', true);   // 2.1.0: E1 y E1.5 siguen por WhatsApp
-      S.show('#vistaForm', false); S.show('#vistaOk', true); S.show('#toast', false); window.scrollTo(0, 0);
+      S.show('#vistaForm', false); S.show('#vistaOk', true); S.show('#toast', false); window.scrollTo(0, 0); S.$('#okWa').focus();
     });
   });
 })();
