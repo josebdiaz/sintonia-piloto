@@ -1,4 +1,4 @@
-# Estado del proyecto · 17 nov 2026
+# Estado del proyecto · 22 nov 2026
 
 Sintonía · piloto en WhatsApp con grupos que ya existen en Cali. Dos condiciones: **E1** (WhatsApp + mago) y **E1.5** (WhatsApp automatizado con n8n, con una persona que aprueba y pega; valor interno `E2`).
 Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `docs/guias/`, 6/11 en el Proyecto). Historial detallado: [`CHANGELOG.md`](CHANGELOG.md).
@@ -86,23 +86,28 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 
 ## 4. Pendientes, en orden
 
-El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden de prioridad (protocolo en `docs/protocolo-home.md`).
+El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden de prioridad (protocolo en `docs/protocolo-home.md`). Los prompts para implementar los aprendizajes de la prueba externa están en `docs/prompts-mejoras-prueba-externa.md`.
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Confirmar el calendario del piloto: el propuesto el 6/11 ponía el plan 1 del 11 al 15/11 y el plan 2 del 16 al 22/11. `[Por confirmar]` qué grupos reales arrancaron y con qué versión de la consola | Piloto y análisis (23–25/11) | Equipo |
-| 2 | Publicar el aviso de privacidad v2 | Datos reales | Equipo |
-| 3 | Actualizar el onboarding del monitor a la consola 2.7.1 (O1; hoy tiene una nota de cambios arriba) | Inducción | Equipo |
-| 4 | Cargar los stickers en el WhatsApp del número Sintonía (`docs/stickers/README.md`) | — | Equipo |
-| 5 | Confirmar con Juan José su respuesta de Desempeño en la encuesta del mago (escala anterior) y corregir `pulso_mago` si hace falta | Dato del mago | José |
-| 6 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
-| 7 | Decidir N1 (encuesta nativa también en E1.5) y N11 (SUS del revisor) | Diseño de E1.5 | Equipo, con Néstor |
-| 8 | Corregir n8n: B1, B5, I5 y N1–N8 (incluida la deduplicación por ronda en W1); después T1–T16 y el ensayo de 2 planes | E1.5 | Equipo |
-| 9 | Confirmar el plan de pago de n8n y la decisión C14 (Evolution o asistida) | E1.5 | Equipo |
-| 10 | D4 · viabilidad técnica del motor (sin respuesta de Moncada) | Cierre metodológico | Equipo |
-| 11 | Crear los tags `piloto/v2.7.1` y `backend/v2.7.3` (desde esta sesión GitHub no deja subir tags) | Historial | José |
-| 12 | ~~Desplegar el backend 2.7.2 y 2.7.3~~ Hecho el 15/11 | — | José |
-| 13 | ~~`reabrir_opciones` en `MOTOR_ACCIONES` (N7)~~ Hecho en el backend 2.7.1 | — | — |
+| 1 | Ola A de mejoras antes de la próxima prueba (prompts 1 a 5): invitar al parche sin pérdida, crear el grupo sin chocar con los contactos, fecha concreta, mensajes en orden y avisos al monitor | Prueba con Cali (viernes) | José |
+| 2 | Agregar el correo del monitor a la propiedad `NOTIFICAR_A` del script y cargar los stickers en el número Sintonía | Prueba con Cali | José |
+| 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
+| 4 | Landing pública y QR para el material POP (prompt 8); impresos este fin de semana | Material POP | Equipo |
+| 5 | Guion de la prueba con un grupo de Cali (prompt 9) | Prueba con Cali | Equipo |
+| 6 | Publicar el aviso de privacidad v2 | Datos reales | Equipo |
+| 7 | Actualizar el onboarding del monitor a la consola 2.7.x | Inducción | Equipo |
+| 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |
+| 9 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
+| 10 | Control de compromisos de los periodos 8 y 9: archivo interno consolidado al cierre; escribir a soporte por las fechas | Seguimiento de la maestría | José |
+| 11 | n8n y licencias: **aplazados** (19/11) hasta tener más pruebas manuales. Cuando se retomen: N1–N11, B1, B5, I5 y C14 | E1.5 | Equipo |
+| 12 | Crear los tags `piloto/v2.7.1` y `backend/v2.7.3` | Historial | José |
+
+## 4.2 Prueba externa (semana del 15/11, n = 1, modo prueba)
+
+Hallazgos y prompts: `docs/prompts-mejoras-prueba-externa.md`. Los que más pesan: quien organiza no entendió que debía compartir la invitación; WhatsApp no deja agregar a quien no está en los contactos; faltó la fecha concreta; los mensajes salieron en desorden; faltó la disposición a pagar.
+
+**Decisiones del 19/11 (P8c):** se aplazan las licencias y la automatización hasta tener más pruebas manuales con grupos de Cali; la próxima prueba es con un grupo de Cali y el equipo observa sin intervenir; la disposición a pagar entra en las respuestas de los usuarios; el material POP se imprime este fin de semana, con un QR a una landing pública; la entrega final es el 4/12.
 
 ## 4.1 Prueba de Juan José (15/11, consola 2.7.0)
 

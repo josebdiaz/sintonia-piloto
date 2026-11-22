@@ -2,56 +2,179 @@
   "_nota": "Contenido del menú «Detrás de escena» del home (index.html). Lo editas aquí y corres `python3 tools/home.py`. La tarjeta «Estado del repo» y la versión se generan solas desde el repo. Protocolo: docs/protocolo-home.md",
   "tarjetas": [
     {
-      "clase": "now", "etiqueta": "Piloto en curso", "titulo": "¿Te invitaron?",
+      "clase": "now",
+      "etiqueta": "Piloto en curso",
+      "titulo": "¿Te invitaron?",
       "texto": "Abre el enlace que te envió quien organiza tu parche o el equipo de Sintonía. Desde ahí aceptas, votas y nos cuentas cómo les fue.",
-      "enlaces": [ { "texto": "Aviso de privacidad", "href": "piloto/aviso.html" } ]
-    },
-    { "clase": "team", "auto": "estado" },
-    {
-      "clase": "team", "etiqueta": "Equipo · operar", "titulo": "Operación del piloto",
-      "texto": "La consola y el panel piden la clave del equipo.", "texto_suave": true,
       "enlaces": [
-        { "texto": "Consola del mago", "href": "piloto/mago.html" },
-        { "texto": "Panel del piloto", "href": "piloto/panel.html" },
-        { "texto": "Plan de pruebas de usuario", "href": "docs/plan-pruebas-usuario.html", "extra": { "texto": "PDF", "href": "docs/plan-pruebas-usuario.pdf" } },
-        { "texto": "Onboarding del monitor", "href": "docs/deck-onboarding-monitor.html" },
-        { "texto": "Stickers de Sintonía", "href": "docs/stickers/hoja-de-contacto.png", "nota": "14, para el WhatsApp del número", "extra": { "texto": "cómo usarlos", "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/stickers/README.md" } }
+        {
+          "texto": "Aviso de privacidad",
+          "href": "piloto/aviso.html"
+        }
       ]
     },
     {
-      "clase": "team", "etiqueta": "Equipo · decks", "titulo": "Presentaciones",
-      "texto": "De la más reciente a la más antigua.", "texto_suave": true, "decks": true,
+      "clase": "team",
+      "auto": "estado"
+    },
+    {
+      "clase": "team",
+      "etiqueta": "Equipo · operar",
+      "titulo": "Operación del piloto",
+      "texto": "La consola y el panel piden la clave del equipo.",
+      "texto_suave": true,
       "enlaces": [
-        { "texto": "Pitch final", "href": "docs/deck-pitch-final.html", "nota": "12 dic" },
-        { "texto": "Onboarding del monitor", "href": "docs/deck-onboarding-monitor.html", "nota": "6 nov" },
-        { "texto": "Pitch técnico · motor y agente", "href": "docs/deck-pitch-tecnico.html", "nota": "30 oct" },
-        { "texto": "Status", "href": "docs/deck-status-26oct.html", "nota": "26 oct" },
-        { "texto": "Business case", "href": "docs/deck-business-case.html" },
-        { "texto": "Status interno P7", "href": "docs/deck-status-interno-p7.html", "nota": "15 oct" },
-        { "texto": "Método interno P7", "href": "docs/deck-metodo-interno-p7.html" },
-        { "texto": "Tutoría P6 · pivote", "href": "docs/deck-pivote.html" }
+        {
+          "texto": "Consola del mago",
+          "href": "piloto/mago.html"
+        },
+        {
+          "texto": "Panel del piloto",
+          "href": "piloto/panel.html"
+        },
+        {
+          "texto": "Plan de pruebas de usuario",
+          "href": "docs/plan-pruebas-usuario.html",
+          "extra": {
+            "texto": "PDF",
+            "href": "docs/plan-pruebas-usuario.pdf"
+          }
+        },
+        {
+          "texto": "Onboarding del monitor",
+          "href": "docs/deck-onboarding-monitor.html"
+        },
+        {
+          "texto": "Stickers de Sintonía",
+          "href": "docs/stickers/hoja-de-contacto.png",
+          "nota": "14, para el WhatsApp del número",
+          "extra": {
+            "texto": "cómo usarlos",
+            "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/stickers/README.md"
+          }
+        }
       ]
     },
     {
-      "clase": "team", "etiqueta": "Equipo · documentos", "titulo": "Documentación",
-      "texto": "Estado, guías por estado, textos fuente y versiones.", "texto_suave": true,
+      "clase": "team",
+      "etiqueta": "Equipo · decks",
+      "titulo": "Presentaciones",
+      "texto": "De la más reciente a la más antigua.",
+      "texto_suave": true,
+      "decks": true,
       "enlaces": [
-        { "texto": "Estado del proyecto", "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/ESTADO.md", "nota": "empieza aquí" },
-        { "texto": "Control de guías", "href": "docs/guias/", "nota": "vigentes, hechas y pendientes" },
-        { "texto": "Onboarding del monitor (Markdown)", "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/guias/onboarding-monitor.md" },
-        { "texto": "Motor n8n · guía de continuación", "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/GUIA-CONTINUACION.md" },
-        { "texto": "Motor n8n · cambios", "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/CHANGELOG.md" },
-        { "texto": "Versiones (CHANGELOG)", "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md", "auto_version": true }
+        {
+          "texto": "Pitch final",
+          "href": "docs/deck-pitch-final.html",
+          "nota": "12 dic"
+        },
+        {
+          "texto": "Onboarding del monitor",
+          "href": "docs/deck-onboarding-monitor.html",
+          "nota": "6 nov"
+        },
+        {
+          "texto": "Pitch técnico · motor y agente",
+          "href": "docs/deck-pitch-tecnico.html",
+          "nota": "30 oct"
+        },
+        {
+          "texto": "Status",
+          "href": "docs/deck-status-26oct.html",
+          "nota": "26 oct"
+        },
+        {
+          "texto": "Business case",
+          "href": "docs/deck-business-case.html"
+        },
+        {
+          "texto": "Status interno P7",
+          "href": "docs/deck-status-interno-p7.html",
+          "nota": "15 oct"
+        },
+        {
+          "texto": "Método interno P7",
+          "href": "docs/deck-metodo-interno-p7.html"
+        },
+        {
+          "texto": "Tutoría P6 · pivote",
+          "href": "docs/deck-pivote.html"
+        }
       ]
     },
     {
-      "clase": "arch", "etiqueta": "Archivo · solo lectura", "titulo": "Versiones anteriores", "decks": true,
+      "clase": "team",
+      "etiqueta": "Equipo · documentos",
+      "titulo": "Documentación",
+      "texto": "Estado, guías por estado, textos fuente y versiones.",
+      "texto_suave": true,
       "enlaces": [
-        { "texto": "Periodo 4 · H1–H4 e investigadores", "href": "archivo/p4-pre-pivote/researchers/index.html", "nota": "antes del pivote", "nota_suelta": true },
-        { "texto": "Piloto 1.0.0 («M1»)", "href": "archivo/piloto-m1-claude/index.html" },
-        { "texto": "Inducción del monitor v1", "href": "docs/deck-induccion-monitor.html", "nota": "reemplazada por el onboarding", "nota_suelta": true },
-        { "texto": "Protocolo de operación M2", "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/protocolo-m2.md", "nota": "superado: describe E2 como web app", "nota_suelta": true },
-        { "texto": "Todo el archivo", "href": "archivo/" }
+        {
+          "texto": "Estado del proyecto",
+          "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/ESTADO.md",
+          "nota": "empieza aquí"
+        },
+        {
+          "texto": "Aprendizajes de la prueba externa y prompts",
+          "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/prompts-mejoras-prueba-externa.md",
+          "nota": "22 nov"
+        },
+        {
+          "texto": "Control de guías",
+          "href": "docs/guias/",
+          "nota": "vigentes, hechas y pendientes"
+        },
+        {
+          "texto": "Onboarding del monitor (Markdown)",
+          "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/guias/onboarding-monitor.md"
+        },
+        {
+          "texto": "Motor n8n · guía de continuación",
+          "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/GUIA-CONTINUACION.md"
+        },
+        {
+          "texto": "Motor n8n · cambios",
+          "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/CHANGELOG.md"
+        },
+        {
+          "texto": "Versiones (CHANGELOG)",
+          "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md",
+          "auto_version": true
+        }
+      ]
+    },
+    {
+      "clase": "arch",
+      "etiqueta": "Archivo · solo lectura",
+      "titulo": "Versiones anteriores",
+      "decks": true,
+      "enlaces": [
+        {
+          "texto": "Periodo 4 · H1–H4 e investigadores",
+          "href": "archivo/p4-pre-pivote/researchers/index.html",
+          "nota": "antes del pivote",
+          "nota_suelta": true
+        },
+        {
+          "texto": "Piloto 1.0.0 («M1»)",
+          "href": "archivo/piloto-m1-claude/index.html"
+        },
+        {
+          "texto": "Inducción del monitor v1",
+          "href": "docs/deck-induccion-monitor.html",
+          "nota": "reemplazada por el onboarding",
+          "nota_suelta": true
+        },
+        {
+          "texto": "Protocolo de operación M2",
+          "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/protocolo-m2.md",
+          "nota": "superado: describe E2 como web app",
+          "nota_suelta": true
+        },
+        {
+          "texto": "Todo el archivo",
+          "href": "archivo/"
+        }
       ]
     }
   ],

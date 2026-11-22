@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Aprendizajes de la prueba externa y prompts de mejora
+- `docs/prompts-mejoras-prueba-externa.md`: hallazgos por momento de la prueba externa (n = 1, modo prueba, Emergente), decisiones de la reunión P8c del 19/11 y 9 prompts en 4 olas (antes de la prueba con Cali, sustentación, material POP y guion de la prueba).
+- `ESTADO.md` §4 se reordena con esas prioridades; n8n y licencias quedan aplazados.
+
 ### 2026-11-17 · Portada del home en celular
 - El glifo va arriba al centro; el texto sigue alineado a la izquierda, con 28 px de margen a los lados y más aire entre bloques; el wordmark baja al centro. Escritorio sin cambios. QA del código secreto: 20 de 20.
 
