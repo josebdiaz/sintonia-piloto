@@ -93,7 +93,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Probar la ola A de punta a punta en modo prueba (inscripción en celular, avisos por correo) y el enlace corto de Maps en un teléfono real. Consola y backend 2.8.0 desplegados | Prueba con Cali (viernes) | José |
+| 1 | Correcciones 2.8.1 de la auditoría E2E (`docs/plan-correcciones-2.8.1.md`): plazo que puede quedar en el pasado, /confirmado que contradice la opción, datos de salud de terceros en preferencias, encuesta del mago que se pierde. Lunes 23 código, martes 24 despliegue y teléfono real, miércoles 25 ensayo con WhatsApp real, jueves 26 congelar | Prueba con Cali (viernes) | Claude y José |
 | 2 | Cargar los stickers en el número Sintonía (el correo del monitor ya está en `NOTIFICAR_A`) | Prueba con Cali | José |
 | 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
 | 4 | Landing pública y QR para el material POP (prompt 8); impresos este fin de semana | Material POP | Equipo |

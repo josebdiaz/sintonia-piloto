@@ -115,6 +115,11 @@
           "nota": "empieza aquí"
         },
         {
+          "texto": "Plan de correcciones 2.8.1 (auditoría E2E)",
+          "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/plan-correcciones-2.8.1.md",
+          "nota": "22 nov"
+        },
+        {
           "texto": "Aprendizajes de la prueba externa y prompts",
           "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/prompts-mejoras-prueba-externa.md",
           "nota": "22 nov"

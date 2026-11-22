@@ -5,6 +5,9 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Auditoría E2E de la 2.8.0 y plan de correcciones
+- `docs/plan-correcciones-2.8.1.md`: una prueba completa simulada en modo prueba (código real, hoja simulada, n = 0 personas reales) dio 48 revisiones bien y 14 hallazgos. Hay 4 graves: el plazo para confirmar puede quedar en el pasado, /confirmado contradice la opción votada, los datos de salud de terceros llegan a la hoja y la encuesta del mago se pierde. El plan trae la causa en el código, la solución, el criterio de aceptación y el calendario hasta la prueba con Cali.
+
 ### 2026-11-22 · Ola A de la prueba externa (frontend 2.8.0 · backend 2.8.0)
 Prompts 1 a 5 de `docs/prompts-mejoras-prueba-externa.md`, para la prueba con el grupo de Cali. Evidencia: una sola prueba en modo prueba (n = 1, Emergente).
 - **Invitar al parche (prompt 1).** La pantalla final de la inscripción ya no dice «¡Listo!»: dice «Falta un paso: invita a tu parche», explica que Sintonía no tiene los números y el botón principal es «Enviar la invitación por WhatsApp» (recibe el foco). En la consola, «Esperar que acepten» trae «Recordar a <quien organiza> que comparta la invitación», con el mensaje listo, y un reloj a las 2 h sin aceptaciones nuevas (fuera de modo prueba).
