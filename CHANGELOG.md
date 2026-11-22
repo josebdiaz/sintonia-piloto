@@ -5,6 +5,18 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Decks al día con la 2.8.1
+- **Onboarding del monitor** (`docs/deck-onboarding-monitor.html`):
+  - El recorrido usa **capturas reales de la consola 2.8.1** (`docs/deck-onboarding-monitor/`, 8 imágenes con datos ficticios del simulador) en lugar de las pantallas dibujadas de la 2.3.
+  - Siete etapas: entrar y esperar (recordar a quien organiza), grupo en 3 pasos, opciones y «¿Qué día?», votos y cierre, confirmar con plazo, día del plan, y encuestas y plan 2.
+  - Diapositiva nueva: «Paso 0 · Quién manda qué».
+  - El contexto, lo que pasa en el chat, la voz, las contingencias, las reglas y las preguntas frecuentes van según la guía v1.2.
+- **Pitch final** (`docs/deck-pitch-final.html`): queda alineado con la decisión del 19/11.
+  - Factibilidad: hoy opera una persona con la consola; n8n entra cuando las pruebas manuales dejen de fallar.
+  - Ruta: hoy, pruebas con mago en grupos reales de Cali; después, el agente.
+  - Validación y solución: tres opciones para fechas concretas, encuesta de WhatsApp con «Ninguna me sirve».
+- **Business case** pasa a «Versiones anteriores»: es de octubre (E2 web, W1/W2), antes de D1.
+
 ### 2026-11-22 · Documentación al día con la 2.8.1
 - **Guía del monitor v1.2** (`docs/guias/onboarding-monitor.md`): reescrita para la consola 2.8.1. Diapositivas nuevas: «Paso 0 · Quién manda qué» y «Lo que toca ahora, y el resto en cuatro pestañas». También se actualizaron el paso a paso de los planes (grupo en 3 pasos, fechas, «¿Qué día?», plazo, encuesta del mago), lo que se registra del chat, la voz, las contingencias y las preguntas frecuentes. Se quitaron las notas de actualización de la 2.7.1 y la 2.8.0. Falta regenerar el deck.
 - **Control de guías:** revisión del 22/11 con frontend y backend 2.8.1; el guion de la prueba con Cali, vigente.

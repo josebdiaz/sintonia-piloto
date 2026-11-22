@@ -66,12 +66,12 @@
         {
           "texto": "Pitch final",
           "href": "docs/deck-pitch-final.html",
-          "nota": "12 dic"
+          "nota": "12 dic · actualizado 22 nov"
         },
         {
           "texto": "Onboarding del monitor",
           "href": "docs/deck-onboarding-monitor.html",
-          "nota": "6 nov"
+          "nota": "22 nov · consola 2.8.1"
         },
         {
           "texto": "Pitch técnico · motor y agente",
@@ -82,10 +82,6 @@
           "texto": "Status",
           "href": "docs/deck-status-26oct.html",
           "nota": "26 oct"
-        },
-        {
-          "texto": "Business case",
-          "href": "docs/deck-business-case.html"
         },
         {
           "texto": "Status interno P7",
@@ -164,6 +160,11 @@
       "titulo": "Versiones anteriores",
       "decks": true,
       "enlaces": [
+        {
+          "texto": "Business case",
+          "href": "docs/deck-business-case.html",
+          "nota": "octubre · superado (E2 web y W1/W2, antes de D1)"
+        },
         {
           "texto": "Periodo 4 · H1–H4 e investigadores",
           "href": "archivo/p4-pre-pivote/researchers/index.html",

@@ -18,7 +18,7 @@ CÓMO USAR ESTE ARCHIVO EN EL MOTOR DE PRESENTACIONES
   - `> Notas:` son las notas del orador. No van en pantalla.
 - Estilo: el de los decks de Sintonía (DS 3.0). Papel, noche, naranja, mostaza, vitral. Inter + Climate Crisis para el glifo.
 - Fuente de verdad: consola y backend 2.8.1 (22/11/2026). La v1.1 describía la consola 2.2.2; esta versión integra los cambios de la prueba de Juan José (2.7.1), la ola A de la prueba externa (2.8.0) y la auditoría E2E (2.8.1).
-- El deck `docs/deck-onboarding-monitor.html` todavía muestra la v1.1: regenerarlo desde este archivo.
+- El deck `docs/deck-onboarding-monitor.html` está regenerado (22/11) con capturas reales de la consola 2.8.1 en `docs/deck-onboarding-monitor/`.
 - Las cifras de encuesta son datos propios de Sintonía (n = 76, vista parcial al 25/10). Clasificación: emergente.
 -->
 

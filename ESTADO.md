@@ -101,7 +101,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | 4 | Landing pública y QR para el material POP (prompt 8); impresos este fin de semana | Material POP | Equipo |
 | 5 | Guion de la prueba con Cali: **hecho** (`docs/guias/prueba-cali.md`). Faltan sus decisiones: confirmar el grupo y el modo (se recomienda piloto, con «Empezar piloto real» el jueves 26), qué encuesta de cierre se usa (prompt 6 antes del miércoles 25 o la actual) y fecha del plan a más tardar el 30/11 | Prueba con Cali | Equipo |
 | 6 | Publicar el aviso de privacidad v2 | Datos reales | Equipo |
-| 7 | Onboarding del monitor: **guía al día** (v1.2, consola 2.8.1, 22/11). Falta regenerar el deck `docs/deck-onboarding-monitor.html` y pegar el prompt maestro v3.2 en las instrucciones del Proyecto | Inducción | José |
+| 7 | Onboarding del monitor: **guía al día** (v1.2, consola 2.8.1, 22/11). Deck regenerado con capturas reales de la 2.8.1 y prompt maestro v3.2 en las instrucciones (22/11). **Hecho** | Inducción | José |
 | 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |
 | 9 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
 | 10 | Control de compromisos de los periodos 8 y 9: archivo interno consolidado al cierre; escribir a soporte por las fechas | Seguimiento de la maestría | José |
