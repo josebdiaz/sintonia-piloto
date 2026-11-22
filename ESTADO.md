@@ -8,7 +8,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 | Componente | Versión | Estado |
 |---|---|---|
 | Frontend (consola, panel, páginas de participante) | **2.8.0** | Publicado en https://sintonia.my el 22/11 (ola A de la prueba externa: invitar, crear el grupo, fechas, orden, avisos) |
-| Backend (Apps Script) | **2.7.4** en vivo · 2.8.0 entregada | **Desplegar la 2.8.0**: aviso por cada aceptación, hora de aceptación (reloj de 2 h) y fechas para Gemini. Sin ella, la consola 2.8.0 funciona, sin esas tres cosas |
+| Backend (Apps Script) | **2.8.0** | Desplegado el 22/11 (aviso por cada aceptación, hora de aceptación y fechas para Gemini); NOTIFICAR_A con el correo del monitor |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
 | Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main` |
@@ -93,8 +93,8 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Desplegar el backend 2.8.0 y probar en un teléfono real el enlace corto de Maps de una opción. La ola A (prompts 1 a 5) está hecha en la consola 2.8.0 | Prueba con Cali (viernes) | José |
-| 2 | Agregar el correo del monitor a la propiedad `NOTIFICAR_A` del script y cargar los stickers en el número Sintonía | Prueba con Cali | José |
+| 1 | Probar la ola A de punta a punta en modo prueba (inscripción en celular, avisos por correo) y el enlace corto de Maps en un teléfono real. Consola y backend 2.8.0 desplegados | Prueba con Cali (viernes) | José |
+| 2 | Cargar los stickers en el número Sintonía (el correo del monitor ya está en `NOTIFICAR_A`) | Prueba con Cali | José |
 | 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
 | 4 | Landing pública y QR para el material POP (prompt 8); impresos este fin de semana | Material POP | Equipo |
 | 5 | Guion de la prueba con un grupo de Cali (prompt 9) | Prueba con Cali | Equipo |
@@ -109,7 +109,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 ## 4.2 Prueba externa (semana del 15/11, n = 1, modo prueba)
 
-Hallazgos y prompts: `docs/prompts-mejoras-prueba-externa.md`. **Ola A (prompts 1 a 5): hecha en la consola 2.8.0 el 22/11**; el backend 2.8.0 falta desplegarlo. Los que más pesan: quien organiza no entendió que debía compartir la invitación; WhatsApp no deja agregar a quien no está en los contactos; faltó la fecha concreta; los mensajes salieron en desorden; faltó la disposición a pagar.
+Hallazgos y prompts: `docs/prompts-mejoras-prueba-externa.md`. **Ola A (prompts 1 a 5): hecha en la consola 2.8.0 el 22/11**; backend 2.8.0 desplegado el 22/11. Los que más pesan: quien organiza no entendió que debía compartir la invitación; WhatsApp no deja agregar a quien no está en los contactos; faltó la fecha concreta; los mensajes salieron en desorden; faltó la disposición a pagar.
 
 **Decisiones del 19/11 (P8c):** se aplazan las licencias y la automatización hasta tener más pruebas manuales con grupos de Cali; la próxima prueba es con un grupo de Cali y el equipo observa sin intervenir; la disposición a pagar entra en las respuestas de los usuarios; el material POP se imprime este fin de semana, con un QR a una landing pública; la entrega final es el 4/12.
 

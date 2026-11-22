@@ -341,8 +341,8 @@ Marcadores `[n]` bloqueados, menú «⋯» por persona, cola de mensajes, mapa e
 
 Desde la 2.3.3, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
-### [2.8.0] · 2026-11-22 · Aviso por cada aceptación, hora de aceptación y fechas para Gemini · **por desplegar**
-Tag `backend/v2.8.0` por crear. QA: 90 de 90. La consola 2.8.0 funciona con el backend 2.7.4; sin desplegar, no llegan los correos por aceptación, el reloj de 2 h no se activa y Gemini no recibe la fecha.
+### [2.8.0] · 2026-11-22 · Aviso por cada aceptación, hora de aceptación y fechas para Gemini · **desplegado el 22/11**
+Tag `backend/v2.8.0` por crear. QA: 90 de 90.
 ### [2.7.4] · 2026-11-22 · Gemini se presenta como «el +1 de confianza» · desplegado el 22/11
 Tag `backend/v2.7.4` por crear.
 ### [2.7.3] · 2026-11-15 · Gemini pone primero la indicación del mago y usa español neutro · desplegado el 15/11
