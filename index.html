@@ -108,7 +108,9 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
 .menu{position:fixed;inset:0;z-index:20;background:var(--noche);color:var(--papel-50);overflow:auto;
   padding:calc(40px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
   clip-path:circle(0 at var(--cx,50%) var(--cy,50%));transition:clip-path 900ms cubic-bezier(.65,0,.35,1);visibility:hidden}
-.menu.open{clip-path:circle(150% at var(--cx,50%) var(--cy,50%));visibility:visible}
+.menu.open{clip-path:circle(var(--r,150vmax) at var(--cx,50%) var(--cy,50%));visibility:visible}
+/* 2.9.2: con el menú abierto, la landing de atrás no se desplaza */
+html.menu-abierto,html.menu-abierto body{overflow:hidden}
 .menu .wrap{max-width:1080px;margin:0 auto}
 .menu .top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:40px}
 .menu .top .wm{font-size:32px;color:var(--papel-50)} .menu .wm .i::after{background:var(--naranja)}
@@ -270,10 +272,10 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
       <section class="card team estado">
         <span class="tag">Estado del repo · 22 nov 2026</span>
         <h3>En qué va</h3>
-        <p class="versiones"><b>Frontend 2.9.1</b> · <b>Backend 2.9.0</b></p>
-        <p class="muted">Último cambio: 2026-11-22 · Logo actualizado en todo el proyecto (frontend 2.9.1)</p>
+        <p class="versiones"><b>Frontend 2.9.2</b> · <b>Backend 2.9.0</b></p>
+        <p class="muted">Último cambio: 2026-11-22 · Menú del equipo sobre la landing (frontend 2.9.2)</p>
         <p class="muted" style="margin-top:6px">Pendientes que siguen:</p>
-        <ol class="pend"><li>Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags piloto/v2.9.1 y backend/v2.9.0 (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1</li><li>Cargar los stickers en el número Sintonía (el correo del monitor ya está en NOTIFICAR_A)</li><li>Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7)</li></ol>
+        <ol class="pend"><li>Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags piloto/v2.9.2 y backend/v2.9.0 (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1</li><li>Cargar los stickers en el número Sintonía (el correo del monitor ya está en NOTIFICAR_A)</li><li>Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7)</li></ol>
         <ul><li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/ESTADO.md" target="_blank" rel="noopener">Estado del proyecto</a> <span class="muted">· todo el detalle</span></li></ul>
       </section>
       <section class="card team">
@@ -317,7 +319,7 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
           <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/guias/onboarding-monitor.md" target="_blank" rel="noopener">Onboarding del monitor (Markdown)</a></li>
           <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/GUIA-CONTINUACION.md" target="_blank" rel="noopener">Motor n8n · guía de continuación</a></li>
           <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/CHANGELOG.md" target="_blank" rel="noopener">Motor n8n · cambios</a></li>
-          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Versiones (CHANGELOG)</a> <span class="muted" id="ver">· frontend v2.9.1 · backend v2.9.0</span></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Versiones (CHANGELOG)</a> <span class="muted" id="ver">· frontend v2.9.2 · backend v2.9.0</span></li>
         </ul>
       </section>
       <section class="card arch">
@@ -360,9 +362,13 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
     if (pos === SEQ.length) { if (tactil) vibra([18, 40, 18]); reset(); open(); }
   }
   function open(){
-    const g = document.querySelector('.glyph').getBoundingClientRect();
-    menu.style.setProperty('--cx', (g.left + g.width/2) + 'px');
-    menu.style.setProperty('--cy', (g.top + g.height/2) + 'px');
+    // 2.9.2: el círculo nace en el glifo si está a la vista; si la página está desplazada, en el centro. El radio cubre siempre las cuatro esquinas.
+    const g = document.querySelector('.glyph').getBoundingClientRect(), W = window.innerWidth, H = window.innerHeight;
+    let cx = g.left + g.width/2, cy = g.top + g.height/2;
+    if (cy < 0 || cy > H || cx < 0 || cx > W) { cx = W/2; cy = H/2; }
+    menu.style.setProperty('--cx', cx + 'px'); menu.style.setProperty('--cy', cy + 'px');
+    menu.style.setProperty('--r', Math.ceil(Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) + 24) + 'px');
+    document.documentElement.classList.add('menu-abierto');
     lastFocus = document.activeElement;
     menu.hidden = false;
     requestAnimationFrame(() => requestAnimationFrame(() => menu.classList.add('open')));
@@ -370,7 +376,7 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
   }
   function close(){
     menu.classList.remove('open');
-    const done = () => { menu.hidden = true; menu.removeEventListener('transitionend', done); };
+    const done = () => { menu.hidden = true; document.documentElement.classList.remove('menu-abierto'); menu.removeEventListener('transitionend', done); };
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) done(); else menu.addEventListener('transitionend', done);
     if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true});
   }

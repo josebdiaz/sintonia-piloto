@@ -7,7 +7,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Componente | Versión | Estado |
 |---|---|---|
-| Frontend (consola, panel, páginas de participante) | **2.9.1** | Publicado en https://sintonia.my el 22/11: logo actualizado en todo el sitio. La 2.9.0 trajo la landing pública del QR del material POP (lista de espera mientras no haya cupo). La consola solo cambió de logo desde la 2.8.2 |
+| Frontend (consola, panel, páginas de participante) | **2.9.2** | Publicado en https://sintonia.my el 22/11: el menú del equipo cubre la pantalla aunque la landing esté desplazada. La 2.9.1 actualizó el logo en todo el sitio. La 2.9.0 trajo la landing pública del QR del material POP (lista de espera mientras no haya cupo). La consola solo cambió de logo desde la 2.8.2 |
 | Backend (Apps Script) | **2.9.0** en el repo · 2.8.1 desplegado | 2.9.0: `?view=cupo` y lista de espera (hoja nueva `lista_espera`). **Por desplegar**: pegar, `probarMontaje()` y «Nueva versión». Sin desplegar, la landing muestra la lista de espera pero no la puede guardar |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
@@ -100,7 +100,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags `piloto/v2.9.1` y `backend/v2.9.0` (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1 | Prueba con Cali (viernes) | José |
+| 1 | Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags `piloto/v2.9.2` y `backend/v2.9.0` (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1 | Prueba con Cali (viernes) | José |
 | 2 | Cargar los stickers en el número Sintonía (el correo del monitor ya está en `NOTIFICAR_A`) | Prueba con Cali | José |
 | 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
 | 4 | Material POP: landing y QR **hechos** (2.9.0, `docs/pop/`). Faltan: desplegar el backend 2.9.0, el archivo del logo de Icesi para la landing y las piezas, y los artes en Affinity. Impresión en dos oleadas: pines, stickers y tarjetas el 24/11; tótem y volantes el 1/12 (brief en el Proyecto) | Material POP | Equipo |

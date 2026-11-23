@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Menú del equipo sobre la landing (frontend 2.9.2)
+- Si el código secreto se usaba con la página desplazada, el círculo que revela «Detrás de escena» nacía en el glifo, que estaba fuera de la pantalla, y no alcanzaba a cubrirla: se veía la landing debajo de una curva.
+- Ahora el círculo nace en el glifo solo si está a la vista; si no, en el centro de la pantalla. Su radio se calcula para cubrir las cuatro esquinas.
+- Con el menú abierto, la landing de atrás ya no se desplaza.
+- Probado en escritorio y en iPhone con la página desplazada. Código secreto: 18 de 18.
+
 ### 2026-11-22 · Logo actualizado en todo el proyecto (frontend 2.9.1)
 El logo nuevo viene del archivo de marca «Sintonia Logo NEW UPDATED.svg». Trae el anillo exterior noche, un anillo rojo #ff2500 más ancho y una «s» redibujada.
 - El original recorta la «s» con una máscara en mapa de bits. Se vectorizó como un solo trazado: coincide en un 99,9 % con el render del original, y las esquinas de los remates quedaron rectas. Así sirve para la web y para imprimir a cualquier tamaño.
