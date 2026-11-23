@@ -30,6 +30,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 | 2.6.0 | Mapa del recorrido: 2 planes × 5 etapas (Grupo, Proponer, Decidir, El día, Cierre) | Revisión visual |
 | 2.7.0 | Plan F0–F5: marcadores `[n]` bloqueados, cola de mensajes, conteo de votos «− n +», día y hora en botones, llegadas en un toque, color semántico, teléfonos enmascarados, sin «Trabajo» en la inscripción. **Medición de la consola** (hojas `medicion_consola` y `pulso_mago`: SUS y NASA-TLX de quien opera) | Revisión visual (`claude/revision-visual-consola-2026-11-15.md`, Proyecto) |
 
+QA al 22/11 (2.8.2, `tools/qa/correr.sh todo`): backend 95 de 95 · recorrido 57 de 57 · consola 26 de 26 · ola A 21 de 21 · auditoría E2E 64 OK, 0 graves y 2 conocidos (M8, M9) · contraste y axe sin fallas.
 QA al 22/11 (2.8.1): backend 95 de 95 · recorrido completo 57 de 57 · F0–F5 26 de 26 · auditoría E2E 59 OK y 0 graves.
 QA al 22/11 (2.8.0): backend 90 de 90 · recorrido completo 57 de 57 · ola A 22 de 22 · F0–F5 25 de 25 · axe sin hallazgos nuevos.
 QA al 17/11: backend 85 de 85 · recorrido completo 52 de 52 · F0–F5 y 2.7.1 25 de 25 · código secreto 20 de 20 (iPhone, Pixel, escritorio) · axe-core 0 · sin scroll horizontal a 390 px.

@@ -1,0 +1,7 @@
+{
+  "name": "sintonia-qa",
+  "private": true,
+  "description": "QA de punta a punta del piloto Sintonía (código real sobre una hoja simulada). Ver README.md.",
+  "scripts": { "todo": "./correr.sh todo" },
+  "dependencies": { "axe-core": "^4.10.2" }
+}

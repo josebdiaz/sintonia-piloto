@@ -711,7 +711,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       return '<div class="c-etapa" data-st="' + st + '"' + (act ? ' data-actual="1"' : '') + pos(r + 1, c + 2, c + 2, r + 1) + (rl && rl.vencido ? ' data-vencido="1"' : '') + (ahora ? ' aria-current="step"' : '') + '>' +
         (ir ? '<button type="button" data-ir-etapa="' + et[0] + '" data-plan="' + e(pid) + '" aria-label="' + e(lab) + '">' + inner + '</button>' : '<div aria-label="' + e(lab) + '" role="group">' + inner + '</div>') + '</div>';
     }
-    var h = '<section class="c-mapa"' + (cur ? '' : ' data-state="done"') + ' aria-labelledby="mapaT"><header><h3 id="mapaT">Recorrido del grupo</h3><small>' + e(grupoNom(g)) + '</small></header>';
+    var h = '<section class="c-mapa"' + (cur ? '' : ' data-state="done"') + ' aria-labelledby="mapaT"><header><h2 id="mapaT">Recorrido del grupo</h2><small>' + e(grupoNom(g)) + '</small></header>';
     // 2.7.0 (F1): una sola rejilla; en pantalla ancha va vertical en la columna izquierda (etapas hacia abajo, planes en columnas)
     h += '<div class="c-g">' + ETAPAS_MAPA.map(function (et, c) { return '<span class="c-mom" aria-hidden="true"' + pos(1, c + 2, c + 2, 1) + '>' + e(et[2]) + '</span>'; }).join('');
     [1, 2].forEach(function (r) {

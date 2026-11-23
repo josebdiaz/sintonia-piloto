@@ -5,6 +5,13 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · QA de punta a punta en el repositorio (`tools/qa/`)
+- Las pruebas de punta a punta pasan al repositorio: `tools/qa/correr.sh todo` corre el backend sobre la hoja simulada y las páginas reales con Playwright. Usan datos ficticios y no tocan el backend real. Uso en `tools/qa/README.md`.
+- La auditoría E2E ahora carga axe-core desde `node_modules`. Antes faltaba `@axe-core/playwright` y el chequeo se saltaba sin avisar.
+- Los hallazgos que ya están en el plan se marcan `CONOCIDO`: M8 (disposición a pagar sin `plan_id`) y M9 (largo de la encuesta de cierre).
+- **Accesibilidad (frontend 2.8.2, sin cambio de versión):** el botón «Mostrar» del teléfono en la consola pasa de 16 a 24 px de alto (WCAG 2.2, área táctil). El título «Recorrido del grupo» pasa de h3 a h2, para que el orden de los títulos no salte.
+- Resultado: backend 95/95 · recorrido 57/57 · consola 26/26 · ola A 21/21 · auditoría E2E 64 OK, 0 ALTA, 0 MEDIA y 2 conocidos · contraste sin fallas · axe sin hallazgos.
+
 ### 2026-11-22 · Ajustes visuales de la auditoría anti-slop (frontend 2.8.2)
 Auditoría con las skills `no-ai-design-slop` y `audit-ai-design-slop` (catálogo completo). Se renderizó cada superficie en escritorio y en iPhone 13. Cada cambio pasa la prueba de quitar: se elimina lo que no tiene función y se corrige lo mínimo con el sistema DS 3.0, sin rediseñar.
 - **La web dice lo mismo que el chat (P1):**
