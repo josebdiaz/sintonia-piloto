@@ -52,6 +52,11 @@
             "texto": "cómo usarlos",
             "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/stickers/README.md"
           }
+        },
+        {
+          "texto": "QR del material POP",
+          "href": "docs/pop/",
+          "nota": "uno por pieza impresa"
         }
       ]
     },

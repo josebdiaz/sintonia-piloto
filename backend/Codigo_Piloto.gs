@@ -1,7 +1,13 @@
 /**
- * Sintonía · Piloto v2.8.1 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.9.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.9.0 (22/11, landing pública del QR del material POP):
+ *   - ?view=cupo (pública): dice si el piloto recibe grupos nuevos. Lo decide la propiedad CUPO_ABIERTO («si»/«no»; por defecto «no»),
+ *     para que el QR impreso nunca prometa más grupos de los que el mago puede operar. No cuenta grupos ni devuelve datos.
+ *   - Acción lista_espera (pública): nombre de pila, WhatsApp, tamaño del parche y origen de la pieza impresa, con autorización y mayoría
+ *     de edad. Hoja nueva 'lista_espera' (correr probarMontaje). Un mismo número no se anota dos veces. El aviso al equipo no lleva ni el
+ *     nombre ni el número.
  * Versión 2.8.1 (23/11, auditoría E2E de la 2.8.0):
  *   - Minimización (Ley 1581): las preferencias que mencionen salud, religión, política u orientación sexual se guardan sin esa frase
  *     («[dato sensible omitido]»). Lista cerrada en TERMINOS_SENSIBLES_ (la misma que revisa el formulario). «No toma alcohol» sí se guarda:
@@ -115,6 +121,7 @@
  *   TOLERANCIA_MIN (minutos de gracia para contar una llegada "a tiempo"; por defecto 15)
  *   NOTIFICAR_A (opcional, v2.4.0: correo(s) del equipo para avisar inscripciones, separados por coma; sin datos personales)
  *   AVISO_POR_ACEPTACION (opcional, v2.8.0: «no» apaga el aviso por cada aceptación; por defecto se envía)
+ *   CUPO_ABIERTO (opcional, v2.9.0: «si» deja que la landing lleve a la inscripción; por defecto «no»: lista de espera)
  *
  * Zona horaria: en Configuración del proyecto, poner America/Bogota. La hora_encuentro se interpreta en esa zona.
  */
@@ -152,7 +159,9 @@ var SHEETS = {
   pulso_mago:       ['ts','plan_id','grupo_id','experimento','ronda','mago','consola_version','sus_01','sus_02','sus_03','sus_04','sus_05','sus_06','sus_07','sus_08','sus_09','sus_10','sus_puntaje',
                      'tlx_mental','tlx_fisica','tlx_temporal','tlx_desempeno','tlx_esfuerzo','tlx_frustracion','tlx_raw','comentario'],
   // v2.7.0: lo que mide la propia consola, por etapa del mapa (grupo, proponer, decidir, dia, cierre)
-  medicion_consola: ['ts','plan_id','grupo_id','experimento','mago','consola_version','etapa','segundos_activos','toques','scroll_px']
+  medicion_consola: ['ts','plan_id','grupo_id','experimento','mago','consola_version','etapa','segundos_activos','toques','scroll_px'],
+  // v2.9.0: quien escanea el QR cuando el piloto no tiene cupo. Datos de contacto con autorización; nada de respuestas de investigación
+  lista_espera:     ['ts','espera_id','nombre_pila','whatsapp','tamano_grupo','origen','autoriza_datos','mayor_18','aviso_version','estado']
 };
 
 var TIPOS_GRUPO  = ['amigos','familia','pareja','trabajo','otro'];
@@ -281,7 +290,8 @@ function doPost(e) {
       evento: evento_, operacion: operacion_, registrar_cambio: registrarCambio_, redactar_ia: redactarIA_,
       retro: retro_, wtp: wtp_, usabilidad: usabilidad_, revocar: revocar_, sesion_mago: sesionMago_, limpiar_registros: limpiarRegistros_,
       reabrir_opciones: reabrirOpciones_,   // v2.4.0
-      pulso_mago: pulsoMago_, medicion_consola: medicionConsola_   // v2.7.0
+      pulso_mago: pulsoMago_, medicion_consola: medicionConsola_,   // v2.7.0
+      lista_espera: listaEspera_   // v2.9.0
     };
     var a = String(d.action || '');
     if (!H[a]) return json_({ ok: false, error: 'accion_desconocida' });
@@ -787,6 +797,7 @@ function doGet(e) {
   try {
     if (q.view === 'plan') return json_(vistaPlan_(q));
     if (q.view === 'invitacion') return json_(vistaInvitacion_(q));
+    if (q.view === 'cupo') return json_({ ok: true, abierto: cupoAbierto_() });   // v2.9.0: pública, sin datos
     if (q.view === 'resolver' && (isMotor_(q.key) || isAdmin_(q.key))) return json_(vistaResolver_(q));   // v2.3.0
     if (!isAdmin_(q.key)) return json_({ ok: false, error: 'no_autorizado' });
     if (q.view === 'mago') return json_(vistaMago_(q));
@@ -801,6 +812,25 @@ function vistaResolver_(q) {
   var act = {}; activos_(String(q.grupo_id)).forEach(function (p) { act[p.pid] = p.rol; });
   var c = rows_('contactos').filter(function (x) { return act[x.pid] && String(x.whatsapp).replace(/\D/g, '').slice(-10) === t; })[0];
   return c ? { ok: true, pid: c.pid, rol: act[c.pid] } : { ok: false, error: 'no_miembro' };
+}
+
+/** v2.9.0: ¿el piloto recibe grupos nuevos desde la landing? Lo decide el equipo (propiedad CUPO_ABIERTO), no un conteo. */
+function cupoAbierto_() { return String(prop_('CUPO_ABIERTO', 'no')).toLowerCase() === 'si'; }
+/** v2.9.0: lista de espera de la landing. Minimización: nombre de pila y WhatsApp, solo con autorización y mayoría de edad. */
+function listaEspera_(d) {
+  if (!(bool_(d.autoriza_datos) && bool_(d.mayor_18))) return { ok: false, error: 'faltan_autorizaciones' };
+  var nombre = limpiar_(str_(d.nombre_pila, 40)).trim(), tel = str_(d.whatsapp, 20).replace(/\D/g, '');
+  if (!nombre) return { ok: false, error: 'falta_nombre' };
+  if (tel.length === 12 && tel.indexOf('57') === 0) tel = tel.slice(2);
+  if (!/^3\d{9}$/.test(tel)) return { ok: false, error: 'whatsapp_invalido' };   // celular de Colombia, 10 dígitos
+  var tam = int_(d.tamano_grupo); if (tam !== '' && (tam < 2 || tam > MAX_GRUPO)) tam = '';
+  var origen = str_(d.origen, 20).replace(/[^\w-]/g, '');
+  if (rows_('lista_espera').some(function (r) { return String(r.whatsapp).replace(/\D/g, '').slice(-10) === tel; })) return { ok: true, ya_estaba: true };
+  append_('lista_espera', { espera_id: id_('e'), nombre_pila: nombre, whatsapp: '+57' + tel, tamano_grupo: tam, origen: origen,
+    autoriza_datos: true, mayor_18: true, aviso_version: prop_('AVISO_VERSION', 'v1'), estado: 'en_espera' });
+  avisarEquipo_('Sintonía · alguien se anotó en la lista de espera', 'Una persona se anotó en la lista de espera' + (origen ? ' (llegó por ' + origen + ')' : '') +
+    (tam !== '' ? ', con un parche de ' + tam + ' personas' : '') + '. Sus datos están en la hoja lista_espera.');
+  return { ok: true };
 }
 
 /** v2.2.3: vista pública de una invitación. Solo estado y modo: ni nombres, ni condición E1/E2, ni conteos. */
@@ -1000,7 +1030,7 @@ function resumenUsab_(u, mean) {
  * Antes de borrar copia las pestañas con datos a una hoja de respaldo nueva en el Drive del dueño del script,
  * sin la pestaña contactos (minimización: los nombres y números de los ensayos no se copian).
  */
-var CONSERVAR_AL_LIMPIAR = ['tokens', 'inventario', 'bitacora', 'operacion', 'sesiones'];   // v2.7.2: los minutos y las sesiones del mago son el registro de horas del monitor; no se borran. El panel solo cuenta los de grupos en modo piloto
+var CONSERVAR_AL_LIMPIAR = ['tokens', 'inventario', 'bitacora', 'operacion', 'sesiones', 'lista_espera'];   // v2.9.0: + lista de espera (personas reales, no ensayos)   // v2.7.2: los minutos y las sesiones del mago son el registro de horas del monitor; no se borran. El panel solo cuenta los de grupos en modo piloto
 var NO_RESPALDAR = ['contactos'];
 var FRASE_LIMPIAR = 'EMPEZAR PILOTO';
 function hojasALimpiar_(conservarCambios) {

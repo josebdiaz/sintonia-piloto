@@ -233,6 +233,19 @@ ctx.UrlFetchApp.fetch = fetchViejo; delete PROPS.NOTIFICAR_A;
   const vp = get({ view: 'mago', key: A }).planes.filter(x => x.plan_id === ps1.plan_id)[0];
   chk('2.8.1 la vista del mago dice si ya hay encuesta del mago por plan', vp && vp.pulso_mago === true && get({ view: 'mago', key: A }).planes.filter(x => x.plan_id !== ps1.plan_id).every(x => x.pulso_mago === false || x.pulso_mago === true), vp && vp.pulso_mago); }
 
+// 2.9.0: cupo de la landing y lista de espera
+{ chk('2.9.0 ?view=cupo pública: cerrado por defecto', (() => { const c = get({ view: 'cupo' }); return c.ok && c.abierto === false && Object.keys(c).length === 2; })(), get({ view: 'cupo' }));
+  PROPS.CUPO_ABIERTO = 'si'; chk('2.9.0 CUPO_ABIERTO=si abre la inscripción desde la landing', get({ view: 'cupo' }).abierto === true, get({ view: 'cupo' })); delete PROPS.CUPO_ABIERTO;
+  const c9 = []; ctx.MailApp = { sendEmail: (to, a, b) => c9.push([to, a, b]), getRemainingDailyQuota: () => 100 }; PROPS.NOTIFICAR_A = 'equipo@qa';
+  const sinA = post({ action: 'lista_espera', nombre_pila: 'Vale', whatsapp: '3001112233', mayor_18: true });
+  const malT = post({ action: 'lista_espera', nombre_pila: 'Vale', whatsapp: '12345', autoriza_datos: true, mayor_18: true });
+  const e1 = post({ action: 'lista_espera', nombre_pila: 'Vale', whatsapp: '+57 300 111 2233', tamano_grupo: 4, origen: 'qr-totem<script>', autoriza_datos: true, mayor_18: true });
+  const e2 = post({ action: 'lista_espera', nombre_pila: 'Vale otra vez', whatsapp: '3001112233', autoriza_datos: true, mayor_18: true });
+  const fila = SHEETS.lista_espera.rows.slice(-1)[0], H = SHEETS.lista_espera.rows[0];
+  chk('2.9.0 lista de espera: exige autorización y un celular válido', sinA.error === 'faltan_autorizaciones' && malT.error === 'whatsapp_invalido', [sinA, malT]);
+  chk('2.9.0 lista de espera: guarda +57, origen limpio y estado; un número no se anota dos veces', e1.ok && e2.ok && e2.ya_estaba && SHEETS.lista_espera.rows.length === 2 && fila[H.indexOf('whatsapp')] === '+573001112233' && fila[H.indexOf('origen')] === 'qr-totemscript' && fila[H.indexOf('estado')] === 'en_espera', fila);
+  chk('2.9.0 el aviso al equipo no lleva ni el nombre ni el número', c9.length === 1 && /qr-totem/.test(c9[0][2]) && !/Vale|300111|2233/.test(c9[0][1] + c9[0][2]), c9); }
+
 // 2.5.0: ubicaciones e inventario liviano
 const ub = vm.runInContext('revisarUbicaciones_', ctx)([{ id: 'A', direccion: 'Cl 5', latitud: 34516, longitud: -765320 }, { id: 'B', direccion: '', latitud: 3.45, longitud: -76.53 }, { id: 'C', direccion: 'Cra 1', latitud: 4.6, longitud: -74.1 }, { id: 'D', direccion: 'Cra 2', latitud: '', longitud: '' }]);
 chk('2.5.0 probarMontaje: ubicaciones (regional, fuera de Cali, sin dirección, sin coordenadas)', /3 de 4 con dirección/.test(ub) && /1 con coordenadas leídas/.test(ub) && /1 con coordenadas fuera de Cali \(p\. ej\. C\)/.test(ub) && /1 sin coordenadas/.test(ub), ub);
@@ -242,6 +255,7 @@ chk('2.5.0 ?view=mago&inv=0 no envía el inventario y sí cuántos hay', liv.ok 
 const opPre = SHEETS.operacion.rows.length, sesPre = SHEETS.sesiones.rows.length;
 const lim = post({ action: 'limpiar_registros', key: A, confirmar: 'EMPEZAR PILOTO' });
 chk('2.7.2 Empezar piloto real conserva minutos y sesiones del mago', lim.ok && opPre > 2 && sesPre > 2 && SHEETS.operacion.rows.length === opPre && SHEETS.sesiones.rows.length === sesPre && !('operacion' in lim.borradas), [opPre, sesPre, SHEETS.operacion.rows.length, SHEETS.sesiones.rows.length]);
+chk('2.9.0 Empezar piloto real conserva la lista de espera', SHEETS.lista_espera.rows.length === 2, SHEETS.lista_espera.rows.length);
 chk('Empezar piloto real limpia (incluye usabilidad y decisiones)', lim.ok && SHEETS.usabilidad.rows.length <= 2 && SHEETS.inventario.rows.length === 3 && SHEETS.decisiones.rows.length <= 2, lim.borradas);
 console.log(res.map(r => r.join(' · ')).join('\n'));
 console.log('\n' + res.filter(r => r[0] === 'OK ').length + ' de ' + res.length + ' OK');

@@ -1,6 +1,6 @@
 # Protocolo · el home al día con el repo
 
-El home (https://sintonia.my) tiene una portada pública y un menú oculto para el equipo, **«Detrás de escena»**. El menú se abre con ↑ ↑ ↓ ↓ ← → ← → en el teclado o con los mismos deslizamientos en el celular. Desde el 17/11/2026, las tarjetas de ese menú **no se editan a mano**: se generan desde el repositorio.
+El home (https://sintonia.my) es, desde la 2.9.0 (22/11), la **landing pública del QR del material POP**: qué es Sintonía, cómo funciona en 8 pasos y «Crear mi grupo» o la lista de espera, según la propiedad `CUPO_ABIERTO` del backend. Cada pieza impresa llega con su origen (`?o=qr-totem`, `qr-volante`, `qr-tarjeta`, `qr-sticker`; QR en `docs/pop/`, generados con `tools/qr-pop.py`), y la landing lo pasa a la inscripción o a la lista de espera. Encima vive un menú oculto para el equipo, **«Detrás de escena»**. El menú se abre con ↑ ↑ ↓ ↓ ← → ← → en el teclado o con los mismos deslizamientos en el celular. Desde el 17/11/2026, las tarjetas de ese menú **no se editan a mano**: se generan desde el repositorio.
 
 ## 1. De dónde sale cada cosa
 
@@ -53,8 +53,5 @@ Antes de cada push a `main`: `python3 tools/home.py --check` tiene que terminar 
 ## 5. El código secreto
 
 - **Teclado:** ↑ ↑ ↓ ↓ ← → ← → en menos de 2,5 s entre teclas. Esc cierra.
-- **Celular:** los mismos ocho deslizamientos sobre la portada, con hasta 4,5 s entre uno y otro. Cada acierto enciende un punto naranja y hace vibrar el teléfono, si este lo permite. Para que el navegador no se robe el gesto:
-  - mientras el menú está cerrado, la portada no se desplaza ni recarga al deslizar;
-  - no cuentan los deslizamientos que empiezan en el borde izquierdo o derecho (el gesto de «atrás») ni en la franja de abajo (la barra de inicio);
-  - basta un trazo de 30 px en una dirección clara.
+- **Celular:** los mismos ocho deslizamientos, **empezando sobre el glifo**, con hasta 4,5 s entre uno y otro. Cada acierto enciende un punto naranja y hace vibrar el teléfono, si este lo permite. Desde la 2.9.0 la landing se desplaza: solo los trazos que nacen en el glifo son del código (el glifo tiene `touch-action: none`); el resto desplaza la página normalmente. Basta un trazo de 30 px en una dirección clara.
 - Prueba automática: `tools/qa-home.js` (iPhone 13, Pixel 7 y escritorio; ver el uso en su primera línea).

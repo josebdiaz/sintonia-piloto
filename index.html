@@ -9,7 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
-/* Portada de expectativa: un glifo que cae al agua y un claim. El menú vive oculto detrás de ↑↑↓↓←→←→ */
+/* Landing pública (QR del material POP): portada con el glifo que cae al agua, qué es, cómo funciona y crear el grupo o anotarse en la lista de espera.
+   El menú del equipo sigue oculto detrás de ↑↑↓↓←→←→ (teclado) o de esos deslizamientos sobre el glifo (celular). */
 :root{
   --papel-0:#ffffff; --papel-50:#faf9f6; --papel-100:#efede7; --papel-300:#dad6cc; --papel-700:#47494d;
   --noche:#0e1116; --naranja:#ff4f00; --naranja-700:#c23a00;
@@ -20,17 +21,15 @@
   color-scheme:light;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
-html{overscroll-behavior:none}
-/* en celular, mientras el menú está cerrado y la portada cabe en la pantalla, los deslizamientos son del código (no recargan ni desplazan) */
-html.codigo body{touch-action:pinch-zoom}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;background:var(--crema);color:var(--noche);font-family:var(--f-txt);-webkit-font-smoothing:antialiased;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 
 /* portada */
-.cover{min-height:100%;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:clamp(28px,6vw,96px);
+.cover{min-height:min(100svh,980px);display:grid;grid-template-columns:auto 1fr;align-items:center;gap:clamp(28px,6vw,96px);
   max-width:1280px;margin:0 auto;padding-block:clamp(32px,8vh,96px)}
-.glyph{width:clamp(180px,30vw,420px);aspect-ratio:1;position:relative}
+.glyph{width:clamp(180px,30vw,420px);aspect-ratio:1;position:relative;touch-action:none}   /* en celular los deslizamientos sobre el glifo son del código */
 .glyph svg{width:100%;height:100%;overflow:visible;display:block}
 .eyebrow{font-weight:600;font-size:clamp(12px,1.2vw,16px);letter-spacing:.12em;text-transform:uppercase;color:#a83200;margin:0 0 18px}
 h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line-height:.95;margin:0;text-wrap:balance}
@@ -40,8 +39,51 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
 .wm{font-weight:800;letter-spacing:-.045em;display:inline-block;line-height:1}
 .wm .i{position:relative;display:inline-block}
 .wm .i::after{content:"";position:absolute;width:.30em;height:.10em;border-radius:.05em;left:.02em;top:.2em;transform:rotate(-40deg);transform-origin:left center;background:var(--naranja-700)}
-.logo{position:fixed;right:max(24px,env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));font-size:clamp(20px,2vw,28px);z-index:5}
-.foot{position:fixed;left:max(24px,env(safe-area-inset-left,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));font-size:12px;color:var(--papel-700);letter-spacing:.04em;z-index:5}
+.logo{font-size:clamp(24px,2.4vw,32px)}
+
+/* acciones de la portada */
+.acciones{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin:32px 0 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border-radius:999px;border:0;
+  font:700 17px/1 var(--f-txt);text-decoration:none;cursor:pointer;background:var(--noche);color:var(--papel-50)}
+.btn:hover{background:#262a31}
+.btn-link{background:none;border:0;padding:12px 2px;min-height:44px;font:600 16px var(--f-txt);color:var(--noche);cursor:pointer;
+  text-decoration:underline;text-decoration-color:var(--naranja-700);text-decoration-thickness:2px;text-underline-offset:5px}
+.pasos:focus-visible,.btn:focus-visible,.btn-link:focus-visible,.land a:focus-visible,.land input:focus-visible,.land select:focus-visible{outline:3px solid var(--naranja-700);outline-offset:3px}
+.nota{margin:14px 0 0;font-size:15px;line-height:1.45;color:#1f2226;max-width:40ch}
+
+/* secciones */
+.land{max-width:1280px;margin:0 auto}
+.sec{padding:clamp(56px,9vw,112px) 0;border-top:1px solid #d9cf9c}
+.sec h2{font-weight:800;font-size:clamp(30px,4.4vw,56px);letter-spacing:-.03em;line-height:1;margin:0 0 14px;max-width:18ch;text-wrap:balance}
+.sec .bajada{font-size:clamp(17px,1.6vw,21px);line-height:1.45;margin:0;max-width:46ch;color:#1f2226}
+.pasos{list-style:none;margin:40px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(18px,2.4vw,32px);counter-reset:paso}
+.pasos li{counter-increment:paso;margin:0}
+.pasos img{display:block;width:100%;height:auto;aspect-ratio:1200/896;border-radius:14px;background:var(--papel-50)}
+.pasos p{margin:12px 0 0;font-size:16px;line-height:1.4}
+.pasos p::before{content:counter(paso);display:inline-grid;place-items:center;width:26px;height:26px;margin-right:8px;border-radius:50%;
+  background:var(--noche);color:var(--papel-50);font:700 13px/1 var(--f-txt);vertical-align:1px}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,72px);margin-top:36px}
+.dos h3{font-size:19px;font-weight:800;margin:0 0 10px}
+.dos ul{margin:0;padding-left:20px;display:grid;gap:8px;font-size:17px;line-height:1.45}
+
+/* lista de espera */
+.espera{max-width:560px}
+.campo{display:grid;gap:6px;margin:0 0 18px}
+.campo label{font-weight:600;font-size:16px}
+.campo input,.campo select{font:500 17px var(--f-txt);min-height:50px;padding:0 14px;border:1.5px solid #47494d;border-radius:12px;background:var(--papel-0);color:var(--noche);width:100%}
+.campo small{font-size:14px;color:#47494d}
+.check{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start;margin:0 0 14px;font-size:16px;line-height:1.4}
+.check input{width:22px;height:22px;margin:1px 0 0;accent-color:var(--noche)}
+.check a{color:inherit;text-decoration-color:var(--naranja-700);text-underline-offset:3px}
+.error{color:#a3261b;font-weight:600;font-size:15px;margin:4px 0 14px;min-height:1px}
+.listo{font-size:clamp(20px,2vw,24px);font-weight:700;line-height:1.35;margin:0;max-width:30ch}
+
+/* pie */
+.pie{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:20px;padding:36px 0 calc(48px + env(safe-area-inset-bottom,0px));border-top:1px solid #d9cf9c;font-size:14px;color:#47494d}
+.pie a{color:inherit;text-underline-offset:3px;display:inline-block;padding:4px 0}
+.pie .uni{display:flex;align-items:center;gap:14px}
+.pie .uni img{height:40px;width:auto}
+.hidden{display:none!important}
 
 /* animación: piedra en el agua */
 .zl,.stone,.ring,.wave{transform-origin:100px 100px;transform-box:view-box}
@@ -106,14 +148,18 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
 @media (max-width:720px){
   /* celular: el glifo arriba al centro; el texto alineado a la izquierda, con más aire a los lados */
   .cover{grid-template-columns:1fr;justify-items:center;align-content:start;
-    gap:clamp(32px,6vh,56px);padding:calc(clamp(40px,9vh,88px) + env(safe-area-inset-top,0px)) 12px calc(120px + env(safe-area-inset-bottom,0px))}
-  .glyph{width:min(54vw,230px)}
+    gap:clamp(24px,4vh,40px);padding:calc(clamp(28px,5vh,56px) + env(safe-area-inset-top,0px)) 12px clamp(40px,8vh,72px)}
+  .glyph{width:min(40vw,170px)}
   .cover > div:last-child{justify-self:stretch;max-width:34ch}
   .eyebrow{margin-bottom:14px}
   h1{font-size:clamp(40px,11.5vw,64px)}
   .lede{margin:24px 0 0;font-size:clamp(17px,4.6vw,20px);max-width:28ch}
-  .logo{left:50%;right:auto;transform:translateX(-50%)}
-  .foot{display:none}
+  .acciones{margin-top:26px} .acciones .btn{width:100%}
+  .pasos{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory;
+    margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-right:16px;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+  .pasos li{scroll-snap-align:start}
+  .dos{grid-template-columns:1fr}
+  .pie{flex-direction:column;align-items:flex-start}
 }
 @media (prefers-reduced-motion:reduce){
   .zl,.stone,.ring,.in{animation:none;opacity:1;transform:none}
@@ -130,8 +176,9 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
 </head>
 <body>
 
-<main class="cover" aria-labelledby="claim">
-  <div class="glyph" role="img" aria-label="Avatar de Sintonía">
+<main class="land">
+<section class="cover" aria-labelledby="claim">
+  <div class="glyph" id="glifo" role="img" aria-label="Glifo de Sintonía">
     <svg viewBox="-40 -40 280 280" aria-hidden="true">
       <circle class="zl" cx="100" cy="100" r="100" fill="#ebc46a"/>
       <circle class="ring r1" cx="100" cy="100" r="81.3" fill="none" stroke="#c23a00" stroke-width="5.1"/>
@@ -142,14 +189,67 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
     </svg>
   </div>
   <div>
-    <p class="eyebrow in" style="--i:0">Muy pronto</p>
-    <h1 id="claim" class="in" style="--i:1">Algo se está<br><span class="u">armando.<svg viewBox="0 0 128 16" preserveAspectRatio="none" aria-hidden="true"><path class="trazo" d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
-    <p class="lede in" style="--i:2">Tu parche está a un plan de verse. Menos vueltas, más plan.</p>
+    <p class="eyebrow in" style="--i:0">Piloto en Cali</p>
+    <h1 id="claim" class="in" style="--i:1">«Hay que vernos»… y esta vez, <span class="u">sí.<svg viewBox="0 0 128 16" preserveAspectRatio="none" aria-hidden="true"><path class="trazo" d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+    <p class="lede in" style="--i:2">Sintonía es su +1 de confianza dentro del WhatsApp del parche: propone el plan, concilia la votación y lo cierra con día y hora.</p>
+    <div class="acciones in" style="--i:3">
+      <a class="btn" id="cta" href="#espera">Anotarme en la lista de espera</a>
+      <button type="button" class="btn-link" id="miGrupo">Ver el estado de mi grupo</button>
+    </div>
+    <p class="nota hidden" id="miGrupoNota" role="status">Tu enlace personal está en el mensaje que te mandó Sintonía por WhatsApp. Ábrelo desde ahí.</p>
   </div>
+</section>
+
+<section class="sec" id="como" aria-labelledby="comoT">
+  <h2 id="comoT">Cómo funciona</h2>
+  <p class="bajada">Para parches que ya existen: amigos, familia o pareja, de 3 a 6 personas. Ustedes ponen las ganas; Sintonía pone el plan.</p>
+  <ol class="pasos" tabindex="0" aria-label="Los 8 pasos de un plan con Sintonía">
+    <li><img src="piloto/assets/storyboard/vineta-01.webp" alt="Cuatro personas, cada una en su casa o su trabajo, miran el chat del grupo sin decidir nada" width="720" height="538" loading="lazy" decoding="async"><p>En el chat todos dicen «hay que vernos» y nadie concreta.</p></li>
+    <li><img src="piloto/assets/storyboard/vineta-02.webp" alt="Una mujer en el sofá completa un formulario corto en el celular" width="720" height="538" loading="lazy" decoding="async"><p>Quien organiza inscribe al parche en un par de minutos.</p></li>
+    <li><img src="piloto/assets/storyboard/vineta-03.webp" alt="Tres personas aceptan una invitación en su celular" width="720" height="538" loading="lazy" decoding="async"><p>Cada persona acepta su invitación con un enlace.</p></li>
+    <li><img src="piloto/assets/storyboard/vineta-04.webp" alt="Un hombre en su escritorio arma opciones de planes con el computador" width="720" height="538" loading="lazy" decoding="async"><p>Sintonía arma 3 planes con lugares verificados de Cali.</p></li>
+    <li><img src="piloto/assets/storyboard/vineta-05.webp" alt="El grupo mira en el celular tres opciones: un museo, un cerro y un paseo en bicicleta" width="720" height="538" loading="lazy" decoding="async"><p>El parche vota en una encuesta del grupo de WhatsApp.</p></li>
+    <li><img src="piloto/assets/storyboard/vineta-06.webp" alt="Un mapa de la ciudad con la ruta al lugar, la hora y el clima" width="720" height="538" loading="lazy" decoding="async"><p>Queda cerrado el día, la hora y hasta cuándo confirmar.</p></li>
+    <li><img src="piloto/assets/storyboard/vineta-07.webp" alt="Los amigos se abrazan al llegar mientras una persona marca que ya llegó" width="720" height="538" loading="lazy" decoding="async"><p>Se encuentran, y con un toque avisan que ya llegaron.</p></li>
+    <li><img src="piloto/assets/storyboard/vineta-08.webp" alt="De noche, cada uno en su casa responde una encuesta corta en el celular" width="720" height="538" loading="lazy" decoding="async"><p>«Ya en casa», y una encuesta corta para el próximo plan.</p></li>
+  </ol>
+  <div class="dos">
+    <div><h3>Qué es</h3><ul><li>Un piloto académico de la Universidad Icesi.</li><li>Lugares de Cali que el equipo revisó uno por uno.</li><li>Un solo chat: el WhatsApp que ya usan.</li></ul></div>
+    <div><h3>Qué no es</h3><ul><li>Una app para conocer gente nueva.</li><li>Una app de citas.</li><li>Un servicio para menores de 18.</li></ul></div>
+  </div>
+</section>
+
+<section class="sec" id="espera" aria-labelledby="esperaT">
+  <div class="espera" id="vistaEspera">
+    <h2 id="esperaT">Anótate en la lista de espera</h2>
+    <p class="bajada">El piloto atiende pocos parches a la vez. Cuando haya cupo, te escribimos por WhatsApp.</p>
+    <form id="formEspera" novalidate style="margin-top:28px">
+      <div class="campo"><label for="eNombre">Tu nombre</label><input id="eNombre" name="nombre" autocomplete="given-name" maxlength="40" required></div>
+      <div class="campo"><label for="eTel">Tu WhatsApp</label><input id="eTel" name="tel" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="300 123 4567" maxlength="15" required aria-describedby="eTelAy"><small id="eTelAy">Celular de Colombia, 10 dígitos.</small></div>
+      <div class="campo"><label for="eTam">¿Cuántos son en el parche, contigo?</label><select id="eTam"><option value="">Prefiero no decir</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>
+      <label class="check"><input type="checkbox" id="eDatos"><span>Autorizo a Sintonía a usar mi nombre y mi WhatsApp para avisarme cuando haya cupo, según el <a href="piloto/aviso.html">aviso de privacidad</a>.</span></label>
+      <label class="check"><input type="checkbox" id="eMayor"><span>Soy mayor de 18 años.</span></label>
+      <p class="error" id="eError" role="alert"></p>
+      <button class="btn" type="submit" id="eEnviar" data-busy="Anotando…">Anotarme</button>
+    </form>
+    <p class="listo hidden" id="eListo" role="status" tabindex="-1"></p>
+  </div>
+  <div class="espera hidden" id="vistaCrear">
+    <h2>Arma el plan con tu parche</h2>
+    <p class="bajada">Inscribe al grupo en un par de minutos. Después compartes la invitación con los demás.</p>
+    <div class="acciones"><a class="btn" id="ctaCrear" href="piloto/index.html?exp=E1">Crear mi grupo</a></div>
+  </div>
+</section>
+
+<footer class="pie">
+  <div class="uni">
+    <!-- logo de la Universidad Icesi: piloto/assets/icesi.svg (por cargar) -->
+    <span>Piloto de la Maestría en Gestión de la Innovación · Universidad Icesi</span>
+  </div>
+  <span><a href="piloto/aviso.html">Aviso de privacidad</a> · Solo mayores de 18 · <span class="wm" aria-label="Sintonía">sinton<span class="i">ı</span>a</span></span>
+</footer>
 </main>
 
-<div class="wm logo" aria-hidden="true">sinton<span class="i">ı</span>a</div>
-<p class="foot">Proyecto Sintonía · Universidad Icesi</p>
 <div class="keys" id="keys" aria-hidden="true"></div>
 
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-labelledby="menuTitle" hidden>
@@ -170,10 +270,10 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
       <section class="card team estado">
         <span class="tag">Estado del repo · 22 nov 2026</span>
         <h3>En qué va</h3>
-        <p class="versiones"><b>Frontend 2.8.2</b> · <b>Backend 2.8.1</b></p>
-        <p class="muted">Último cambio: 2026-11-22 · QA de punta a punta en el repositorio (`tools/qa/`)</p>
+        <p class="versiones"><b>Frontend 2.9.0</b> · <b>Backend 2.9.0</b></p>
+        <p class="muted">Último cambio: 2026-11-22 · Landing pública del QR del material POP (frontend 2.9.0 · backend 2.9.0)</p>
         <p class="muted" style="margin-top:6px">Pendientes que siguen:</p>
-        <ol class="pend"><li>Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags piloto/v2.8.2 y backend/v2.8.1 (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1</li><li>Cargar los stickers en el número Sintonía (el correo del monitor ya está en NOTIFICAR_A)</li><li>Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7)</li></ol>
+        <ol class="pend"><li>Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags piloto/v2.9.0 y backend/v2.9.0 (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1</li><li>Cargar los stickers en el número Sintonía (el correo del monitor ya está en NOTIFICAR_A)</li><li>Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7)</li></ol>
         <ul><li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/ESTADO.md" target="_blank" rel="noopener">Estado del proyecto</a> <span class="muted">· todo el detalle</span></li></ul>
       </section>
       <section class="card team">
@@ -186,6 +286,7 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
           <li><a href="docs/plan-pruebas-usuario.html">Plan de pruebas de usuario</a> <span class="muted">· <a href="docs/plan-pruebas-usuario.pdf">PDF</a></span></li>
           <li><a href="docs/deck-onboarding-monitor.html">Onboarding del monitor</a></li>
           <li><a href="docs/stickers/hoja-de-contacto.png">Stickers de Sintonía</a> <span class="muted">· 14, para el WhatsApp del número</span> <span class="muted">· <a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/stickers/README.md" target="_blank" rel="noopener">cómo usarlos</a></span></li>
+          <li><a href="docs/pop/">QR del material POP</a> <span class="muted">· uno por pieza impresa</span></li>
         </ul>
       </section>
       <section class="card team">
@@ -216,7 +317,7 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
           <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/guias/onboarding-monitor.md" target="_blank" rel="noopener">Onboarding del monitor (Markdown)</a></li>
           <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/GUIA-CONTINUACION.md" target="_blank" rel="noopener">Motor n8n · guía de continuación</a></li>
           <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/CHANGELOG.md" target="_blank" rel="noopener">Motor n8n · cambios</a></li>
-          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Versiones (CHANGELOG)</a> <span class="muted" id="ver">· frontend v2.8.2 · backend v2.8.1</span></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Versiones (CHANGELOG)</a> <span class="muted" id="ver">· frontend v2.9.0 · backend v2.9.0</span></li>
         </ul>
       </section>
       <section class="card arch">
@@ -263,13 +364,13 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
     menu.style.setProperty('--cx', (g.left + g.width/2) + 'px');
     menu.style.setProperty('--cy', (g.top + g.height/2) + 'px');
     lastFocus = document.activeElement;
-    menu.hidden = false; modoCodigo();
+    menu.hidden = false;
     requestAnimationFrame(() => requestAnimationFrame(() => menu.classList.add('open')));
     document.getElementById('close').focus({preventScroll:true});
   }
   function close(){
     menu.classList.remove('open');
-    const done = () => { menu.hidden = true; modoCodigo(); menu.removeEventListener('transitionend', done); };
+    const done = () => { menu.hidden = true; menu.removeEventListener('transitionend', done); };
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) done(); else menu.addEventListener('transitionend', done);
     if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true});
   }
@@ -281,21 +382,16 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
   });
   document.getElementById('close').addEventListener('click', close);
 
-  // Celular: la misma secuencia con deslizamientos (↑ ↑ ↓ ↓ ← → ← →).
-  // · El navegador no se los roba: sin recargar al bajar (overscroll), sin desplazar la página, y se ignoran los bordes
-  //   (atrás en iOS y Android, barra de inicio abajo).
+  // Celular: la misma secuencia con deslizamientos (↑ ↑ ↓ ↓ ← → ← →) que empiezan sobre el glifo.
+  // · Desde la 2.9 la portada es una landing que se desplaza: solo los trazos que nacen en el glifo son del código; el resto desplaza la página.
   // · Basta un trazo de 30 px y que se note la dirección; los puntos naranjas muestran el avance y el teléfono vibra.
-  function cabe(){ return document.documentElement.scrollHeight <= window.innerHeight + 2; }
-  function modoCodigo(){ document.documentElement.classList.toggle('codigo', menu.hidden && cabe()); }
-  modoCodigo(); window.addEventListener('resize', modoCodigo); window.addEventListener('orientationchange', modoCodigo);
-  const BORDE = 24;
+  const glifo = document.getElementById('glifo');
   let sx = 0, sy = 0, vivo = false;
-  document.addEventListener('touchstart', e => {
+  glifo.addEventListener('touchstart', e => {
     if (!menu.hidden || e.touches.length > 1) { vivo = false; return; }
-    const t = e.touches[0]; sx = t.clientX; sy = t.clientY;
-    vivo = sx > BORDE && sx < window.innerWidth - BORDE && sy < window.innerHeight - 34;
+    const t = e.touches[0]; sx = t.clientX; sy = t.clientY; vivo = true;
   }, {passive:true});
-  document.addEventListener('touchmove', e => { if (vivo && menu.hidden && cabe() && e.cancelable) e.preventDefault(); }, {passive:false});
+  glifo.addEventListener('touchmove', e => { if (vivo && menu.hidden && e.cancelable) e.preventDefault(); }, {passive:false});
   document.addEventListener('touchend', e => {
     if (!vivo || !menu.hidden) return; vivo = false;
     const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy, ax = Math.abs(dx), ay = Math.abs(dy);
@@ -303,6 +399,46 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
     step(ax > ay ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'), true);
   }, {passive:true});
   document.addEventListener('touchcancel', () => { vivo = false; }, {passive:true});
+
+  /* ---------- Landing (2.9.0): origen de la pieza impresa, cupo, lista de espera y «ver mi grupo» ---------- */
+  const qs = new URLSearchParams(location.search);
+  const limpio = v => String(v || '').replace(/[^\w-]/g, '').slice(0, 20);
+  let origen = limpio(qs.get('o') || qs.get('origen'));
+  try { if (origen) sessionStorage.setItem('sintonia_origen', origen); else origen = sessionStorage.getItem('sintonia_origen') || ''; } catch (e) {}
+  if (!origen) origen = 'web';
+  const $ = id => document.getElementById(id);
+  $('ctaCrear').href = 'piloto/index.html?exp=E1&origen=' + encodeURIComponent(origen);
+
+  function cupo(abierto){
+    $('vistaEspera').classList.toggle('hidden', abierto); $('vistaCrear').classList.toggle('hidden', !abierto);
+    $('cta').textContent = abierto ? 'Crear mi grupo' : 'Anotarme en la lista de espera';
+    $('cta').href = abierto ? $('ctaCrear').href : '#espera';
+  }
+  cupo(false);   // mientras responde el backend (o si no responde), lo seguro es la lista de espera
+  if (window.S) S.get({ view: 'cupo' }).then(r => { if (r && r.ok) cupo(r.abierto === true); }).catch(() => {});
+
+  $('miGrupo').addEventListener('click', () => {
+    const yo = window.S ? S.me() : {};
+    if (yo.pid) { location.href = 'piloto/plan.html?pid=' + encodeURIComponent(yo.pid); return; }
+    $('miGrupoNota').classList.remove('hidden');
+  });
+
+  const ERR = { faltan_autorizaciones: 'Para anotarte necesitamos las dos autorizaciones.', whatsapp_invalido: 'Revisa el número: un celular de Colombia tiene 10 dígitos y empieza por 3.',
+    falta_nombre: 'Escribe tu nombre.', red: 'No pudimos conectarnos. Intenta otra vez en un momento.' };
+  $('formEspera').addEventListener('submit', e => {
+    e.preventDefault();
+    const nombre = $('eNombre').value.trim(), tel = $('eTel').value.replace(/\D/g, '').replace(/^57(?=3\d{9}$)/, '');
+    let err = !nombre ? 'falta_nombre' : !/^3\d{9}$/.test(tel) ? 'whatsapp_invalido' : !($('eDatos').checked && $('eMayor').checked) ? 'faltan_autorizaciones' : '';
+    $('eError').textContent = err ? ERR[err] : '';
+    if (err) { (err === 'falta_nombre' ? $('eNombre') : err === 'whatsapp_invalido' ? $('eTel') : $('eDatos')).focus(); return; }
+    S.busy($('eEnviar'), () => S.post({ action: 'lista_espera', nombre_pila: nombre, whatsapp: tel, tamano_grupo: $('eTam').value, origen: origen,
+      autoriza_datos: true, mayor_18: true })).then(r => {
+      if (!r || !r.ok) { $('eError').textContent = ERR[r && r.error] || ERR.red; return; }
+      $('formEspera').classList.add('hidden');
+      $('eListo').textContent = r.ya_estaba ? 'Ya estabas en la lista. Te escribimos por WhatsApp cuando haya cupo.' : 'Listo, quedaste en la lista. Te escribimos por WhatsApp cuando haya cupo.';
+      $('eListo').classList.remove('hidden'); $('eListo').focus();
+    });
+  });
 })();
 </script>
 </body>

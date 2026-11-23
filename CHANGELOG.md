@@ -5,6 +5,28 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Landing pública del QR del material POP (frontend 2.9.0 · backend 2.9.0)
+Prompt 8 del plan de la prueba externa. Decisiones del equipo (22/11): dos oleadas de impresión, lista de espera cuando no haya cupo, logo de Icesi (archivo por cargar), sin video.
+- **Landing (sintonia.my):** la portada «Algo se está armando» pasa a ser la landing del QR. Conserva el glifo y su animación, y explica lo demás:
+  - La frase: «Hay que vernos»… y esta vez, sí.
+  - Qué hace Sintonía: «su +1 de confianza» dentro del WhatsApp del parche.
+  - Cómo funciona, con las 8 viñetas del storyboard (en WebP, 720 px, con carga diferida).
+  - Qué es y qué no es.
+  - Un pie con el aviso de privacidad y «Solo mayores de 18».
+- **Cupo:**
+  - La landing le pregunta al backend (`?view=cupo`). Si hay cupo, el botón principal es «Crear mi grupo». Si no lo hay, no responde o el backend no está actualizado, es «Anotarme en la lista de espera».
+  - El formulario de la lista pide nombre, WhatsApp, tamaño del parche (opcional), autorización y mayoría de edad.
+  - «Ver el estado de mi grupo» abre el plan si ese celular ya participa; si no, explica que el enlace está en el mensaje de Sintonía.
+- **Origen por pieza:** `?o=qr-totem`, `qr-volante`, `qr-tarjeta` o `qr-sticker` llega a la inscripción y a la lista de espera (columna `origen`). Los QR (SVG vectorial para Affinity, PNG de 1200 px y una hoja de prueba) están en `docs/pop/` y se regeneran con `python3 tools/qr-pop.py`.
+- **Código secreto:** en celular, los deslizamientos cuentan solo si empiezan sobre el glifo. Así la landing se puede desplazar. `tools/qa-home.js` quedó al día.
+- **Backend 2.9.0:**
+  - `?view=cupo` es pública. Responde con la propiedad `CUPO_ABIERTO` («si» o «no»; por defecto «no»), no con un conteo.
+  - La acción `lista_espera` guarda en la hoja nueva `lista_espera`. Valida un celular de Colombia y no anota dos veces el mismo número.
+  - El aviso al equipo no lleva ni el nombre ni el número.
+  - «Empezar piloto real» conserva la lista.
+  - Despliegue: pegar el código, correr `probarMontaje()` y publicar una «Nueva versión».
+- QA: backend 101 de 101 · código secreto 18 de 18 · axe sin hallazgos en la landing (celular y escritorio) · los 4 QR decodifican a su URL.
+
 ### 2026-11-22 · QA de punta a punta en el repositorio (`tools/qa/`)
 - Las pruebas de punta a punta pasan al repositorio: `tools/qa/correr.sh todo` corre el backend sobre la hoja simulada y las páginas reales con Playwright. Usan datos ficticios y no tocan el backend real. Uso en `tools/qa/README.md`.
 - La auditoría E2E ahora carga axe-core desde `node_modules`. Antes faltaba `@axe-core/playwright` y el chequeo se saltaba sin avisar.
