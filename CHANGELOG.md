@@ -5,6 +5,19 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Logo actualizado en todo el proyecto (frontend 2.9.1)
+El logo nuevo viene del archivo de marca «Sintonia Logo NEW UPDATED.svg». Trae el anillo exterior noche, un anillo rojo #ff2500 más ancho y una «s» redibujada.
+- El original recorta la «s» con una máscara en mapa de bits. Se vectorizó como un solo trazado: coincide en un 99,9 % con el render del original, y las esquinas de los remates quedaron rectas. Así sirve para la web y para imprimir a cualquier tamaño.
+- **Dónde cambió:**
+  - `piloto/assets/glifo.svg`, que es el logo de todas las páginas, la consola y el panel.
+  - Los íconos del sitio: `favicon.svg`, `favicon.ico`, `apple-touch-icon.png` e `icon-192/512.png`.
+  - El glifo animado de la landing, que conserva su animación.
+  - Los decks: pitch final (incluidos los glifos pequeños del circuito y de las ondas), pitch técnico, inducción y onboarding del monitor, y status del 26/10.
+  - Los stickers 01, 11 y 14 de WhatsApp, la bandeja y la hoja de contacto.
+  - Las capturas de la consola del deck de onboarding, que también usa el pitch.
+  - Las 10 piezas del material POP, más un sticker nuevo: el logo con la URL alrededor.
+- Código secreto del home: 18 de 18.
+
 ### 2026-11-22 · Artes del material POP en Affinity
 - **Oleada 1:** tarjeta con QR de 90 × 55 mm (frente y reverso), 2 pines de 58 mm y 3 stickers troquelados de 60 mm.
 - **Oleada 2:** tótem de 80 × 200 cm, volante media carta y hablador de mesa.
