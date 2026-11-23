@@ -108,7 +108,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible, .chip:focus-wit
 .bar > i { display: block; height: 100%; background: var(--pine-2); border-radius: 99px; transition: width .4s; }
 
 /* Insignias */
-.badge { display: inline-block; font-size: .74rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--muted); text-transform: lowercase; }
+.badge { display: inline-block; font-size: .74rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }   /* 2.8.2: sin minúsculas forzadas; badge() ya pone la mayúscula inicial */
 .badge.activo, .badge.cerrado, .badge.ok { background: var(--pine-soft); color: var(--pine); }
 .badge.reclutando, .badge.votando, .badge.en_revision, .badge.borrador { background: var(--honey-soft); color: #8A5A07; }
 .badge.excluido, .badge.caido, .badge.revocado { background: var(--danger-soft); color: var(--danger); }

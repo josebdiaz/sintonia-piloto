@@ -17,16 +17,15 @@
 <main class="wrap">
   <header class="top">
     <a class="brand" href="./"><span class="brand-mark" aria-hidden="true"></span><span class="wm" aria-label="Sintonía">sinton<span class="i">ı</span>a</span></a>
-    <span class="tag" id="tagDur">Pulso de 4 minutos</span>
+    <span class="tag" id="tagDur">Encuesta de cierre</span>
   </header>
 
   <div id="estado" class="card empty"><div class="pulse" aria-hidden="true"></div><p class="muted">Cargando…</p></div>
 
   <section id="vistaForm" class="hidden">
     <div class="hero">
-      <p class="eyebrow">Pulso · 4 minutos</p>
       <h1 id="heroT">¿Cómo les fue?</h1>
-      <p id="heroP">Cuéntennos cómo les fue en este pulso breve de 4 minutos. No hay respuestas buenas ni malas.</p>
+      <p id="heroP">No hay respuestas buenas ni malas. Las preguntas abiertas son opcionales.</p>
     </div>
     <form id="form" novalidate>
       <div class="card" id="bloqueRetro1">
@@ -160,12 +159,12 @@
     S.show('#bloqueUsab', conUsab); S.show('#bloqueSeqCont', conUsab && ronda >= 2);
     if (soloUsab) {
       S.show('#bloqueRetro1', false); S.show('#bloqueRetro2', false); S.show('#bloqueWtp', false);
-      S.$('#tagDur').textContent = 'Complemento de 2 minutos';
+      S.$('#tagDur').textContent = 'Complemento';
       S.$('#heroT').textContent = 'Nos falta una parte.';
-      S.$('#heroP').textContent = 'Ya nos contaste cómo les fue' + (he && !isNaN(he) ? ' en la salida del ' + S.fecha(he) : '') + '. Ahora, 2 minutos sobre qué tan fácil fue usar Sintonía en esa salida. No hay respuestas buenas ni malas.';
+      S.$('#heroP').textContent = 'Ya nos contaste cómo les fue' + (he && !isNaN(he) ? ' en la salida del ' + S.fecha(he) : '') + '. Ahora, unas preguntas sobre qué tan fácil fue usar Sintonía en esa salida. No hay respuestas buenas ni malas.';
       S.show(estado, false); S.show('#vistaForm', true); return;
     }
-    if (!conUsab) { S.$('#tagDur').textContent = 'Pulso de 2 minutos'; S.$('#heroP').textContent = 'Cuéntennos cómo les fue en este pulso breve de 2 minutos. No hay respuestas buenas ni malas.'; }
+    if (!conUsab) { S.$('#heroP').textContent = 'No hay respuestas buenas ni malas.'; }
     S.show('#bloqueCarga', rol === 'organizador'); S.show('#bloqueWtp', rol === 'organizador');
     S.show(estado, false); S.show('#vistaForm', true);
   });

@@ -459,3 +459,6 @@ body.consola .toast { width: max-content; }
 .c-ia-box { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: var(--m-papel-100); }
 .c-ia-box > label { display: block; margin: 0 0 6px; font: 700 13px/1.2 var(--m-txt); }
 .c-ia-box .c-chip { min-height: 34px; font-size: 13px; }
+
+/* 2.8.2 (auditoría visual): foco visible en la marca de la barra */
+.c-bar .c-id:focus-visible { outline: 3px solid var(--m-naranja-700); outline-offset: 4px; border-radius: 10px; }

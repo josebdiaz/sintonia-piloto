@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.8.1',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.8.2',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
@@ -249,13 +249,23 @@
     if (k) { box.textContent = 'Parece que mencionas un dato de salud, religión, política u orientación de alguien. Escríbelo en general, sin decir quién ni qué: por ejemplo «hay una restricción de comida» o «alguien no puede caminar mucho». «No toma alcohol» sí sirve.'; ta.focus(); }
     return !k;
   }
-  window.S = { CONFIG: CONFIG, sensible: sensible, revisarSensible: revisarSensible, LS: LS, SS: SS, post: post, get: get, errMsg: errMsg, $: $, $$: $$, esc: esc, param: param, show: show, toast: toast, busy: busy,
+  /** 2.8.2 · Un solo precio por persona, igual en el chat y en la web: el punto medio del rango, redondeado a miles
+   *  («$80.000 – $148.000» → «$114.000»). Con un valor, ese valor. Sin números, el texto tal cual. */
+  function precioUno(x) {
+    x = String(x || '').trim(); if (!x) return '';
+    var n = (x.match(/\d[\d.,]*/g) || []).map(function (t) { var v = Number(t.replace(/[.,](?=\d{3}(\D|$))/g, '').replace(',', '.')); return /mil|k\b/i.test(x) && v < 1000 ? v * 1000 : v; }).filter(function (v) { return v >= 1000; });
+    if (!n.length) return x.replace(/\s*por persona/i, '');
+    var v = n.length > 1 ? (Math.min.apply(null, n) + Math.max.apply(null, n)) / 2 : n[0];
+    return '$' + (Math.round(v / 1000) * 1000).toLocaleString('es-CO');
+  }
+  window.S = { CONFIG: CONFIG, sensible: sensible, revisarSensible: revisarSensible, precioUno: precioUno, LS: LS, SS: SS, post: post, get: get, errMsg: errMsg, $: $, $$: $$, esc: esc, param: param, show: show, toast: toast, busy: busy,
     link: link, wa: wa, waShare: waShare, phone: phone, copy: copy, scale: scale, chips: chips, consent: consent, counter: counter,
     pct: pct, num: num, cop: cop, usd: usd, fecha: fecha, me: me, saveMe: saveMe, adoptPid: adoptPid, inicio: inicio, adminKey: adminKey, forgetKey: forgetKey, configBackend: configBackend, dosPasos: dosPasos };
   window.CONFIG = CONFIG;
 
   /* ---------- Versión visible en el pie (trazabilidad: qué versión vio cada quien) ---------- */
-  function sello() { var f = document.querySelector('.foot') || document.querySelector('.top .brand') || document.querySelector('#verConsola'); if (f && !f.querySelector('.ver')) { var v = document.createElement('span'); v.className = 'ver'; v.textContent = (f.classList.contains('brand') || f.id === 'verConsola' ? 'v' : ' · v') + CONFIG.FRONTEND_VERSION; f.appendChild(v); } }
+  // 2.8.2 (auditoría visual): en las páginas de participante la versión no se muestra (no les sirve y se quedaba sola en una línea); queda en <html data-version> para soporte
+  function sello() { document.documentElement.setAttribute('data-version', CONFIG.FRONTEND_VERSION); if (document.body && document.body.classList.contains('publico')) return; var f = document.querySelector('.foot') || document.querySelector('.top .brand') || document.querySelector('#verConsola'); if (f && !f.querySelector('.ver')) { var v = document.createElement('span'); v.className = 'ver'; v.textContent = (f.classList.contains('brand') || f.id === 'verConsola' ? 'v' : ' · v') + CONFIG.FRONTEND_VERSION; f.appendChild(v); } }
   function enlacesInicio() {
     var m = me();
     $$('a.brand[href="./"], a[data-inicio]').forEach(function (a) { a.href = (!m.pid && a.hasAttribute('data-quedarse')) ? location.href : inicio(); });

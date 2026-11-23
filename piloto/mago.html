@@ -306,7 +306,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function horasFranja(g) { var f = dispoDe(g).franjas[0] || 'tarde'; return f === 'mañana' ? ['9:00 a. m.', '10:00 a. m.', '11:00 a. m.'] : f === 'noche' ? ['7:00 p. m.', '8:00 p. m.', '9:00 p. m.'] : ['3:00 p. m.', '4:00 p. m.', '5:00 p. m.']; }
   function poll(q, ops, multi) { return { q: q, ops: ops, multi: !!multi }; }
   function porPersona(x) { x = String(x || ''); return x ? x + (/por persona/i.test(x) ? '' : ' por persona') : ''; }
-  function txtPulso(nom, l) { return (nom ? nom + ', ¿c' : '¿C') + 'ómo te fue en el plan? Cuéntanos en 4 minutos: ' + l + '\nTus respuestas son privadas.'; }
+  function txtPulso(nom, l) { return (nom ? nom + ', ¿c' : '¿C') + 'ómo te fue en el plan? Cuéntanos aquí: ' + l + '\nTus respuestas son privadas.'; }
   function pad2(n) { return String(n).padStart(2, '0'); }
   function hoyISO() { var d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
   function horaOpts(val) {
@@ -534,7 +534,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function encuestaCierreHtml(g, p) {
     if (!g || !p || p.estado !== 'cerrado') return '';
     var faltan = g.miembros.filter(function (m) { return (p.retro_pids || []).indexOf(m.pid) < 0; }).length;
-    return '<div class="tpl c-encuesta"><div class="tpl-head"><b>Encuesta de cierre</b> <span class="small muted">por privado, a cada persona · unos 4 minutos · faltan ' + faltan + ' de ' + g.miembros.length + '</span></div>' +
+    return '<div class="tpl c-encuesta"><div class="tpl-head"><b>Encuesta de cierre</b> <span class="small muted">por privado, a cada persona · faltan ' + faltan + ' de ' + g.miembros.length + '</span></div>' +
       g.miembros.map(function (m) {
         var ya = (p.retro_pids || []).indexOf(m.pid) >= 0, t = txtPulso(m.nombre, linkRetro(m.pid, p.plan_id));
         return '<div class="poll-row"><span><b>' + e(m.nombre) + '</b> <span class="tiny ' + (ya ? '' : 'muted') + '">' + (ya ? '✓ respondió' : 'pendiente') + '</span></span><span class="actions" style="margin:0">' +
@@ -956,7 +956,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       h += '<details class="small" style="margin:0 0 10px"><summary><b>Corregir hora del encuentro</b> · si el grupo la cambió después de cerrar</summary><div style="margin-top:8px">' + campoEncuentro('C', p.hora_encuentro) +
         '<div class="row" style="align-items:flex-end"><div class="field" style="margin:0"><label for="salidaC">Salida sugerida</label><input id="salidaC" data-keep="salidaC" type="text" maxlength="40" value="' + e(((ops[Number(p.elegida)] || {}).hora_salida) || '') + '"></div><button class="btn btn-ghost btn-sm" id="corregir" data-busy="Guardando…" style="flex:0 0 auto">Guardar corrección</button></div></div>' +
         '<p class="tiny muted">No cambia la hora del cierre ni la opción elegida (las métricas quedan intactas). La hora anterior queda en la nota del plan.</p>' + (p.nota ? '<p class="tiny muted">Nota: ' + e(p.nota) + '</p>' : '') + '</details>';
-      h += '<h3 id="pulsos">Encuesta de cierre · enlaces personales</h3><p class="tiny muted">La encuesta de cierre incluye SEQ y SUS (unos 4 minutos). ' + (p.experimento === 'E2' ? 'En E1.5 lo envía el motor; usa estos botones solo si falla.' : 'Envíalo a cada persona, por privado, después del encuentro.') + (Array.isArray(p.usabilidad_pids) ? ' «Enviar complemento» aparece si alguien respondió la encuesta de cierre pero no la parte de usabilidad.' : '') + '</p>' + (g3 ? g3.miembros : []).map(function (m) {
+      h += '<h3 id="pulsos">Encuesta de cierre · enlaces personales</h3><p class="tiny muted">La encuesta de cierre incluye SEQ y SUS. ' + (p.experimento === 'E2' ? 'En E1.5 lo envía el motor; usa estos botones solo si falla.' : 'Envíalo a cada persona, por privado, después del encuentro.') + (Array.isArray(p.usabilidad_pids) ? ' «Enviar complemento» aparece si alguien respondió la encuesta de cierre pero no la parte de usabilidad.' : '') + '</p>' + (g3 ? g3.miembros : []).map(function (m) {
         var st = (p.estado_por_pid || {})[m.pid] || {}, l = linkRetro(m.pid, p.plan_id);
         var hayU = Array.isArray(p.usabilidad_pids), yaR = (p.retro_pids || []).indexOf(m.pid) >= 0, yaU = hayU && p.usabilidad_pids.indexOf(m.pid) >= 0, pendUsab = hayU && yaR && !yaU;
         return '<div class="member"><div class="who">' + e(m.nombre) + ' <span class="tiny muted">' + [st.apuntado ? 'apuntado' : '', st.llego ? 'llegó' : '', st.casa ? 'en casa' : '', yaR ? 'encuesta ✓' : '', hayU ? (yaU ? 'usabilidad ✓' : (yaR ? 'usabilidad pendiente' : '')) : ''].filter(Boolean).join(' · ') + '</span></div>' +
@@ -1166,7 +1166,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     ['/no_llega', 'Alguien no ha llegado', 'persona', 'preguntar con cuidado a una persona que todavía no llega cómo va y si está bien, sin culpa ni presión', function (d) { return d.nom + ', ¿cómo vas? El parche ya está en ' + d.lugarCorto + '. ¿Todo bien? Si se te complicó llegar, cuéntanos y lo ajustamos 🙌'; }],
     ['/todos', 'Ya llegaron todos', 'grupo', 'celebrar breve que ya llegó todo el parche', function () { return 'Ya estamos todos. ¡Disfruten! 🙌'; }],
     ['/en_casa', '¿Ya en casa? (si el plan fue de noche, al día siguiente a las 10:00)', 'ambos', 'preguntar si ya llegaron bien a la casa después del plan', function (d) { return d.persona ? d.nom + ', ¿ya en casa? Con un «ya en casa» basta.' : { poll: poll('¿Ya en casa?', ['Ya en casa', 'Todavía no'], false) }; }],
-    ['/retro', 'Encuesta de cierre · aviso al grupo (los enlaces van por privado)', 'ambos', 'invitar a responder la encuesta de cierre de 4 minutos después del plan', function (d) { return d.persona ? (d.retro ? txtPulso(d.nom, d.retro) : null) : '¿Cómo les fue? A cada uno le llega por privado su enlace para contarnos en 4 minutos. Sus respuestas son privadas.'; }],
+    ['/retro', 'Encuesta de cierre · aviso al grupo (los enlaces van por privado)', 'ambos', 'invitar a responder la encuesta de cierre después del plan', function (d) { return d.persona ? (d.retro ? txtPulso(d.nom, d.retro) : null) : '¿Cómo les fue? A cada uno le llega por privado su enlace para contarnos. Sus respuestas son privadas.'; }],
     ['/guardrail', 'Fuera de alcance (política de IA de WhatsApp)', 'ambos', 'decir con amabilidad que solo ayudamos a armar planes y volver al plan', function () { return 'Mi tarea es ayudarles a armar y coordinar planes en Cali, así que en eso no les puedo ayudar. ¿Volvemos al plan?'; }],
     ['/humano', 'Escalar a una persona', 'ambos', 'presentarse como persona del equipo que toma la conversación', function (d) { return 'Hola' + (d.persona ? ' ' + d.nom : '') + ', soy ' + d.humano + ', del equipo de investigación de Sintonía. Tomo la conversación para ayudarles con lo que necesiten. Si es una emergencia, llamen al 123.'; }]
   ];
@@ -1184,13 +1184,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   }
   /** Un solo valor por persona: el punto medio del rango, redondeado a miles («$80.000 – $148.000» → «$114.000»). Con un valor, ese valor.
    *  Se elige el punto medio y no el mínimo para no prometer un plan más barato de lo que suele salir. Si no hay números, el texto tal cual. */
-  function precioUno(x) {
-    x = String(x || '').trim(); if (!x) return '';
-    var n = (x.match(/\d[\d.,]*/g) || []).map(function (t) { var v = Number(t.replace(/[.,](?=\d{3}(\D|$))/g, '').replace(',', '.')); return /mil|k\b/i.test(x) && v < 1000 ? v * 1000 : v; }).filter(function (v) { return v >= 1000; });
-    if (!n.length) return x.replace(/\s*por persona/i, '');
-    var v = n.length > 1 ? (Math.min.apply(null, n) + Math.max.apply(null, n)) / 2 : n[0];
-    return '$' + (Math.round(v / 1000) * 1000).toLocaleString('es-CO');
-  }
+  function precioUno(x) { return S.precioUno(x); }   // 2.8.2: la misma función que la web del participante (sintonia.js)
   var ETAPAS = [['grupo', 'Grupo', ['/ingreso']], ['votacion', 'Votación', ['/opciones', '/opcion_1', '/opcion_2', '/opcion_3', '/encuesta', '/recordatorio', '/empate', '/dia', '/horario']],
     ['confirmacion', 'Confirmación', ['/confirmado', '/evento', '/asistencia', '/reprogramar']], ['dia', 'Día del plan', ['/hoy', '/salida', '/checkpoint', '/no_llega', '/todos']],
     ['cierre', 'Cierre', ['/en_casa', '/retro']], ['otros', 'Otros', ['/guardrail', '/humano']]];
@@ -1214,7 +1208,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var hx = p ? hechos(p.plan_id) : {}; if (mk && hx[mk]) hx[mk] = desdePub(p, mk, hx[mk]);
     var env = mk ? (mk === 'msg_ingreso' && g && ingresoHecho(g.grupo_id) ? 1 : (hx[mk] || []).length) : 0;
     var uno = mk && o.txts.length === 1 && !o.poll && !o.evento && !env;
-    var h = '<div class="tpl" data-ti="' + i + '"><div class="tpl-head"><b>' + e(t[0]) + '</b> <span class="small muted">' + e(t[1]) + '</span>' + (ajustes[i + '|' + dd] ? ' <span class="badge ok">ajustado con Gemini</span>' : '') + (env ? ' <span class="badge ok">✓ enviado' + (hx[mk] && hx[mk].length ? ' ' + hhmm(hx[mk].slice(-1)[0]) : '') + '</span>' : '') + '</div>';
+    var h = '<div class="tpl" data-ti="' + i + '"><div class="tpl-head"><b>' + e(t[0]) + '</b> <span class="small muted">' + e(t[1]) + '</span>' + (ajustes[i + '|' + dd] ? ' <span class="badge ok">Ajustado con Gemini</span>' : '') + (env ? ' <span class="badge ok">✓ Enviado' + (hx[mk] && hx[mk].length ? ' ' + hhmm(hx[mk].slice(-1)[0]) : '') + '</span>' : '') + '</div>';
     o.txts.forEach(function (txt, k) {
       var id = 'ta-' + w + '-' + i + '-' + k, val = k === 0 && ajustes[i + '|' + dd] ? ajustes[i + '|' + dd] : txt;
       h += (o.txts.length > 1 ? '<p class="tiny muted" style="margin:8px 0 2px">Mensaje ' + (k + 1) + ' de ' + o.txts.length + '</p>' : '') +
@@ -1285,7 +1279,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     h += ETAPAS.map(function (x) {
       var boxes = x[2].map(function (c) { var k = tplIdx(c), t = TPL[k]; if (k < 0 || (dest === 'grupo' ? t[2] === 'persona' : t[2] === 'grupo')) return ''; return tplBox(k, d, 'm'); }).join('');
       if (x[0] === 'cierre' && dest === 'grupo') boxes += encuestaCierreHtml(g, p);   // 2.7.1
-      return boxes ? '<details class="card etapa" id="etapa-' + x[0] + '"' + (x[0] === cur ? ' open' : '') + '><summary><b>' + e(x[1]) + '</b>' + (x[0] === cur ? ' <span class="badge ok">ahora</span>' : '') + '</summary><div class="grid two" style="margin-top:10px">' + boxes + '</div></details>' : '';
+      return boxes ? '<details class="card etapa" id="etapa-' + x[0] + '"' + (x[0] === cur ? ' open' : '') + '><summary><b>' + e(x[1]) + '</b>' + (x[0] === cur ? ' <span class="badge ok">Ahora</span>' : '') + '</summary><div class="grid two" style="margin-top:10px">' + boxes + '</div></details>' : '';
     }).join('');
     el.innerHTML = h;
     growAll();

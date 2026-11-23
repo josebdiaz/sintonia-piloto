@@ -44,7 +44,7 @@
       ['Opciones y votación en el grupo de WhatsApp', r.estado === 'cerrado' || r.estado === 'caido'],
       ['Plan fijado: lugar, día, hora y salida', r.estado === 'cerrado'],
       ['El día del plan: avisar en el grupo de WhatsApp que llegaste y que estás «ya en casa»', r.estado === 'cerrado' && paso],
-      ['Contarnos cómo les fue (unos 4 minutos)', !!yo.retro]
+      ['Contarnos cómo les fue', !!yo.retro]
     ];
     if (r.estado === 'caido') L = L.slice(0, 2);
     var i = L.findIndex(function (x) { return !x[1]; }), n = L.filter(function (x) { return x[1]; }).length;
@@ -58,13 +58,13 @@
   function stopsHtml(o) {
     return '<ul class="stops">' + (o.paradas || []).map(function (p, i) {
       return '<li><b>' + (i + 1) + '. ' + S.esc(p.nombre) + '</b><div class="meta"><span>' + S.esc(p.zona || '') + '</span>' +
-        (p.horario ? '<span>Horario: ' + S.esc(p.horario) + '</span>' : '') + (p.costo_aprox !== '' && p.costo_aprox !== undefined ? '<span>Costo: ' + (/^\$?\s*0$/.test(String(p.costo_aprox).trim()) ? 'gratis' : S.esc(p.costo_aprox)) + '</span>' : '') + '</div></li>';
+        (p.horario ? '<span>Horario: ' + S.esc(p.horario) + '</span>' : '') + '</div></li>';   // 2.8.2: sin costo por parada; el precio es uno solo, igual que en el chat
     }).join('') + '</ul>';
   }
   function optionHtml(o, i, extra) {
     return '<h3>' + S.esc(o.titulo || ('Opción ' + (i + 1))) + '</h3>' + stopsHtml(o) +
       '<div class="meta">' + (o.hora_salida ? '<span>Salida sugerida: <b>' + S.esc(o.hora_salida) + '</b></span>' : '') +
-      (o.presupuesto_aprox ? '<span>Presupuesto: <b>' + S.esc(o.presupuesto_aprox) + '</b></span>' : '') + '</div>' +
+      (o.presupuesto_aprox ? '<span>Aprox. <b>' + S.esc(S.precioUno(o.presupuesto_aprox)) + '</b> por persona</span>' : '') + '</div>' +
       (o.por_que ? '<p class="small" style="margin:10px 0 0">' + S.esc(o.por_que) + '</p>' : '') + (extra || '');
   }
 
@@ -153,7 +153,7 @@
     var hora = r.hora_encuentro ? new Date(r.hora_encuentro) : null, now = Date.now();
     var ventana = !hora || (now >= hora.getTime() - 3 * 36e5 && now <= hora.getTime() + 8 * 36e5);
     var yo = r.yo || {};
-    var h = luz(r) + recorrido(r, true) + '<div class="hero"><h1>¡El plan quedó!</h1><p>Llega sabiendo qué esperar. Ruta clara, ganas intactas.</p></div>';
+    var h = luz(r) + recorrido(r, true) + '<div class="hero"><h1>¡El plan quedó!</h1></div>';   // 2.8.2: sin texto de relleno
     h += '<article class="option win">' + optionHtml(o, 0, hora ? '<p style="margin:12px 0 0"><b>Encuentro: ' + S.esc(S.fecha(hora)) + '</b></p>' : '') + '</article>';
     if (r.failover) {   // 2.1.0: solo si el plan pasó a la web por contingencia
       h += '<div class="card"><h3>¿Vas?</h3><p class="small muted">' + (r.n_apuntados || 0) + ' de ' + (r.n_invitados || '?') + ' ya se apuntaron.</p><div class="actions split">' +
@@ -165,8 +165,8 @@
     var antes = hora && now < hora.getTime();   // 2.0.2: el pulso se abre desde la hora de encuentro
     if (antes) h += calendario(o, hora);
     h += '<div class="card soft"><h3>Después de la salida</h3>' + (yo.retro ? '<p class="small">¡Gracias por contarnos cómo les fue!</p>' :
-      antes ? '<p class="small muted">Después del encuentro te pediremos unos 4 minutos para contarnos cómo les fue.</p>' :
-      '<p class="small">¿Cómo te fue? Cuéntanos en unos 4 minutos.</p><div class="actions"><a class="btn btn-primary btn-block" href="' + S.esc(S.link('retro.html', { plan_id: planId, pid: pid })) + '">Cuéntanos cómo te fue</a></div>') + '</div>';
+      antes ? '<p class="small muted">Después del encuentro te pediremos que nos cuentes cómo les fue.</p>' :
+      '<p class="small">¿Cómo te fue? Cuéntanos en la encuesta de cierre.</p><div class="actions"><a class="btn btn-primary btn-block" href="' + S.esc(S.link('retro.html', { plan_id: planId, pid: pid })) + '">Cuéntanos cómo te fue</a></div>') + '</div>';
     if (antes && hora.getTime() - now < 12 * 36e5) { clearTimeout(timer); timer = setTimeout(load, hora.getTime() - now + 5000); }   // una sola recarga al llegar la hora (sin sondear el backend)
     html(h + recorrido(r));
     S.$$('[data-ev]', app).forEach(function (b) {

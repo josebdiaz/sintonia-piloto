@@ -5,6 +5,31 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Ajustes visuales de la auditoría anti-slop (frontend 2.8.2)
+Auditoría con las skills `no-ai-design-slop` y `audit-ai-design-slop` (catálogo completo). Se renderizó cada superficie en escritorio y en iPhone 13. Cada cambio pasa la prueba de quitar: se elimina lo que no tiene función y se corrige lo mínimo con el sistema DS 3.0, sin rediseñar.
+- **La web dice lo mismo que el chat (P1):**
+  - El plan cerrado muestra «Aprox. $114.000 por persona», el mismo precio único del chat. La función vive ahora en `S.precioUno` y la usan la consola y la web; se quitó el «Costo» por parada.
+  - La encuesta de cierre deja de llamarse «Pulso» en su etiqueta y su encabezado, y ya no promete «4 minutos» (tiene 26 campos). Tampoco lo prometen el plan, el mensaje de la consola ni la instrucción a Gemini. El tiempo real se mide en el ensayo del 25/11.
+- **Home (P1):** el texto aparece desde 0,35 s, no desde 1,2–1,8 s. La etiqueta pasa a #a83200 (contraste de 4,40 a 5,45).
+- **Pitch (P1/P2):**
+  - «Ruta · Hoy» lleva una captura real de la consola 2.8.1, en lugar del marcador de foto.
+  - En «Prototipo», «Capturas del piloto · pendientes» se reemplazó por «2 pruebas con mago · n = 1 cada una».
+  - En «Factibilidad», el subtítulo del paso 2 queda en una línea («Hoy: consola del mago · después: n8n»), el paso 1 dice «WhatsApp Business · número del equipo» y las notas ya no mencionan Evolution API.
+- **Plantillas repetidas (P2):**
+  - El bloque oscuro de bienvenida queda solo en inscripción y unirse (clase `.hero.portada`). Plan, encuesta y aviso abren con un título sobre papel.
+  - Se quitó el texto de relleno «Ruta clara, ganas intactas».
+- **Etiquetas duplicadas (P2):** la inscripción ya no repite el lema («Menos vueltas para salir») y la encuesta tiene una sola etiqueta.
+- **Menores (P3):**
+  - La versión ya no se ve en el pie de las páginas de participante; queda en `<html data-version>`.
+  - El panel escribe «1 grupo · 2 planes», sin paréntesis.
+  - Las insignias ya no fuerzan minúsculas.
+  - Los pasos hechos ya no van tachados.
+  - El correo del aviso tiene 24 px de área táctil.
+  - La categoría de las guías sube a 5,38 de contraste.
+  - La marca de la consola tiene foco visible.
+- **No entra:** los extremos repetidos del SUS. Cambia el formato de un instrumento validado y necesita el visto bueno de Néstor.
+- QA: recorrido completo 57 de 57, F0–F5 26 de 26, ola A 21 de 21, auditoría E2E 59 OK con 0 graves, contraste sin fallas en 6 páginas y axe sin hallazgos nuevos.
+
 ### 2026-11-22 · Decks al día con la 2.8.1
 - **Onboarding del monitor** (`docs/deck-onboarding-monitor.html`):
   - El recorrido usa **capturas reales de la consola 2.8.1** (`docs/deck-onboarding-monitor/`, 8 imágenes con datos ficticios del simulador) en lugar de las pantallas dibujadas de la 2.3.
@@ -250,7 +275,9 @@ Ensayo interno del 13/11 en modo prueba (Juan José como mago). Todavía no hay 
 
 Desde la 2.3.0, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
-### [2.8.1] · 2026-11-22 · Correcciones de la auditoría E2E · **en vivo**
+### [2.8.2] · 2026-11-22 · Ajustes visuales de la auditoría anti-slop · **en vivo**
+Tag `piloto/v2.8.2` por crear (al congelar, el jueves 26). Solo frontend; el backend sigue en 2.8.1.
+### [2.8.1] · 2026-11-22 · Correcciones de la auditoría E2E
 Tag `piloto/v2.8.1` por crear (al congelar, el jueves 26).
 ### [2.8.0] · 2026-11-22 · Ola A de la prueba externa (invitar, crear el grupo, fechas, orden, avisos)
 Tag `piloto/v2.8.0` por crear.

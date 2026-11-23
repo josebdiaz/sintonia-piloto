@@ -54,6 +54,7 @@
 <script src="assets/sintonia.js"></script>
 <script>
 (function () {
+  function nGrupos(n) { n = Number(n) || 0; return n === 1 ? '1 grupo' : n + ' grupos'; }   // 2.8.2: plurales sin paréntesis
   var key = '', e = S.esc;
   function gate(on) { S.show('#gate', on); S.show('#vista', !on); }
   S.$('#gateForm').addEventListener('submit', function (ev) { ev.preventDefault(); S.SS.set('sintonia_admin_key', S.$('#key').value.trim()); S.busy(S.$('#entrar'), load); });
@@ -100,7 +101,7 @@
         rows.map(function (r) { return '<tr><td>' + e(r[0]) + '</td><td>' + r[1](pe.E1) + '</td><td>' + r[1](pe.E2) + '</td></tr>'; }).join('') + '</tbody></table></div>';
     }
     var sinU = !u(pe.E1) && !u(pe.E2);
-    return '<h2 style="margin:0">E1 frente a E1.5</h2><p class="small muted" style="margin:4px 0 0">' + (pe.E1 ? pe.E1.grupos : 0) + ' grupo(s) en E1 y ' + (pe.E2 ? pe.E2.grupos : 0) + ' en E1.5. Cada cifra lleva su n; con 2 grupos por condición la lectura es descriptiva.</p>' +
+    return '<h2 style="margin:0">E1 frente a E1.5</h2><p class="small muted" style="margin:4px 0 0">' + nGrupos(pe.E1 ? pe.E1.grupos : 0) + ' en E1 y ' + (pe.E2 ? pe.E2.grupos : 0) + ' en E1.5. Cada cifra lleva su n; con 2 grupos por condición la lectura es descriptiva.</p>' +
       (sinU ? '<p class="small" style="color:var(--danger)">El backend en vivo no envía SEQ ni SUS: despliega la versión 2.3.0.</p>' : '') +
       tabla('Métricas validadas con Néstor', filas) + tabla('Contexto', ctx) + consolaTabla(pe);
   }
@@ -127,7 +128,7 @@
   function col(k, x) {
     if (!x) return '';
     var c = x.costo || {}, o = x.organizador || {}, t = x.todos || {};
-    return '<div class="card"><div class="actions" style="margin:0 0 8px;justify-content:space-between"><h2 style="margin:0">' + NOMBRE[k] + '</h2><span class="small muted">' + x.grupos + ' grupo(s) · ' + x.planes + ' plan(es)</span></div>' +
+    return '<div class="card"><div class="actions" style="margin:0 0 8px;justify-content:space-between"><h2 style="margin:0">' + NOMBRE[k] + '</h2><span class="small muted">' + nGrupos(x.grupos) + ' · ' + (Number(x.planes) === 1 ? '1 plan' : (x.planes || 0) + ' planes') + '</span></div>' +
       '<h3>SEQ y SUS por plan</h3>' + porPlan(x) +
       '<p class="tiny muted" style="margin:6px 0 0">La SEQ de continuidad solo se pregunta en el plan 2.</p>' +
       '<details style="margin-top:12px"><summary class="small"><b>Métricas secundarias</b> · embudo, coordinación, capas, costo</summary>' +
