@@ -17,7 +17,15 @@ Cada pieza lleva su propio `origen`, que llega a la inscripción y a la lista de
 - Usan corrección de errores Q y una zona tranquila de 4 módulos.
 - En los artes de Affinity, cada QR es un solo trazado vectorial, sin uniones entre módulos. Todos se verificaron decodificando el render.
 
-## Artes (22/11/2026, logo nuevo) · `artes/`
+## Artes (22/11/2026, sistema «Resonancia») · `artes/`
+
+Todas las piezas siguen `filosofia-visual.md`:
+- **Ondas:** anillos finos que salen del logo en progresión geométrica, en un tono apenas separado del fondo. En los círculos se calculan como arcos, sin máscaras.
+- **Trazo:** uno solo, rojo y ondulado, en la palabra decisiva de cada cara.
+- **Titular:** grande y alineado a la izquierda.
+- **Etiquetas:** versalitas espaciadas.
+- **Recorrido:** contado como estaciones numeradas.
+- **QR:** sobre una placa blanca de esquinas redondeadas.
 
 | Pieza | Archivo | Formato | Sangrado | Oleada |
 |---|---|---|---|---|

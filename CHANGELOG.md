@@ -5,6 +5,18 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Material POP rediseñado: sistema «Resonancia»
+- La filosofía visual está en `docs/pop/filosofia-visual.md`, escrita con la skill de diseño gráfico canvas-design. Retoma la piedra que cae al agua del glifo animado de la landing.
+- Las 11 piezas se rehicieron en Affinity con ese sistema:
+  - Ondas concéntricas que salen del logo, en un tono apenas separado del fondo.
+  - Un solo trazo rojo ondulado por cara.
+  - Titulares grandes y alineados a la izquierda, y etiquetas en versalitas espaciadas.
+  - El recorrido contado como estaciones numeradas.
+  - QR sobre una placa blanca redondeada.
+- En los pines y los stickers las ondas se calculan como arcos dentro del círculo, sin máscaras.
+- En el volante, el QR pasa a 38 mm, lejos del corte, sobre una banda noche.
+- Los cinco QR se verificaron decodificando el render.
+
 ### 2026-11-22 · Menú del equipo sobre la landing (frontend 2.9.2)
 - Si el código secreto se usaba con la página desplazada, el círculo que revela «Detrás de escena» nacía en el glifo, que estaba fuera de la pantalla, y no alcanzaba a cubrirla: se veía la landing debajo de una curva.
 - Ahora el círculo nace en el glifo solo si está a la vista; si no, en el centro de la pantalla. Su radio se calcula para cubrir las cuatro esquinas.
