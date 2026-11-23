@@ -5,6 +5,13 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-22 · Artes del material POP en Affinity
+- **Oleada 1:** tarjeta con QR de 90 × 55 mm (frente y reverso), 2 pines de 58 mm y 3 stickers troquelados de 60 mm.
+- **Oleada 2:** tótem de 80 × 200 cm, volante media carta y hablador de mesa.
+- Todo en CMYK, con sangrado y en Graphik. Cada QR es un solo trazado vectorial, y los cinco que llevan las piezas se verificaron decodificando el render.
+- Vistas previas en `docs/pop/artes/` y especificaciones para la imprenta en `docs/pop/README.md`. Los `.af` y los PDF de imprenta quedan fuera del repositorio.
+- Falta el logo vectorial de Icesi.
+
 ### 2026-11-22 · Landing pública del QR del material POP (frontend 2.9.0 · backend 2.9.0)
 Prompt 8 del plan de la prueba externa. Decisiones del equipo (22/11): dos oleadas de impresión, lista de espera cuando no haya cupo, logo de Icesi (archivo por cargar), sin video.
 - **Landing (sintonia.my):** la portada «Algo se está armando» pasa a ser la landing del QR. Conserva el glifo y su animación, y explica lo demás:
