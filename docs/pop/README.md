@@ -17,13 +17,13 @@ Cada pieza lleva su propio `origen`, que llega a la inscripción y a la lista de
 - Usan corrección de errores Q y una zona tranquila de 4 módulos.
 - En los artes de Affinity, cada QR es un solo trazado vectorial, sin uniones entre módulos. Todos se verificaron decodificando el render.
 
-## Artes (22/11/2026) · `artes/`
+## Artes (22/11/2026, logo nuevo) · `artes/`
 
 | Pieza | Archivo | Formato | Sangrado | Oleada |
 |---|---|---|---|---|
 | Tarjeta con QR (frente y reverso) | `Tarjeta-QR_90x55` | 90 × 55 mm | 3 mm | 1 · 24/11 |
 | Pines (2 diseños) | `Pines-58mm_arte-70mm` | Arte circular de 70 mm para botón de 58 mm | 2 mm | 1 · 24/11 |
-| Stickers (3 diseños) | `Stickers-60mm_troquel` | Círculo de 60 mm, troquelado | 2 mm | 1 · 24/11 |
+| Stickers (4 diseños; el 4.º es el logo con «SINTONIA.MY» arriba y el lema abajo, como sello) | `Stickers-60mm_troquel` | Círculo de 60 mm, troquelado | 2 mm | 1 · 24/11 |
 | Tótem (roll-up) | `Totem-rollup_80x200cm` | 800 × 2000 mm, a 150 ppp, todo vectorial | 5 mm | 2 · 1/12 |
 | Volante | `Volante-media-carta` | 139,7 × 215,9 mm, una cara | 3 mm | 2 · 1/12 |
 | Hablador de mesa | `Hablador-mesa_media-carta` | Media carta vertical, para porta-aviso | 3 mm | 2 · 1/12 |
@@ -31,6 +31,7 @@ Cada pieza lleva su propio `origen`, que llega a la inscripción y a la lista de
 ### Para la imprenta
 
 - **Color:** documentos en CMYK. La imprenta debe confirmar su perfil (por ejemplo, FOGRA39) y entregar una prueba de color del naranja.
+- **Logo:** el nuevo, del archivo de marca «Sintonia Logo NEW UPDATED.svg», con la «s» vectorizada. El rojo del anillo va en CMYK 0/90/100/0, equivalente a #ff2500.
 - **Fuente:** Graphik (Bold, Semibold, Medium y Regular). Los PDF «press ready» la incrustan; para abrir el `.af` hay que tenerla instalada.
 - **Pines:**
   - La cara visible mide 58 mm.
