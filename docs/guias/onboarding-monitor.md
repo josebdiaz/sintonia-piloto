@@ -1,7 +1,7 @@
 ---
 titulo: "Sintonía · Onboarding del monitor"
 subtitulo: "Cómo operar el mago en el piloto de WhatsApp"
-version: "v1.2 · 22 nov 2026 · consola y backend 2.8.1"
+version: "v1.3 · 23 nov 2026 · consola 2.13.0 y backend 2.9.2"
 audiencia: "Monitor asignado por la maestría (20 h en 2 semanas)"
 autores: "Jose Bolaños · Katherine Castro"
 idioma: "es-CO"
@@ -18,13 +18,14 @@ CÓMO USAR ESTE ARCHIVO EN EL MOTOR DE PRESENTACIONES
   - `> Notas:` son las notas del orador. No van en pantalla.
 - Estilo: el de los decks de Sintonía (DS 3.0). Papel, noche, naranja, mostaza, vitral. Inter + Climate Crisis para el glifo.
 - Fuente de verdad: consola y backend 2.8.1 (22/11/2026). La v1.1 describía la consola 2.2.2; esta versión integra los cambios de la prueba de Juan José (2.7.1), la ola A de la prueba externa (2.8.0) y la auditoría E2E (2.8.1).
+- v1.3 (23/11): «Quiénes pueden» (disponibilidad de cada persona, 2.10), encuesta de cierre por pasos (2.11), encabezado compacto en celular, avisos abajo, mapa con un nombre por momento y «Aceptaron: n de N» (2.12), aviso de privacidad v2 (2.13).
 - El deck `docs/deck-onboarding-monitor.html` está regenerado (22/11) con capturas reales de la consola 2.8.1 en `docs/deck-onboarding-monitor/`.
 - Las cifras de encuesta son datos propios de Sintonía (n = 76, vista parcial al 25/10). Clasificación: emergente.
 -->
 
 ## Bienvenido al piloto de Sintonía
 
-Etiqueta: Onboarding del monitor · consola 2.8.1 · noviembre 2026
+Etiqueta: Onboarding del monitor · consola 2.13.0 · noviembre 2026
 
 **Tu guía para operar el mago, de principio a fin.**
 
@@ -229,7 +230,7 @@ Etiqueta: Paso a paso · 1 de 2
 |---|---|---|
 | 1 | Grupo | Cerrar el reclutamiento. Crear el grupo de WhatsApp en **3 pasos**: (1) guardar a quien organiza como contacto en el teléfono Sintonía («Copiar nombre y número»): WhatsApp solo agrega a contactos guardados; (2) crear el grupo agregándola (ajustes: solo administradores agregan; sin mensajes temporales); (3) pegar el enlace del grupo y mandar «Invitar a…» a los demás. **Plan B:** «Invitar a <quien organiza>» si no la pudiste agregar |
 | 2 | Lo que toca ahora | **/ingreso** en el grupo: bienvenida, transparencia y aviso de privacidad |
-| 3 | Plan | Crear el plan 1. Pegar lo que dijeron en el chat y **pedir 3 opciones a Gemini** (solo inventario activo). Revisarlas y publicar |
+| 3 | Plan | Crear el plan 1. Mirar **«Quiénes pueden»**: cuántas personas pueden en cada fecha (cada una marcó su disponibilidad al unirse). Pegar lo que dijeron en el chat y **pedir 3 opciones a Gemini** (solo inventario activo). Revisarlas y publicar |
 | 4 | Lo que toca ahora | La cola: **/opciones** (dice la fecha concreta), un mensaje por opción, **«¿Qué día?»** si hay varias fechas, y la **encuesta** del plan (Adjuntar → Encuesta, varias respuestas) |
 | 5 | Plan | Copiar los números de «Ver votos» con **− n +**. Si a las 2 h faltan votos: **un solo /recordatorio** (desaparece cuando ya votaron todos). Cerrar con **día y hora** (botones con las fechas del grupo). «Ninguna me sirve» → **pedir más opciones** (no cuenta como plan caído) |
 
@@ -256,7 +257,7 @@ Etiqueta: Paso a paso · 2 de 2
 
 Visual: seis cajas con flechas; la última en rubí («Repetir y Mago off»).
 
-> Notas: La encuesta de cierre es la fuente de SEQ y SUS; si no le llega a cada persona, el plan se queda sin su métrica principal. Tu encuesta como mago es la que compara E1 con E1.5: respóndela el mismo día. La pregunta de continuidad solo aparece desde el plan 2.
+> Notas: La encuesta de cierre es la fuente de SEQ y SUS; si no le llega a cada persona, el plan se queda sin su métrica principal. Tu encuesta como mago es la que compara E1 con E1.5: respóndela el mismo día. La pregunta de continuidad solo aparece desde el plan 2. La encuesta va por pasos (5 para miembros, 6 para quien organiza): si alguien dice que «es muy larga», cuéntale que son pasos cortos y que las preguntas abiertas son opcionales.
 
 ---
 

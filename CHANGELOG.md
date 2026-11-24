@@ -5,6 +5,24 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-23 · Aviso de privacidad v2 y términos sensibles afinados (frontend 2.13.0 · backend 2.9.2)
+Aprobado por Néstor el 23/11.
+- **Aviso v2 (v2-2026-11)** publicado en `piloto/aviso.html`:
+  - Nuevos datos: la disponibilidad y la lista de espera.
+  - Nueva finalidad: avisar cuando haya cupo, y nada más.
+  - Los datos de la lista de espera se borran al cierre del estudio, y hay nota de versión.
+  - «En corto» suma una línea sobre la lista de espera.
+  - `AVISO_VERSION` del frontend pasa a v2-2026-11.
+- **Términos sensibles afinados**, iguales en el formulario y en el backend: «enfermera», «judicial», «operador» y «política de no llegar tarde» ya no frenan la frase.
+  - Salud y religión se buscan por palabra completa donde la raíz era ambigua: «enfermo», «operada», «judío».
+  - Política se busca por expresiones partidistas, como «partido político» o «de derecha».
+- **Backend 2.9.2:** solo cambia la lista de términos. Al desplegarlo, la propiedad `AVISO_VERSION` del script pasa a `v2-2026-11`.
+- **Guías:**
+  - Onboarding del monitor v1.3, para la consola 2.13.0.
+  - El guion de la prueba con Cali queda al día.
+  - Capturas del deck regeneradas.
+- **QA:** backend 108 de 108, recorrido 57 de 57, consola 26 de 26, ola A 21 de 21, auditoría E2E sin hallazgos.
+
 ### 2026-11-23 · Backend 2.9.1 desplegado
 - Pegado en Apps Script, con `probarMontaje()` y «Nueva versión». Desde hoy se guardan la lista de espera de la landing y la disponibilidad de cada persona.
 

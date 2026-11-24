@@ -259,6 +259,14 @@ ctx.UrlFetchApp.fetch = fetchViejo; delete PROPS.NOTIFICAR_A;
   const rv = post({ action: 'revocar', pid: m9.pid });
   chk('2.9.1 revocar el consentimiento borra también su disponibilidad', SHEETS.linea_base.rows.every(r => r[H.indexOf('pid')] !== m9.pid), rv); }
 
+// 2.9.2: términos sensibles afinados con Néstor (sin falsos positivos)
+{ const q = vm.runInContext('quitarSensibles_', ctx), es = vm.runInContext('esSensible_', ctx);
+  const inocentes = ['Mi amiga es enfermera', 'Trabajo en la rama judicial', 'Soy operador de cámara', 'Tenemos política de no llegar tarde', 'Somos de Jamundí'];
+  chk('2.9.2 frases inocentes ya no se marcan como sensibles', inocentes.every(x => !es(x)), inocentes.filter(x => es(x)));
+  const sensibles = ['Está enfermo', 'A ella la operaron hace poco', 'Es judía', 'No hablamos de partido político', 'Uno es de derecha', 'Tiene una enfermedad'];
+  chk('2.9.2 siguen marcadas las que sí lo son', sensibles.every(x => es(x)), sensibles.filter(x => !es(x)));
+  chk('2.9.2 se omite la frase sensible y se conserva el resto', q('Mi amiga es enfermera. Uno está enfermo, plan tranqui') === 'Mi amiga es enfermera. [dato sensible omitido], plan tranqui' || /enfermera/.test(q('Mi amiga es enfermera. Uno está enfermo, plan tranqui')) && /omitido/.test(q('Mi amiga es enfermera. Uno está enfermo, plan tranqui')), q('Mi amiga es enfermera. Uno está enfermo, plan tranqui')); }
+
 // 2.5.0: ubicaciones e inventario liviano
 const ub = vm.runInContext('revisarUbicaciones_', ctx)([{ id: 'A', direccion: 'Cl 5', latitud: 34516, longitud: -765320 }, { id: 'B', direccion: '', latitud: 3.45, longitud: -76.53 }, { id: 'C', direccion: 'Cra 1', latitud: 4.6, longitud: -74.1 }, { id: 'D', direccion: 'Cra 2', latitud: '', longitud: '' }]);
 chk('2.5.0 probarMontaje: ubicaciones (regional, fuera de Cali, sin dirección, sin coordenadas)', /3 de 4 con dirección/.test(ub) && /1 con coordenadas leídas/.test(ub) && /1 con coordenadas fuera de Cali \(p\. ej\. C\)/.test(ub) && /1 sin coordenadas/.test(ub), ub);

@@ -1,7 +1,12 @@
 /**
- * Sintonía · Piloto v2.9.1 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.9.2 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.9.2 (23/11, revisión de Néstor):
+ *   - TERMINOS_SENSIBLES_ afinados para no frenar frases inocentes: «enfermera», «judicial», «operador» o «política de no llegar tarde» ya no
+ *     cuentan. Salud y religión se buscan por palabra completa donde la raíz era ambigua; política, por expresiones partidistas. Es la misma
+ *     lista del formulario (sintonia.js).
+ *   - Aviso de privacidad v2 (v2-2026-11): la propiedad AVISO_VERSION debe pasar a v2-2026-11 al desplegar.
  * Versión 2.9.1 (23/11, sync P8d: «escoge tu disponibilidad» para todo el parche):
  *   - linea_base.disponibilidad (columna nueva al final; probarMontaje la agrega sola): la disponibilidad de CADA persona, con el mismo
  *     formato «dias: … · franjas: … · fechas: AAAA/MM/DD, …». La de quien organiza sigue también en linea_base_grupo (la consola la usa
@@ -262,9 +267,9 @@ function escala_(v) { var n = int_(v); return (n !== '' && n >= 1 && n <= 5) ? n
 /** v2.8.1: términos que delatan datos sensibles (salud, religión, política, orientación sexual). Se compara sin tildes y por inicio de palabra.
  *  El alcohol y la comida no están: «no toma», «vegetariano» o «sin alcohol» son restricciones del plan. Debe coincidir con S.SENSIBLE (sintonia.js). */
 var TERMINOS_SENSIBLES_ = ['diabet', 'hipertens', 'cancer', 'vih', 'sida', 'epilep', 'asma', 'depresi', 'ansiedad', 'bipolar', 'esquizofren', 'autis', 'tdah',
-  'embaraz', 'enferm', 'diagnost', 'medicament', 'pastilla', 'terapia', 'psiquiatr', 'psicolog', 'alergi', 'alergic', 'celiac', 'cirugi', 'operad', 'discapacid',
-  'religi', 'catolic', 'cristiano', 'cristiana', 'evangel', 'adventist', 'judi', 'musulman', 'testigo de jehov', 'mormon', 'ateo', 'atea',
-  'politic', 'petrist', 'uribist', 'partido liberal', 'partido conservador', 'pacto historico', 'centro democratico',
+  'embaraz', 'enfermedad', 'enfermo ', 'enferma ', 'enfermos ', 'enfermas ', 'diagnost', 'medicament', 'pastilla', 'terapia', 'psiquiatr', 'psicolog', 'alergi', 'alergic', 'celiac', 'cirugi', 'operado ', 'operada ', 'me operaron', 'lo operaron', 'la operaron', 'discapacid',
+  'religi', 'catolic', 'cristiano', 'cristiana', 'evangel', 'adventist', 'judio', 'judia', 'judaism', 'musulman', 'testigo de jehov', 'mormon', 'ateo', 'atea',
+  'partido politic', 'ideologia politic', 'opinion politic', 'politica partidista', 'politicamente', 'izquierdista', 'derechista', 'de izquierda ', 'de derecha ', 'petrist', 'uribist', 'partido liberal', 'partido conservador', 'pacto historico', 'centro democratico',
   'gay', 'lesbi', 'bisexual', 'homosex', 'orientacion sexual', 'lgbt', 'trans'];
 function sinTildes_(s) { return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
 function esSensible_(frase) { var t = ' ' + sinTildes_(frase).replace(/[^a-z0-9ñ ]/g, ' ') + ' '; return TERMINOS_SENSIBLES_.some(function (k) { return t.indexOf(' ' + k) >= 0 && (k !== 'trans' || / trans /.test(t)); }); }

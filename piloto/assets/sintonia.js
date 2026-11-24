@@ -20,9 +20,9 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.12.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.13.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
-    AVISO_VERSION: 'v1-2026-10',
+    AVISO_VERSION: 'v2-2026-11',
     TIMEOUT_MS: 30000
   };
 
@@ -271,9 +271,9 @@
   /** 2.8.1 · Datos sensibles (Ley 1581): salud, religión, política u orientación sexual. Misma lista que TERMINOS_SENSIBLES_ del backend.
    *  El alcohol y la comida no están: «no toma» o «vegetarianos» son restricciones del plan. Devuelve el término encontrado o ''. */
   var SENSIBLE = ['diabet', 'hipertens', 'cancer', 'vih', 'sida', 'epilep', 'asma', 'depresi', 'ansiedad', 'bipolar', 'esquizofren', 'autis', 'tdah',
-    'embaraz', 'enferm', 'diagnost', 'medicament', 'pastilla', 'terapia', 'psiquiatr', 'psicolog', 'alergi', 'alergic', 'celiac', 'cirugi', 'operad', 'discapacid',
-    'religi', 'catolic', 'cristiano', 'cristiana', 'evangel', 'adventist', 'judi', 'musulman', 'testigo de jehov', 'mormon', 'ateo', 'atea',
-    'politic', 'petrist', 'uribist', 'partido liberal', 'partido conservador', 'pacto historico', 'centro democratico',
+    'embaraz', 'enfermedad', 'enfermo ', 'enferma ', 'enfermos ', 'enfermas ', 'diagnost', 'medicament', 'pastilla', 'terapia', 'psiquiatr', 'psicolog', 'alergi', 'alergic', 'celiac', 'cirugi', 'operado ', 'operada ', 'me operaron', 'lo operaron', 'la operaron', 'discapacid',
+    'religi', 'catolic', 'cristiano', 'cristiana', 'evangel', 'adventist', 'judio', 'judia', 'judaism', 'musulman', 'testigo de jehov', 'mormon', 'ateo', 'atea',
+    'partido politic', 'ideologia politic', 'opinion politic', 'politica partidista', 'politicamente', 'izquierdista', 'derechista', 'de izquierda ', 'de derecha ', 'petrist', 'uribist', 'partido liberal', 'partido conservador', 'pacto historico', 'centro democratico',
     'gay', 'lesbi', 'bisexual', 'homosex', 'orientacion sexual', 'lgbt', 'trans'];
   function sensible(txt) {
     var t = ' ' + String(txt || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9ñ ]/g, ' ') + ' ';
