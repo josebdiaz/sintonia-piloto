@@ -5,6 +5,9 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-23 · Backend 2.9.2 desplegado
+- Pegado con «Nueva versión». La propiedad `AVISO_VERSION` pasó a `v2-2026-11`: desde ahora cada inscripción y cada anotación en la lista de espera guardan el aviso v2.
+
 ### 2026-11-23 · Aviso de privacidad v2 y términos sensibles afinados (frontend 2.13.0 · backend 2.9.2)
 Aprobado por Néstor el 23/11.
 - **Aviso v2 (v2-2026-11)** publicado en `piloto/aviso.html`:
