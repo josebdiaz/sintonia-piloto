@@ -140,10 +140,16 @@ const T0=Date.now();
  for(const [i,h] of encs.entries()){
    const u=h.match(/https?:\/\/\S+retro\.html\S+/)[0].replace('https://sintonia.my',B); const x=await movil('iPhone 13'); await x.p.goto(u); await x.p.waitForSelector('#vistaForm:not(.hidden)',{timeout:8000});
    if(i===0){ await axe(x.p,'encuesta de cierre'); await scrollX(x.p,'encuesta de cierre'); }
-   await x.p.$$eval('[role=radiogroup]',gs=>gs.forEach(g=>{const bs=g.querySelectorAll('button[data-v]');if(bs.length&&g.offsetParent)bs[Math.min(3,bs.length-1)].click();}));
-   await x.p.$$eval('.chips',gs=>gs.forEach(g=>{const r=g.querySelector('input');if(r&&g.offsetParent)r.click();}));
+   // 2.11.0: la encuesta va por pasos; en cada uno se responde lo visible y se sigue
    const esOrg=await x.p.$eval('#bloqueWtp',e=>!e.classList.contains('hidden')).catch(()=>false);
-   if(esOrg){ await x.p.fill('#muyBarato','3000'); await x.p.fill('#barato','8000'); await x.p.fill('#caro','20000'); await x.p.fill('#muyCaro','35000'); }
+   const nPasos=await x.p.$eval('#encPaso',e=>e.innerText); if(i===0) ok(/Paso 1 de (5|6)/.test(nPasos),'Continuidad','2.11.0: la encuesta de cierre va por pasos (5 para miembros, 6 para quien organiza)',nPasos,'MEDIA');
+   for(let k=0;k<8;k++){
+     await x.p.$$eval('[role=radiogroup]',gs=>gs.forEach(g=>{const bs=g.querySelectorAll('button[data-v]');if(bs.length&&g.offsetParent)bs[Math.min(3,bs.length-1)].click();}));
+     await x.p.$$eval('.chips',gs=>gs.forEach(g=>{const r=g.querySelector('input');if(r&&g.offsetParent)r.click();}));
+     if(esOrg&&await x.p.$eval('#bloqueWtp',e=>!e.hidden)){ await x.p.fill('#muyBarato','3000'); await x.p.fill('#barato','8000'); await x.p.fill('#caro','20000'); await x.p.fill('#muyCaro','35000'); }
+     if(await x.p.$eval('#enviar',e=>!e.classList.contains('hidden'))) break;
+     await x.p.click('#seguir'); await x.p.waitForTimeout(80);
+   }
    const t0=Date.now(); await x.p.click('#enviar'); await x.p.waitForSelector('#vistaOk:not(.hidden)',{timeout:8000}).catch(()=>{});
    const done=await x.p.$eval('#vistaOk',e=>!e.classList.contains('hidden')); ok(done,'Continuidad','Encuesta de cierre enviada desde el celular ('+(esOrg?'organiza':'miembro')+')',await x.p.$eval('#toast',e=>e.innerText).catch(()=>''));
    if(i===0) await x.p.screenshot({path:OUT+'/03-encuesta-ok.png',fullPage:false});

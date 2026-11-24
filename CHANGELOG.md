@@ -5,6 +5,22 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-23 · Encuesta de cierre por pasos (frontend 2.11.0)
+Se sentía larga: eran 26 campos en una sola página.
+- **Pasos:** ahora va por pasos, uno por momento del plan:
+  1. **Antes · Armar el plan:** desgaste, carga de quien organiza y SEQ de activación.
+  2. **Durante · El día del plan:** cómo funcionó, cómo terminó, SEQ de interacción y cómo te sentiste.
+  3. **Después · Lo que sigue:** si repetirían, qué tan a gusto con Sintonía y, en el plan 2, SEQ de continuidad.
+  4. **Diez frases rápidas:** el SUS, con «Llevas n de 10» y la leyenda de la escala una sola vez arriba.
+  5. **¿Cuánto pagarías?:** solo quien organiza. Es opcional, y el botón dice «Saltar este paso» mientras esté vacío.
+  6. **¿Algo más?:** preguntas abiertas y opcionales.
+- **Navegación:** barra de progreso, «Paso n de N», «Atrás» y «Seguir».
+- **Validación por paso:** marca cada pregunta pendiente («Te falta esta») y dice cuántas faltan, sin bloquear al final.
+- **Textos:** más cercanos en los mensajes de error, en los estados («Primero, a disfrutar el plan», «Todavía es pronto») y en la confirmación.
+- **Lo que no cambia:** la redacción de las preguntas validadas (SEQ, SUS, Van Westendorp) y del desgaste, que se compara con la línea base. También quedan igual los datos que se guardan y el backend.
+- El complemento de usabilidad y la vista de revisión usan los mismos pasos.
+- **QA:** auditoría E2E con 68 OK, recorrido 57 de 57 y axe sin fallas en los 6 pasos.
+
 ### 2026-11-23 · Ajustes del material POP (sync P8d)
 - **Stickers:** los 4 llevan «sintonía» escrito. El sello del logo dice «SINTONÍA» arriba y «WWW.SINTONIA.MY» abajo; la dirección se escribe con «www.» para que se lea como web.
 - **Pin B:** «¿Lo repetimos? con este parche» sonaba raro. Lo reemplaza el claim «Menos vueltas, más plan.», con «SINTONÍA» debajo.

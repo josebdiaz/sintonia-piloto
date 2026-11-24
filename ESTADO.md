@@ -7,7 +7,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Componente | Versión | Estado |
 |---|---|---|
-| Frontend (consola, panel, páginas de participante) | **2.10.0** | Publicado en https://sintonia.my el 23/11 (sync P8d). Trae «Escoge tu disponibilidad» con calendario para todo el parche, «Quiénes pueden» en la consola, el claim «Menos vueltas, más plan», «Regístrate aquí» con 3 pasos y la vista de revisión de la encuesta de cierre. La 2.9.x trajo la landing del QR (con lista de espera), el logo nuevo y el arreglo del menú |
+| Frontend (consola, panel, páginas de participante) | **2.11.0** | Publicado en https://sintonia.my el 23/11. La 2.11.0 pone la encuesta de cierre por pasos (antes, durante, después, frases, precio y cierre). La 2.10.0 (sync P8d) Trae «Escoge tu disponibilidad» con calendario para todo el parche, «Quiénes pueden» en la consola, el claim «Menos vueltas, más plan», «Regístrate aquí» con 3 pasos y la vista de revisión de la encuesta de cierre. La 2.9.x trajo la landing del QR (con lista de espera), el logo nuevo y el arreglo del menú |
 | Backend (Apps Script) | **2.9.1** en el repo · 2.8.1 desplegado | 2.9.0: `?view=cupo` y lista de espera (hoja `lista_espera`). 2.9.1: disponibilidad por persona (columna nueva en `linea_base`). **Por desplegar**: pegar, `probarMontaje()` y «Nueva versión». Sin desplegar, la landing no guarda la lista de espera y la disponibilidad de los miembros se pierde |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
@@ -19,6 +19,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Versión | Cambio principal | Origen |
 |---|---|---|
+| 2.11.0 | Encuesta de cierre por pasos, uno por momento del plan, con progreso, validación por paso y UX writing; las preguntas validadas no cambian | Pedido del equipo (23/11) |
 | 2.10.0 | Disponibilidad con calendario para todo el parche y «Quiénes pueden» en la consola (backend 2.9.1), claim «Menos vueltas, más plan», «Regístrate aquí» con 3 pasos, vista de revisión de la encuesta de cierre | Sync P8d (23/11) |
 | 2.9.1 | Logo nuevo (anillo rojo #ff2500, «s» redibujada) en el sitio, los íconos, los decks, los stickers de WhatsApp y el material POP | Marca (22/11) |
 | 2.9.0 | Landing pública del QR (qué es, cómo funciona, crear el grupo o lista de espera), origen por pieza impresa, QR en `docs/pop/`, código secreto sobre el glifo; backend con cupo y lista de espera | Material POP (prompt 8) |
@@ -103,7 +104,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags `piloto/v2.10.0` y `backend/v2.9.1` (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1 | Prueba con Cali (viernes) | José |
+| 1 | Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags `piloto/v2.11.0` y `backend/v2.9.1` (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1 | Prueba con Cali (viernes) | José |
 | 2 | Cargar los stickers en el número Sintonía (el correo del monitor ya está en `NOTIFICAR_A`) | Prueba con Cali | José |
 | 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
 | 4 | Material POP: landing y QR **hechos** (2.9.0, `docs/pop/`). Faltan: desplegar el backend 2.9.1, el archivo del logo de Icesi para la landing y las piezas, y los artes en Affinity. Impresión en dos oleadas: pines, stickers y tarjetas el 24/11; tótem y volantes el 1/12 (brief en el Proyecto) | Material POP | Equipo |
