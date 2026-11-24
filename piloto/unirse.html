@@ -37,6 +37,10 @@
     <form id="form" class="card" novalidate>
       <div class="field"><label for="nombre">Tu nombre de pila</label><input id="nombre" type="text" maxlength="40" autocomplete="given-name" required></div>
       <div class="field"><label for="wa">Tu WhatsApp</label><div class="prefix"><span>+57</span><input id="wa" type="tel" inputmode="tel" maxlength="16" autocomplete="tel-national" placeholder="300 123 4567" required></div><span class="hint">Lo usamos solo para coordinar los planes de tu grupo.</span></div>
+      <!-- 2.10.0 (sync P8d): cada persona marca su disponibilidad, no solo quien organiza -->
+      <div class="field"><span class="label" id="agendaLbl">Escoge tu disponibilidad</span><span class="hint" id="agendaPista" style="margin:0 0 8px">Los días de las próximas 2 semanas en que podrías salir con tu parche.</span><div id="agenda" role="group" aria-labelledby="agendaLbl" aria-describedby="agendaPista"></div></div>
+      <div class="field"><span class="label" id="franjasLbl">¿En qué franja?</span><div class="chips" id="franjas" role="group" aria-labelledby="franjasLbl">
+        <label class="chip"><input type="checkbox" value="manana"><span>Mañana</span></label><label class="chip"><input type="checkbox" value="tarde"><span>Tarde</span></label><label class="chip"><input type="checkbox" value="noche"><span>Noche</span></label></div><span class="hint">Marca todas las que apliquen.</span></div>
       <div class="field">
         <label for="prefs">¿Qué te gusta y qué no te sirve? <span class="counter" id="prefsN"></span></label>
         <p class="hint" id="prefsPista" style="margin:0 0 6px">Opcional. Sin detalles de nadie: nada de salud, religión, política ni teléfonos. Si algo importa, dilo en general, por ejemplo «hay una restricción de comida» o «no tomo alcohol».</p>
@@ -83,10 +87,13 @@
       if (r.estado === 'excluido') return aviso('Este grupo ya no participa', 'El grupo quedó por fuera de la prueba. Gracias por tu interés.');
       if (r.estado !== 'reclutando') return aviso('Este grupo ya cerró las inscripciones', 'Si crees que es un error, escríbele a quien organiza tu parche.');
       if (r.lleno) return aviso('Este grupo ya está completo', 'Ya aceptaron todas las personas invitadas.');
+      agenda.propuestas(r.fechas || []);   // 2.10.0: un punto en las fechas que propuso quien organiza
     } else if (r && r.error === 'invitacion_invalida') return aviso('Este enlace no es válido', S.errMsg(r));
     S.show('#vistaForm', true);   // si la consulta falla por red, se deja seguir: el backend valida al enviar
   });
 
+  var agenda = S.agenda(S.$('#agenda'));   // 2.10.0 (sync P8d)
+  function franjas() { return S.$$('#franjas input:checked').map(function (x) { return x.value; }); }
   var fatiga = S.scale(S.$('#fatiga'), ['Nada', 'Muchísimo']);
   var cons = S.consent(S.$('#consent'));
   S.counter(S.$('#prefs'), S.$('#prefsN'));
@@ -96,11 +103,14 @@
     var nombre = S.$('#nombre').value.trim(), wa = S.$('#wa').value.replace(/\D/g, '');
     if (!nombre) return S.toast('Escribe tu nombre de pila.', true);
     if (wa.length !== 10 || wa.charAt(0) !== '3') return S.toast('Escribe tu celular de 10 dígitos (empieza por 3).', true);
+    if (!agenda.fechas().length) return S.toast('Marca en el calendario al menos un día en que podrías salir.', true);
+    if (!franjas().length) return S.toast('Marca al menos una franja: mañana, tarde o noche.', true);
     if (!fatiga.value()) return S.toast('Marca qué tan desgastante es cuadrar un plan (1 a 5).', true);
     if (!cons.valid()) return S.toast('Para participar necesitamos las 4 autorizaciones.', true);
     if (!S.revisarSensible(S.$('#prefs'))) return;   // 2.8.1 (auditoría): datos sensibles
     var payload = Object.assign({
       action: 'registrar', codigo_invitacion: inv, nombre_pila: nombre, whatsapp: '+57' + wa,
+      disponibilidad: S.dispoTexto(agenda.fechas(), franjas()),   // 2.10.0
       preferencias: S.$('#prefs').value.trim(), fatiga_previa: fatiga.value(), consent_metodo: cons.metodo(), aviso_version: S.CONFIG.AVISO_VERSION
     }, cons.values());
     S.busy(S.$('#enviar'), function () { return S.post(payload); }).then(function (r) {

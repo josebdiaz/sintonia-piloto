@@ -4,9 +4,9 @@ const cons={autoriza_datos:true,optin_whatsapp:true,mayor_18:true,consent_invest
 (async()=>{const K=(await qa()).ADMIN;const b=await chromium.launch();const errs=[];
  // inscripción entre semana: cuántos botones de fecha
  const x=await b.newContext(devices['iPhone 13']);await x.addInitScript(u=>{try{localStorage.setItem('SINTONIA_BACKEND_URL',u);}catch(e){}},B+'/exec');const p=await x.newPage();await p.route(/fonts\./,r=>r.abort());
- await p.goto(B+'/piloto/index.html?exp=E1&modo=prueba'); await p.click('#dias label:has-text("Entre semana")'); await p.click('#dias label:has-text("Viernes")');
- L('entre semana + viernes → botones de fecha',(await p.$$('#fechas input')).length);
- for(let i=0;i<5;i++) await p.click('#fechas label >> nth='+i); L('marcadas tras 5 clics',(await p.$$('#fechas input:checked')).length, await p.$eval('#toast',e=>e.innerText).catch(()=>''));
+ await p.goto(B+'/piloto/index.html?exp=E1&modo=prueba');
+ L('calendario de disponibilidad → días',(await p.$$('#agenda .ag-dia')).length);
+ for(let i=0;i<5;i++) await p.click('#agenda .ag-dia >> nth='+i); L('marcadas tras 5 clics',(await p.$$('#agenda input:checked')).length, await p.$eval('#toast',e=>e.innerText).catch(()=>''));
  // plan para HOY en modo prueba: plazo
  const o=await api(Object.assign({action:'registrar',experimento:'E1',modo:'prueba',tipo_grupo:'pareja',nombre_grupo:'Hoy mismo',n_invitados:2,disponibilidad:'dias: sabado · franjas: noche',nombre_pila:'Ro',whatsapp:'+573001000701'},cons));
  await api(Object.assign({action:'registrar',codigo_invitacion:o.codigo_invitacion,nombre_pila:'Sa',whatsapp:'+573001000702'},cons));

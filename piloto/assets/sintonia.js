@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.9.2',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.10.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
@@ -153,6 +153,45 @@
     return { value: function () { var c = $('input:checked', el); return c ? c.value : ''; } };
   }
 
+  /** 2.10.0 (sync P8d): «Escoge tu disponibilidad». Calendario de las próximas 2 semanas (desde mañana), alineado de lunes a domingo.
+   *  Cada día es una casilla; opts.max limita cuántos se marcan y opts.propuestas resalta las fechas de quien organiza.
+   *  Devuelve { fechas(), propuestas(lista) }. Las fechas van como AAAA/MM/DD (el backend borra secuencias largas de dígitos). */
+  var DSC = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'], DSL = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+    MSC = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'], MSL = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  function p2(n) { return (n < 10 ? '0' : '') + n; }
+  function agenda(el, opts) {
+    opts = opts || {}; var max = opts.max || 14, dias = 14, hoy = new Date(); hoy.setHours(12, 0, 0, 0);
+    var lista = []; for (var k = 1; k <= dias; k++) lista.push(new Date(hoy.getTime() + k * 864e5));
+    var lead = (lista[0].getDay() + 6) % 7, h = '<div class="ag-sem" aria-hidden="true"><span>lu</span><span>ma</span><span>mi</span><span>ju</span><span>vi</span><span>sá</span><span>do</span></div><div class="ag-dias">';
+    for (var b = 0; b < lead; b++) h += '<span class="ag-vacio" aria-hidden="true"></span>';
+    lista.forEach(function (x, i) {
+      var v = x.getFullYear() + '/' + p2(x.getMonth() + 1) + '/' + p2(x.getDate()), mes = i === 0 || x.getDate() === 1;
+      h += '<label class="ag-dia' + (x.getDay() === 0 || x.getDay() === 6 ? ' finde' : '') + '"><input type="checkbox" value="' + v + '" aria-label="' + DSL[x.getDay()] + ' ' + x.getDate() + ' de ' + MSL[x.getMonth()] + '">' +
+        '<span><b>' + x.getDate() + '</b><small>' + (mes ? MSC[x.getMonth()] : DSC[x.getDay()]) + '</small></span></label>';
+    });
+    el.classList.add('agenda'); el.innerHTML = h + '</div><p class="ag-pie" aria-live="polite"></p>';
+    var pie = $('.ag-pie', el), prop = [];
+    function fechas() { return $$('input:checked', el).map(function (x) { return x.value; }); }
+    function pintar() {
+      var n = fechas().length, t = n ? (n === 1 ? '1 día marcado' : n + ' días marcados') + (max < dias ? ' de ' + max : '') : (opts.vacio || 'Toca los días en que puedes.');
+      if (prop.length) t += ' · Con punto: lo que propuso quien organiza.';
+      pie.textContent = t;
+    }
+    el.addEventListener('change', function (ev) { if (ev.target.checked && fechas().length > max) { ev.target.checked = false; toast('Marca hasta ' + max + ' días.', true); } pintar(); });
+    pintar();
+    return { fechas: fechas,
+      propuestas: function (l) { prop = (l || []).filter(function (v) { return $('input[value="' + v + '"]', el); });
+        $$('.ag-dia', el).forEach(function (d) { d.classList.toggle('propuesta', prop.indexOf($('input', d).value) >= 0); }); pintar(); } };
+  }
+  /** El texto que guarda el backend: «dias: … · franjas: … · fechas: …». Los días salen de las fechas marcadas, para la consola de siempre. */
+  function dispoTexto(fechas, franjas) {
+    var DIA = ['domingo', 'entre_semana', 'entre_semana', 'entre_semana', 'entre_semana', 'viernes', 'sabado'], orden = ['entre_semana', 'viernes', 'sabado', 'domingo'], d = [];
+    (fechas || []).forEach(function (v) { var q = v.split('/'), w = DIA[new Date(+q[0], +q[1] - 1, +q[2], 12).getDay()]; if (d.indexOf(w) < 0) d.push(w); });
+    d.sort(function (a, b) { return orden.indexOf(a) - orden.indexOf(b); });
+    if (!d.length && !(franjas || []).length) return '';
+    return 'dias: ' + d.join(', ') + ' · franjas: ' + (franjas || []).join(', ') + ((fechas || []).length ? ' · fechas: ' + fechas.slice().sort().join(', ') : '');
+  }
+
   /** Bloque de las 4 autorizaciones. El botón marca las 4 (sin pre-marcar) y cada casilla se puede desmarcar. */
   var CONSENT = [
     ['autoriza_datos', 'Autorizo el tratamiento de mis datos personales para coordinar planes con mi grupo, según la Ley 1581 de 2012 y el <a href="aviso.html" target="_blank" rel="noopener">aviso de privacidad</a>.'],
@@ -259,7 +298,7 @@
     return '$' + (Math.round(v / 1000) * 1000).toLocaleString('es-CO');
   }
   window.S = { CONFIG: CONFIG, sensible: sensible, revisarSensible: revisarSensible, precioUno: precioUno, LS: LS, SS: SS, post: post, get: get, errMsg: errMsg, $: $, $$: $$, esc: esc, param: param, show: show, toast: toast, busy: busy,
-    link: link, wa: wa, waShare: waShare, phone: phone, copy: copy, scale: scale, chips: chips, consent: consent, counter: counter,
+    link: link, wa: wa, waShare: waShare, phone: phone, copy: copy, scale: scale, chips: chips, agenda: agenda, dispoTexto: dispoTexto, consent: consent, counter: counter,
     pct: pct, num: num, cop: cop, usd: usd, fecha: fecha, me: me, saveMe: saveMe, adoptPid: adoptPid, inicio: inicio, adminKey: adminKey, forgetKey: forgetKey, configBackend: configBackend, dosPasos: dosPasos };
   window.CONFIG = CONFIG;
 

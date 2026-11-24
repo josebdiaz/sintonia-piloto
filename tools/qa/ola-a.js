@@ -11,8 +11,7 @@ const cons={autoriza_datos:true,optin_whatsapp:true,mayor_18:true,consent_invest
   await ctx.addInitScript(u=>{try{localStorage.setItem('SINTONIA_BACKEND_URL',u);}catch(e){}},B+'/exec');
   await p.goto(B+'/piloto/'+pagina+'?exp=E1&modo=prueba');
   await p.click('#tipo label:has-text("Amigos")'); await p.fill('#ninv','3');
-  await p.click('#dias label:has-text("Sábado")'); await p.click('#franjas label:has-text("Tarde")');
-  const hayF=await p.$('#fechas input'); if(hayF){ await p.click('#fechas label >> nth=0'); }
+  await p.click('#agenda .ag-dia.finde >> nth=0'); await p.click('#franjas label:has-text("Tarde")');   // 2.10.0: calendario
   await p.selectOption('#realizados','1'); await p.click('#fatiga button[data-v="4"]');
   await p.click('[data-step="1"] [data-next="2"]'); await p.waitForTimeout(200);
   const paso2=await p.$eval('[data-step="2"]',e=>e.innerText);
@@ -22,14 +21,14 @@ const cons={autoriza_datos:true,optin_whatsapp:true,mayor_18:true,consent_invest
   await p.waitForTimeout(300); await p.screenshot({path:OUT+'/'+shot+'.png'});
   const r={titulo:await p.$eval('#okTitulo',e=>e.innerText),primero:await p.evaluate(()=>{const v=document.querySelector('#vistaOk');const els=[...v.querySelectorAll('a,button')].filter(x=>x.offsetParent);return els[0]?els[0].innerText:'';}),
     foco:await p.evaluate(()=>document.activeElement&&document.activeElement.id),
-    waTop:await p.$eval('#okWa',e=>e.getBoundingClientRect().top), href:await p.$eval('#okWa',e=>decodeURIComponent(e.href)), paso2, hayF:!!hayF};
+    waTop:await p.$eval('#okWa',e=>e.getBoundingClientRect().top), href:await p.$eval('#okWa',e=>decodeURIComponent(e.href)), paso2, hayF:(await p.$$('#agenda .ag-dia')).length===14};
   await ctx.close(); return r;
  }
  const des=await inscribir('index.html','2-exito-despues-390');
  ok('P1 después: «Falta un paso» y lo primero que se toca es «Enviar la invitación por WhatsApp»',/Falta un paso, Paula: invita a tu parche/.test(des.titulo)&&/Enviar la invitación por WhatsApp/.test(des.primero)&&des.foco==='okWa',JSON.stringify(des));
  ok('P1 el botón de enviar se ve sin desplazarse (390 × 844)',des.waTop<600,des.waTop);
  ok('P1 el mensaje de invitación lleva el enlace de unirse',/unirse\.html\?inv=/.test(des.href)&&/\+1 de confianza/.test(des.href),des.href);
- ok('P3 la inscripción ofrece fechas concretas de los días marcados',des.hayF,'');
+ ok('P3 la inscripción ofrece fechas concretas (calendario de 14 días, 2.10.0)',des.hayF,'');
  ok('P5 el paso 2 aclara que es una descripción del grupo y pide no dar detalles de nadie',/Describe al grupo en general/.test(des.paso2)&&/hay una restricción de alcohol/.test(des.paso2),des.paso2);
  const vm0=await (await fetch(B+'/exec?view=mago&key='+K)).json(); const gIns=vm0.grupos.filter(g=>g.modo==='prueba').slice(-1)[0];
  ok('P3 la disponibilidad guarda las fechas sin que el backend las borre',/fechas: \d{4}\/\d{2}\/\d{2}/.test(gIns.disponibilidad),gIns.disponibilidad);

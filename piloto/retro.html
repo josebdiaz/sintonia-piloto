@@ -135,7 +135,19 @@
     return o;
   }
 
-  if (!pid) return msg('warn', 'Abre tu enlace personal', 'Este formulario se abre desde el enlace del plan o desde el mensaje de Sintonía.');
+  // 2.10.0 (sync P8d): vista de revisión. retro.html?revisar=organiza (o =miembro; &ronda=2 para el plan 2) muestra la encuesta completa
+  // sin grupo ni backend: nada se guarda y al enviar se ve lo que se habría guardado. Sirve para revisar la disposición a pagar a mano.
+  var revisar = S.param('revisar'), enviado = [];
+  var post = revisar ? function (o) { enviado.push(o); return Promise.resolve({ ok: true }); } : S.post;
+  if (revisar) {
+    rol = revisar === 'miembro' ? 'miembro' : 'organizador'; conUsab = true; ronda = Number(S.param('ronda')) === 2 ? 2 : 1; planId = 'revision'; pid = pid || 'revision';
+    S.$('#tagDur').textContent = 'Vista de revisión';
+    S.$('#heroP').textContent = 'Vista de revisión, como ' + (rol === 'organizador' ? 'quien organiza' : 'miembro del parche') + (ronda === 2 ? ', en el plan 2' : '') + '. Nada de lo que marques se guarda.';
+    S.show('#bloqueUsab', true); S.show('#bloqueSeqCont', ronda >= 2); S.show('#bloqueCarga', rol === 'organizador'); S.show('#bloqueWtp', rol === 'organizador');
+    S.show(estado, false); S.show('#vistaForm', true);
+  }
+  else if (!pid) return msg('warn', 'Abre tu enlace personal', 'Este formulario se abre desde el enlace del plan o desde el mensaje de Sintonía.');
+  if (revisar) return listeners_();
   var q = { view: 'plan', pid: pid }; if (planId) q.plan_id = planId;
   var tarda = setTimeout(function () {   // 2.7.0 (F4): nunca un «Cargando…» sin salida
     msg('warn', 'Esto está tardando más de lo normal', 'Revisa tu conexión y vuelve a intentarlo. Si sigue igual, escríbenos por WhatsApp en el grupo del plan.');
@@ -169,12 +181,13 @@
     S.show(estado, false); S.show('#vistaForm', true);
   });
 
+  listeners_();
   function n(id) { var v = S.$(id).value; return v === '' ? '' : Math.max(0, parseInt(v, 10)); }
-  S.$('#form').addEventListener('submit', function (ev) {
+  function listeners_() { S.$('#form').addEventListener('submit', function (ev) {
     ev.preventDefault();
     if (soloUsab) {
       var f0 = usabOk(); if (f0) return S.toast(f0, true);
-      return S.busy(S.$('#enviar'), function () { return S.post(usabPayload(false)); }).then(fin_);
+      return S.busy(S.$('#enviar'), function () { return post(usabPayload(false)); }).then(fin_);
     }
     if (!sat.value() || !fat.value() || !fin.value() || !con.value() || !rep.value()) return S.toast('Responde las preguntas de escala y si repetirían.', true);
     if (rol === 'organizador' && !car.value()) return S.toast('Cuéntanos cuánto del trabajo recayó en ti.', true);
@@ -186,22 +199,29 @@
       if (!(w.muy_barato <= w.barato && w.barato <= w.caro && w.caro <= w.muy_caro)) return S.toast('Revisa los precios: deberían ir de menor a mayor.', true);
     }
     S.busy(S.$('#enviar'), function () {
-      return S.post({ action: 'retro', plan_id: planId, pid: pid, satisfaccion_plan: sat.value(), fatiga_post: fat.value(), carga_organizador: rol === 'organizador' ? car.value() : '',
+      return post({ action: 'retro', plan_id: planId, pid: pid, satisfaccion_plan: sat.value(), fatiga_post: fat.value(), carga_organizador: rol === 'organizador' ? car.value() : '',
         valor_final: fin.value(), repetiria: rep.value(), confort_bot: con.value(), sentimiento: sen.value(),
         que_agregaria: S.$('#agregaria').value.trim(), comentario: S.$('#comentario').value.trim() })
       .then(function (r) {   // 2.0.8: después de la retro va la usabilidad (si el backend la tiene); un reintento la tolera ya enviada
         if (!r || (!r.ok && r.error !== 'retro_ya_enviada') || !conUsab) return r;
-        return S.post(usabPayload(true)).then(function (u) { return u && (u.ok || u.error === 'usabilidad_ya_enviada') ? { ok: true } : u; });
+        return post(usabPayload(true)).then(function (u) { return u && (u.ok || u.error === 'usabilidad_ya_enviada') ? { ok: true } : u; });
       })
       .then(function (r) {
         if (!r || (!r.ok && r.error !== 'retro_ya_enviada')) return r;
         if (!hayWtp) return r;   // si la retro ya estaba (reintento tras una falla), igual se intenta guardar el precio
-        return S.post(Object.assign({ action: 'wtp', pid: pid, preventa: S.$('#preventa').checked }, w));
+        return post(Object.assign({ action: 'wtp', pid: pid, preventa: S.$('#preventa').checked }, w));
       });
     }).then(fin_);
-  });
+  }); }
   function fin_(r) {
     if (!r || (!r.ok && r.error !== 'usabilidad_ya_enviada')) return S.toast(S.errMsg(r), true);
+    if (revisar) {   // 2.10.0: lo que se habría guardado, por hoja
+      var c = S.$('#vistaOk .card'); c.querySelector('h2').textContent = 'Así quedaría la respuesta';
+      c.querySelector('p').textContent = 'Vista de revisión: no se guardó nada. Estas son las filas que irían a cada hoja.';
+      c.querySelector('.actions').innerHTML = '<a class="btn btn-ghost btn-block" href="' + S.esc(location.href) + '">Volver a empezar</a>';
+      c.insertAdjacentHTML('beforeend', enviado.map(function (o) { return '<h3 style="margin:16px 0 6px">' + S.esc(o.action === 'retro' ? 'retro (encuesta de cierre)' : o.action === 'wtp' ? 'wtp (disposición a pagar)' : o.action) + '</h3><table class="small" style="width:100%;text-align:left">' +
+        Object.keys(o).filter(function (k) { return ['action', 'pid', 'plan_id', 'junto_al_pulso'].indexOf(k) < 0; }).map(function (k) { return '<tr><td class="muted">' + S.esc(k) + '</td><td>' + S.esc(String(o[k])) + '</td></tr>'; }).join('') + '</table>'; }).join(''));
+    }
     S.show('#vistaForm', false); S.show('#vistaOk', true); S.show('#toast', false); window.scrollTo(0, 0);
   }
 })();

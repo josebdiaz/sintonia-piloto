@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Sintonía · Arma el plan de tu parche</title>
-<meta name="description" content="Que las ganas se vuelvan plan. Menos vueltas para salir.">
+<meta name="description" content="Menos vueltas, más plan. Sintonía es su +1 de confianza en el WhatsApp del parche.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap">
 <link rel="stylesheet" href="assets/sintonia.css">
 <link rel="stylesheet" href="assets/ds3.css">
@@ -56,13 +56,10 @@
         <div class="field"><span class="label">¿Qué tipo de grupo es?</span><div id="tipo"></div></div>
         <div class="field"><label for="nomGrupo">¿Cómo quieren que se llame el grupo? <span class="muted">(opcional)</span></label><input id="nomGrupo" type="text" maxlength="25" autocomplete="off" placeholder="Ej.: Parche de los jueves"><span class="hint">Así se llamará el grupo de WhatsApp del plan.</span></div>
         <div class="field"><label for="ninv">¿Cuántas personas van a este plan, contándote?</label><input id="ninv" type="number" inputmode="numeric" min="2" max="8" required><span class="hint">Entre 2 y 8. Cada una acepta desde su propio enlace.</span></div>
-        <!-- 2.1.0 (Sync P7c): disponibilidad del organizador en lugar de una segunda pregunta de tamaño -->
-        <div class="field"><span class="label" id="diasLbl">¿Qué días suelen poder salir?</span><div class="chips" id="dias" role="group" aria-labelledby="diasLbl">
-          <label class="chip"><input type="checkbox" value="entre_semana"><span>Entre semana</span></label><label class="chip"><input type="checkbox" value="viernes"><span>Viernes</span></label><label class="chip"><input type="checkbox" value="sabado"><span>Sábado</span></label><label class="chip"><input type="checkbox" value="domingo"><span>Domingo</span></label></div></div>
-        <div class="field"><span class="label" id="franjasLbl">¿A qué hora les queda mejor?</span><div class="chips" id="franjas" role="group" aria-labelledby="franjasLbl">
-          <label class="chip"><input type="checkbox" value="manana"><span>Mañana</span></label><label class="chip"><input type="checkbox" value="tarde"><span>Tarde</span></label><label class="chip"><input type="checkbox" value="noche"><span>Noche</span></label></div><span class="hint">Marca todas las que apliquen.</span></div>
-        <!-- 2.8.0 (ola A, prompt 3): fechas concretas de las próximas 2 semanas, según los días marcados -->
-        <div class="field" id="fechasCampo" hidden><span class="label" id="fechasLbl">¿Qué fechas les sirven?</span><div class="chips" id="fechas" role="group" aria-labelledby="fechasLbl"></div><span class="hint">Hasta 4. Así el plan llega con día concreto y nadie tiene que preguntar «¿cuándo es esto?».</span></div>
+        <!-- 2.10.0 (sync P8d): «escoge tu disponibilidad» con días concretos de un calendario (antes: «¿qué días suelen poder salir?» y fechas aparte) -->
+        <div class="field"><span class="label" id="agendaLbl">Escoge tu disponibilidad</span><span class="hint" id="agendaPista" style="margin:0 0 8px">Hasta 4 días de las próximas 2 semanas. Así el plan llega con fecha concreta y nadie tiene que preguntar «¿cuándo es esto?».</span><div id="agenda" role="group" aria-labelledby="agendaLbl" aria-describedby="agendaPista"></div></div>
+        <div class="field"><span class="label" id="franjasLbl">¿En qué franja?</span><div class="chips" id="franjas" role="group" aria-labelledby="franjasLbl">
+          <label class="chip"><input type="checkbox" value="manana"><span>Mañana</span></label><label class="chip"><input type="checkbox" value="tarde"><span>Tarde</span></label><label class="chip"><input type="checkbox" value="noche"><span>Noche</span></label></div><span class="hint">Marca todas las que apliquen. Cada persona del parche marca la suya al unirse.</span></div>
         <div class="field"><label for="realizados">De los últimos 5 planes que propusieron en el chat del parche, ¿cuántos se hicieron?</label><select id="realizados" required><option value="">Elige…</option><option value="0">Ninguno</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">Los 5</option></select><span class="hint">Un cálculo aproximado está bien.</span></div>
         <div class="field"><label for="quien">¿Quién suele organizar?</label><input id="quien" type="text" maxlength="40" placeholder="Por ejemplo: yo, mi hermana, nadie fijo"></div>
         <div class="field"><span class="label" id="fatigaLbl">Hoy, ¿qué tan desgastante es para ti cuadrar un plan con este grupo?</span><div id="fatiga" aria-labelledby="fatigaLbl"></div></div>
@@ -150,29 +147,16 @@
     S.$('#stepLabel').textContent = labels[n]; window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   function int(id) { var v = S.$(id).value; return v === '' ? '' : parseInt(v, 10); }
-  // 2.1.0: disponibilidad del organizador (días y franjas), varias opciones
+  // 2.10.0 (sync P8d): disponibilidad con días concretos (S.agenda); el texto conserva «dias: … · franjas: … · fechas: …» para la consola
   function marcados(id) { return S.$$('#' + id + ' input:checked').map(function (x) { return x.value; }); }
-  function disponibilidad() { var d = marcados('dias'), f = marcados('franjas'), x = marcados('fechas'); return d.length || f.length ? 'dias: ' + d.join(', ') + ' · franjas: ' + f.join(', ') + (x.length ? ' · fechas: ' + x.join(', ') : '') : ''; }
-  // 2.8.0 (ola A, prompt 3): las fechas de las próximas 2 semanas que caen en los días marcados (desde mañana). Se guardan como AAAA/MM/DD:
-  // el backend borra secuencias largas de dígitos (teléfonos), y con «/» la fecha no se confunde con un número.
-  var DOW = { entre_semana: [1, 2, 3, 4], viernes: [5], sabado: [6], domingo: [0] }, DS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'], MS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
-  function pad(n) { return (n < 10 ? '0' : '') + n; }
-  function pintarFechas() {
-    var antes = marcados('fechas'), dias = marcados('dias'), w = [], hoy = new Date(); hoy.setHours(12, 0, 0, 0);
-    dias.forEach(function (d) { w = w.concat(DOW[d] || []); });
-    var h = '';
-    for (var k = 1; k <= 14; k++) { var x = new Date(hoy.getTime() + k * 864e5); if (w.indexOf(x.getDay()) < 0) continue; var v = x.getFullYear() + '/' + pad(x.getMonth() + 1) + '/' + pad(x.getDate());
-      h += '<label class="chip"><input type="checkbox" value="' + v + '"' + (antes.indexOf(v) >= 0 ? ' checked' : '') + '><span>' + DS[x.getDay()] + ' ' + x.getDate() + ' ' + MS[x.getMonth()] + '</span></label>'; }
-    S.$('#fechas').innerHTML = h; S.$('#fechasCampo').hidden = !h;
-  }
-  S.$('#dias').addEventListener('change', pintarFechas);
-  S.$('#fechas').addEventListener('change', function (ev) { if (ev.target.checked && marcados('fechas').length > 4) { ev.target.checked = false; S.toast('Marca hasta 4 fechas.', true); } });
+  var agenda = S.agenda(S.$('#agenda'), { max: 4, vacio: 'Toca los días en que el parche podría salir.' });
+  function disponibilidad() { return S.dispoTexto(agenda.fechas(), marcados('franjas')); }
   function valida1() {
     if (!tipo.value()) return 'Elige qué tipo de grupo es.';
     var n = int('#ninv');
     if (n === '' || n < 2 || n > 8) return 'Al plan van entre 2 y 8 personas, contándote.';
-    if (!marcados('dias').length || !marcados('franjas').length) return 'Marca al menos un día y una franja en que suelen poder salir.';
-    if (S.$('#fechas input') && !marcados('fechas').length) return 'Marca al menos una fecha en que les sirve el plan.';
+    if (!agenda.fechas().length) return 'Marca en el calendario al menos un día en que el parche podría salir.';
+    if (!marcados('franjas').length) return 'Marca al menos una franja: mañana, tarde o noche.';
     if (int('#realizados') === '') return 'Cuéntanos cuántos de los últimos 5 planes se hicieron (puede ser ninguno).';
     if (!fatiga.value()) return 'Marca qué tan desgastante es cuadrar un plan (1 a 5).';
     return '';

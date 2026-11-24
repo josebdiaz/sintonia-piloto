@@ -246,6 +246,19 @@ ctx.UrlFetchApp.fetch = fetchViejo; delete PROPS.NOTIFICAR_A;
   chk('2.9.0 lista de espera: guarda +57, origen limpio y estado; un número no se anota dos veces', e1.ok && e2.ok && e2.ya_estaba && SHEETS.lista_espera.rows.length === 2 && fila[H.indexOf('whatsapp')] === '+573001112233' && fila[H.indexOf('origen')] === 'qr-totemscript' && fila[H.indexOf('estado')] === 'en_espera', fila);
   chk('2.9.0 el aviso al equipo no lleva ni el nombre ni el número', c9.length === 1 && /qr-totem/.test(c9[0][2]) && !/Vale|300111|2233/.test(c9[0][1] + c9[0][2]), c9); }
 
+// 2.9.1: «escoge tu disponibilidad» para todo el parche
+{ const o9 = post(Object.assign({ action: 'registrar', experimento: 'E1', modo: 'prueba', tipo_grupo: 'amigos', n_invitados: 3, nombre_grupo: 'Nueve', fatiga_previa: 3, disponibilidad: 'dias: sabado, domingo · franjas: tarde · fechas: 2026/11/29, 2026/11/30', nombre_pila: 'Ana', whatsapp: '+573009990051' }, cons));
+  const inv9 = get({ view: 'invitacion', inv: o9.codigo_invitacion });
+  chk('2.9.1 la invitación trae las fechas de quien organiza y nada personal', inv9.ok && JSON.stringify(inv9.fechas) === JSON.stringify(['2026/11/29', '2026/11/30']) && !/Ana|300999|amigos|Nueve/.test(JSON.stringify(inv9)), inv9);
+  const m9 = post(Object.assign({ action: 'registrar', codigo_invitacion: o9.codigo_invitacion, fatiga_previa: 2, disponibilidad: 'dias: domingo · franjas: tarde, noche · fechas: 2026/11/30, 2026/12/06', nombre_pila: 'Beto', whatsapp: '+573009990052' }, cons));
+  const m9b = post(Object.assign({ action: 'registrar', codigo_invitacion: o9.codigo_invitacion, disponibilidad: 'dias: sabado · franjas: noche · fechas: 2026/11/29 llámame al 3001234567', nombre_pila: 'Caro', whatsapp: '+573009990053' }, cons));
+  const H = SHEETS.linea_base.rows[0], filas = SHEETS.linea_base.rows.filter(r => [m9.pid, m9b.pid].indexOf(r[H.indexOf('pid')]) >= 0);
+  chk('2.9.1 linea_base guarda la disponibilidad de cada miembro (aunque no marque la fatiga) y borra teléfonos', m9.ok && m9b.ok && filas.length === 2 && /2026\/12\/06/.test(filas[0][H.indexOf('disponibilidad')]) && /\[número\]/.test(filas[1][H.indexOf('disponibilidad')]) && !/3001234567/.test(filas[1][H.indexOf('disponibilidad')]), filas);
+  const vg9 = get({ view: 'mago', key: A }).grupos.find(g => g.grupo_id === o9.grupo_id);
+  chk('2.9.1 la vista del mago trae la disponibilidad de cada persona', vg9 && vg9.miembros.length === 3 && vg9.miembros.every(m => /fechas: /.test(m.disponibilidad)) && /fechas: 2026\/11\/29, 2026\/11\/30/.test(vg9.disponibilidad), vg9 && vg9.miembros.map(m => m.disponibilidad));
+  const rv = post({ action: 'revocar', pid: m9.pid });
+  chk('2.9.1 revocar el consentimiento borra también su disponibilidad', SHEETS.linea_base.rows.every(r => r[H.indexOf('pid')] !== m9.pid), rv); }
+
 // 2.5.0: ubicaciones e inventario liviano
 const ub = vm.runInContext('revisarUbicaciones_', ctx)([{ id: 'A', direccion: 'Cl 5', latitud: 34516, longitud: -765320 }, { id: 'B', direccion: '', latitud: 3.45, longitud: -76.53 }, { id: 'C', direccion: 'Cra 1', latitud: 4.6, longitud: -74.1 }, { id: 'D', direccion: 'Cra 2', latitud: '', longitud: '' }]);
 chk('2.5.0 probarMontaje: ubicaciones (regional, fuera de Cali, sin dirección, sin coordenadas)', /3 de 4 con dirección/.test(ub) && /1 con coordenadas leídas/.test(ub) && /1 con coordenadas fuera de Cali \(p\. ej\. C\)/.test(ub) && /1 sin coordenadas/.test(ub), ub);

@@ -1,4 +1,4 @@
-# Estado del proyecto · 22 nov 2026
+# Estado del proyecto · 23 nov 2026
 
 Sintonía · piloto en WhatsApp con grupos que ya existen en Cali. Dos condiciones: **E1** (WhatsApp + mago) y **E1.5** (WhatsApp automatizado con n8n, con una persona que aprueba y pega; valor interno `E2`).
 Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `docs/guias/`, 6/11 en el Proyecto). Historial detallado: [`CHANGELOG.md`](CHANGELOG.md).
@@ -7,8 +7,8 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Componente | Versión | Estado |
 |---|---|---|
-| Frontend (consola, panel, páginas de participante) | **2.9.2** | Publicado en https://sintonia.my el 22/11: el menú del equipo cubre la pantalla aunque la landing esté desplazada. La 2.9.1 actualizó el logo en todo el sitio. La 2.9.0 trajo la landing pública del QR del material POP (lista de espera mientras no haya cupo). La consola solo cambió de logo desde la 2.8.2 |
-| Backend (Apps Script) | **2.9.0** en el repo · 2.8.1 desplegado | 2.9.0: `?view=cupo` y lista de espera (hoja nueva `lista_espera`). **Por desplegar**: pegar, `probarMontaje()` y «Nueva versión». Sin desplegar, la landing muestra la lista de espera pero no la puede guardar |
+| Frontend (consola, panel, páginas de participante) | **2.10.0** | Publicado en https://sintonia.my el 23/11 (sync P8d). Trae «Escoge tu disponibilidad» con calendario para todo el parche, «Quiénes pueden» en la consola, el claim «Menos vueltas, más plan», «Regístrate aquí» con 3 pasos y la vista de revisión de la encuesta de cierre. La 2.9.x trajo la landing del QR (con lista de espera), el logo nuevo y el arreglo del menú |
+| Backend (Apps Script) | **2.9.1** en el repo · 2.8.1 desplegado | 2.9.0: `?view=cupo` y lista de espera (hoja `lista_espera`). 2.9.1: disponibilidad por persona (columna nueva en `linea_base`). **Por desplegar**: pegar, `probarMontaje()` y «Nueva versión». Sin desplegar, la landing no guarda la lista de espera y la disponibilidad de los miembros se pierde |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
 | Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main` |
@@ -19,6 +19,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Versión | Cambio principal | Origen |
 |---|---|---|
+| 2.10.0 | Disponibilidad con calendario para todo el parche y «Quiénes pueden» en la consola (backend 2.9.1), claim «Menos vueltas, más plan», «Regístrate aquí» con 3 pasos, vista de revisión de la encuesta de cierre | Sync P8d (23/11) |
 | 2.9.1 | Logo nuevo (anillo rojo #ff2500, «s» redibujada) en el sitio, los íconos, los decks, los stickers de WhatsApp y el material POP | Marca (22/11) |
 | 2.9.0 | Landing pública del QR (qué es, cómo funciona, crear el grupo o lista de espera), origen por pieza impresa, QR en `docs/pop/`, código secreto sobre el glifo; backend con cupo y lista de espera | Material POP (prompt 8) |
 | 2.8.2 | Precio único también en la web, encuesta de cierre sin «Pulso» ni «4 minutos», bloque oscuro solo en la primera impresión, capturas reales en el pitch, contraste y foco | Auditoría visual anti-slop |
@@ -32,6 +33,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 | 2.6.0 | Mapa del recorrido: 2 planes × 5 etapas (Grupo, Proponer, Decidir, El día, Cierre) | Revisión visual |
 | 2.7.0 | Plan F0–F5: marcadores `[n]` bloqueados, cola de mensajes, conteo de votos «− n +», día y hora en botones, llegadas en un toque, color semántico, teléfonos enmascarados, sin «Trabajo» en la inscripción. **Medición de la consola** (hojas `medicion_consola` y `pulso_mago`: SUS y NASA-TLX de quien opera) | Revisión visual (`claude/revision-visual-consola-2026-11-15.md`, Proyecto) |
 
+QA al 23/11 (2.10.0 · backend 2.9.1): backend 105 de 105 · recorrido 57 de 57 · consola 26 de 26 · ola A 21 de 21 · auditoría E2E 67 OK, 0 graves y 2 conocidos · contraste y axe sin fallas.
 QA al 22/11 (2.9.0): backend 101 de 101 · código secreto del home 18 de 18 (iPhone 13, Pixel 7, escritorio) · landing con axe sin hallazgos y sin scroll horizontal · los 4 QR decodifican a su URL.
 QA al 22/11 (2.8.2, `tools/qa/correr.sh todo`): backend 95 de 95 · recorrido 57 de 57 · consola 26 de 26 · ola A 21 de 21 · auditoría E2E 64 OK, 0 graves y 2 conocidos (M8, M9) · contraste y axe sin fallas.
 QA al 22/11 (2.8.1): backend 95 de 95 · recorrido completo 57 de 57 · F0–F5 26 de 26 · auditoría E2E 59 OK y 0 graves.
@@ -83,6 +85,7 @@ La guía `n8n/GUIA-CONTINUACION.md` (30/10) se escribió con la consola 2.3. Des
 ### 3.4 Privacidad (aviso v2)
 
 - `pulso_mago` y `medicion_consola` guardan solo datos del equipo (nombre de quien opera, tiempos y toques); **no hay datos nuevos de participantes**, así que no cambian el aviso.
+- Desde la 2.10.0 cada persona guarda su disponibilidad (días y franja, en `linea_base`). No es un dato sensible, pero es un dato nuevo de participantes: el aviso v2 debe nombrarlo. Revocar el consentimiento lo borra.
 - La consola enmascara los teléfonos (minimización, Ley 1581).
 - Sigue pendiente **publicar el aviso v2** (aprobado por Néstor el 6/11) y, si se usa Telegram en E1.5, nombrarlo como encargado.
 
@@ -100,12 +103,12 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags `piloto/v2.9.2` y `backend/v2.9.0` (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1 | Prueba con Cali (viernes) | José |
+| 1 | Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags `piloto/v2.10.0` y `backend/v2.9.1` (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1 | Prueba con Cali (viernes) | José |
 | 2 | Cargar los stickers en el número Sintonía (el correo del monitor ya está en `NOTIFICAR_A`) | Prueba con Cali | José |
 | 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
-| 4 | Material POP: landing y QR **hechos** (2.9.0, `docs/pop/`). Faltan: desplegar el backend 2.9.0, el archivo del logo de Icesi para la landing y las piezas, y los artes en Affinity. Impresión en dos oleadas: pines, stickers y tarjetas el 24/11; tótem y volantes el 1/12 (brief en el Proyecto) | Material POP | Equipo |
+| 4 | Material POP: landing y QR **hechos** (2.9.0, `docs/pop/`). Faltan: desplegar el backend 2.9.1, el archivo del logo de Icesi para la landing y las piezas, y los artes en Affinity. Impresión en dos oleadas: pines, stickers y tarjetas el 24/11; tótem y volantes el 1/12 (brief en el Proyecto) | Material POP | Equipo |
 | 5 | Guion de la prueba con Cali: **hecho** (`docs/guias/prueba-cali.md`). Faltan sus decisiones: confirmar el grupo y el modo (se recomienda piloto, con «Empezar piloto real» el jueves 26), qué encuesta de cierre se usa (prompt 6 antes del miércoles 25 o la actual) y fecha del plan a más tardar el 30/11 | Prueba con Cali | Equipo |
-| 6 | Publicar el aviso de privacidad v2, con la lista de espera como finalidad nueva (nombre y WhatsApp solo para avisar cuando haya cupo). Va antes de que circule el primer QR | Datos reales y material POP | Equipo |
+| 6 | Publicar el aviso de privacidad v2, con dos datos nuevos: la lista de espera (nombre y WhatsApp solo para avisar cuando haya cupo) y la disponibilidad de cada persona (días y franja, para cuadrar el plan). Va antes de que circule el primer QR | Datos reales y material POP | Equipo |
 | 7 | Onboarding del monitor: **guía al día** (v1.2, consola 2.8.1, 22/11). Deck regenerado con capturas reales de la 2.8.1 y prompt maestro v3.2 en las instrucciones (22/11). **Hecho** | Inducción | José |
 | 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |
 | 9 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |

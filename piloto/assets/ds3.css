@@ -576,3 +576,21 @@ body.publico .chip input:checked + span, body.publico .opt[aria-pressed="true"],
 /* 2.8.2 (auditoría visual): enlaces de texto con área táctil de 24 px y foco visible en la marca */
 .publico .card a[href^="mailto:"] { display: inline-block; padding: 3px 0; min-height: 24px; }
 a.brand:focus-visible { outline: 3px solid var(--color-signal-searching, #c2410c); outline-offset: 4px; border-radius: 8px; }
+
+/* 2.10.0 (sync P8d): «Escoge tu disponibilidad», calendario de 2 semanas en inscripción y unirse */
+.agenda { --ag-gap: 6px; }
+.agenda .ag-sem, .agenda .ag-dias { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--ag-gap); }
+.agenda .ag-sem { margin: 0 0 4px; }
+.agenda .ag-sem span { text-align: center; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.agenda .ag-dia { position: relative; }
+.agenda .ag-dia input { position: absolute; inset: 0; opacity: 0; cursor: pointer; margin: 0; }
+.agenda .ag-dia span { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 52px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); line-height: 1.05; }
+.agenda .ag-dia b { font-size: 1.05rem; font-weight: 700; color: var(--ink); }
+.agenda .ag-dia small { font-size: .68rem; color: var(--muted); margin-top: 2px; }
+.agenda .ag-dia.finde span { background: var(--surface-2, #f1eee5); }
+.agenda .ag-dia.propuesta span::after { content: ""; position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--honey); }
+.agenda .ag-dia input:checked + span { background: var(--pine); border-color: var(--pine); }
+.agenda .ag-dia input:checked + span b, .agenda .ag-dia input:checked + span small { color: var(--color-text-on-brand, #fff); }
+.agenda .ag-dia input:focus-visible + span { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+.agenda .ag-pie { margin: 8px 0 0; font-size: .85rem; color: var(--muted); }
+body.publico .agenda .ag-dia input:checked + span { box-shadow: 0 0 0 2px #2c6a86 inset; }

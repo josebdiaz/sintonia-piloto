@@ -68,6 +68,11 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
 
 /* lista de espera */
 .espera{max-width:560px}
+/* 2.10.0: los 3 pasos del registro, contados como estaciones */
+.registro{list-style:none;margin:28px 0 0;padding:0;counter-reset:reg}
+.registro li{counter-increment:reg;position:relative;padding:0 0 18px 44px;font-size:17px;line-height:1.45}
+.registro li::before{content:counter(reg);position:absolute;left:0;top:-1px;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#0e1116;color:#faf9f6;font-weight:700;font-size:14px}
+.registro li:not(:last-child)::after{content:"";position:absolute;left:13.5px;top:30px;bottom:2px;width:1px;background:#dad6cc}
 .campo{display:grid;gap:6px;margin:0 0 18px}
 .campo label{font-weight:600;font-size:16px}
 .campo input,.campo select{font:500 17px var(--f-txt);min-height:50px;padding:0 14px;border:1.5px solid #47494d;border-radius:12px;background:var(--papel-0);color:var(--noche);width:100%}
@@ -192,8 +197,8 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
   </div>
   <div>
     <p class="eyebrow in" style="--i:0">Piloto en Cali</p>
-    <h1 id="claim" class="in" style="--i:1">«Hay que vernos»… y esta vez, <span class="u">sí.<svg viewBox="0 0 128 16" preserveAspectRatio="none" aria-hidden="true"><path class="trazo" d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
-    <p class="lede in" style="--i:2">Sintonía es su +1 de confianza dentro del WhatsApp del parche: propone el plan, concilia la votación y lo cierra con día y hora.</p>
+    <h1 id="claim" class="in" style="--i:1">Menos vueltas, <span class="u">más plan.<svg viewBox="0 0 128 16" preserveAspectRatio="none" aria-hidden="true"><path class="trazo" d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+    <p class="lede in" style="--i:2">Para cuando el parche dice «hay que vernos» y nadie concreta. Sintonía es su +1 de confianza en el WhatsApp del grupo: propone el plan, concilia la votación y lo cierra con día y hora.</p>
     <div class="acciones in" style="--i:3">
       <a class="btn" id="cta" href="#espera">Anotarme en la lista de espera</a>
       <button type="button" class="btn-link" id="miGrupo">Ver el estado de mi grupo</button>
@@ -237,9 +242,14 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
     <p class="listo hidden" id="eListo" role="status" tabindex="-1"></p>
   </div>
   <div class="espera hidden" id="vistaCrear">
-    <h2>Arma el plan con tu parche</h2>
-    <p class="bajada">Inscribe al grupo en un par de minutos. Después compartes la invitación con los demás.</p>
-    <div class="acciones"><a class="btn" id="ctaCrear" href="piloto/index.html?exp=E1">Crear mi grupo</a></div>
+    <h2>Regístrate aquí</h2>
+    <p class="bajada">Quien organiza inscribe al parche. Son tres pasos y el primero toma un par de minutos.</p>
+    <ol class="registro">
+      <li><b>Inscribe a tu parche.</b> Cuántos son, tu disponibilidad y las autorizaciones.</li>
+      <li><b>Comparte la invitación</b> en el chat del parche. Sintonía no tiene los números de los demás.</li>
+      <li><b>Cada quien acepta</b> desde su enlace y marca su disponibilidad. Después les escribimos por WhatsApp.</li>
+    </ol>
+    <div class="acciones"><a class="btn" id="ctaCrear" href="piloto/index.html?exp=E1">Inscribir a mi parche</a></div>
   </div>
 </section>
 
@@ -270,12 +280,12 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
         </ul>
       </section>
       <section class="card team estado">
-        <span class="tag">Estado del repo · 22 nov 2026</span>
+        <span class="tag">Estado del repo · 23 nov 2026</span>
         <h3>En qué va</h3>
-        <p class="versiones"><b>Frontend 2.9.2</b> · <b>Backend 2.9.0</b></p>
-        <p class="muted">Último cambio: 2026-11-22 · Material POP rediseñado: sistema «Resonancia»</p>
+        <p class="versiones"><b>Frontend 2.10.0</b> · <b>Backend 2.9.1</b></p>
+        <p class="muted">Último cambio: 2026-11-23 · «Escoge tu disponibilidad» para todo el parche, claim y registro (frontend 2.10.0 · backend 2.9.1)</p>
         <p class="muted" style="margin-top:6px">Pendientes que siguen:</p>
-        <ol class="pend"><li>Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags piloto/v2.9.2 y backend/v2.9.0 (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1</li><li>Cargar los stickers en el número Sintonía (el correo del monitor ya está en NOTIFICAR_A)</li><li>Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7)</li></ol>
+        <ol class="pend"><li>Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; revisar con Néstor la lista de términos sensibles. Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags piloto/v2.10.0 y backend/v2.9.1 (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1</li><li>Cargar los stickers en el número Sintonía (el correo del monitor ya está en NOTIFICAR_A)</li><li>Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7)</li></ol>
         <ul><li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/ESTADO.md" target="_blank" rel="noopener">Estado del proyecto</a> <span class="muted">· todo el detalle</span></li></ul>
       </section>
       <section class="card team">
@@ -319,7 +329,7 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
           <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/guias/onboarding-monitor.md" target="_blank" rel="noopener">Onboarding del monitor (Markdown)</a></li>
           <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/GUIA-CONTINUACION.md" target="_blank" rel="noopener">Motor n8n · guía de continuación</a></li>
           <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/CHANGELOG.md" target="_blank" rel="noopener">Motor n8n · cambios</a></li>
-          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Versiones (CHANGELOG)</a> <span class="muted" id="ver">· frontend v2.9.2 · backend v2.9.0</span></li>
+          <li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Versiones (CHANGELOG)</a> <span class="muted" id="ver">· frontend v2.10.0 · backend v2.9.1</span></li>
         </ul>
       </section>
       <section class="card arch">
@@ -417,8 +427,8 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
 
   function cupo(abierto){
     $('vistaEspera').classList.toggle('hidden', abierto); $('vistaCrear').classList.toggle('hidden', !abierto);
-    $('cta').textContent = abierto ? 'Crear mi grupo' : 'Anotarme en la lista de espera';
-    $('cta').href = abierto ? $('ctaCrear').href : '#espera';
+    $('cta').textContent = abierto ? 'Regístrate aquí' : 'Anotarme en la lista de espera';   // 2.10.0 (sync P8d): «Regístrate aquí» lleva a los 3 pasos
+    $('cta').href = '#espera';
   }
   cupo(false);   // mientras responde el backend (o si no responde), lo seguro es la lista de espera
   if (window.S) S.get({ view: 'cupo' }).then(r => { if (r && r.ok) cupo(r.abierto === true); }).catch(() => {});

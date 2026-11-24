@@ -256,6 +256,26 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     if (d.dias.length) for (var k = 1; k <= 14 && out.length < 3; k++) { var x = new Date(hoy.getTime() + k * 864e5); if (d.dias.some(function (n) { return (DOW[n] || []).indexOf(x.getDay()) >= 0; })) out.push(x); }
     return { lista: out, declaradas: false };
   }
+  /** 2.10.0 (sync P8d): cuántas personas pueden en cada fecha. Cada miembro marca su disponibilidad al unirse (backend 2.9.1).
+   *  Primero las fechas de quien organiza; después, otras que marcaron al menos 2 personas. Conteos, nunca nombres. */
+  function coincidencias(g) {
+    var ms = (g && g.miembros) || [], con = ms.filter(function (m) { return m.disponibilidad; }), n = ms.length;
+    if (!con.length) return null;
+    var cuenta = {}; con.forEach(function (m) { dispoDe(m).fechas.forEach(function (x) { var k = isoDia(x); cuenta[k] = (cuenta[k] || 0) + 1; }); });
+    var base = fechasDe(g).declaradas ? fechasDe(g).lista.map(isoDia) : [];
+    var otras = Object.keys(cuenta).filter(function (k) { return base.indexOf(k) < 0 && cuenta[k] >= 2; }).sort(function (a, b) { return cuenta[b] - cuenta[a] || (a < b ? -1 : 1); }).slice(0, 3);
+    var dia = function (k) { var q = k.split('-'); return new Date(+q[0], +q[1] - 1, +q[2], 12); };
+    return { marcaron: con.length, total: n,
+      base: base.map(function (k) { return { fecha: dia(k), n: cuenta[k] || 0 }; }),
+      otras: otras.map(function (k) { return { fecha: dia(k), n: cuenta[k] }; }) };
+  }
+  function coincidenciasHtml(g) {
+    var c = coincidencias(g); if (!c) return '';
+    var f = function (x) { return e(fechaCortaTxt(x.fecha)) + ' <b>' + x.n + ' de ' + c.total + '</b>'; };
+    return '<p style="margin:6px 0 0"><b>Quiénes pueden</b> <span class="muted">(' + c.marcaron + ' de ' + c.total + ' marcaron su disponibilidad)</span>: ' +
+      (c.base.length ? c.base.map(f).join(' · ') : '<span class="muted">quien organiza no marcó fechas</span>') +
+      (c.otras.length ? '<br><span class="muted">Otras fechas con coincidencias:</span> ' + c.otras.map(f).join(' · ') : '') + '</p>';
+  }
   var DSL = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'], MSL = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
   function fechaLarga(x) { return DSL[x.getDay()] + ' ' + x.getDate() + ' de ' + MSL[x.getMonth()]; }
   function fechaCortaTxt(x) { return cap(DSL[x.getDay()].slice(0, 3)) + ' ' + x.getDate() + ' ' + MSL[x.getMonth()].slice(0, 3); }
@@ -912,7 +932,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       if (!borrador.length && ops.length) borrador = ops.map(function (o) { return { tipo: o.tipo || '', titulo: o.titulo, hora_salida: o.hora_salida, presupuesto_aprox: o.presupuesto_aprox, por_que: o.por_que, ids: (o.paradas || []).map(function (s) { return s.id; }) }; });
       var prefs = (g && g.preferencias) || [], dt = g ? cuandoTxt(g) : '';   // 2.8.1: las mismas fechas que /opciones
       h += '<div class="card soft small" style="margin:8px 0"><b>Lo que contó el parche al inscribirse</b> <span class="muted">(Gemini ya lo recibe)</span>' +
-        '<p style="margin:6px 0 0"><b>Cuándo pueden:</b> ' + (dt ? e(cap(dt)) : '<span class="muted">sin dato</span>') + '</p>' +
+        '<p style="margin:6px 0 0"><b>Cuándo pueden:</b> ' + (dt ? e(cap(dt)) : '<span class="muted">sin dato</span>') + '</p>' + coincidenciasHtml(g) +   // 2.10.0
         (prefs.length ? '<ul style="margin:6px 0 0;padding-left:18px">' + prefs.map(function (x) { return '<li>' + e(x) + (/\[dato sensible omitido\]/.test(x) ? ' <span class="badge">Se omitió un dato sensible</span>' : '') + '</li>'; }).join('') + '</ul>' : '<p class="muted" style="margin:6px 0 0">Nadie escribió gustos o restricciones.</p>') + '</div>';
       if (ultDec) h += '<div class="card warn small" style="margin:8px 0"><b>Ronda ' + (decs.length + 1) + ' de opciones.</b> En la anterior, ' + e(resumenDecision(ultDec)) + '. Pega lo que dijeron en el grupo para que Gemini proponga otras.</div>';
       h += '<div class="field"><label for="restr">Lo que dijeron en el grupo para este plan</label><textarea id="restr" data-keep="restr" maxlength="1500" placeholder="Pega aquí los mensajes del chat tal cual, o escribe: sábado en la tarde, máx. $40.000, sur u oeste."></textarea><span class="hint">Gemini lo usa junto con lo del registro. Sin esto solo tiene lo del registro y suele proponer menos.</span></div>' +

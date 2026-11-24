@@ -1,7 +1,13 @@
 /**
- * Sintonía · Piloto v2.9.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.9.1 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.9.1 (23/11, sync P8d: «escoge tu disponibilidad» para todo el parche):
+ *   - linea_base.disponibilidad (columna nueva al final; probarMontaje la agrega sola): la disponibilidad de CADA persona, con el mismo
+ *     formato «dias: … · franjas: … · fechas: AAAA/MM/DD, …». La de quien organiza sigue también en linea_base_grupo (la consola la usa
+ *     como las fechas del plan). Revocar el consentimiento la borra con el resto de la línea base.
+ *   - ?view=invitacion devuelve «fechas», las fechas que propuso quien organiza (sin datos personales), para marcarlas en el calendario de unirse.
+ *   - ?view=mago: cada miembro trae su disponibilidad, para contar cuántas personas pueden en cada fecha.
  * Versión 2.9.0 (22/11, landing pública del QR del material POP):
  *   - ?view=cupo (pública): dice si el piloto recibe grupos nuevos. Lo decide la propiedad CUPO_ABIERTO («si»/«no»; por defecto «no»),
  *     para que el QR impreso nunca prometa más grupos de los que el mago puede operar. No cuenta grupos ni devuelve datos.
@@ -136,7 +142,7 @@ var SHEETS = {
   contactos:        ['ts','pid','nombre_pila','whatsapp'],
   grupos:           ['ts','grupo_id','experimento','modo','organizador_pid','codigo_invitacion','tipo_grupo','tamano_grupo','n_invitados','estado','motivo','version','nombre'],
   linea_base_grupo: ['ts','grupo_id','tipo_grupo','tamano_grupo','planes_realizados_mes','planes_fallidos_mes','quien_organiza','fatiga_previa_org','disponibilidad','origen'],
-  linea_base:       ['ts','pid','grupo_id','fatiga_previa'],
+  linea_base:       ['ts','pid','grupo_id','fatiga_previa','disponibilidad'],   // v2.9.1: + disponibilidad de cada persona
   preferencias:     ['ts','pid','grupo_id','resumen'],
   inventario:       ['id','categoria','nombre','zona','direccion','costo_aprox','horario','duracion','acceso','apto_para','fuente','verificado_el','estado','telefono_para_llamar'],
   planes:           ['ts','plan_id','grupo_id','experimento','ronda','version','estado','opciones_json','elegida','t_propuesto','t_publicado','t_cerrado','hora_encuentro','n_invitados','n_consentidos','n_apuntados','n_asistentes','causa_caida','nota','failover'],
@@ -323,7 +329,7 @@ function registrar_(d) {
     append_('linea_base_grupo', { grupo_id: gid, tipo_grupo: tipo, tamano_grupo: int_(d.tamano_grupo) === '' ? nInv : int_(d.tamano_grupo),
       planes_realizados_mes: int_(d.planes_realizados_mes), planes_fallidos_mes: int_(d.planes_fallidos_mes),
       quien_organiza: limpiar_(str_(d.quien_organiza, 40)), fatiga_previa_org: int_(d.fatiga_previa),
-      disponibilidad: limpiar_(str_(d.disponibilidad, 200)), origen: str_(d.origen, 20).replace(/[^\w-]/g, '') });   // v2.3.0: origen = campaña del enlace (p. ej. ig)
+      disponibilidad: limpiar_(str_(d.disponibilidad, 300)), origen: str_(d.origen, 20).replace(/[^\w-]/g, '') });   // v2.3.0: origen = campaña del enlace (p. ej. ig)
   } else {
     rol = 'miembro';
     var g = findOne_('grupos', 'codigo_invitacion', str_(d.codigo_invitacion, 20).toUpperCase());
@@ -345,7 +351,8 @@ function registrar_(d) {
       avisarEquipo_('Sintonía · aceptó 1 persona más (' + van + ' de ' + gg.n_invitados + ')', 'Aceptó 1 persona más en «' + nombreG + '»: ' + van + ' de ' + gg.n_invitados + '. Consola del mago: https://sintonia.my/piloto/mago.html');
     if (gg && van >= Number(gg.n_invitados)) avisarEquipo_('Sintonía · ya aceptaron todos', 'Ya aceptaron todas las personas del grupo «' + (gg.nombre || gg.tipo_grupo) + '». Cierra el reclutamiento y crea el grupo de WhatsApp: https://sintonia.my/piloto/mago.html');
   }
-  if (int_(d.fatiga_previa) !== '') append_('linea_base', { pid: pid, grupo_id: grupo.grupo_id, fatiga_previa: int_(d.fatiga_previa) });
+  var dispo = limpiar_(str_(d.disponibilidad, 300));   // v2.9.1: la disponibilidad de cada persona, no solo la de quien organiza
+  if (int_(d.fatiga_previa) !== '' || dispo) append_('linea_base', { pid: pid, grupo_id: grupo.grupo_id, fatiga_previa: int_(d.fatiga_previa), disponibilidad: dispo });
   if (d.preferencias) append_('preferencias', { pid: pid, grupo_id: grupo.grupo_id, resumen: quitarSensibles_(limpiar_(str_(d.preferencias, 400))) });   // v2.8.1: + datos sensibles
   return { ok: true, pid: pid, rol: rol, grupo_id: grupo.grupo_id, experimento: grupo.experimento,
     codigo_invitacion: rol === 'organizador' ? grupo.codigo_invitacion : undefined };
@@ -838,7 +845,9 @@ function vistaInvitacion_(q) {
   var g = findOne_('grupos', 'codigo_invitacion', str_(q.inv, 20).toUpperCase());
   if (!g) return { ok: false, error: 'invitacion_invalida' };
   var n = activos_(g.grupo_id).length, inv = Number(g.n_invitados) || MAX_GRUPO;
-  return { ok: true, estado: g.estado, modo: g.modo || 'piloto', lleno: n >= Math.min(MAX_GRUPO, inv) };
+  var lb = findOne_('linea_base_grupo', 'grupo_id', g.grupo_id), fx = String((lb && lb.disponibilidad) || '').match(/fechas:\s*([^·]*)/);   // v2.9.1
+  var fechas = fx ? fx[1].split(',').map(function (x) { return x.trim(); }).filter(function (x) { return /^\d{4}\/\d{2}\/\d{2}$/.test(x); }) : [];
+  return { ok: true, estado: g.estado, modo: g.modo || 'piloto', lleno: n >= Math.min(MAX_GRUPO, inv), fechas: fechas };
 }
 
 /** v2.2.1: sin plan_id, devuelve el plan más reciente del grupo de esa persona (un solo enlace por grupo). */
@@ -876,12 +885,13 @@ function vistaMago_(q) {
   var nombres = {}; rows_('contactos').forEach(function (c) { nombres[c.pid] = { nombre: c.nombre_pila, whatsapp: c.whatsapp }; });
   var part = rows_('participantes').filter(function (p) { return p.estado === 'activo'; });
   var lbs = {}; rows_('linea_base_grupo').forEach(function (b) { lbs[b.grupo_id] = b; });
+  var dispoP = {}; rows_('linea_base').forEach(function (b) { if (b.disponibilidad) dispoP[b.pid] = String(b.disponibilidad); });   // v2.9.1
   var grupos = rows_('grupos').map(function (g) {
     return { grupo_id: g.grupo_id, experimento: g.experimento, modo: g.modo, estado: g.estado, motivo: g.motivo, version: g.version,
       tipo_grupo: g.tipo_grupo, n_invitados: g.n_invitados, codigo_invitacion: g.codigo_invitacion, nombre: g.nombre || '',
       disponibilidad: (lbs[g.grupo_id] || {}).disponibilidad || '',   // v2.4.0
       miembros: part.filter(function (p) { return p.grupo_id === g.grupo_id; }).map(function (p) {
-        return { pid: p.pid, rol: p.rol, ts: p.ts, nombre: (nombres[p.pid] || {}).nombre || '', whatsapp: (nombres[p.pid] || {}).whatsapp || '' }; }),   // v2.8.0: + ts (hora en que aceptó)
+        return { pid: p.pid, rol: p.rol, ts: p.ts, nombre: (nombres[p.pid] || {}).nombre || '', whatsapp: (nombres[p.pid] || {}).whatsapp || '', disponibilidad: dispoP[p.pid] || '' }; }),   // v2.9.1: + disponibilidad   // v2.8.0: + ts (hora en que aceptó)
       preferencias: rows_('preferencias').filter(function (r) { return r.grupo_id === g.grupo_id; }).map(function (r) { return r.resumen; }) };
   });
   var votos = rows_('votos'), evs = rows_('eventos'), oper = rows_('operacion'), rts = rows_('retro'), usb = rows_('usabilidad'), decs = rows_('decisiones'), pmg = rows_('pulso_mago');
@@ -1082,7 +1092,7 @@ function probarMontaje() {
   r.push(prop_('MOTOR_KEY', '') ? (prop_('MOTOR_KEY', '') === prop_('ADMIN_KEY', '') ? '❌ MOTOR_KEY no puede ser igual a ADMIN_KEY' : '✅ MOTOR_KEY (motor n8n)') : '⚠️ sin MOTOR_KEY: el motor de E1.5 no puede escribir');   // v2.3.0
   try { var ss = ss_(); r.push('✅ Hoja: ' + ss.getName()); } catch (x) { r.push('❌ No abre la hoja (revisa SHEET_ID): ' + x); Logger.log(r.join('\n')); return; }
   Object.keys(SHEETS).forEach(function (n) { sheet_(n); }); r.push('✅ ' + Object.keys(SHEETS).length + ' hojas listas');
-  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.4.0)');
+  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.9.1)');
   if (notificarA_()) { try { MailApp.sendEmail(notificarA_(), 'Sintonía · prueba de avisos', 'Si te llegó este correo, los avisos de inscripción de la consola del mago funcionan.'); r.push('✅ Avisos por correo a ' + notificarA_() + ' (correo de prueba enviado; cupo diario: ' + MailApp.getRemainingDailyQuota() + ')'); } catch (x) { r.push('❌ Avisos por correo: ' + x); } }
   else r.push('ℹ️ sin NOTIFICAR_A: no se envían avisos de inscripción por correo (opcional)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');

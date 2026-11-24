@@ -5,6 +5,24 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-23 · «Escoge tu disponibilidad» para todo el parche, claim y registro (frontend 2.10.0 · backend 2.9.1)
+Sale del sync P8d.
+- **Disponibilidad de cada persona:**
+  - La inscripción y la página de unirse muestran un calendario de las próximas 2 semanas, alineado de lunes a domingo, más la franja (mañana, tarde o noche).
+  - Quien organiza marca hasta 4 días y cada miembro, los que quiera. En unirse, un punto señala las fechas que propuso quien organiza.
+  - Reemplaza «¿Qué días suelen poder salir?» y las fechas aparte. El texto que se guarda conserva el formato `dias: … · franjas: … · fechas: …`, así que la consola y Gemini lo leen como antes.
+- **Backend 2.9.1:**
+  - `linea_base` tiene una columna nueva, `disponibilidad`, por persona. `probarMontaje()` la agrega sola al final.
+  - `?view=invitacion` devuelve las fechas de quien organiza, sin datos personales.
+  - `?view=mago` trae la disponibilidad de cada miembro.
+  - Revocar el consentimiento la borra con el resto de la línea base.
+- **Consola:** en «Lo que contó el parche» aparece «Quiénes pueden», con cuántas personas pueden cada fecha (por ejemplo, «Dom 29 nov 3 de 4») y otras fechas con coincidencias. Muestra conteos, nunca nombres.
+- **Landing:**
+  - El claim principal pasa a «Menos vueltas, más plan». «Hay que vernos» queda como gancho en la bajada.
+  - Con cupo abierto, el botón dice «Regístrate aquí» y lleva a 3 pasos numerados (inscribir, compartir la invitación, cada quien acepta y marca su disponibilidad) antes de «Inscribir a mi parche».
+- **Encuesta de cierre, vista de revisión:** `retro.html?revisar=organiza` (o `=miembro`, y `&ronda=2` para el plan 2) muestra la encuesta completa sin grupo ni backend. No guarda nada; al enviar, muestra lo que iría a cada hoja (retro, usabilidad y disposición a pagar). Los enlaces están en la página del equipo.
+- **QA:** backend 105 de 105, recorrido 57 de 57, consola 26 de 26, ola A 21 de 21, auditoría E2E con 67 OK, 0 graves y 2 conocidos. Contraste y axe sin fallas.
+
 ### 2026-11-22 · Material POP rediseñado: sistema «Resonancia»
 - La filosofía visual está en `docs/pop/filosofia-visual.md`, escrita con la skill de diseño gráfico canvas-design. Retoma la piedra que cae al agua del glifo animado de la landing.
 - Las 11 piezas se rehicieron en Affinity con ese sistema:

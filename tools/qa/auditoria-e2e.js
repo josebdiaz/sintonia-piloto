@@ -16,15 +16,14 @@ const T0=Date.now();
  const o=await movil('iPhone 13'), po=o.p;
  await po.goto(B+'/piloto/index.html?exp=E1&modo=prueba'); await axe(po,'inscripción paso 1'); await scrollX(po,'inscripción');
  await po.click('#tipo label:has-text("Amigos")'); await po.fill('#ninv','3'); await po.fill('#nomGrupo','Las del cole');
- await po.click('#dias label:has-text("Sábado")'); await po.click('#dias label:has-text("Domingo")');
- const nFechas=(await po.$$('#fechas input')).length; ok(nFechas===4,'Activación','Sábado + domingo ofrece 4 fechas en 2 semanas',nFechas,'BAJA');
- await po.click('#fechas label >> nth=0'); await po.click('#fechas label >> nth=2');
+ // 2.10.0 (sync P8d): «Escoge tu disponibilidad» en un calendario de 2 semanas
+ const nDias=(await po.$$('#agenda .ag-dia')).length, nFinde=(await po.$$('#agenda .ag-dia.finde')).length; ok(nDias===14&&nFinde===4,'Activación','El calendario muestra 14 días, 4 de fin de semana',[nDias,nFinde],'BAJA');
+ for(let k=0;k<5;k++) await po.click('#agenda .ag-dia >> nth='+k);
+ const tope=(await po.$$('#agenda input:checked')).length; ok(tope===4,'Activación','Quien organiza marca hasta 4 días (el quinto se frena con un aviso)',tope,'BAJA');
+ for(let k=0;k<4;k++) await po.click('#agenda .ag-dia >> nth='+k);
+ await po.click('#agenda .ag-dia.finde >> nth=0'); await po.click('#agenda .ag-dia.finde >> nth=2');
+ const pie=await po.$eval('#agenda .ag-pie',e=>e.innerText); ok(/2 días marcados de 4/.test(pie),'Activación','El calendario dice cuántos días van marcados',pie,'BAJA');
  await po.click('#franjas label:has-text("Tarde")'); await po.selectOption('#realizados','1'); await po.click('#fatiga button[data-v="4"]');
- // ¿qué pasa si desmarco el día de una fecha elegida?
- await po.click('#dias label:has-text("Domingo")'); const quedan=await po.$$eval('#fechas input:checked',x=>x.map(y=>y.value)); await po.click('#dias label:has-text("Domingo")');
- const quedan2=await po.$$eval('#fechas input:checked',x=>x.map(y=>y.value));
- ok(quedan2.length===2,'Activación','Desmarcar y volver a marcar un día conserva las fechas elegidas',JSON.stringify([quedan,quedan2]),'BAJA');
- if(quedan2.length<2){ await po.click('#fechas label >> nth=0'); await po.click('#fechas label >> nth=2'); }
  await po.click('[data-step="1"] [data-next="2"]');
  await po.fill('#prefs','Algo tranqui en San Antonio, máximo 50 mil. Ana es diabética y no toma, su cel es 3001239999');
  await po.click('[data-step="2"] [data-next="3"]'); await po.waitForTimeout(200);
@@ -70,6 +69,8 @@ const T0=Date.now();
  for(const [dev,nom,tel] of [['Pixel 7','Kate','3001000502'],['iPhone SE','Mafe','3001000503']]){
    const x=await movil(dev); await x.p.goto(invLink.replace('https://sintonia.my',B)); await x.p.waitForSelector('#vistaForm:not(.hidden)',{timeout:8000});
    if(nom==='Kate'){ await axe(x.p,'unirse'); await scrollX(x.p,'unirse ('+dev+')'); const lbl=await x.p.$eval('#vistaForm',e=>e.innerText); ok(/salud/.test(lbl)&&/restricción/.test(lbl),'Privacidad','La página de unirse tiene la misma pista de datos sensibles que la inscripción (ejemplo «hay una restricción…»)',lbl.match(/No incluyas[^\n]*/)||'', 'MEDIA'); }
+   if(nom==='Kate'){ const pr=(await x.p.$$('#agenda .ag-dia.propuesta')).length; ok(pr===2,'Activación','Unirse marca con punto las 2 fechas que propuso quien organiza',pr,'MEDIA'); }
+   await x.p.click('#agenda .ag-dia.propuesta >> nth=0'); await x.p.click('#agenda .ag-dia:not(.propuesta) >> nth=0'); await x.p.click('#franjas label:has-text("'+(nom==='Kate'?'Tarde':'Noche')+'")');
    await x.p.fill('#nombre',nom); await x.p.fill('#wa',tel); await x.p.click('#fatiga button[data-v="3"]'); await x.p.click('#consent [data-all]'); await x.p.click('#enviar');
    await x.p.waitForSelector('#vistaOk:not(.hidden)',{timeout:8000}); if(nom==='Kate') await x.p.screenshot({path:OUT+'/02-miembro-ok.png'});
    const okTxt=await x.p.$eval('#vistaOk',e=>e.innerText); if(nom==='Kate') ok(/WhatsApp/.test(okTxt),'Antes','Quien acepta sabe qué sigue (le escriben por WhatsApp)',okTxt.slice(0,200),'MEDIA');
@@ -173,6 +174,7 @@ const T0=Date.now();
  const D2=(await qa()).dump, filas=Object.entries(D2).filter(([k])=>k!=='contactos'&&k!=='bitacora');
  const conPII=filas.filter(([k,v])=>JSON.stringify(v).match(/Paula|Kate|Mafe|300100\d{4}|3001239999/));
  ok(!conPII.length,'Privacidad','Nombres y teléfonos solo en «contactos»',conPII.map(([k,v])=>k+': '+(JSON.stringify(v).match(/.{30}(Paula|Kate|Mafe|300100\d{4}|3001239999).{20}/)||[''])[0]).join(' · '));
+ { const H=D2.linea_base[0], c=H.indexOf('disponibilidad'), dm=D2.linea_base.slice(1).map(r=>r[c]).filter(Boolean); ok(c>=0&&dm.filter(x=>/fechas: \d{4}\/\d{2}\/\d{2}, \d{4}/.test(x)).length>=2,'Datos','2.10.0: linea_base guarda la disponibilidad de cada miembro',JSON.stringify(dm.slice(-3))); }
  const lb=D2.linea_base_grupo.slice(-1)[0].join(' '); ok(/fechas: \d{4}\/\d{2}\/\d{2}, \d{4}\/\d{2}\/\d{2}/.test(lb),'Datos','Las fechas quedan en linea_base_grupo',lb);
  const ops=D2.operacion.slice(1), ses=D2.sesiones.slice(1); H(ses.length?'OK':'MEDIA','Mago','Sesión de «Mago in» registrada',ses.length);
  const med=D2.medicion_consola? D2.medicion_consola.length-1:0;
