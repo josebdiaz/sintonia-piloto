@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Sintonía · Cómo trabajamos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: lienzo 1920×1080 que escala; una idea por diapositiva; tablas y pasos legibles para una sesión de inducción */
+:root{
+  --papel-0:#ffffff; --papel-50:#faf9f6; --papel-100:#efede7; --papel-300:#dad6cc;
+  --papel-700:#47494d; --papel-900:#1f2226; --noche:#0e1116;
+  --naranja:#ff4f00; --naranja-700:#c23a00;
+  --mostaza:#ebc46a; --crema:#f3e9b8; --vitral:#2c6a86; --salvia:#a9c9b8;
+  --coral:#e8806a; --rosa:#eec0b4; --rubi:#9b2d30;
+  --f-txt:'Graphik','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --ease-standard:cubic-bezier(.3,.6,.3,1); --ease-enter:cubic-bezier(.2,.8,.2,1);
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--noche);color:var(--papel-50);font-family:var(--f-txt);overflow:hidden;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+*{box-sizing:border-box}
+.viewport{position:fixed;left:0;right:0;top:0;bottom:64px;overflow:hidden;background:var(--noche)}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;transform:translate(-50%,-50%) scale(.5)}
+.slide{position:absolute;inset:0;overflow:hidden;padding:90px 130px 100px;display:flex;flex-direction:column;visibility:hidden;opacity:0;transition:opacity 800ms var(--ease-standard),visibility 0s linear 800ms}
+.slide.active{visibility:visible;opacity:1;transition:opacity 800ms var(--ease-standard)}
+.slide>.content{position:relative;z-index:2;display:flex;flex-direction:column;height:100%}
+.slide>.content.center{justify-content:center}
+.s-noche{background:var(--noche);color:var(--papel-50)}
+.s-papel{background:var(--papel-50);color:var(--noche)}
+.s-crema{background:var(--crema);color:var(--noche)}
+.s-vitral{background:var(--vitral);color:var(--papel-0)}
+.eyebrow{font-weight:600;font-size:24px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 20px}
+.s-papel .eyebrow,.s-crema .eyebrow{color:var(--naranja-700)} .s-noche .eyebrow{color:var(--naranja)} .s-vitral .eyebrow{color:var(--crema)}
+h1,h2{font-weight:800;letter-spacing:-.035em;line-height:.98;margin:0;text-wrap:balance}
+h1{font-size:120px} h2{font-size:84px}
+.lead{font-size:46px;line-height:1.2;margin:28px 0 0;letter-spacing:-.02em}
+.body{font-size:32px;line-height:1.4;margin:24px 0 0;max-width:40ch}
+.s-papel .body,.s-crema .body{color:var(--papel-900)}
+.src{font-size:22px;color:var(--papel-700);margin-top:auto}
+.note{font-size:26px;line-height:1.4;color:var(--papel-700);margin-top:auto;max-width:70ch}
+.pend{display:inline-flex;border:3px dashed var(--naranja-700);color:var(--naranja-700);border-radius:10px;padding:2px 10px;font-weight:700}
+b{font-weight:800}
+code{font-family:var(--f-mono);font-size:.9em}
+.in{opacity:0;transform:translateY(22px)}
+.active .in{animation:rise 700ms var(--ease-enter) forwards;animation-delay:calc(var(--i,0)*110ms + 250ms)}
+@keyframes rise{to{opacity:1;transform:none}}
+.trazo path{stroke-dasharray:1 1.2;stroke-dashoffset:1.1}
+.active .trazo path{animation:draw 1300ms var(--ease-enter) forwards 1s}
+@keyframes draw{from{stroke-dashoffset:1.1}to{stroke-dashoffset:0}}
+.u{position:relative;display:inline-block;white-space:nowrap}
+.u .trazo{position:absolute;left:0;bottom:-.16em;width:100%;height:.2em;overflow:visible}
+.wm{font-weight:800;letter-spacing:-.045em;display:inline-block;line-height:1}
+.wm .i{position:relative;display:inline-block}
+.wm .i::after{content:"";position:absolute;width:.30em;height:.10em;border-radius:.05em;left:.02em;top:.2em;transform:rotate(-40deg);transform-origin:left center;background:var(--tilde,var(--naranja))}
+.logo{position:absolute;right:130px;bottom:34px;font-size:34px;z-index:40;pointer-events:none;color:var(--noche);--tilde:var(--naranja-700);transition:color 800ms}
+.logo.on-dark{color:var(--papel-50);--tilde:var(--naranja)} .logo.on-vitral{color:var(--papel-0);--tilde:var(--mostaza)}
+
+/* glifo */
+.glyph{flex:none} .glyph svg{width:100%;height:100%;overflow:visible;display:block}
+.zl,.stone,.gring,.wave{transform-origin:100px 100px;transform-box:view-box;opacity:0}
+.active .zl{animation:zj 700ms cubic-bezier(.22,1,.36,1) forwards .2s}
+@keyframes zj{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:scale(1)}}
+.active .stone{animation:stn 760ms cubic-bezier(.45,0,.3,1) forwards .65s}
+@keyframes stn{0%{opacity:0;transform:scale(2)}60%{opacity:1;transform:scale(.94)}100%{opacity:1;transform:scale(1)}}
+.active .wave{animation:wv 1900ms cubic-bezier(.25,.1,.25,1) forwards 1.1s}
+@keyframes wv{0%{opacity:0;transform:scale(.3)}10%{opacity:.85}100%{opacity:0;transform:scale(1.45)}}
+.active .wave.loop{animation:wvl 6000ms cubic-bezier(.37,0,.2,1) infinite 4.6s}
+@keyframes wvl{0%{opacity:0;transform:scale(.3)}4%{opacity:.6}32%{opacity:0;transform:scale(1.45)}100%{opacity:0;transform:scale(1.45)}}
+.active .gring{animation:st 1000ms ease-out forwards} .active .gring.r1{animation-delay:1.65s} .active .gring.r2{animation-delay:1.85s}
+@keyframes st{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+
+/* portada */
+.slide>.content.cover{flex-direction:row;align-items:center;gap:100px}
+.cover>div:last-child{min-width:0}
+.pills{display:flex;gap:14px;flex-wrap:wrap;margin-top:40px}
+.pills span{font-size:24px;font-weight:700;padding:12px 22px;border-radius:999px;border:2px solid currentColor}
+.pills.light span{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.5)}
+
+/* 30 s */
+.verbs{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:64px}
+.vb{background:var(--c);color:var(--t,var(--noche));border-radius:26px;padding:40px 34px;display:flex;flex-direction:column;gap:16px;min-height:360px}
+.vb i{font-style:normal;font-size:28px;font-weight:800;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:rgba(14,17,22,.12)}
+.vb b{font-size:54px;letter-spacing:-.03em}
+.vb span{font-size:28px;line-height:1.3;font-weight:500}
+
+/* problema */
+.twonum{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:70px}
+.twonum b{display:block;font-size:240px;letter-spacing:-.06em;line-height:.85;font-variant-numeric:tabular-nums}
+.twonum b.o{color:var(--naranja-700)}
+.twonum span{display:block;font-size:38px;line-height:1.25;font-weight:600;margin-top:20px;max-width:18ch}
+
+/* idea */
+.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:60px}
+.cd{background:var(--c);color:var(--t,var(--noche));border-radius:24px;padding:40px 32px;display:flex;flex-direction:column;gap:16px;min-height:320px}
+.cd b{font-size:48px;letter-spacing:-.03em}
+.cd span{font-size:28px;line-height:1.3}
+
+/* tablas */
+.tb{border-collapse:separate;border-spacing:0;width:100%;font-size:28px;margin-top:40px}
+.tb th,.tb td{padding:20px 24px;text-align:left;vertical-align:top;border-bottom:2px solid var(--papel-300);line-height:1.3}
+.tb th{font-size:22px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--papel-700)}
+.tb .hl{background:var(--vitral);color:var(--papel-0)}
+.tb th.hl{color:var(--papel-0);border-radius:18px 18px 0 0}
+.tb th em{display:block;font-style:normal;margin-top:6px;font-size:18px;color:var(--mostaza)}
+.tb.dark th{color:var(--papel-300);border-color:#2a2e34} .tb.dark td{border-color:#2a2e34}
+.tb.dark code{color:var(--mostaza);font-size:24px}
+.cmp2{display:grid;grid-template-columns:1.6fr 1fr;gap:60px;align-items:start}
+.measure{margin-top:40px}
+.measure h3{font-size:40px;margin:10px 0 14px;letter-spacing:-.02em}
+.measure p{font-size:28px;line-height:1.35;margin:0 0 14px}
+.measure .mini{font-size:24px;color:var(--papel-700)}
+
+/* listas */
+.bl{list-style:none;padding:0;margin:30px 0 0;display:flex;flex-direction:column;gap:14px}
+.bl li{font-size:32px;line-height:1.3;padding-left:34px;position:relative}
+.bl li::before{content:"";position:absolute;left:0;top:.55em;width:16px;height:5px;border-radius:3px;background:currentColor}
+.bl.dark li{font-size:28px}
+
+/* 20 h */
+.stack{display:flex;height:120px;border-radius:20px;overflow:hidden;margin-top:60px}
+.stack i{display:grid;place-items:center;width:var(--w);background:var(--c);transform:scaleX(0);transform-origin:left;font-style:normal}
+.active .stack i{animation:sx 800ms var(--ease-enter) forwards;animation-delay:calc(var(--k)*180ms + .6s)}
+@keyframes sx{to{transform:scaleX(1)}}
+.stack b{font-size:34px;color:var(--noche)}
+.legend{list-style:none;padding:0;margin:34px 0 0;display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+.legend li{border-top:8px solid var(--c);padding-top:12px;display:flex;flex-direction:column;gap:6px}
+.legend span{font-size:24px;line-height:1.25;font-weight:600}
+.legend b{font-size:30px}
+
+/* checklist */
+.check{list-style:none;padding:0;margin:40px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:22px 50px}
+.check li{display:flex;gap:22px;align-items:flex-start}
+.check i{width:44px;height:44px;border-radius:10px;border:4px solid var(--mostaza);flex:none;margin-top:4px}
+.check b{display:block;font-size:32px;margin-bottom:6px}
+.check span,.check code{font-size:24px;line-height:1.35;color:var(--papel-300)}
+.check code{color:var(--mostaza)}
+
+/* consola */
+.tabs{display:grid;grid-template-columns:repeat(7,1fr);gap:16px;margin-top:56px;flex:1;align-content:start}
+.tab{border-radius:20px;padding:30px 22px;display:flex;flex-direction:column;gap:14px;min-height:600px;background:var(--papel-100);border:3px solid transparent}
+.tab b{font-size:32px;letter-spacing:-.01em;line-height:1.1}
+.tab span{font-size:25px;line-height:1.35;color:var(--papel-700)}
+.tab em{margin-top:auto;font-style:normal;font-size:20px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:8px 12px;border-radius:999px;align-self:flex-start}
+.tab.use{background:var(--noche);color:var(--papel-50)} .tab.use span{color:var(--papel-300)} .tab.use em{background:var(--mostaza);color:var(--noche)}
+.tab.look em{background:var(--papel-300)}
+.tab.no{border-style:dashed;border-color:var(--papel-300)} .tab.no em{border:2px solid var(--papel-700)}
+.tab.never{background:var(--rosa)} .tab.never em{background:var(--rubi);color:var(--papel-0)}
+
+/* turno */
+.flow5{list-style:none;padding:0;margin:70px 0 0;display:grid;grid-template-columns:repeat(5,1fr);gap:40px;position:relative}
+.flow5 li{position:relative;background:#1f2226;border:2px solid #2a2e34;border-radius:24px;padding:34px 28px;display:flex;flex-direction:column;gap:12px;min-height:300px}
+.flow5 li:not(:last-child)::after{content:"→";position:absolute;right:-34px;top:50%;transform:translateY(-50%);font-size:36px;font-weight:800;color:var(--naranja)}
+.flow5 i{font-style:normal;font-size:24px;font-weight:800;color:var(--papel-300)}
+.flow5 b{font-size:38px;letter-spacing:-.02em}
+.flow5 span{font-size:26px;line-height:1.3;color:var(--papel-300)}
+.flow5 li.hot{background:var(--naranja);border-color:var(--naranja);color:var(--noche)} .flow5 li.hot i,.flow5 li.hot span{color:var(--noche)}
+.warn{margin-top:auto;font-size:28px;line-height:1.4;padding:24px 30px;border-radius:20px;background:#1f2226;border-left:8px solid var(--mostaza)}
+.warn.dark{background:var(--papel-100);border-left-color:var(--naranja-700);color:var(--noche)}
+
+/* pasos */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:36px;margin-top:70px}
+.st{position:relative;background:#1f2226;border:2px solid #2a2e34;border-radius:24px;padding:30px 26px;display:flex;flex-direction:column;gap:14px;min-height:440px}
+.st:not(:last-child)::after{content:"→";position:absolute;right:-31px;top:60px;font-size:32px;font-weight:800;color:var(--naranja)}
+.st i{font-style:normal;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--mostaza);color:var(--noche);font-size:30px;font-weight:800}
+.st small{font-size:20px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja)}
+.st span{font-size:27px;line-height:1.35}
+.st span b{color:var(--mostaza)}
+.st.last{background:var(--rubi);border-color:var(--rubi)} .st.last small{color:var(--rosa)} .st.last span b{color:var(--papel-0)} .st.last i{background:var(--papel-0)}
+
+/* palabras */
+.words{margin-top:40px;border-radius:24px;overflow:hidden;display:flex;flex-direction:column}
+.wh,.wr{display:grid;grid-template-columns:1fr 1.4fr}
+.wh span{font-size:20px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:16px 28px;color:var(--papel-700);background:var(--papel-100)}
+.wh span+span{background:var(--noche);color:var(--papel-300)}
+.wr b{font-size:30px;padding:16px 28px;background:var(--papel-100);border-top:2px solid var(--papel-50)}
+.wr span{font-size:27px;padding:18px 28px;background:var(--noche);color:var(--papel-50);border-top:2px solid #1f2226;line-height:1.3}
+.words .warn{display:none}
+
+/* voz */
+.voice{display:grid;grid-template-columns:1.2fr 1fr;gap:70px;margin-top:20px;align-items:center;flex:1}
+.examples{display:flex;flex-direction:column;gap:30px}
+.ex{background:#e9e2d6;border-radius:28px;padding:30px;display:flex;flex-direction:column;gap:14px}
+.ex small{font-size:22px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.ex.yes small{color:var(--vitral)} .ex.no small{color:var(--rubi)}
+.ex .bub{align-self:flex-start;background:var(--papel-0);border-radius:20px 20px 20px 4px;padding:18px 22px;font-size:30px;line-height:1.3}
+.ex.no .bub{text-decoration:line-through;text-decoration-color:var(--rubi);text-decoration-thickness:3px;opacity:.75}
+
+/* reglas */
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px}
+.rule{background:var(--papel-100);border-radius:24px;padding:34px 32px;display:flex;flex-direction:column;gap:12px;min-height:220px}
+.rule b{font-size:46px;color:var(--naranja-700);letter-spacing:-.03em}
+.rule span{font-size:28px;line-height:1.3}
+
+/* entregas */
+.deliver{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:34px}
+.deliver div{border-top:8px solid var(--naranja-700);padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.deliver b{font-size:42px;letter-spacing:-.02em}
+.deliver span{font-size:28px;line-height:1.3;color:var(--papel-900)}
+.quote{margin-top:auto;font-size:38px;line-height:1.3;font-weight:500;padding:30px 36px;background:var(--crema);border-radius:24px}
+
+/* faq */
+.faq{display:flex;flex-direction:column;gap:22px;margin-top:44px}
+.fq{display:grid;grid-template-columns:720px 1fr;gap:40px;border-bottom:2px solid var(--papel-300);padding-bottom:20px}
+.fq b{font-size:32px;line-height:1.25;letter-spacing:-.01em}
+.fq span{font-size:28px;line-height:1.35;color:var(--papel-900)}
+
+/* cierre */
+.names{font-size:28px;font-weight:700;margin-top:40px;color:var(--papel-300)}
+
+/* mago de oz */
+.oz{display:grid;grid-template-columns:1fr 200px 1fr;gap:30px;align-items:center;flex:1;margin-top:20px}
+.ozside{display:flex;flex-direction:column;gap:16px;align-items:center}
+.ozside small{font-size:22px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--crema)}
+.ozphone{width:380px;height:440px;border-radius:36px;background:#e9e2d6;border:12px solid var(--noche);padding:24px 18px;display:flex;flex-direction:column;gap:14px;justify-content:flex-end}
+.ozh{font-size:16px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--papel-700);text-align:center;margin-bottom:auto}
+.ozb{font-size:24px;line-height:1.3;border-radius:18px;padding:12px 16px;color:var(--noche);background:var(--papel-0);max-width:90%}
+.ozb.me{align-self:flex-end;background:#dcefe6;border-radius:18px 18px 4px 18px}
+.ozb.sin{align-self:flex-start;background:var(--naranja-700);color:var(--papel-0);font-weight:700;border-radius:18px 18px 18px 4px}
+.ozb.sin em{display:block;font-style:normal;font-size:14px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.ozlink svg{width:200px;height:40px}
+.ozstage{position:relative;width:440px;height:440px;border-radius:32px;background:var(--mostaza);overflow:hidden;display:grid;place-items:center}
+.ozyou{display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--noche)}
+.ozyou svg{width:200px;height:150px}
+.ozyou b{font-size:64px;letter-spacing:-.03em}
+.ozyou span{font-size:28px;font-weight:600}
+.curtain{position:absolute;top:0;bottom:0;width:51%;background:repeating-linear-gradient(90deg,#9b2d30 0 34px,#7d2427 34px 40px);transition:transform 1400ms cubic-bezier(.65,0,.35,1)}
+.curtain.l{left:0;transform-origin:left} .curtain.r{right:0;transform-origin:right}
+.active .curtain.l{animation:cl 1400ms cubic-bezier(.65,0,.35,1) forwards 1.4s}
+.active .curtain.r{animation:cr 1400ms cubic-bezier(.65,0,.35,1) forwards 1.4s}
+@keyframes cl{to{transform:translateX(-86%)}} @keyframes cr{to{transform:translateX(86%)}}
+.s-vitral .pills{justify-content:center}
+
+/* navegación */
+.navbar{position:fixed;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom,0px));padding:0 max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px;background:#0b0e13;border-top:1px solid var(--papel-900);z-index:20}
+.navbar button{flex:none;min-width:44px;height:44px;border-radius:999px;border:1px solid var(--papel-700);background:transparent;color:var(--papel-50);font:600 16px var(--f-txt);cursor:pointer;padding:0 12px}
+.navbar button:hover{border-color:var(--naranja)}
+.navbar button:focus-visible,.range:focus-visible{outline:3px solid var(--naranja);outline-offset:2px}
+.navbar .count{flex:none;font:600 14px var(--f-txt);color:var(--papel-300);font-variant-numeric:tabular-nums;min-width:52px;text-align:center}
+.navbar .chap{flex:none;font:600 12px var(--f-txt);letter-spacing:.1em;text-transform:uppercase;color:var(--naranja);min-width:110px}
+.track{position:relative;flex:1;min-width:0;height:44px;display:flex;align-items:center}
+.ticks{position:absolute;left:9px;right:9px;top:50%;height:6px;transform:translateY(-50%);display:flex;gap:3px;pointer-events:none}
+.ticks i{flex:1;border-radius:3px;background:var(--papel-900)} .ticks i.on{background:var(--naranja)} .ticks i.ch{margin-left:6px}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;position:relative;cursor:pointer}
+.range::-webkit-slider-runnable-track{height:6px;background:transparent}
+.range::-moz-range-track{height:6px;background:transparent}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--papel-50);border:3px solid var(--naranja);margin-top:-6px}
+.range::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--papel-50);border:3px solid var(--naranja)}
+.tip{position:absolute;bottom:46px;transform:translateX(-50%);background:var(--papel-50);color:var(--noche);font:600 13px var(--f-txt);padding:6px 10px;border-radius:8px;white-space:nowrap;pointer-events:none}
+.notes{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));max-width:min(640px,calc(100vw - 32px));z-index:22;background:var(--papel-50);color:var(--noche);border-radius:14px;padding:18px 22px;font-size:16px;line-height:1.5;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.notes b{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja-700);margin-bottom:6px}
+/* ---------- Deck WOW ---------- */
+/* costo de una conversación larga */
+.cost{display:grid;grid-template-columns:1.1fr 1fr;gap:90px;align-items:end;flex:1;margin-top:40px}
+.bars{display:flex;align-items:flex-end;gap:22px;height:520px;border-bottom:3px solid var(--papel-300);padding-bottom:0}
+.bars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:14px;height:100%}
+.bars i{display:block;width:100%;height:var(--h);border-radius:16px 16px 0 0;background:var(--c,var(--papel-300));transform:scaleY(0);transform-origin:bottom}
+.active .bars i{animation:sy 800ms var(--ease-enter) forwards;animation-delay:calc(var(--k)*120ms + .5s)}
+@keyframes sy{to{transform:scaleY(1)}}
+.bars small{font-size:22px;font-weight:700;color:var(--papel-700);white-space:nowrap}
+.cost .side h3{font-size:48px;letter-spacing:-.03em;margin:0 0 18px;line-height:1.05}
+.cost .side p{font-size:30px;line-height:1.35;margin:0 0 22px;color:var(--papel-900)}
+.tagi{display:inline-block;font-size:18px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border:2px solid var(--papel-700);color:var(--papel-700);border-radius:999px;padding:4px 12px;margin-top:16px}
+
+/* ciclo */
+.cycle{display:grid;grid-template-columns:repeat(3,1fr);gap:56px;margin-top:64px;flex:1}
+.cy{position:relative;border-radius:28px;padding:40px 36px;display:flex;flex-direction:column;gap:20px;background:#1f2226;border:2px solid #2a2e34}
+.cy:not(:last-child)::after{content:"→";position:absolute;right:-46px;top:64px;font-size:40px;font-weight:800;color:var(--naranja)}
+.cy .n{font-size:22px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--naranja)}
+.cy h3{font-size:64px;margin:0;letter-spacing:-.035em;line-height:1}
+.cy .who{display:grid;grid-template-columns:110px 1fr;gap:12px 18px;margin-top:10px}
+.cy .who small{font-size:20px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--papel-300);padding-top:6px}
+.cy .who span{font-size:27px;line-height:1.35}
+.cy .who span b{color:var(--mostaza)}
+.cy.hot{background:var(--naranja);border-color:var(--naranja);color:var(--noche)}
+.cy.hot .n,.cy.hot .who small{color:var(--noche)} .cy.hot .who span b{color:var(--noche);background:var(--crema);padding:0 8px;border-radius:6px}
+
+/* árbol de decisión */
+.tree{display:grid;grid-template-columns:1fr 330px;gap:40px;margin-top:44px;flex:1;min-height:0}
+.qs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.qs li{display:grid;grid-template-columns:56px 1fr 250px;gap:22px;align-items:center;background:var(--papel-0);border:2px solid var(--papel-300);border-radius:20px;padding:16px 22px}
+.qs li i{font-style:normal;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--noche);color:var(--papel-50);font-size:26px;font-weight:800}
+.qs li b{font-size:30px;line-height:1.2;letter-spacing:-.01em}
+.qs li b small{display:block;font-size:22px;font-weight:500;color:var(--papel-700);margin-top:4px;letter-spacing:0}
+.qs li em{font-style:normal;font-size:22px;font-weight:800;text-align:center;padding:12px 10px;border-radius:14px;background:var(--naranja);color:var(--noche);line-height:1.15}
+.qs li em.stay{background:var(--salvia)}
+.qs li em small{display:block;font-size:16px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
+.qs li.si-no{border-style:dashed}
+.tree .key{display:flex;flex-direction:column;gap:18px;justify-content:center}
+.tree .key div{border-radius:22px;padding:26px 24px;display:flex;flex-direction:column;gap:8px}
+.tree .key b{font-size:34px;letter-spacing:-.02em}
+.tree .key span{font-size:24px;line-height:1.3}
+.k-new{background:var(--naranja);color:var(--noche)} .k-stay{background:var(--salvia);color:var(--noche)}
+.k-rule{background:var(--papel-100)}
+
+/* qué pegar */
+.paste{display:grid;grid-template-columns:1fr 760px;gap:80px;align-items:center;flex:1;margin-top:20px}
+.chat{background:#e9e2d6;border-radius:34px;padding:36px;display:flex;flex-direction:column;gap:14px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.chat .hd{font-size:18px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--papel-700);text-align:center;margin-bottom:6px}
+.chat .msg{align-self:flex-end;background:#dcefe6;color:var(--noche);border-radius:22px 22px 6px 22px;padding:22px 26px;font-size:25px;line-height:1.4;max-width:100%;display:flex;flex-direction:column;gap:10px}
+.chat .msg p{margin:0}
+.chat .msg .blk{border-left:5px solid var(--c);padding-left:14px}
+.chat .msg .blk small{display:block;font-size:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--c2,var(--papel-700))}
+.parts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:26px}
+.parts li{display:grid;grid-template-columns:18px 1fr;gap:24px}
+.parts li i{display:block;border-radius:9px;background:var(--c)}
+.parts b{display:block;font-size:40px;letter-spacing:-.02em}
+.parts span{display:block;font-size:27px;line-height:1.35;color:var(--papel-300);margin-top:6px}
+
+/* traspaso */
+.hand{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:60px}
+.hd3{border-radius:26px;padding:38px 34px;display:flex;flex-direction:column;gap:16px;background:var(--c);color:var(--t,var(--noche));min-height:430px}
+.hd3 small{font-size:22px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+.hd3 b{font-size:66px;letter-spacing:-.04em;line-height:1}
+.hd3 span{font-size:28px;line-height:1.35}
+.hd3 q{margin-top:auto;font-size:24px;line-height:1.4;quotes:none;background:rgba(14,17,22,.08);border-radius:16px;padding:16px 18px;font-style:italic}
+.hd3.dk q{background:rgba(255,255,255,.14)}
+
+/* nombres */
+.names3{display:flex;flex-direction:column;gap:22px;margin-top:56px}
+.nm{display:flex;align-items:center;gap:0;font-size:46px;font-weight:700;letter-spacing:-.02em}
+.nm span{padding:20px 30px;background:var(--papel-100);border-radius:0}
+.nm span:first-child{border-radius:20px 0 0 20px;background:var(--noche);color:var(--papel-50)}
+.nm span:last-child{border-radius:0 20px 20px 0;color:var(--papel-700);font-variant-numeric:tabular-nums}
+.nm span+span{border-left:3px solid var(--papel-50)}
+.anat{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:0 70px;margin-top:40px}
+.anat div{border-top:8px solid var(--c);padding-top:14px}
+.anat b{display:block;font-size:30px} .anat span{font-size:24px;color:var(--papel-700)}
+
+/* frentes */
+.fronts{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.fr{min-height:290px;background:var(--papel-0);border:2px solid var(--papel-300);border-radius:24px;padding:30px 30px 26px;display:flex;flex-direction:column;gap:12px;border-top:12px solid var(--c)}
+.fr b{font-size:40px;letter-spacing:-.03em;line-height:1.05}
+.fr span{font-size:25px;line-height:1.35;color:var(--papel-900)}
+.fr em{margin-top:auto;font-style:normal;font-size:22px;line-height:1.35;padding:12px 16px;border-radius:14px;background:var(--papel-100);color:var(--papel-900)}
+.fr em b{font-size:22px;letter-spacing:0;color:var(--naranja-700)}
+
+/* fuentes */
+.src5{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:52px}
+.sv{border-radius:24px;padding:32px;display:flex;flex-direction:column;gap:10px;background:#1f2226;border:2px solid #2a2e34;min-height:280px}
+.sv small{font-size:20px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja)}
+.sv b{font-size:38px;letter-spacing:-.02em;line-height:1.1}
+.sv span{font-size:24px;line-height:1.35;color:var(--papel-300)}
+.sv code{font-size:24px;color:var(--mostaza)}
+.sv.never{background:var(--rubi);border-color:var(--rubi)} .sv.never small{color:var(--rosa)} .sv.never span{color:var(--papel-50)}
+
+/* semana */
+.week{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:70px;position:relative}
+.week::before{content:"";position:absolute;left:0;right:0;top:44px;height:6px;border-radius:3px;background:var(--papel-300)}
+.wk{position:relative;padding:0 26px 0 0;display:flex;flex-direction:column;gap:14px}
+.wk i{font-style:normal;width:94px;height:94px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:var(--noche);font-size:40px;font-weight:800;position:relative;z-index:1;border:6px solid var(--crema)}
+.wk small{font-size:22px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--naranja-700);margin-top:12px}
+.wk b{font-size:40px;letter-spacing:-.025em;line-height:1.05}
+.wk span{font-size:26px;line-height:1.35;color:var(--papel-900)}
+.wk code{font-size:22px;background:var(--papel-0);padding:2px 8px;border-radius:6px}
+
+/* quién decide */
+.who4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:60px}
+.wd{border-radius:26px;padding:36px 30px;display:flex;flex-direction:column;gap:14px;background:var(--c);color:var(--t,var(--noche));min-height:420px}
+.wd small{font-size:20px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+.wd b{font-size:56px;letter-spacing:-.04em;line-height:1}
+.wd span{font-size:27px;line-height:1.35}
+
+/* archivo */
+.arch{display:grid;grid-template-columns:1fr 1fr;gap:50px;margin-top:50px;flex:1}
+.ac{border-radius:28px;padding:38px 40px;display:flex;flex-direction:column;gap:14px}
+.ac small{font-size:22px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.ac h3{font-size:56px;margin:0;letter-spacing:-.035em;line-height:1}
+.ac ul{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.ac li{font-size:27px;line-height:1.3;padding-left:32px;position:relative}
+.ac li::before{content:"";position:absolute;left:0;top:.55em;width:16px;height:5px;border-radius:3px;background:currentColor}
+.ac.live{background:var(--noche);color:var(--papel-50)} .ac.live small{color:var(--naranja)}
+.ac.old{background:var(--papel-100);color:var(--papel-700);border:3px dashed var(--papel-300)} .ac.old small{color:var(--papel-700)} .ac.old h3{color:var(--noche)}
+
+/* chuleta */
+.cheat{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:56px}
+.ch4{border-top:10px solid var(--c);background:#1f2226;border-radius:0 0 24px 24px;padding:34px 32px;display:flex;flex-direction:column;gap:16px;min-height:340px}
+.ch4 b{font-size:64px;letter-spacing:-.04em}
+.ch4 span{font-size:32px;line-height:1.35;color:var(--papel-100)}
+.ch4 code{font-size:30px;color:var(--mostaza)}
+
+/* ---------- Estandarización de diagramación ---------- */
+h2{font-size:76px}
+.slide .content>h2+*:not(.body){margin-top:56px!important}
+.tb th,.tb td{padding:16px 24px} table{color:inherit;font-family:inherit}
+.slide .content>h2+.body{margin-top:32px!important}
+.wth+h2{margin-top:18px}
+.warn,.wtip,.sheet{border-radius:0!important}
+.hs,.inp.hs{overflow:visible}
+
+@media (max-width:640px){.navbar .chap,.navbar .hide-sm{display:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:1ms!important;animation-delay:0s!important;animation-iteration-count:1!important} .wave{display:none}}
+</style>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+</head>
+<body>
+
+<div class="viewport" id="viewport">
+<div class="stage" id="stage">
+<div class="wm logo" id="logo" aria-label="Sintonía">sinton<span class="i">ı</span>a</div>
+
+<!-- 1 · Bienvenida -->
+
+<!-- 1 · Portada -->
+<section class="slide s-crema active" data-chap="La idea" data-title="Portada" data-notes="Este deck explica cómo trabajamos con Claude en Sintonía. La idea cabe en una frase: una conversación por frente y una tarea a la vez, con un cierre que deja todo al día para que la siguiente conversación arranque liviana.">
+  <div class="content cover">
+    <div class="glyph" style="width:460px;height:460px" role="img" aria-label="Logo de Sintonía">
+      <svg viewBox="-40 -40 280 280" aria-hidden="true">
+        <circle class="zl" cx="100" cy="100" r="99" fill="#ebc46a"/>
+        <circle class="gring r1" cx="100" cy="100" r="87.65" fill="none" stroke="#ff2500" stroke-width="7.05"/>
+        <circle class="gring r2" cx="100" cy="100" r="95.55" fill="none" stroke="#0e1116" stroke-width="8.9"/>
+        <circle class="wave" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3.5" vector-effect="non-scaling-stroke"/>
+        <circle class="wave loop" cx="100" cy="100" r="100" fill="none" stroke="#ff4f00" stroke-width="3" vector-effect="non-scaling-stroke"/>
+        <g class="stone"><path d="M 507.0 774.5 C 678.5 768.2 791.2 715.9 813.0 632.5 C 819.1 609.2 819.1 578.5 813.0 554.4 C 799.4 500.7 747.8 467.5 662.8 457.5 C 644.5 455.4 630.9 454.3 608.1 453.2 C 604.7 453.1 581.4 452.9 549.9 452.8 C 495.7 452.6 495.1 452.5 487.5 451.5 C 469.6 449.0 459.4 439.9 458.0 425.2 C 456.7 411.7 464.6 399.4 479.4 391.8 C 534.5 363.7 689.3 377.4 788.2 421.6 L 788.2 256.9 C 685.6 221.3 581.2 206.1 478.1 212.0 C 325.4 220.8 213.0 277.1 190.3 356.4 C 180.9 388.9 184.8 429.3 199.6 453.9 C 227.4 500.2 287.4 523.0 395.0 528.1 C 419.0 529.2 432.5 529.5 472.2 529.5 C 511.4 529.5 514.8 529.6 522.4 531.4 C 536.2 534.7 543.5 542.9 543.9 555.8 C 545.0 588.1 506.9 604.2 429.4 604.2 C 348.9 604.2 262.7 586.2 203.2 554.6 L 203.2 724.6 C 291.9 760.9 403.6 778.3 507.0 774.5 Z" fill="#0e1116" transform="translate(-0.221 -0.221) scale(0.20145)"/></g>
+      </svg>
+    </div>
+    <div>
+      <p class="eyebrow in" style="--i:1">Cómo trabajamos con Claude · noviembre 2026</p>
+      <h1 class="in" style="--i:2">Una conversación, una <span class="u">tarea.<svg class="trazo" viewBox="0 0 128 16" preserveAspectRatio="none"><path d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+      <div class="pills in" style="--i:3"><span>Forma de trabajo v2</span><span>José y Katherine</span><span>Proyecto Sintonía</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · En 30 segundos -->
+<section class="slide s-papel" data-chap="La idea" data-title="En 30 segundos" data-notes="Si solo recuerdas una diapositiva, que sea esta. Cuatro gestos: abrir con un brief, trabajar una tarea, cerrar con «Cierra el frente» y pasar la posta con el traspaso.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Lo esencial</p>
+    <h2 class="in" style="--i:1">En 30 segundos.</h2>
+    <div class="verbs">
+      <div class="vb in" style="--i:2;--c:var(--mostaza)"><i>1</i><b>Abres</b><span>una conversación con el brief del frente y una sola tarea.</span></div>
+      <div class="vb in" style="--i:3;--c:var(--salvia)"><i>2</i><b>Trabajas</b><span>esa tarea. Tú decides cuando Claude pregunta.</span></div>
+      <div class="vb in" style="--i:4;--c:var(--vitral);--t:var(--papel-0)"><i>3</i><b>Cierras</b><span>escribiendo «Cierra el frente». Claude deja todo al día.</span></div>
+      <div class="vb in" style="--i:5;--c:var(--coral)"><i>4</i><b>Pasas la posta</b><span>con un traspaso de 3 líneas a la conversación siguiente.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Por qué -->
+<section class="slide s-papel" data-chap="La idea" data-title="Por qué" data-notes="Cada respuesta de Claude vuelve a leer toda la conversación. Por eso una conversación larga es más lenta, más cara y más propensa a olvidar lo acordado. Las barras son ilustrativas: muestran la forma del costo, no una medición.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">Por qué</p>
+    <h2 class="in" style="--i:1">Cada respuesta carga todo lo anterior.</h2>
+    <div class="cost">
+      <div class="in" style="--i:2">
+        <div class="bars" aria-hidden="true">
+          <div><i style="--h:8%;--k:0"></i><small>Mensaje 1</small></div>
+          <div><i style="--h:20%;--k:1"></i><small>10</small></div>
+          <div><i style="--h:38%;--k:2"></i><small>20</small></div>
+          <div><i style="--h:62%;--k:3;--c:var(--coral)"></i><small>30</small></div>
+          <div><i style="--h:96%;--k:4;--c:var(--naranja-700)"></i><small>50</small></div>
+          <div><i style="--h:10%;--k:5;--c:var(--salvia)"></i><small>Nueva</small></div>
+        </div>
+        <span class="tagi">Ilustrativo · la forma, no la cifra</span>
+      </div>
+      <div class="side in" style="--i:3">
+        <h3>Larga = lenta, cara y olvidadiza.</h3>
+        <p>Claude relee la conversación entera antes de cada respuesta. Lo que se acordó al principio queda enterrado.</p>
+        <p><b>Abrir una nueva cuesta casi nada:</b> el traspaso y el resumen del estado bastan para retomar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · El ciclo -->
+<section class="slide s-noche" data-chap="El ciclo" data-title="El ciclo" data-notes="Tres pasos. En abrir, tú pegas el brief y Claude lee solo el resumen del estado. En trabajar, una tarea a la vez. En cerrar, Claude actualiza el estado, el changelog, el home y la copia en el Proyecto, y te deja el traspaso.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">El ciclo de cada conversación</p>
+    <h2 class="in" style="--i:1">Abrir, trabajar, cerrar.</h2>
+    <div class="cycle">
+      <div class="cy in" style="--i:2"><span class="n">Paso 1</span><h3>Abrir</h3>
+        <div class="who"><small>Tú</small><span>Pegas el <b>brief</b> del frente, el traspaso anterior y <b>una</b> tarea.</span><small>Claude</small><span>Lee solo el resumen del estado («En corto») y lo que nombra el brief.</span></div></div>
+      <div class="cy in" style="--i:3"><span class="n">Paso 2</span><h3>Trabajar</h3>
+        <div class="who"><small>Tú</small><span>Decides cuando Claude pregunta. Una tarea a la vez.</span><small>Claude</small><span>Hace la tarea. Lee secciones, no documentos completos.</span></div></div>
+      <div class="cy hot in" style="--i:4"><span class="n">Paso 3</span><h3>Cerrar</h3>
+        <div class="who"><small>Tú</small><span>Escribes <b>«Cierra el frente»</b>.</span><small>Claude</small><span>Actualiza estado, historial, home y Proyecto, y deja el traspaso de 3 líneas.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · ¿Sigo o abro otra? -->
+<section class="slide s-papel" data-chap="El ciclo" data-title="¿Sigo aquí o abro otra?" data-notes="Recorre las preguntas de arriba abajo. La primera que conteste sí decide. Si ninguna dice sí, sigue en la misma conversación. Antes de abrir una nueva, siempre «Cierra el frente» en la vieja para tener el traspaso.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">La decisión</p>
+    <h2 class="in" style="--i:1">¿Sigo aquí o abro otra?</h2>
+    <div class="tree">
+      <ol class="qs">
+        <li class="in" style="--i:2"><i>1</i><b>¿La tarea es de otro frente?<small>Por ejemplo, pasas de la consola al volante.</small></b><em>Abre una nueva<small>con su brief</small></em></li>
+        <li class="in" style="--i:3"><i>2</i><b>¿La tarea anterior ya terminó?<small>Publicada, desplegada o entregada.</small></b><em>Cierra y abre otra</em></li>
+        <li class="in" style="--i:4"><i>3</i><b>¿Acaba de pasar un hito?<small>Despliegue, congelamiento, ensayo, Cali o una sync.</small></b><em>Cierra y abre otra</em></li>
+        <li class="in" style="--i:5"><i>4</i><b>¿Ya es larga?<small>Más de unas 2 horas o 30 intercambios, muchas capturas.</small></b><em>Cierra y abre otra</em></li>
+        <li class="in" style="--i:6"><i>5</i><b>¿Claude olvida o repite preguntas?<small>Señal de que la conversación ya pesa.</small></b><em>Cierra y abre otra</em></li>
+        <li class="si-no in" style="--i:7"><i>6</i><b>¿Es un ajuste pequeño de lo que se acaba de hacer?<small>Si nada de lo anterior dijo «sí», también.</small></b><em class="stay">Sigue aquí</em></li>
+      </ol>
+      <div class="key in" style="--i:8">
+        <div class="k-rule"><b>La primera que diga «sí» decide.</b><span>Lee de arriba abajo y para ahí.</span></div>
+        <div class="k-new"><b>Abrir otra</b><span>Antes, «Cierra el frente» en la vieja.</span></div>
+        <div class="k-stay"><b>Seguir aquí</b><span>Solo para ajustes de lo mismo.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · Qué pegar -->
+<section class="slide s-noche" data-chap="El ciclo" data-title="Qué pegar al abrir" data-notes="Este es el primer mensaje de cada conversación. Tres bloques: el brief del frente, que está en el documento de forma de trabajo; el traspaso que dejó la conversación anterior; y una sola tarea. Si es la primera vez en ese frente, no hay traspaso y no pasa nada.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">El primer mensaje</p>
+    <h2 class="in" style="--i:1">Qué pegar al abrir.</h2>
+    <div class="paste">
+      <ul class="parts">
+        <li class="in" style="--i:2;--c:var(--mostaza)"><i></i><div><b>El brief del frente</b><span>Ya está escrito: lo copias tal cual. Dice qué leer y qué no tocar.</span></div></li>
+        <li class="in" style="--i:3;--c:var(--salvia)"><i></i><div><b>El traspaso</b><span>Las 3 líneas que dejó la conversación anterior. Si es la primera vez, se omite.</span></div></li>
+        <li class="in" style="--i:4;--c:var(--naranja)"><i></i><div><b>Una tarea</b><span>Una sola. Si son tres, son tres conversaciones.</span></div></li>
+      </ul>
+      <div class="chat in" style="--i:3" role="img" aria-label="Ejemplo de primer mensaje">
+        <div class="hd">Conversación nueva · Plataforma</div>
+        <div class="msg">
+          <div class="blk" style="--c:var(--mostaza);--c2:#7a5b00"><small>Brief</small><p>Frente: Plataforma. Lee solo el «En corto» de ESTADO.md y lo que nombre la tarea.</p></div>
+          <div class="blk" style="--c:var(--salvia);--c2:#2f6a4f"><small>Traspaso</small><p>Quedó: 2.15.0 publicada.<br>Falta: tags del 26/11.<br>Decidir: nada.</p></div>
+          <div class="blk" style="--c:var(--naranja);--c2:var(--naranja-700)"><small>Tarea</small><p>Crear los tags del congelamiento.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · El traspaso -->
+<section class="slide s-papel" data-chap="El ciclo" data-title="El traspaso" data-notes="El traspaso lo escribe Claude cuando dices «Cierra el frente». Siempre son tres líneas y siempre en este orden. Lo copias tal cual en la conversación siguiente; no hace falta pegar nada más, porque el resto está en el estado.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">La posta</p>
+    <h2 class="in" style="--i:1">El traspaso: tres líneas, siempre las mismas.</h2>
+    <div class="hand">
+      <div class="hd3 in" style="--i:2;--c:var(--mostaza)"><small>Línea 1</small><b>Quedó</b><span>Lo que está hecho y dónde vive: versión, archivo o enlace.</span><q>Frontend 2.15.0 publicado en sintonia.my.</q></div>
+      <div class="hd3 in" style="--i:3;--c:var(--salvia)"><small>Línea 2</small><b>Falta</b><span>Lo siguiente y quién lo hace.</span><q>Crear los tags el 26/11 (José).</q></div>
+      <div class="hd3 dk in" style="--i:4;--c:var(--vitral);--t:var(--papel-0)"><small>Línea 3</small><b>Decidir</b><span>Lo que necesita al equipo o a Néstor. Si no hay nada, «nada».</span><q>Si el cupo se abre el día de la sustentación.</q></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · Cómo nombrarla -->
+<section class="slide s-crema" data-chap="El ciclo" data-title="Cómo nombrarla" data-notes="Un nombre con tres partes hace que la lista de conversaciones del Proyecto se lea como un índice. Frente primero, porque así se agrupan solas.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Encontrarla después</p>
+    <h2 class="in" style="--i:1">Frente · tarea · fecha.</h2>
+    <div class="names3">
+      <div class="nm in" style="--i:2"><span>Plataforma</span><span>fix del aviso</span><span>25/11</span></div>
+      <div class="nm in" style="--i:3"><span>Operación</span><span>ensayo con WhatsApp real</span><span>25/11</span></div>
+      <div class="nm in" style="--i:4"><span>Sync</span><span>P8e</span><span>28/11</span></div>
+    </div>
+    <div class="anat in" style="--i:5">
+      <div style="--c:var(--noche)"><b>Frente</b><span>Agrupa la lista sola</span></div>
+      <div style="--c:var(--papel-300)"><b>Tarea</b><span>Una, en pocas palabras</span></div>
+      <div style="--c:var(--naranja-700)"><b>Fecha</b><span>Día/mes</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · Los frentes -->
+<section class="slide s-papel" data-chap="Los frentes" data-title="Los seis frentes" data-notes="Cada frente tiene su brief listo en el documento de forma de trabajo. Lo que va en recuadro es lo único que hay que recordar de cada uno.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Dónde cae cada tarea</p>
+    <h2 class="in" style="--i:1">Seis frentes, cada uno con su brief.</h2>
+    <div class="fronts">
+      <div class="fr in" style="--i:2;--c:var(--vitral)"><b>Plataforma</b><span>Consola, backend, landing, QA y el home.</span><em><b>Ojo:</b> congelada desde el 26/11.</em></div>
+      <div class="fr in" style="--i:3;--c:var(--mostaza)"><b>Material POP</b><span>Volante, stickers, pines, tarjeta, tótem y hablador.</span><em><b>Ojo:</b> pide captura solo de la pieza que cambias.</em></div>
+      <div class="fr in" style="--i:4;--c:var(--salvia)"><b>Operación del piloto</b><span>Ensayo, prueba con Cali, el mago y los hallazgos.</span><em><b>Ojo:</b> cada hallazgo con su n y su estatus.</em></div>
+      <div class="fr in" style="--i:5;--c:var(--coral)"><b>Investigación y entrega</b><span>Informe del 4/12, JTBD, matriz, negocio y KTH.</span><em><b>Ojo:</b> las metas no son resultados.</em></div>
+      <div class="fr in" style="--i:6;--c:var(--naranja-700)"><b>Pitch</b><span>Deck de 13 pasos y guion del 12/12.</span><em><b>Ojo:</b> ninguna cifra del piloto que no exista.</em></div>
+      <div class="fr in" style="--i:7;--c:var(--noche)"><b>Sync</b><span>Notas de reunión → decisiones y tareas por frente.</span><em><b>Ojo:</b> las notas nunca van al repo.</em></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · Dónde vive cada cosa -->
+<section class="slide s-noche" data-chap="Los frentes" data-title="Dónde vive cada cosa" data-notes="Una sola fuente por tema. Si dos documentos dicen cosas distintas, manda el estado del repo. Lo único que nunca va al repo, porque es público, son las notas internas, las claves y los datos de participantes.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Una sola fuente de verdad</p>
+    <h2 class="in" style="--i:1">Dónde vive cada cosa.</h2>
+    <div class="src5">
+      <div class="sv in" style="--i:2"><small>El estado</small><b>ESTADO.md</b><span>En el repo, con copia en el Proyecto. Su resumen «En corto» cabe en una pantalla.</span></div>
+      <div class="sv in" style="--i:3"><small>La historia</small><b>CHANGELOG.md</b><span>Qué cambió, versión por versión.</span></div>
+      <div class="sv in" style="--i:4"><small>Las reglas</small><b>Prompt maestro</b><span>Las instrucciones del Proyecto. Cambian poco.</span></div>
+      <div class="sv in" style="--i:5"><small>El contexto</small><b>Base de conocimiento</b><span>Evidencia, piloto, negocio, riesgos. Se lee por secciones.</span></div>
+      <div class="sv in" style="--i:6"><small>Para liderazgo</small><b>Reporte ejecutivo</b><span>Se actualiza los lunes con <code>Status Update</code>.</span></div>
+      <div class="sv never in" style="--i:7"><small>Nunca en el repo</small><b>Notas, claves y datos</b><span>Van al Proyecto o al Drive. El repo es público.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · Cadencia -->
+<section class="slide s-crema" data-chap="Los frentes" data-title="La cadencia" data-notes="Cuatro momentos fijos. Después de cada sync, una conversación corta que reparte las tareas. Los lunes, el reporte ejecutivo. Al cerrar cada tarea, «Cierra el frente». Y antes de cada despliegue del backend, Claude deja el archivo listo y tú confirmas.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">El ritmo del equipo</p>
+    <h2 class="in" style="--i:1">Cuatro momentos fijos.</h2>
+    <div class="week">
+      <div class="wk in" style="--i:2;--c:var(--mostaza)"><i>1</i><small>Después de cada sync</small><b>Conversación «Sync»</b><span>Saca decisiones y tareas por frente y entrega un brief para cada una.</span></div>
+      <div class="wk in" style="--i:3;--c:var(--salvia)"><i>2</i><small>Cada lunes</small><b>Status Update</b><span>Los avances de la semana entran al reporte ejecutivo.</span></div>
+      <div class="wk in" style="--i:4;--c:var(--coral)"><i>3</i><small>Al cerrar cada tarea</small><b>«Cierra el frente»</b><span>Y conversación nueva para la siguiente.</span></div>
+      <div class="wk in" style="--i:5;--c:var(--vitral)"><i>4</i><small>Antes de desplegar</small><b>Backend a mano</b><span>Claude deja el archivo listo; tú lo pegas y confirmas «backend desplegado».</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · Reglas -->
+<section class="slide s-papel" data-chap="Las reglas" data-title="Cinco reglas y una pregunta" data-notes="Las cinco reglas tienen el mismo fondo: que Claude cargue solo lo que la tarea necesita.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Menos tokens, mejores respuestas</p>
+    <h2 class="in" style="--i:1">Cinco reglas y una pregunta.</h2>
+    <div class="rules">
+      <div class="rule in" style="--i:2"><b>Una tarea por pedido</b><span>«Haz A, B y C» obliga a cargar el contexto de tres cosas a la vez.</span></div>
+      <div class="rule in" style="--i:3"><b>Nombra el archivo y la parte</b><span>«Revisa los pendientes del estado» cuesta menos que «revisa el estado».</span></div>
+      <div class="rule in" style="--i:4"><b>Decisiones, no transcripciones</b><span>Las notas completas pasan primero por la conversación «Sync».</span></div>
+      <div class="rule in" style="--i:5"><b>Capturas solo para diseño</b><span>Para código o textos alcanza con el texto.</span></div>
+      <div class="rule in" style="--i:6"><b>Nueva al cambiar o terminar</b><span>El traspaso y el resumen del estado bastan para retomar.</span></div>
+      <div class="rule in" style="--i:7;background:var(--crema)"><b>Una pregunta clave</b><span>Antes de pedir: ¿esto es de este frente y de esta tarea?</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · Quién decide -->
+<section class="slide s-noche" data-chap="Las reglas" data-title="Quién decide qué" data-notes="Claude propone y ejecuta, pero no decide estos cuatro temas. Si una tarea toca alguno, Claude pregunta antes.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Las decisiones</p>
+    <h2 class="in" style="--i:1">Quién decide qué.</h2>
+    <div class="who4">
+      <div class="wd in" style="--i:2;--c:var(--vitral);--t:var(--papel-0)"><small>Ética, privacidad y métricas</small><b>Néstor</b><span>También cualquier cambio a las encuestas validadas.</span></div>
+      <div class="wd in" style="--i:3;--c:var(--mostaza)"><small>Alcance, prioridades y calendario</small><b>José y Katherine</b><span>Qué entra, qué espera y cuándo.</span></div>
+      <div class="wd in" style="--i:4;--c:var(--salvia)"><small>Operación diaria del mago</small><b>Juan José</b><span>Con José como respaldo.</span></div>
+      <div class="wd in" style="--i:5;--c:var(--rubi);--t:var(--papel-0)"><small>Consola después del 26/11</small><b>Nadie</b><span>Congelada hasta cerrar el análisis, salvo un error grave que se registra.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 · Archivo -->
+<section class="slide s-papel" data-chap="Las reglas" data-title="Lo vigente y lo archivado" data-notes="Los documentos viejos no se borran: quedan en el Proyecto como historia y se listan en claude/archivo.md. Claude no los usa para el presente salvo que la tarea pida la historia. Cuando un documento se supera, entra a esa lista el mismo día.">
+  <div class="content">
+    <p class="eyebrow in" style="--i:0">El Proyecto en claude.ai</p>
+    <h2 class="in" style="--i:1">Lo viejo no se borra: se archiva.</h2>
+    <div class="arch">
+      <div class="ac live in" style="--i:2"><small>Vigente · se usa</small><h3>Lo que manda hoy</h3>
+        <ul><li>Instrucciones del Proyecto (prompt maestro v3.3)</li><li>Copia del estado (la más reciente)</li><li>Forma de trabajo (este deck, en texto)</li><li>Base de conocimiento</li><li>Lista del archivo</li></ul></div>
+      <div class="ac old in" style="--i:3"><small>Archivado · solo historia</small><h3>16 documentos superados</h3>
+        <ul><li>Estados del 6, 15 y 17 de noviembre</li><li>Prompts maestros v3.1 y v3.2</li><li>Planes de ajuste del 13 al 22/11</li><li>Copias viejas del guion y del onboarding</li><li>Lista completa en <code>claude/archivo.md</code></li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 · Chuleta -->
+<section class="slide s-noche" data-chap="Las reglas" data-title="La chuleta" data-notes="Para dejar a la mano. Cuatro frases que resumen todo el deck.">
+  <div class="content center">
+    <p class="eyebrow in" style="--i:0">Para tener a la mano</p>
+    <h2 class="in" style="--i:1">Menos vueltas, más plan. También con Claude.</h2>
+    <div class="cheat">
+      <div class="ch4 in" style="--i:2;--c:var(--mostaza)"><b>Abre</b><span>Brief + traspaso + una sola tarea.</span></div>
+      <div class="ch4 in" style="--i:3;--c:var(--salvia)"><b>Decide</b><span>¿Otro frente, terminó, hito, larga? Conversación nueva.</span></div>
+      <div class="ch4 in" style="--i:4;--c:var(--coral)"><b>Cierra</b><span><code>Cierra el frente</code></span></div>
+      <div class="ch4 in" style="--i:5;--c:var(--vitral)"><b>Pasa</b><span>Quedó · Falta · Decidir.</span></div>
+    </div>
+    <p class="note in" style="--i:6;color:var(--papel-300);margin-top:56px">Texto completo: <code>claude/wow-sintonia.md</code> en el Proyecto.</p>
+  </div>
+</section>
+
+</div>
+</div>
+
+<nav class="navbar" aria-label="Navegación de la presentación">
+  <button id="prev" type="button" aria-label="Diapositiva anterior">←</button>
+  <span class="chap" id="chap">Contexto</span>
+  <div class="track">
+    <div class="ticks" id="ticks" aria-hidden="true"></div>
+    <input class="range" id="nav" type="range" min="1" max="15" step="1" value="1" aria-label="Ir a diapositiva">
+    <span class="tip" id="tip" hidden></span>
+  </div>
+  <span class="count" id="count">1 / 15</span>
+  <button id="next" type="button" aria-label="Diapositiva siguiente">→</button>
+  <button id="notesBtn" class="hide-sm" type="button" aria-label="Notas del orador (N)">N</button>
+  <button id="fsBtn" class="hide-sm" type="button" aria-label="Pantalla completa (F)">⤢</button>
+</nav>
+<div class="notes" id="notes" hidden><b>Notas del orador</b><span id="notesText"></span></div>
+
+<script>
+(function(){
+  const stage = document.getElementById('stage'), vp = document.getElementById('viewport');
+  function fit(){ const s = Math.min(vp.clientWidth/1920, vp.clientHeight/1080); stage.style.transform = 'translate(-50%,-50%) scale('+s+')'; }
+  window.addEventListener('resize', fit); fit();
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(vp);
+  const slides = [...document.querySelectorAll('.slide')], N = slides.length;
+  const range = document.getElementById('nav'), ticks = document.getElementById('ticks'), tip = document.getElementById('tip');
+  const count = document.getElementById('count'), chap = document.getElementById('chap'), logo = document.getElementById('logo');
+  const notes = document.getElementById('notes'), notesText = document.getElementById('notesText');
+  range.max = N;
+  slides.forEach((s,i) => { const t = document.createElement('i'); if (i>0 && s.dataset.chap !== slides[i-1].dataset.chap) t.className='ch'; ticks.appendChild(t); });
+  const tickEls = [...ticks.children];
+  let cur = 0;
+  function go(n){ n = Math.max(0, Math.min(N-1, n)); if (n !== cur){ slides[cur].classList.remove('active'); cur = n; slides[cur].classList.add('active'); } update(); }
+  function update(){
+    const sc = slides[cur].classList;
+    logo.classList.toggle('on-dark', sc.contains('s-noche'));
+    logo.classList.toggle('on-vitral', sc.contains('s-vitral'));
+    range.value = cur+1; count.textContent = (cur+1)+' / '+N; chap.textContent = slides[cur].dataset.chap || '';
+    range.setAttribute('aria-valuetext', (cur+1)+' de '+N+': '+(slides[cur].dataset.title||''));
+    tickEls.forEach((el,i) => el.classList.toggle('on', i <= cur));
+    notesText.textContent = slides[cur].dataset.notes || '';
+    try { history.replaceState(null,'','#s'+(cur+1)); } catch(e) {}
+  }
+  const m = /^#s(\d+)$/.exec(location.hash||'');
+  if (m){ slides[0].classList.remove('active'); cur = Math.min(N-1, Math.max(0,(+m[1]||1)-1)); slides[cur].classList.add('active'); }
+  update();
+  function showTip(){ const v = +range.value; tip.textContent = v+' · '+(slides[v-1].dataset.title||''); tip.style.left = 'calc(9px + '+((v-1)/(N-1))+' * (100% - 18px))'; tip.hidden = false; }
+  range.addEventListener('input', () => { showTip(); go(+range.value-1); });
+  range.addEventListener('pointerdown', showTip);
+  ['pointerup','pointerleave','blur','change'].forEach(ev => range.addEventListener(ev, () => { tip.hidden = true; }));
+  function toggleFs(){ try { if (document.fullscreenElement) document.exitFullscreen().catch(()=>{}); else document.documentElement.requestFullscreen().catch(()=>{}); } catch(e) {} }
+  document.getElementById('next').addEventListener('click', () => go(cur+1));
+  document.getElementById('prev').addEventListener('click', () => go(cur-1));
+  document.getElementById('notesBtn').addEventListener('click', () => { notes.hidden = !notes.hidden; });
+  document.getElementById('fsBtn').addEventListener('click', toggleFs);
+  vp.addEventListener('click', e => { const r = vp.getBoundingClientRect(); go((e.clientX - r.left)/r.width < .25 ? cur-1 : cur+1); });
+  document.addEventListener('keydown', e => {
+    if (e.target === range && (e.key==='ArrowLeft' || e.key==='ArrowRight')) return;
+    if (['ArrowRight','PageDown',' '].includes(e.key)){ if (e.target.tagName==='BUTTON' && e.key===' ') return; e.preventDefault(); go(cur+1); }
+    else if (['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); go(cur-1); }
+    else if (e.key==='Home') go(0); else if (e.key==='End') go(N-1);
+    else if (e.key==='n' || e.key==='N') notes.hidden = !notes.hidden;
+    else if (e.key==='f' || e.key==='F') toggleFs();
+  });
+  let sx = null;
+  vp.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive:true});
+  vp.addEventListener('touchend', e => { if (sx===null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) go(cur + (dx < 0 ? 1 : -1)); sx = null; });
+})();
+</script>
+</body>
+</html>

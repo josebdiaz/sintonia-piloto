@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-24 · Deck «Cómo trabajamos con Claude»
+- `docs/deck-wow.html`: 15 diapositivas que explican la forma de trabajo sin remitir a secciones numeradas. Cubre el ciclo (abrir, trabajar, cerrar), el árbol «¿Sigo aquí o abro otra?», qué pegar al abrir, el traspaso de 3 líneas, cómo nombrar las conversaciones, los seis frentes, dónde vive cada cosa, la cadencia, las reglas, quién decide, el archivo y una chuleta.
+- Enlazado en el home, en «Presentaciones». El texto en el Proyecto (`claude/wow-sintonia.md` v2.1) ya no usa «§».
+
 ### 2026-11-24 · Forma de trabajo (WOW) y estado «En corto»
 - `ESTADO.md` tiene una §0 «En corto»: una pantalla con versiones, calendario, bloqueos y dónde está cada cosa. Cada conversación arranca leyendo solo eso.
 - La tabla de pendientes (§4) quedó al día al 24/11.

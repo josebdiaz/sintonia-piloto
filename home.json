@@ -69,6 +69,11 @@
       "decks": true,
       "enlaces": [
         {
+          "texto": "Cómo trabajamos con Claude",
+          "href": "docs/deck-wow.html",
+          "nota": "24 nov · forma de trabajo v2"
+        },
+        {
           "texto": "Pitch final",
           "href": "docs/deck-pitch-final.html",
           "nota": "12 dic · actualizado 22 nov"
@@ -165,6 +170,11 @@
       "titulo": "Versiones anteriores",
       "decks": true,
       "enlaces": [
+        {
+          "texto": "Cómo trabajamos con Claude",
+          "href": "docs/deck-wow.html",
+          "nota": "24 nov · forma de trabajo v2"
+        },
         {
           "texto": "Business case",
           "href": "docs/deck-business-case.html",
