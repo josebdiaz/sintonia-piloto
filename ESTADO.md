@@ -5,7 +5,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 ## 0. En corto · leer esto primero
 
-Resumen para arrancar cualquier conversación. El detalle está en las secciones de abajo, y la forma de trabajar, en `claude/wow-sintonia.md` (Proyecto).
+Resumen para arrancar cualquier conversación. El detalle está en las secciones de abajo. La forma de trabajar está en `claude/wow-sintonia.md` (Proyecto) y, en versión visual, en el deck [`docs/deck-wow.html`](docs/deck-wow.html). Los documentos superados del Proyecto no se borran: se listan en `claude/archivo.md` y no son fuente.
 
 - **Versiones:** frontend **2.15.0** (sintonia.my) y backend **2.9.3**, desplegados el 24/11. Aviso de privacidad **v2-2026-11** publicado.
 - **Dónde estamos:** la plataforma está lista para la prueba con un grupo de Cali. **No hay resultados con personas reales.** E1.5 (n8n) está aplazado desde el 19/11.
@@ -30,7 +30,7 @@ Resumen para arrancar cualquier conversación. El detalle está en las secciones
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
 | Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main` |
-| Tags | `piloto/v2.7.0` · `backend/v2.7.2` | Creados el 15/11. **Faltan** los de las versiones intermedias y, al congelar el jueves 26, `piloto/v2.8.1` y `backend/v2.8.1` |
+| Tags | `piloto/v2.7.0` · `backend/v2.7.2` | Creados el 15/11. **Faltan** los de las versiones intermedias y, al congelar el jueves 26, `piloto/v2.15.0` y `backend/v2.9.3` |
 | Inventario verificado | Hoja del piloto | Revisión de ubicaciones con `probarMontaje()` (2.5.0): **resultado por reportar** |
 
 ## 2. Qué cambió desde el 6/11 (consola 2.3.1 → 2.8.1, backend 2.3.x → 2.8.1)
@@ -139,6 +139,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | 11 | n8n y licencias: **aplazados** (19/11) hasta tener más pruebas manuales. Cuando se retomen: N1–N11, B1, B5, I5 y C14 | E1.5 | Equipo |
 | 12 | Control de compromisos de los periodos 8 y 9: archivo interno consolidado al cierre | Seguimiento de la maestría | José |
 | 13 | Crear los tags de las versiones intermedias (`piloto/v2.7.1` a `v2.14.0`, `backend/v2.7.3` a `v2.9.2`) | Historial | José |
+| 14 | Agregar a las instrucciones del Proyecto (punto 1) la línea: los documentos de `claude/archivo.md` son historia y no son fuente | Orden del Proyecto | José |
 
 ## 4.2 Prueba externa (semana del 15/11, n = 1, modo prueba)
 
