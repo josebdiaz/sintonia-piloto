@@ -21,12 +21,14 @@ function mkSheet(name) {
 }
 const ss = { getSheetByName: n => SHEETS[n] || null, insertSheet: n => (SHEETS[n] = mkSheet(n)), getName: () => 'QA', getSheets: () => [mkSheet('x')], deleteSheet: () => {}, getUrl: () => 'https://qa/respaldo' };
 const PROPS = { SHEET_ID: 'qa', ADMIN_KEY: 'admin-key-qa-1234567890', MOTOR_KEY: 'motor-key-qa-1234567890', GEMINI_API_KEY: 'x', GEMINI_MODEL: 'gemini', PRICE_IN_PER_M: '0.3', PRICE_OUT_PER_M: '2.5', AVISO_VERSION: 'v1-2026-10' };
+const CACHE = {};
 let uid = 0;
 const ctx = {
   console, JSON, Date, Math, require,
   PropertiesService: { getScriptProperties: () => ({ getProperty: k => (k in PROPS ? PROPS[k] : null) }) },
   SpreadsheetApp: { openById: () => ss, create: () => ss, getUi: () => { throw new Error('sin UI'); } },
   LockService: { getScriptLock: () => ({ waitLock: () => {}, releaseLock: () => {} }) },
+  CacheService: { getScriptCache: () => ({ get: k => (k in CACHE ? CACHE[k] : null), put: (k, v) => { CACHE[k] = v; } }) },   // v2.9.3
   ContentService: { createTextOutput: t => ({ t, setMimeType() { return this; } }), MimeType: { JSON: 'json' } },
   Utilities: { getUuid: () => require('crypto').randomUUID(), formatDate: () => '2026-10-24 20:00' },
   Session: { getScriptTimeZone: () => 'America/Bogota' },
@@ -56,7 +58,7 @@ for (const exp of ['E1', 'E2']) {
   chk(exp + ' línea base guarda disponibilidad y origen', lbg.indexOf('dias: sabado · franjas: tarde') >= 0 && lbg.indexOf('ig') >= 0 && lbg.indexOf(3) >= 0, lbg);
   const m1 = post(Object.assign({ action: 'registrar', codigo_invitacion: org.codigo_invitacion, nombre_pila: 'A', whatsapp: '+5730020000' + (exp === 'E1' ? 11 : 21) }, cons));
   const dup = post(Object.assign({ action: 'registrar', codigo_invitacion: org.codigo_invitacion, nombre_pila: 'A2', whatsapp: '+5730020000' + (exp === 'E1' ? 11 : 21) }, cons));
-  chk(exp + ' mismo número no acepta dos veces', dup.error === 'ya_registrado', dup);
+  chk(exp + ' mismo número no acepta dos veces (2.9.3: recibe su mismo enlace)', dup.ok && dup.ya_estaba && dup.pid === m1.pid, dup);
   const m2 = post(Object.assign({ action: 'registrar', codigo_invitacion: org.codigo_invitacion, nombre_pila: 'B', whatsapp: '+5730020000' + (exp === 'E1' ? 12 : 22) }, cons));
   chk(exp + ' miembros aceptan', m1.ok && m2.ok, [m1, m2]);
   const cr = post({ action: 'cerrar_reclutamiento', key: A, grupo_id: org.grupo_id });
@@ -266,6 +268,25 @@ ctx.UrlFetchApp.fetch = fetchViejo; delete PROPS.NOTIFICAR_A;
   const sensibles = ['Está enfermo', 'A ella la operaron hace poco', 'Es judía', 'No hablamos de partido político', 'Uno es de derecha', 'Tiene una enfermedad'];
   chk('2.9.2 siguen marcadas las que sí lo son', sensibles.every(x => es(x)), sensibles.filter(x => !es(x)));
   chk('2.9.2 se omite la frase sensible y se conserva el resto', q('Mi amiga es enfermera. Uno está enfermo, plan tranqui') === 'Mi amiga es enfermera. [dato sensible omitido], plan tranqui' || /enfermera/.test(q('Mi amiga es enfermera. Uno está enfermo, plan tranqui')) && /omitido/.test(q('Mi amiga es enfermera. Uno está enfermo, plan tranqui')), q('Mi amiga es enfermera. Uno está enfermo, plan tranqui')); }
+
+// 2.9.3: reintentos sin duplicados
+{ const base = Object.assign({ action: 'registrar', experimento: 'E1', modo: 'prueba', tipo_grupo: 'amigos', n_invitados: 3, nombre_grupo: 'Reintento', disponibilidad: 'dias: sabado · franjas: tarde', nombre_pila: 'Rita', whatsapp: '+573009990061' }, cons);
+  const nG = SHEETS.grupos.rows.length;
+  const r1 = post(Object.assign({ req_id: 'req-aaaa-0001' }, base)), r2 = post(Object.assign({ req_id: 'req-aaaa-0001' }, base));
+  chk('2.9.3 el mismo req_id devuelve la misma respuesta sin escribir otra vez', r1.ok && r2.ok && r2.repetido && r2.grupo_id === r1.grupo_id && SHEETS.grupos.rows.length === nG + 1, [r1, r2, SHEETS.grupos.rows.length - nG]);
+  const r3 = post(Object.assign({ req_id: 'req-bbbb-0002' }, base));
+  chk('2.9.3 quien organiza que reintenta con otro req_id recibe su mismo grupo', r3.ok && r3.ya_estaba && r3.grupo_id === r1.grupo_id && r3.codigo_invitacion === r1.codigo_invitacion && SHEETS.grupos.rows.length === nG + 1, r3);
+  const m1 = post(Object.assign({ action: 'registrar', codigo_invitacion: r1.codigo_invitacion, nombre_pila: 'Sol', whatsapp: '+573009990062' }, cons));
+  const m2 = post(Object.assign({ action: 'registrar', codigo_invitacion: r1.codigo_invitacion, nombre_pila: 'Sol', whatsapp: '3009990062' }, cons));
+  chk('2.9.3 quien ya aceptó recibe su enlace personal, sin duplicarse', m1.ok && m2.ok && m2.ya_estaba && m2.pid === m1.pid && SHEETS.participantes.rows.filter(r => r[SHEETS.participantes.rows[0].indexOf('grupo_id')] === r1.grupo_id).length === 2, [m1, m2]);
+  const nO = SHEETS.operacion.rows.length, op = { action: 'operacion', key: A, grupo_id: r1.grupo_id, actor: 'mago', minutos: 5, causa: 'coordinacion', req_id: 'req-cccc-0003' };
+  post(op); const o2 = post(op); post(Object.assign({}, op, { req_id: 'req-cccc-0004' }));
+  chk('2.9.3 los minutos manuales no se duplican al reintentar, pero sí cuentan con otro req_id', o2.repetido && SHEETS.operacion.rows.length === nO + 2, SHEETS.operacion.rows.length - nO);
+  const sinRq = post(Object.assign({}, op, { req_id: undefined }));
+  chk('2.9.3 sin req_id todo funciona como antes', sinRq.ok && SHEETS.operacion.rows.length === nO + 3, sinRq);
+  const mc = post({ action: 'medicion_consola', key: A, grupo_id: r1.grupo_id, mago: 'QA', consola_version: 't', fallos_red: 3, fallos_timeout: 1, filas: [{ etapa: 'grupo', segundos: 30, toques: 4 }, { etapa: 'proponer', segundos: 10, toques: 2 }] });
+  const HM = SHEETS.medicion_consola.rows[0], fm = SHEETS.medicion_consola.rows.slice(-2);
+  chk('2.9.3 la medición guarda los fallos de red una sola vez por envío', mc.ok && fm[0][HM.indexOf('fallos_red')] === 3 && fm[0][HM.indexOf('fallos_timeout')] === 1 && fm[1][HM.indexOf('fallos_red')] === '', fm); }
 
 // 2.5.0: ubicaciones e inventario liviano
 const ub = vm.runInContext('revisarUbicaciones_', ctx)([{ id: 'A', direccion: 'Cl 5', latitud: 34516, longitud: -765320 }, { id: 'B', direccion: '', latitud: 3.45, longitud: -76.53 }, { id: 'C', direccion: 'Cra 1', latitud: 4.6, longitud: -74.1 }, { id: 'D', direccion: 'Cra 2', latitud: '', longitud: '' }]);

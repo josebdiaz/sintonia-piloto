@@ -5,6 +5,18 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-24 · Reintentos sin duplicados (frontend 2.15.0 · backend 2.9.3)
+Aprobado por Néstor. Corrige los riesgos de una respuesta perdida, cuando el servidor sí guardó y la persona vuelve a tocar el botón. No cambia cómo se miden los minutos.
+- **Cada envío lleva un identificador (`req_id`)**, que se mantiene mientras no llegue la confirmación. Si el backend ya vio ese id en los últimos 10 min, devuelve la misma respuesta sin escribir otra vez. Aplica a las acciones que escriben: inscripción, minutos manuales, lista de espera, precio, encuesta del mago, eventos, sesiones, medición y planes.
+- **Inscripción:** si quien organiza se vuelve a inscribir con el mismo número antes de 60 min y su grupo sigue reclutando, recibe ese mismo grupo, aunque sea desde otra pestaña.
+- **Unirse:** quien ya aceptó recibe su enlace personal («¡Ya estabas en sintonía!»), en vez del error «ya registrado».
+- **«Mago off»:** si el primer intento sí llegó, el reintento ya no muestra error. Dice que la sesión ya estaba cerrada y recarga.
+- **Medición de la consola:** columnas nuevas `fallos_red` y `fallos_timeout`, con los envíos que no llegaron. Darán evidencia en Cali de si la red es un problema real.
+- **QA:**
+  - Backend 114 de 114.
+  - En el navegador, una inscripción con la respuesta perdida y reintento crea un solo grupo.
+  - Recorrido 57 de 57, auditoría E2E 69 OK sin hallazgos.
+
 ### 2026-11-23 · Estado visible en las opciones y «Sí a todos» (frontend 2.14.0)
 - **Estado visible:** cada opción de la inscripción, unirse y la encuesta de cierre muestra si está marcada sin depender del color. Las de varias respuestas llevan una casilla (vacía o con ✓); las de una sola, un círculo.
 - **Calendario:**

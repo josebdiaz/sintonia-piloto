@@ -49,11 +49,11 @@ Para cerrar el plan 1 y su encuesta antes de la entrega del **4 de diciembre**, 
 
 | # | Qué | Cómo se verifica | Quién | Estado |
 |---|---|---|---|---|
-| 1 | Consola y backend congelados | sintonia.my muestra 2.14.0. Tags `piloto/v2.14.0` y `backend/v2.9.2` creados | José | Frontend publicado 23/11 · backend 2.9.2 por pegar · tags el jueves 26 |
+| 1 | Consola y backend congelados | sintonia.my muestra 2.15.0. Tags `piloto/v2.15.0` y `backend/v2.9.3` creados | José | Frontend publicado 23/11 · backend 2.9.3 por pegar · tags el jueves 26 |
 | 2 | Grupo de Cali de 3 a 6 personas, mayores de 18, con quien organiza **externa al equipo** | Nombre del grupo y fecha tentativa confirmados con quien organiza | Equipo | [Por confirmar] |
 | 3 | Modo de la prueba decidido (0.1) | Anotado en este guion | Equipo | Recomendado: piloto |
 | 4 | «Empezar piloto real» corrido después del ensayo | La consola muestra 0 grupos piloto; existe el respaldo en Drive | José | Jueves 26 |
-| 5 | Monitor con la guía al día | Juan José leyó la v1.3 de `docs/guias/onboarding-monitor.md` (consola 2.14.0) e hizo el ensayo | Juan José | Miércoles 25 |
+| 5 | Monitor con la guía al día | Juan José leyó la v1.3 de `docs/guias/onboarding-monitor.md` (consola 2.15.0) e hizo el ensayo | Juan José | Miércoles 25 |
 | 6 | Stickers cargados en el número Sintonía | Juan José manda uno desde ese número sin reenviárselo antes | José | Pendiente |
 | 7 | `NOTIFICAR_A` con el correo del monitor | Al monitor le llegó el correo de prueba de `probarMontaje()` o el de una aceptación en el ensayo | José | Hecho 22/11 |
 | 8 | Aviso de privacidad v2 publicado | `piloto/aviso.html` muestra la v2-2026-11 y la propiedad `AVISO_VERSION` del backend dice lo mismo | Equipo | Publicado 23/11 (aprobado por Néstor) · falta la propiedad |

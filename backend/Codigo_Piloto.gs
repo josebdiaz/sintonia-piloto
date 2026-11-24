@@ -1,7 +1,14 @@
 /**
- * Sintonía · Piloto v2.9.2 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.9.3 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.9.3 (24/11, reintentos sin duplicados, aprobado por Néstor):
+ *   - Idempotencia: las acciones que escriben (IDEMPOTENTES_) aceptan req_id. Si el mismo req_id vuelve antes de 10 min (un reintento tras
+ *     un corte), se devuelve la respuesta guardada en CacheService y no se escribe otra vez. Solo se guardan las respuestas ok.
+ *   - Inscripción: si quien organiza vuelve a inscribirse con el mismo número antes de 60 min y su grupo sigue reclutando, se le devuelve
+ *     ese grupo (ya_estaba) en vez de crear otro.
+ *   - Unirse: si el número ya aceptó en ese grupo, se devuelve su enlace personal (ya_estaba) en vez del error ya_registrado.
+ *   - medicion_consola: columnas nuevas fallos_red y fallos_timeout (envíos de la consola que no llegaron). Correr probarMontaje.
  * Versión 2.9.2 (23/11, revisión de Néstor):
  *   - TERMINOS_SENSIBLES_ afinados para no frenar frases inocentes: «enfermera», «judicial», «operador» o «política de no llegar tarde» ya no
  *     cuentan. Salud y religión se buscan por palabra completa donde la raíz era ambigua; política, por expresiones partidistas. Es la misma
@@ -170,7 +177,7 @@ var SHEETS = {
   pulso_mago:       ['ts','plan_id','grupo_id','experimento','ronda','mago','consola_version','sus_01','sus_02','sus_03','sus_04','sus_05','sus_06','sus_07','sus_08','sus_09','sus_10','sus_puntaje',
                      'tlx_mental','tlx_fisica','tlx_temporal','tlx_desempeno','tlx_esfuerzo','tlx_frustracion','tlx_raw','comentario'],
   // v2.7.0: lo que mide la propia consola, por etapa del mapa (grupo, proponer, decidir, dia, cierre)
-  medicion_consola: ['ts','plan_id','grupo_id','experimento','mago','consola_version','etapa','segundos_activos','toques','scroll_px'],
+  medicion_consola: ['ts','plan_id','grupo_id','experimento','mago','consola_version','etapa','segundos_activos','toques','scroll_px','fallos_red','fallos_timeout'],   // v2.9.3: + fallos
   // v2.9.0: quien escanea el QR cuando el piloto no tiene cupo. Datos de contacto con autorización; nada de respuestas de investigación
   lista_espera:     ['ts','espera_id','nombre_pila','whatsapp','tamano_grupo','origen','autoriza_datos','mayor_18','aviso_version','estado']
 };
@@ -307,10 +314,34 @@ function doPost(e) {
     var a = String(d.action || '');
     if (!H[a]) return json_({ ok: false, error: 'accion_desconocida' });
     if (isMotor_(d.key) && MOTOR_ACCIONES.indexOf(a) >= 0) { d.key = prop_('ADMIN_KEY', ''); d.por_motor = true; }   // v2.3.0: el motor actúa solo en su lista
-    return json_(H[a](d));
+    // v2.9.3: un reintento con el mismo req_id devuelve la respuesta ya dada, sin escribir otra vez
+    var rq = IDEMPOTENTES_.indexOf(a) >= 0 && /^[\w-]{8,80}$/.test(String(d.req_id || '')) ? 'rq_' + a + '_' + d.req_id : '', cache = null;
+    if (rq) { try { cache = CacheService.getScriptCache(); var ya = cache.get(rq); if (ya) { var o = JSON.parse(ya); o.repetido = true; return json_(o); } } catch (x) { cache = null; } }
+    var res = H[a](d);
+    if (rq && cache && res && res.ok) { try { var txt = JSON.stringify(res); if (txt.length < 90000) cache.put(rq, txt, 600); } catch (x) {} }
+    return json_(res);
   } catch (err) {
     return json_({ ok: false, error: String(err) });
   } finally { try { lock.releaseLock(); } catch (x) {} }
+}
+
+/** v2.9.3: acciones que escriben y que un reintento podría duplicar. */
+var IDEMPOTENTES_ = ['registrar', 'operacion', 'lista_espera', 'wtp', 'pulso_mago', 'evento', 'sesion_mago', 'medicion_consola', 'cerrar_plan', 'publicar_plan', 'crear_plan', 'reabrir_opciones'];
+/** v2.9.3: el pid activo de ese número en el grupo, o ''. */
+function pidTelEnGrupo_(gid, tel) {
+  var act = {}; activos_(gid).forEach(function (p) { act[p.pid] = true; });
+  var t = String(tel).replace(/\D/g, '').slice(-10), c = rows_('contactos').filter(function (c) { return act[c.pid] && String(c.whatsapp).replace(/\D/g, '').slice(-10) === t; })[0];
+  return c ? c.pid : '';
+}
+/** v2.9.3: el grupo que este número acaba de inscribir (menos de 60 min, todavía reclutando), para no crear otro al reintentar. */
+function grupoRecienteDe_(tel) {
+  var t = String(tel).replace(/\D/g, '').slice(-10); if (t.length < 10) return null;
+  var limite = Date.now() - 60 * 6e4, pidsTel = {};
+  rows_('contactos').forEach(function (c) { if (String(c.whatsapp).replace(/\D/g, '').slice(-10) === t) pidsTel[c.pid] = true; });
+  var org = rows_('participantes').filter(function (p) { return pidsTel[p.pid] && p.rol === 'organizador' && p.estado === 'activo' && new Date(p.ts).getTime() >= limite; }).pop();
+  if (!org) return null;
+  var g = findOne_('grupos', 'grupo_id', org.grupo_id);
+  return g && g.estado === 'reclutando' ? { pid: org.pid, g: g } : null;
 }
 
 /** Registro con consentimiento individual. El organizador crea el grupo y declara la línea base POR GRUPO (I1, I2). */
@@ -319,6 +350,8 @@ function registrar_(d) {
     return { ok: false, error: 'faltan_autorizaciones' };
   var pid = id_('p'), grupo, rol;
   if (!d.codigo_invitacion) {
+    var previo = grupoRecienteDe_(d.whatsapp);   // v2.9.3: reintento de la misma inscripción
+    if (previo) return { ok: true, ya_estaba: true, pid: previo.pid, rol: 'organizador', grupo_id: previo.g.grupo_id, experimento: previo.g.experimento, codigo_invitacion: previo.g.codigo_invitacion };
     rol = 'organizador';
     var tipo = TIPOS_GRUPO.indexOf(String(d.tipo_grupo)) >= 0 ? String(d.tipo_grupo) : '';
     var nInv = int_(d.n_invitados);
@@ -339,11 +372,14 @@ function registrar_(d) {
     rol = 'miembro';
     var g = findOne_('grupos', 'codigo_invitacion', str_(d.codigo_invitacion, 20).toUpperCase());
     if (!g) return { ok: false, error: 'invitacion_invalida' };
+    var yaPid0 = str_(d.whatsapp, 20).replace(/\D/g, '') ? pidTelEnGrupo_(g.grupo_id, str_(d.whatsapp, 20).replace(/\D/g, '')) : '';   // v2.9.3: antes que «lleno» o «cerrado»
+    if (yaPid0) return { ok: true, ya_estaba: true, pid: yaPid0, rol: 'miembro', grupo_id: g.grupo_id, experimento: g.experimento };
     if (g.estado !== 'reclutando') return { ok: false, error: 'reclutamiento_cerrado' };
     if (activos_(g.grupo_id).length >= Math.min(MAX_GRUPO, Number(g.n_invitados) || MAX_GRUPO)) return { ok: false, error: 'grupo_lleno' };
     grupo = { grupo_id: g.grupo_id, experimento: g.experimento, codigo_invitacion: g.codigo_invitacion };
     var tel = str_(d.whatsapp, 20).replace(/\D/g, '');
-    if (tel && telEnGrupo_(g.grupo_id, tel)) return { ok: false, error: 'ya_registrado' };   // v2.2.3: una persona = un consentimiento (I9)
+    var yaPid = tel ? pidTelEnGrupo_(g.grupo_id, tel) : '';   // v2.2.3: una persona = un consentimiento (I9) · v2.9.3: se le devuelve su enlace
+    if (yaPid) return { ok: true, ya_estaba: true, pid: yaPid, rol: 'miembro', grupo_id: g.grupo_id, experimento: g.experimento };
   }
   append_('participantes', { pid: pid, grupo_id: grupo.grupo_id, rol: rol, experimento: grupo.experimento,
     autoriza_datos: true, optin_whatsapp: true, mayor_18: true, consent_investigacion: true,
@@ -696,13 +732,13 @@ function medicionConsola_(d) {
   var p = d.plan_id ? findOne_('planes', 'plan_id', str_(d.plan_id, 40)) : null;
   var g = p ? findOne_('grupos', 'grupo_id', p.grupo_id) : (d.grupo_id ? findOne_('grupos', 'grupo_id', str_(d.grupo_id, 40)) : null);
   if (!g) return { ok: false, error: 'grupo_no_encontrado' };
-  var filas = Array.isArray(d.filas) ? d.filas.slice(0, 10) : [], n = 0;
+  var filas = Array.isArray(d.filas) ? d.filas.slice(0, 10) : [], n = 0, fr = Math.max(0, Math.min(1000, int_(d.fallos_red) || 0)), ft = Math.max(0, Math.min(1000, int_(d.fallos_timeout) || 0));   // v2.9.3
   filas.forEach(function (f) {
     var et = String(f && f.etapa || ''); if (ETAPAS_CONSOLA.indexOf(et) < 0) return;
     var sg = Math.max(0, Math.min(36000, Math.round(Number(f.segundos) || 0))), tq = Math.max(0, Math.min(5000, int_(f.toques) || 0)), sc = Math.max(0, Math.min(1e6, int_(f.scroll) || 0));
     if (!sg && !tq) return;
     append_('medicion_consola', { plan_id: p ? p.plan_id : '', grupo_id: g.grupo_id, experimento: p ? p.experimento : g.experimento, mago: str_(d.mago, 40) || 'mago',
-      consola_version: str_(d.consola_version, 12), etapa: et, segundos_activos: sg, toques: tq, scroll_px: sc });
+      consola_version: str_(d.consola_version, 12), etapa: et, segundos_activos: sg, toques: tq, scroll_px: sc, fallos_red: n === 0 ? fr : '', fallos_timeout: n === 0 ? ft : '' });   // los fallos van en la primera fila del envío
     n++;
   });
   return { ok: true, filas: n };
@@ -1097,7 +1133,7 @@ function probarMontaje() {
   r.push(prop_('MOTOR_KEY', '') ? (prop_('MOTOR_KEY', '') === prop_('ADMIN_KEY', '') ? '❌ MOTOR_KEY no puede ser igual a ADMIN_KEY' : '✅ MOTOR_KEY (motor n8n)') : '⚠️ sin MOTOR_KEY: el motor de E1.5 no puede escribir');   // v2.3.0
   try { var ss = ss_(); r.push('✅ Hoja: ' + ss.getName()); } catch (x) { r.push('❌ No abre la hoja (revisa SHEET_ID): ' + x); Logger.log(r.join('\n')); return; }
   Object.keys(SHEETS).forEach(function (n) { sheet_(n); }); r.push('✅ ' + Object.keys(SHEETS).length + ' hojas listas');
-  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.9.1)');
+  var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.9.3)');
   if (notificarA_()) { try { MailApp.sendEmail(notificarA_(), 'Sintonía · prueba de avisos', 'Si te llegó este correo, los avisos de inscripción de la consola del mago funcionan.'); r.push('✅ Avisos por correo a ' + notificarA_() + ' (correo de prueba enviado; cupo diario: ' + MailApp.getRemainingDailyQuota() + ')'); } catch (x) { r.push('❌ Avisos por correo: ' + x); } }
   else r.push('ℹ️ sin NOTIFICAR_A: no se envían avisos de inscripción por correo (opcional)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');

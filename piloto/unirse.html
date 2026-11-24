@@ -118,7 +118,7 @@
       S.adoptPid(r.pid); S.saveMe({ pid: r.pid, grupo_id: r.grupo_id, rol: 'miembro', exp: r.experimento, nombre: nombre });
       S.LS.set('sintonia_inv_' + inv, r.pid);
       var mio = S.link('plan.html', { pid: r.pid });
-      S.$('#okTitulo').textContent = '¡Listo, ' + nombre + '! Ya estás en sintonía.';
+      S.$('#okTitulo').textContent = r.ya_estaba ? '¡Ya estabas en sintonía, ' + nombre + '!' : '¡Listo, ' + nombre + '! Ya estás en sintonía.';   // 2.15.0: reintento o segunda aceptación
       S.$('#okLink').textContent = mio;
       S.$('#okCopiar').onclick = function () { S.copy(mio); };
       S.$('#okPlan').href = mio;

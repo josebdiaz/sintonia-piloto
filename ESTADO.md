@@ -1,4 +1,4 @@
-# Estado del proyecto · 23 nov 2026
+# Estado del proyecto · 24 nov 2026
 
 Sintonía · piloto en WhatsApp con grupos que ya existen en Cali. Dos condiciones: **E1** (WhatsApp + mago) y **E1.5** (WhatsApp automatizado con n8n, con una persona que aprueba y pega; valor interno `E2`).
 Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `docs/guias/`, 6/11 en el Proyecto). Historial detallado: [`CHANGELOG.md`](CHANGELOG.md).
@@ -7,8 +7,8 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Componente | Versión | Estado |
 |---|---|---|
-| Frontend (consola, panel, páginas de participante) | **2.14.0** | Publicado en https://sintonia.my el 23/11. La 2.14.0 muestra el estado de cada opción (casilla o círculo) y agrega «Sí a todos» al calendario, sin tope de días para quien organiza. La 2.13.0 publica el aviso de privacidad v2 y afina los términos sensibles. La 2.12.0 aplica la ola 1 de la auditoría UI/UX: claim, calendario, sistema visual de la landing en participantes, sin jerga interna, aviso con resumen y la consola compacta en celular. La 2.11.0 pone la encuesta de cierre por pasos (antes, durante, después, frases, precio y cierre). La 2.10.0 (sync P8d) Trae «Escoge tu disponibilidad» con calendario para todo el parche, «Quiénes pueden» en la consola, el claim «Menos vueltas, más plan», «Regístrate aquí» con 3 pasos y la vista de revisión de la encuesta de cierre. La 2.9.x trajo la landing del QR (con lista de espera), el logo nuevo y el arreglo del menú |
-| Backend (Apps Script) | **2.9.2** desplegado el 23/11 | 2.9.1: lista de espera, cupo y disponibilidad por persona. 2.9.2: términos sensibles afinados con Néstor. `AVISO_VERSION` = `v2-2026-11`. `CUPO_ABIERTO` no existe todavía: el backend asume «no» (lista de espera) |
+| Frontend (consola, panel, páginas de participante) | **2.15.0** | Publicado en https://sintonia.my el 24/11. La 2.15.0 evita duplicados cuando se reintenta tras un corte. La 2.14.0 muestra el estado de cada opción (casilla o círculo) y agrega «Sí a todos» al calendario, sin tope de días para quien organiza. La 2.13.0 publica el aviso de privacidad v2 y afina los términos sensibles. La 2.12.0 aplica la ola 1 de la auditoría UI/UX: claim, calendario, sistema visual de la landing en participantes, sin jerga interna, aviso con resumen y la consola compacta en celular. La 2.11.0 pone la encuesta de cierre por pasos (antes, durante, después, frases, precio y cierre). La 2.10.0 (sync P8d) Trae «Escoge tu disponibilidad» con calendario para todo el parche, «Quiénes pueden» en la consola, el claim «Menos vueltas, más plan», «Regístrate aquí» con 3 pasos y la vista de revisión de la encuesta de cierre. La 2.9.x trajo la landing del QR (con lista de espera), el logo nuevo y el arreglo del menú |
+| Backend (Apps Script) | **2.9.3** en el repo · 2.9.2 desplegado (23/11) | 2.9.2: términos sensibles afinados, `AVISO_VERSION` = `v2-2026-11`. 2.9.3: reintentos sin duplicados (`req_id`), inscripción y aceptación repetidas devuelven lo mismo, y fallos de red en la medición. **Por desplegar**: pegar, `probarMontaje()` (dos columnas nuevas en `medicion_consola`) y «Nueva versión». La consola 2.15.0 funciona con el 2.9.2, solo que sin la protección |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
 | Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main` |
@@ -19,6 +19,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 | Versión | Cambio principal | Origen |
 |---|---|---|
+| 2.15.0 | Reintentos sin duplicados (backend 2.9.3), con los fallos de red medidos | Revisión de sesiones y conexión, aprobada por Néstor (24/11) |
 | 2.14.0 | Casillas visibles en las opciones, «Sí a todos» en el calendario; la consola elige las 4 fechas con más coincidencias | Pedido del equipo (23/11) |
 | 2.13.0 | Aviso de privacidad v2 publicado y términos sensibles afinados (backend 2.9.2) | Revisión con Néstor (23/11) |
 | 2.12.0 | Ola 1 de la auditoría UI/UX (P1–P4, P11, C1, C3, C5, C8 y el resumen del aviso) | Auditoría UI/UX (23/11, Proyecto) |
@@ -107,7 +108,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags `piloto/v2.14.0` y `backend/v2.9.2` (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1 | Prueba con Cali (viernes) | José |
+| 1 | Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags `piloto/v2.15.0` y `backend/v2.9.3` (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1 | Prueba con Cali (viernes) | José |
 | 2 | Cargar los stickers en el número Sintonía (el correo del monitor ya está en `NOTIFICAR_A`) | Prueba con Cali | José |
 | 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
 | 4 | Material POP: landing y QR **hechos** (2.9.0, `docs/pop/`). Backend 2.9.1 desplegado (23/11). Faltan: el archivo del logo de Icesi para la landing y las piezas, y los artes en Affinity. Impresión en dos oleadas: pines, stickers y tarjetas el 24/11; tótem y volantes el 1/12 (brief en el Proyecto) | Material POP | Equipo |

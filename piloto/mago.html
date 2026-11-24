@@ -653,7 +653,9 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var m = medidas(), por = {}; Object.keys(m).forEach(function (k) { var r = m[k], pk = r.plan_id + '|' + r.grupo_id; (por[pk] = por[pk] || { plan_id: r.plan_id, grupo_id: r.grupo_id, filas: [], keys: [] }).filas.push({ etapa: r.etapa, segundos: r.segundos, toques: r.toques, scroll: r.scroll }); por[pk].keys.push(k); });
     return Promise.all(Object.keys(por).map(function (pk) {
       var x = por[pk];
-      return S.post({ action: 'medicion_consola', key: key, plan_id: x.plan_id, grupo_id: x.grupo_id, mago: S.LS.get('sintonia_mago_nombre') || '', consola_version: S.CONFIG.FRONTEND_VERSION, filas: x.filas }).then(function (r) {
+      var fl = {}; try { fl = JSON.parse(S.LS.get('sintonia_fallos') || '{}'); } catch (x) {}   // 2.15.0: envíos que no llegaron desde la última medición
+      return S.post({ action: 'medicion_consola', key: key, fallos_red: fl.red || 0, fallos_timeout: fl.timeout || 0, plan_id: x.plan_id, grupo_id: x.grupo_id, mago: S.LS.get('sintonia_mago_nombre') || '', consola_version: S.CONFIG.FRONTEND_VERSION, filas: x.filas }).then(function (r) {
+        if (r && r.ok && (fl.red || fl.timeout)) S.LS.set('sintonia_fallos', '{}');
         if (r && (r.ok || r.error === 'accion_desconocida' || r.error === 'grupo_no_encontrado')) { var mm = medidas(); x.keys.forEach(function (k) { delete mm[k]; }); S.LS.set('sintonia_medicion', JSON.stringify(mm)); }   // sin backend 2.7.0 no se acumula para siempre
       }).catch(function () {});
     }));
@@ -810,7 +812,11 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       if (tira) { tira.hidden = false; tira.innerHTML = '<span class="mago-led" aria-hidden="true"></span><span><b>Mago en línea</b> · <b id="tiraMin">' + hm(Date.now() - ini) + '</b> <span class="tiny">· ' + e(nom) + (ps ? ' · ' + e(rondaLabel(ps)) : '') + '</span></span><button type="button" class="s-button" data-size="sm" data-style="danger" id="tiraOff">■ Mago off</button>'; }
       var nudge = function () { var nz = S.$('#magoNudge'); if (nz) nz.innerHTML = Date.now() - lastAct > 10 * 6e4 ? '<div class="s-banner" data-type="progress" style="margin-top:8px"><span><strong>¿Sigues atendiendo?</strong>Si estás esperando respuestas, cierra con «Mago off»: la consola te avisa cuando haya novedades y los minutos quedan bien medidos.</span></div>' : ''; };
       reloj = setInterval(function () { var t = hm(Date.now() - ini), m = S.$('#magoMin'), m2 = S.$('#tiraMin'); if (m) m.textContent = t; if (m2) m2.textContent = t; nudge(); }, 15000);   // 2.4.0: aviso tras 10 min sin actividad
-      var off = function () { var b = this; enviarMedicion(); act(b, { action: 'sesion_mago', accion: 'off', mago: nom, sesion_id: ses.sesion_id }, function (r) { return 'Mago off · ' + S.num(r.minutos, 1) + ' min sumados al plan'; }).then(function (r) { if (r && r.ok) { D.sesiones_abiertas = (D.sesiones_abiertas || []).filter(function (x) { return x.sesion_id !== ses.sesion_id; }); renderMagobar(); renderSiguiente(); } }); };
+      var off = function () { var b = this; enviarMedicion(); S.busy(b, function () { return S.post({ key: key, action: 'sesion_mago', accion: 'off', mago: nom, sesion_id: ses.sesion_id }); }).then(function (r) {   // 2.15.0: si ya estaba cerrada (el primer intento sí llegó), se toma como cerrada
+        if (r && !r.ok && r.error === 'sin_sesion_abierta') { S.toast('La sesión ya estaba cerrada. Sus minutos quedaron en el plan.'); r = { ok: true }; }
+        else if (!r || !r.ok) { S.toast(S.errMsg(r), true); return r; }
+        else S.toast('Mago off · ' + S.num(r.minutos, 1) + ' min sumados al plan');
+        return load().then(function () { return r; }); }).then(function (r) { if (r && r.ok) { D.sesiones_abiertas = (D.sesiones_abiertas || []).filter(function (x) { return x.sesion_id !== ses.sesion_id; }); renderMagobar(); renderSiguiente(); } }); };
       S.$('#magoOff', el).onclick = off; if (tira) S.$('#tiraOff', tira).onclick = off;
     } else {
       if (tira) tira.hidden = true;

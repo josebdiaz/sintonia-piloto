@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.14.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.15.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v2-2026-11',
     TIMEOUT_MS: 30000
@@ -32,10 +32,20 @@
   function withTimeout(promise) {
     return Promise.race([promise, new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, CONFIG.TIMEOUT_MS); })]);
   }
+  /* 2.15.0 · reintentos sin duplicados. Cada acción que escribe lleva un req_id estable mientras no se confirme: el contenido del envío más
+   * un contador por acción que solo avanza cuando el backend responde ok. Si se corta la conexión y la persona vuelve a tocar el botón, el
+   * backend reconoce el req_id y devuelve la respuesta que ya había dado (2.9.3). Una acción igual después de un ok lleva otro req_id. */
+  var IDEMP = ['registrar', 'operacion', 'lista_espera', 'wtp', 'pulso_mago', 'evento', 'sesion_mago', 'medicion_consola', 'cerrar_plan', 'publicar_plan', 'crear_plan', 'reabrir_opciones'];
+  function huella(o) { var t = JSON.stringify(o), h = 5381; for (var i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+  /** 2.15.0: cuenta los envíos que no llegaron (sin red o sin respuesta en 30 s). La consola los manda con su medición. */
+  function contarFallo(tipo) { try { var f = JSON.parse(LS.get('sintonia_fallos') || '{}'); f[tipo] = (f[tipo] || 0) + 1; LS.set('sintonia_fallos', JSON.stringify(f)); } catch (x) {} }
   function post(payload) {
-    return withTimeout(fetch(CONFIG.BACKEND_URL, { method: 'POST', body: JSON.stringify(payload), redirect: 'follow' }))
+    var a = payload && payload.action, seqK = 'sintonia_seq_' + a, body = payload;
+    if (a && IDEMP.indexOf(a) >= 0 && !payload.req_id) { var seq = SS.get(seqK) || '0'; body = Object.assign({}, payload, { req_id: a.slice(0, 12) + '-' + huella(payload) + '-' + seq }); }
+    return withTimeout(fetch(CONFIG.BACKEND_URL, { method: 'POST', body: JSON.stringify(body), redirect: 'follow' }))
       .then(function (r) { return r.json(); })
-      .catch(function (e) { return { ok: false, error: e && e.message === 'timeout' ? 'timeout' : 'red' }; });
+      .then(function (r) { if (body !== payload && r && r.ok) SS.set(seqK, String((parseInt(SS.get(seqK) || '0', 10) || 0) + 1)); return r; })
+      .catch(function (e) { var t = e && e.message === 'timeout' ? 'timeout' : 'red'; contarFallo(t); return { ok: false, error: t }; });
   }
   function get(params) {
     var u = CONFIG.BACKEND_URL + (CONFIG.BACKEND_URL.indexOf('?') >= 0 ? '&' : '?') + new URLSearchParams(params).toString();
