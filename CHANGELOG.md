@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-24 · Forma de trabajo (WOW) y estado «En corto»
+- `ESTADO.md` tiene una §0 «En corto»: una pantalla con versiones, calendario, bloqueos y dónde está cada cosa. Cada conversación arranca leyendo solo eso.
+- La tabla de pendientes (§4) quedó al día al 24/11.
+- `CLAUDE.md` apunta a la §0 y a la forma de trabajo, que vive en el Proyecto (`claude/wow-sintonia.md`): un frente por conversación, un brief para abrir y «Cierra el frente» al terminar.
+
 ### 2026-11-24 · Backend 2.9.3 desplegado
 - Pegado con `probarMontaje()` (columnas `fallos_red` y `fallos_timeout`) y «Nueva versión».
 

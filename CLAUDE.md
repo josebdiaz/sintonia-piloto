@@ -1,6 +1,7 @@
 # Sintonía · notas para trabajar en este repositorio
 
-- **Empieza por `ESTADO.md`:** versiones, implicaciones y pendientes. Historial en `CHANGELOG.md`.
+- **Empieza por `ESTADO.md` §0 «En corto»** (una pantalla). Lee el resto solo si la tarea lo necesita. Historial en `CHANGELOG.md`. Forma de trabajo: `claude/wow-sintonia.md` en el Proyecto.
+- **Al cerrar una tarea que cambie versión, decisión o pendiente:** actualiza §0, §1 y §4 de `ESTADO.md`, `CHANGELOG.md`, el home y la copia en el Proyecto.
 - **El home se genera.** Las tarjetas del menú «Detrás de escena» de `index.html` salen de `home.json` y del estado del repo con `tools/home.py`. Antes de cada push a `main`, corre `python3 tools/home.py` y luego `python3 tools/home.py --check`; tiene que terminar en ✓. Protocolo: `docs/protocolo-home.md`.
 - **Al subir una versión:**
   1. `FRONTEND_VERSION` en `piloto/assets/sintonia.js` o el encabezado de `backend/Codigo_Piloto.gs`.

@@ -3,6 +3,24 @@
 Sintonía · piloto en WhatsApp con grupos que ya existen en Cali. Dos condiciones: **E1** (WhatsApp + mago) y **E1.5** (WhatsApp automatizado con n8n, con una persona que aprueba y pega; valor interno `E2`).
 Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `docs/guias/`, 6/11 en el Proyecto). Historial detallado: [`CHANGELOG.md`](CHANGELOG.md).
 
+## 0. En corto · leer esto primero
+
+Resumen para arrancar cualquier conversación. El detalle está en las secciones de abajo, y la forma de trabajar, en `claude/wow-sintonia.md` (Proyecto).
+
+- **Versiones:** frontend **2.15.0** (sintonia.my) y backend **2.9.3**, desplegados el 24/11. Aviso de privacidad **v2-2026-11** publicado.
+- **Dónde estamos:** la plataforma está lista para la prueba con un grupo de Cali. **No hay resultados con personas reales.** E1.5 (n8n) está aplazado desde el 19/11.
+- **Calendario:** ensayo el 25/11 · congelamiento el 26/11 · prueba con Cali el 27/11 (encuentro a más tardar el 30/11) · entrega el 4/12 · pitch el 12/12.
+- **Regla vigente:** desde el 26/11 la consola no cambia hasta cerrar el análisis.
+- **Bloqueos:**
+  - El grupo de Cali está sin confirmar.
+  - El tótem espera la plantilla de la estructura.
+  - Falta el logo vectorial de Icesi.
+- **Próximos 3 pasos:** los primeros de la §4.
+- **Dónde está cada cosa:**
+  - Código y guías: el repo.
+  - Notas internas, briefs y documentos de trabajo: el Proyecto.
+  - Estado para liderazgo: el reporte ejecutivo semanal.
+
 ## 1. Versiones
 
 | Componente | Versión | Estado |
@@ -108,19 +126,19 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 1 | Probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»; Después: ensayo con WhatsApp real (miércoles 25) y congelar la versión con tags `piloto/v2.15.0` y `backend/v2.9.3` (jueves 26). Las correcciones de la auditoría ya están en la consola 2.8.1 | Prueba con Cali (viernes) | José |
-| 2 | Cargar los stickers en el número Sintonía (el correo del monitor ya está en `NOTIFICAR_A`) | Prueba con Cali | José |
-| 3 | Disposición a pagar en la encuesta de cierre, también para miembros (prompt 6), y modelo de negocio con varios pagadores (prompt 7) | Sustentación (4/12) | Katherine, con José |
-| 4 | Material POP: landing y QR **hechos** (2.9.0, `docs/pop/`). Backend 2.9.1 desplegado (23/11). Faltan: el archivo del logo de Icesi para la landing y las piezas, y los artes en Affinity. Impresión en dos oleadas: pines, stickers y tarjetas el 24/11; tótem y volantes el 1/12 (brief en el Proyecto) | Material POP | Equipo |
-| 5 | Guion de la prueba con Cali: **hecho** (`docs/guias/prueba-cali.md`). Faltan sus decisiones: confirmar el grupo y el modo (se recomienda piloto, con «Empezar piloto real» el jueves 26), qué encuesta de cierre se usa (prompt 6 antes del miércoles 25 o la actual) y fecha del plan a más tardar el 30/11 | Prueba con Cali | Equipo |
-| 6 | Aviso de privacidad v2: **hecho**. Publicado el 23/11 (v2-2026-11, aprobado por Néstor) y con `AVISO_VERSION` al día en el backend | Datos reales y material POP | José |
-| 7 | Onboarding del monitor: **guía al día** (v1.2, consola 2.8.1, 22/11). Deck regenerado con capturas reales de la 2.8.1 y prompt maestro v3.2 en las instrucciones (22/11). **Hecho** | Inducción | José |
+| 1 | Ensayo con WhatsApp real el miércoles 25 (guion en «Insumos para los agregados», Proyecto). Antes: probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso» | Prueba con Cali (viernes 27) | Equipo · Juan José |
+| 2 | Congelar el jueves 26: tags `piloto/v2.15.0` y `backend/v2.9.3`, y «Empezar piloto real» después del ensayo | Prueba con Cali | José |
+| 3 | Confirmar el grupo de Cali (o el plan B de Katherine) y la fecha del encuentro, a más tardar el 30/11. Modo piloto y encuesta actual (recomendado) | Prueba con Cali | Katherine |
+| 4 | Imprimir la oleada 1 del material POP (pines, stickers, tarjetas y volante); el tótem espera la plantilla de Juan Carlos; falta el logo vectorial de Icesi | Material POP | Equipo |
+| 5 | Cargar los stickers en el número Sintonía | Prueba con Cali | José |
+| 6 | Disposición a pagar también para miembros (prompt 6) y modelo de negocio con varios pagadores (prompt 7): después de Cali | Sustentación (4/12) | Katherine, con José |
+| 7 | Activar en GitHub *secret scanning*, *push protection* y la protección de `main`, sin exigir pull requests (pasos en «Insumos para los agregados») | Seguridad del repo | José |
 | 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |
 | 9 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
-| 10 | Control de compromisos de los periodos 8 y 9: archivo interno consolidado al cierre; escribir a soporte por las fechas | Seguimiento de la maestría | José |
+| 10 | Ola 2 de la auditoría UI/UX (una sola guía en la consola, inscripción en 3 pasos): después de Cali | Siguiente fase | José |
 | 11 | n8n y licencias: **aplazados** (19/11) hasta tener más pruebas manuales. Cuando se retomen: N1–N11, B1, B5, I5 y C14 | E1.5 | Equipo |
-| 12 | Activar en GitHub *secret scanning*, *push protection* y la protección de `main` (`docs/seguridad-repo.md` §3) | Seguridad del repo | José |
-| 13 | Crear los tags `piloto/v2.7.1` a `piloto/v2.8.0` y `backend/v2.7.3` a `backend/v2.8.0`; `v2.8.1` al congelar el jueves 26 | Historial | José |
+| 12 | Control de compromisos de los periodos 8 y 9: archivo interno consolidado al cierre | Seguimiento de la maestría | José |
+| 13 | Crear los tags de las versiones intermedias (`piloto/v2.7.1` a `v2.14.0`, `backend/v2.7.3` a `v2.9.2`) | Historial | José |
 
 ## 4.2 Prueba externa (semana del 15/11, n = 1, modo prueba)
 
