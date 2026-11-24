@@ -83,7 +83,7 @@
     '<div class="actions"><a class="btn btn-primary btn-block" href="' + S.esc(S.link('plan.html', { pid: yaPid })) + '">Abrir mi plan</a></div>');
   S.get({ view: 'invitacion', inv: inv }).then(function (r) {
     if (r && r.ok) {
-      if (r.modo === 'prueba') S.$('#tagModo').textContent = 'Modo prueba';
+      if (r.modo === 'prueba') S.$('#tagModo').textContent = 'Ensayo';   // 2.12.0 (auditoría P4)
       if (r.estado === 'excluido') return aviso('Este grupo ya no participa', 'El grupo quedó por fuera de la prueba. Gracias por tu interés.');
       if (r.estado !== 'reclutando') return aviso('Este grupo ya cerró las inscripciones', 'Si crees que es un error, escríbele a quien organiza tu parche.');
       if (r.lleno) return aviso('Este grupo ya está completo', 'Ya aceptaron todas las personas invitadas.');

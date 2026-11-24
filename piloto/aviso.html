@@ -20,6 +20,7 @@
 </head>
 <body class="publico">
 <main class="wrap legal">
+  <style>.legal h2[id] { scroll-margin-top: 16px; } .legal .soft a { display: inline-block; padding: 3px 0; }</style>
   <header class="top">
     <a class="brand" href="./"><span class="brand-mark" aria-hidden="true"></span><span class="wm" aria-label="Sintonía">sinton<span class="i">ı</span>a</span></a>
     <span class="tag">Versión <span id="ver">v1-2026-10</span></span>
@@ -30,12 +31,25 @@
     <p>Piloto académico "Sintonía" · Cali, octubre de 2026. Conforme a la Ley Estatutaria 1581 de 2012 y al Decreto 1377 de 2013 (compilado en el Decreto 1074 de 2015).</p>
   </div>
 
+  <!-- 2.12.0 (auditoría P5): resumen y saltos. Resume el texto de abajo, que es el que vale; no agrega nada. -->
+  <div class="card soft">
+    <h2 style="margin-top:0">En corto</h2>
+    <ul>
+      <li>Usamos tu nombre de pila y tu WhatsApp para coordinar los planes de tu parche.</li>
+      <li>Para la investigación guardamos tus respuestas con un código, sin tu nombre. Los resultados son agregados y anónimos.</li>
+      <li>No pedimos datos sensibles, no vendemos tus datos y no los usamos para publicidad.</li>
+      <li>La IA que propone los planes solo recibe un resumen de preferencias, sin nombres ni números.</li>
+      <li>Puedes retirarte cuando quieras y borramos tus datos. Para dejar de recibir mensajes, escribe <b>SALIR</b>.</li>
+    </ul>
+    <p class="small" style="margin:12px 0 0"><b>Ir a:</b> <a href="#quien">Quién</a> · <a href="#datos">Qué datos</a> · <a href="#para">Para qué</a> · <a href="#ia">IA</a> · <a href="#terceros">Terceros</a> · <a href="#tiempo">Cuánto tiempo</a> · <a href="#derechos">Tus derechos</a> · <a href="#investigacion">Investigación</a> · <a href="#seguridad">Seguridad</a> · <a href="#cambios">Cambios</a></p>
+  </div>
+
   <div class="card">
-    <h2>1. Quién trata tus datos</h2>
+    <h2 id="quien">1. Quién trata tus datos</h2>
     <p>El responsable del tratamiento es el <b>equipo investigador del proyecto Sintonía</b> (José Bolaños y Katherine Castro), estudiantes de la Maestría en Gestión de la Innovación de la Universidad Icesi, Cali, Colombia. El proyecto es una investigación académica sin fines comerciales durante este piloto.</p>
     <p>Contacto para consultas, reclamos y solicitudes: <b id="correo"></b></p>
 
-    <h2>2. Qué datos tratamos</h2>
+    <h2 id="datos">2. Qué datos tratamos</h2>
     <ul>
       <li><b>Identificación y contacto:</b> nombre de pila y número de WhatsApp.</li>
       <li><b>Datos del grupo</b> que declara quien organiza: tipo y tamaño del grupo, planes hechos y caídos en el último mes, quién suele organizar.</li>
@@ -45,7 +59,7 @@
     </ul>
     <p><b>No tratamos:</b> tu ubicación, tus redes sociales, fotos ni el historial de tus chats. <b>No pedimos datos sensibles</b> (salud, religión, orientación sexual, opinión política u otros); si los mencionas, no los guardamos. Los teléfonos y correos que se escriban en campos de texto libre se borran automáticamente. El piloto es <b>solo para mayores de 18 años</b>.</p>
 
-    <h2>3. Para qué los usamos</h2>
+    <h2 id="para">3. Para qué los usamos</h2>
     <ul>
       <li>Coordinar los planes de tu grupo: proponer opciones de lugares verificados en Cali, recoger votos y confirmar asistencia.</li>
       <li>Enviarte mensajes por WhatsApp sobre esos planes, solo si lo autorizaste. Puedes dejar de recibirlos cuando quieras escribiendo <b>SALIR</b>.</li>
@@ -53,27 +67,27 @@
     </ul>
     <p>No vendemos ni cedemos tus datos, no los usamos para publicidad y no tomamos decisiones automáticas sobre ti: una persona del equipo revisa todo lo que propone el sistema antes de que llegue al grupo.</p>
 
-    <h2>4. Seudonimización y minimización en la inteligencia artificial</h2>
+    <h2 id="ia">4. Seudonimización y minimización en la inteligencia artificial</h2>
     <p>Cada persona y cada grupo se registran con un código (seudónimo). El nombre y el WhatsApp se guardan en una tabla separada, a la que solo accede el equipo. Para proponer opciones usamos un modelo de inteligencia artificial (Gemini, de Google), al que <b>solo enviamos un resumen de preferencias del grupo</b>, sin nombres, números ni datos de contacto, y la lista de lugares verificados.</p>
 
-    <h2>5. Quién más interviene (encargados) y transferencia internacional</h2>
+    <h2 id="terceros">5. Quién más interviene (encargados) y transferencia internacional</h2>
     <p>Para operar el piloto usamos servicios de terceros que tratan datos por cuenta del equipo: <b>Google</b> (hoja de cálculo, Apps Script y la API de Gemini), <b>Meta</b> (WhatsApp) y <b>GitHub</b> (alojamiento de estas páginas, que registra datos técnicos de conexión). Sus servidores pueden estar fuera de Colombia, principalmente en Estados Unidos, país que la Superintendencia de Industria y Comercio reconoce con nivel adecuado de protección (Circular Externa 005 de 2017). Al aceptar, autorizas esta transferencia para las finalidades descritas.</p>
 
-    <h2>6. Cuánto tiempo los guardamos</h2>
+    <h2 id="tiempo">6. Cuánto tiempo los guardamos</h2>
     <p>Durante el piloto y hasta terminar el estudio. Al cierre se borran los datos de contacto, las preferencias y los textos libres; solo quedan métricas anónimas. Si revocas antes, suprimimos tus datos de inmediato.</p>
 
-    <h2>7. Tus derechos</h2>
+    <h2 id="derechos">7. Tus derechos</h2>
     <p>Como titular puedes: conocer, actualizar y rectificar tus datos; pedir prueba de tu autorización; saber cómo se han usado; presentar quejas ante la Superintendencia de Industria y Comercio; y <b>revocar la autorización y pedir la supresión</b> de tus datos (artículo 8 de la Ley 1581 de 2012).</p>
     <p><b>Cómo ejercerlos:</b> escribe al correo de contacto o al WhatsApp de Sintonía indicando tu nombre y lo que solicitas. Respondemos las consultas en máximo 10 días hábiles (prorrogables 5) y los reclamos en máximo 15 días hábiles (prorrogables 8), según los artículos 14 y 15 de la Ley 1581.</p>
     <p><b>Si te retiras:</b> borramos todos tus datos. Por rigor metodológico, el grupo del que hacías parte deja de contarse en el análisis de la prueba; esto no tiene ninguna consecuencia para ti ni para tu grupo.</p>
 
-    <h2>8. Participación en la investigación</h2>
+    <h2 id="investigacion">8. Participación en la investigación</h2>
     <p>Tu participación es voluntaria y puedes retirarte en cualquier momento sin dar explicaciones. El estudio es de riesgo mínimo (Resolución 8430 de 1993) y cuenta con el aval del comité de ética correspondiente. No hay engaño: durante el piloto, una persona del equipo acompaña al sistema y lo decimos desde el primer mensaje.</p>
 
-    <h2>9. Seguridad</h2>
+    <h2 id="seguridad">9. Seguridad</h2>
     <p>La hoja del piloto tiene acceso restringido al equipo investigador, con verificación en dos pasos. Las claves de los servicios no se publican en estas páginas.</p>
 
-    <h2>10. Cambios a este aviso</h2>
+    <h2 id="cambios">10. Cambios a este aviso</h2>
     <p>Si cambia algo importante, actualizaremos la versión de este aviso y te lo informaremos antes de seguir tratando tus datos.</p>
     <p class="small muted">Aclaración del 14/10/2026: se precisó en el punto 2 que la encuesta final incluye preguntas sobre la facilidad de uso (escala de 1 a 7). Es el mismo tipo de dato y la misma finalidad, por eso la versión del aviso no cambia.</p>
   </div>

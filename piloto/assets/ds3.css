@@ -569,8 +569,12 @@ body.publico .hero.portada h1 { position: relative; z-index: 1; color: #faf9f6; 
 body.publico .hero.portada p:not(.eyebrow) { position: relative; z-index: 1; color: rgba(250,249,246,.78); max-width: 46ch; }
 body.publico .hero.portada .hl { background: linear-gradient(transparent 62%, #c23a00 62% 88%, transparent 88%); }
 body.publico .card { border-radius: 18px; box-shadow: 0 1px 0 rgba(14,17,22,.04), 0 8px 24px -16px rgba(14,17,22,.18); }
-body.publico .step-label { color: #c23a00; }
-body.publico .chip input:checked + span, body.publico .opt[aria-pressed="true"], body.publico .scale button[aria-pressed="true"] { box-shadow: 0 0 0 2px #2c6a86 inset; }
+body.publico .step-label { color: #9e2f00; }   /* 2.12.0: 4,5:1 también sobre el fondo crema */
+body.publico .chip input:checked + span, body.publico .opt[aria-pressed="true"], body.publico .scale button[aria-pressed="true"] { box-shadow: none; }
+/* 2.12.0 (auditoría P3): las páginas de participantes usan el sistema de la landing: fondo crema y acción en noche */
+body.publico { --pine: #0e1116; --pine-2: #2b3038; --color-bg-brand: #0e1116; --color-bg-brand-hover: #2b3038; --color-bg-brand-soft: #fbefd2; --color-text-brand: #0e1116; --color-border-brand: #0e1116;
+  --color-data-bar: #0e1116; --color-signal-live: #c23a00; background: #f3e9b8; }
+body.publico .top { border-bottom-color: rgba(14,17,22,.12); }
 .top .brand .ver { font-size: .7rem; font-weight: 600; letter-spacing: 0; color: var(--muted, #6b6b6b); margin-left: 6px; align-self: flex-end; padding-bottom: 3px; }
 
 /* 2.8.2 (auditoría visual): enlaces de texto con área táctil de 24 px y foco visible en la marca */
@@ -587,10 +591,11 @@ a.brand:focus-visible { outline: 3px solid var(--color-signal-searching, #c2410c
 .agenda .ag-dia span { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 52px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); line-height: 1.05; }
 .agenda .ag-dia b { font-size: 1.05rem; font-weight: 700; color: var(--ink); }
 .agenda .ag-dia small { font-size: .68rem; color: var(--muted); margin-top: 2px; }
-.agenda .ag-dia.finde span { background: var(--surface-2, #f1eee5); }
 .agenda .ag-dia.propuesta span::after { content: ""; position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--honey); }
 .agenda .ag-dia input:checked + span { background: var(--pine); border-color: var(--pine); }
 .agenda .ag-dia input:checked + span b, .agenda .ag-dia input:checked + span small { color: var(--color-text-on-brand, #fff); }
 .agenda .ag-dia input:focus-visible + span { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
 .agenda .ag-pie { margin: 8px 0 0; font-size: .85rem; color: var(--muted); }
-body.publico .agenda .ag-dia input:checked + span { box-shadow: 0 0 0 2px #2c6a86 inset; }
+body.publico .agenda .ag-dia input:checked + span { box-shadow: none; }
+.agenda .ag-mes { display: block; margin: 0 0 1px; line-height: 1; font-style: normal; font-size: .6rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #c23a00; }
+.agenda .ag-dia input:checked + span .ag-mes { color: #ebc46a; }

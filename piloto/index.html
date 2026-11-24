@@ -40,8 +40,8 @@
 
   <section id="vistaForm">
     <div class="hero portada">
-      <p class="eyebrow">Menos vueltas, más plan</p>
-      <h1>Que las ganas se vuelvan <span class="hl">plan.</span></h1>
+      <p class="eyebrow">Piloto en Cali</p>
+      <h1>Menos vueltas, <span class="hl">más plan.</span></h1>
       <p>Tú nos cuentas cómo es tu parche; Sintonía les propone opciones reales en Cali y ayuda a que el plan sí pase.</p>
     </div>
 
@@ -123,7 +123,7 @@
   var exp = expRaw === 'E2' ? 'E2' : 'E1';
   var modo = S.param('modo') === 'prueba' ? 'prueba' : 'piloto';
   // 2.0.5: el canal del experimento queda visible desde la inscripción (E1 por WhatsApp, E2 en la web)
-  if (expValida) S.$('#tagExp').textContent = (modo === 'prueba' ? 'Modo prueba · ' : 'Piloto · Cali · ') + 'por WhatsApp';
+  if (expValida) S.$('#tagExp').textContent = modo === 'prueba' ? 'Ensayo' : 'Piloto · Cali';   // 2.12.0 (auditoría P4): sin jerga interna
 
   var yo = S.me();
   if (yo.pid && yo.rol === 'organizador' && modo !== 'prueba') {

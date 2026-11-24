@@ -711,7 +711,9 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     }).join('') + '</div>';
   }
   /** 2.6.0 · Mapa del recorrido: 5 etapas por plan, ligadas a los tres momentos. Reemplaza la lista de 19 pasos. */
-  var ETAPAS_MAPA = [['grupo', 'Grupo', 'Antes'], ['proponer', 'Proponer', 'Activación'], ['decidir', 'Decidir', 'Activación'], ['dia', 'El día', 'Interacción'], ['cierre', 'Cierre', 'Continuidad']];
+  // 2.12.0 (auditoría C1): en celular, el encabezado se compacta al bajar
+  (function () { var t = false; window.addEventListener('scroll', function () { if (t) return; t = true; requestAnimationFrame(function () { document.body.classList.toggle('c-compacta', window.scrollY > 80); t = false; }); }, { passive: true }); })();
+  var ETAPAS_MAPA = [['grupo', 'Grupo', 'Activación'], ['proponer', 'Proponer', 'Activación'], ['decidir', 'Decidir', 'Activación'], ['dia', 'El día', 'Interacción'], ['cierre', 'Cierre', 'Continuidad']];
   var MAPA_IR = { grupo: ['grupos', null], proponer: ['planes', '#restr'], decidir: ['planes', '#decision'], dia: ['registro', '.estado-sel'], cierre: ['planes', '#pulsos'] };
   function mapaHtml(g, L, i, cur, hechosN) {
     var rel = relojesDe(g), psG = planesDe(g.grupo_id), ultR = psG.length ? Number(psG[psG.length - 1].ronda) : 0;
@@ -733,7 +735,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     }
     var h = '<section class="c-mapa"' + (cur ? '' : ' data-state="done"') + ' aria-labelledby="mapaT"><header><h2 id="mapaT">Recorrido del grupo</h2><small>' + e(grupoNom(g)) + '</small></header>';
     // 2.7.0 (F1): una sola rejilla; en pantalla ancha va vertical en la columna izquierda (etapas hacia abajo, planes en columnas)
-    h += '<div class="c-g">' + ETAPAS_MAPA.map(function (et, c) { return '<span class="c-mom" aria-hidden="true"' + pos(1, c + 2, c + 2, 1) + '>' + e(et[2]) + '</span>'; }).join('');
+    h += '<div class="c-g">' + ETAPAS_MAPA.map(function (et, c) { return '<span class="c-mom" aria-hidden="true"' + pos(1, c + 2, c + 2, 1) + '>' + (c > 0 && ETAPAS_MAPA[c - 1][2] === et[2] ? '' : e(et[2])) + '</span>'; }).join('');
     [1, 2].forEach(function (r) {
       var actual = cur ? (cur.etapa === 'grupo' ? r === 1 : cur.ronda === r) : r === 2;
       h += '<span class="c-fila-n"' + (actual ? ' data-actual="1"' : '') + pos(r + 1, 1, 1, r + 1) + '>Plan ' + r + '</span>' + ETAPAS_MAPA.map(function (et, c) {
@@ -858,7 +860,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
       }).join('');
       var arch = archivados().indexOf(g.grupo_id) >= 0;
       return '<div class="card"><div class="actions" style="margin:0 0 8px;justify-content:space-between"><h3 style="margin:0">' + e(grupoNom(g)) + (g.nombre ? ' <span class="tiny muted">' + e(cap(g.tipo_grupo)) + '</span>' : '') + '</h3><span>' + badge(g.estado) + ' ' + (g.modo === 'prueba' ? badge('prueba') : '') + '</span></div>' +
-        '<p class="small" style="margin:0">Quórum: <b>' + n + ' / ' + inv + '</b> consintieron' + (g.motivo ? ' · <span class="muted">' + e(g.motivo) + '</span>' : '') + '</p>' +
+        '<p class="small" style="margin:0">Aceptaron: <b>' + n + ' de ' + inv + '</b>' + (g.motivo ? ' · <span class="muted">' + e(g.motivo) + '</span>' : '') + '</p>' +
         '<div class="bar"><i style="width:' + (inv ? Math.min(100, Math.round(n / inv * 100)) : 0) + '%"></i></div>' +
         (g.estado === 'reclutando' ? '<div class="linkbox" style="margin-top:10px">' + e(invLink) + '</div><div class="actions"><button class="btn btn-ghost btn-sm" data-copy="' + e(invLink) + '">Copiar invitación</button>' +
           '<button class="btn btn-primary btn-sm" data-cerrar="' + e(g.grupo_id) + '" data-n="' + n + '" data-inv="' + inv + '" data-busy="Cerrando…">Cerrar reclutamiento</button></div>' : '') +

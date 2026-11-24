@@ -462,3 +462,17 @@ body.consola .toast { width: max-content; }
 
 /* 2.8.2 (auditoría visual): foco visible en la marca de la barra */
 .c-bar .c-id:focus-visible { outline: 3px solid var(--m-naranja-700); outline-offset: 4px; border-radius: 10px; }
+
+/* 2.12.0 (auditoría C1 y C5) */
+/* C5: los avisos van abajo, donde no tapan el encabezado ni el estado del mago */
+body.consola .toast { top: auto !important; bottom: 24px !important; }
+@media (max-width: 760px) { body.consola .toast { top: auto !important; bottom: 88px !important; } }
+/* C1: en celular, con scroll, el encabezado se reduce a una línea (estado del mago y «Mago off») */
+@media (max-width: 760px) {
+  body.consola.c-compacta .c-bar { padding: 8px 16px; gap: 8px; margin-bottom: 12px; }
+  body.consola.c-compacta .c-bar .c-acc, body.consola.c-compacta .c-bar h1, body.consola.c-compacta .c-bar .ver { display: none; }
+  body.consola.c-compacta .c-bar .wm { display: none; }
+  .c-tabbar { padding: 2px 4px; bottom: 8px; }
+  .c-tabbar .s-tabs [role="tab"] { min-height: 40px; padding-top: 8px; }
+  #siguiente { padding-bottom: 72px; }
+}

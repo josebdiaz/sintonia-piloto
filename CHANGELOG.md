@@ -5,6 +5,19 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-23 · Ola 1 de la auditoría UI/UX (frontend 2.12.0)
+Sale de la auditoría del 23/11, que está en el Proyecto.
+- **P1:** la inscripción abre con el claim «Menos vueltas, más plan.» (antes decía «Que las ganas se vuelvan plan.»).
+- **P2 y P11:** en el calendario, los fines de semana ya no van en gris (parecían no disponibles). Cada día muestra su día de la semana, y el mes va como marca en naranja.
+- **P3:** las páginas de participantes usan el sistema de la landing: fondo crema, y acción y selección en noche (antes, azul petróleo). La etiqueta del paso se oscureció para pasar 4,5:1 sobre crema.
+- **P4:** fuera la jerga interna. «Modo prueba» pasa a «Ensayo», y «Piloto · Cali · por WhatsApp» a «Piloto · Cali».
+- **P5 (en parte):** el aviso de privacidad trae «En corto», 5 líneas que resumen el texto vigente sin agregar nada, y un índice con anclas. **Falta publicar el texto v2 aprobado.**
+- **C1:** en celular, el encabezado de la consola se compacta a una línea al bajar (estado del mago y «Mago off»). La barra de pestañas es más baja y deja espacio al final.
+- **C3:** el mapa del recorrido nombra cada momento una sola vez: Activación (Grupo, Proponer, Decidir), Interacción y Continuidad. Antes decía «Antes» y repetía «Activación».
+- **C5:** los avisos de la consola van abajo y ya no tapan el encabezado.
+- **C8:** «Quórum: 3 / 3 consintieron» pasa a «Aceptaron: 3 de 3».
+- **QA:** backend 105 de 105, recorrido 57 de 57, consola 26 de 26, ola A 21 de 21, auditoría E2E sin hallazgos. Contraste y axe sin fallas.
+
 ### 2026-11-23 · Encuesta de cierre por pasos (frontend 2.11.0)
 Se sentía larga: eran 26 campos en una sola página.
 - **Pasos:** ahora va por pasos, uno por momento del plan:

@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.11.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.12.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v1-2026-10',
     TIMEOUT_MS: 30000
@@ -167,7 +167,7 @@
     lista.forEach(function (x, i) {
       var v = x.getFullYear() + '/' + p2(x.getMonth() + 1) + '/' + p2(x.getDate()), mes = i === 0 || x.getDate() === 1;
       h += '<label class="ag-dia' + (x.getDay() === 0 || x.getDay() === 6 ? ' finde' : '') + '"><input type="checkbox" value="' + v + '" aria-label="' + DSL[x.getDay()] + ' ' + x.getDate() + ' de ' + MSL[x.getMonth()] + '">' +
-        '<span><b>' + x.getDate() + '</b><small>' + (mes ? MSC[x.getMonth()] : DSC[x.getDay()]) + '</small></span></label>';
+        '<span>' + (mes ? '<i class="ag-mes" aria-hidden="true">' + MSC[x.getMonth()] + '</i>' : '') + '<b>' + x.getDate() + '</b><small>' + DSC[x.getDay()] + '</small></span></label>';   // 2.12.0: el día de la semana siempre; el mes, como marca
     });
     el.classList.add('agenda'); el.innerHTML = h + '</div><p class="ag-pie" aria-live="polite"></p>';
     var pie = $('.ag-pie', el), prop = [];
