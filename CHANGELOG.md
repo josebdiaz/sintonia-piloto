@@ -5,6 +5,9 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-23 · Backend 2.9.1 desplegado
+- Pegado en Apps Script, con `probarMontaje()` y «Nueva versión». Desde hoy se guardan la lista de espera de la landing y la disponibilidad de cada persona.
+
 ### 2026-11-23 · Ola 1 de la auditoría UI/UX (frontend 2.12.0)
 Sale de la auditoría del 23/11, que está en el Proyecto.
 - **P1:** la inscripción abre con el claim «Menos vueltas, más plan.» (antes decía «Que las ganas se vuelvan plan.»).
