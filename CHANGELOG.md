@@ -5,6 +5,15 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-23 · Ajustes del material POP (sync P8d)
+- **Stickers:** los 4 llevan «sintonía» escrito. El sello del logo dice «SINTONÍA» arriba y «WWW.SINTONIA.MY» abajo; la dirección se escribe con «www.» para que se lea como web.
+- **Pin B:** «¿Lo repetimos? con este parche» sonaba raro. Lo reemplaza el claim «Menos vueltas, más plan.», con «SINTONÍA» debajo.
+- **Volante, ahora de dos caras:**
+  - Frente: «¿Hay que vernos?», el claim y un QR de 55 mm (antes 38 mm) con «Escanea y arma el plan con tu parche».
+  - Reverso: los 4 pasos, un 45 % más grandes.
+  - El QR decodifica a su URL.
+- Las vistas previas de `docs/pop/artes/` están al día. El tótem espera la plantilla de la estructura.
+
 ### 2026-11-23 · «Escoge tu disponibilidad» para todo el parche, claim y registro (frontend 2.10.0 · backend 2.9.1)
 Sale del sync P8d.
 - **Disponibilidad de cada persona:**

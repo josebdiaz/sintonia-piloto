@@ -17,7 +17,7 @@ Cada pieza lleva su propio `origen`, que llega a la inscripción y a la lista de
 - Usan corrección de errores Q y una zona tranquila de 4 módulos.
 - En los artes de Affinity, cada QR es un solo trazado vectorial, sin uniones entre módulos. Todos se verificaron decodificando el render.
 
-## Artes (22/11/2026, sistema «Resonancia») · `artes/`
+## Artes (22/11/2026, sistema «Resonancia»; ajustes del sync P8d el 23/11) · `artes/`
 
 Todas las piezas siguen `filosofia-visual.md`:
 - **Ondas:** anillos finos que salen del logo en progresión geométrica, en un tono apenas separado del fondo. En los círculos se calculan como arcos, sin máscaras.
@@ -26,14 +26,15 @@ Todas las piezas siguen `filosofia-visual.md`:
 - **Etiquetas:** versalitas espaciadas.
 - **Recorrido:** contado como estaciones numeradas.
 - **QR:** sobre una placa blanca de esquinas redondeadas.
+- **Nombre y dirección (23/11):** todos los stickers llevan «sintonía» escrito, y la dirección va como «www.sintonia.my» para que se lea como web.
 
 | Pieza | Archivo | Formato | Sangrado | Oleada |
 |---|---|---|---|---|
 | Tarjeta con QR (frente y reverso) | `Tarjeta-QR_90x55` | 90 × 55 mm | 3 mm | 1 · 24/11 |
-| Pines (2 diseños) | `Pines-58mm_arte-70mm` | Arte circular de 70 mm para botón de 58 mm | 2 mm | 1 · 24/11 |
-| Stickers (4 diseños; el 4.º es el logo con «SINTONIA.MY» arriba y el lema abajo, como sello) | `Stickers-60mm_troquel` | Círculo de 60 mm, troquelado | 2 mm | 1 · 24/11 |
+| Pines (2 diseños: «Tu +1 de confianza» y el claim «Menos vueltas, más plan» con «SINTONÍA») | `Pines-58mm_arte-70mm` | Arte circular de 70 mm para botón de 58 mm | 2 mm | 1 · 24/11 |
+| Stickers (4 diseños, todos con «sintonía» escrito; el 4.º es el logo con «SINTONÍA» arriba y «WWW.SINTONIA.MY» abajo, como sello) | `Stickers-60mm_troquel` | Círculo de 60 mm, troquelado | 2 mm | 1 · 24/11 |
 | Tótem (roll-up) | `Totem-rollup_80x200cm` | 800 × 2000 mm, a 150 ppp, todo vectorial | 5 mm | 2 · 1/12 |
-| Volante | `Volante-media-carta` | 139,7 × 215,9 mm, una cara | 3 mm | 2 · 1/12 |
+| Volante (frente: «¿Hay que vernos?», el claim y QR de 55 mm; reverso: los 4 pasos) | `Volante-media-carta` | 139,7 × 215,9 mm, dos caras | 3 mm | 2 · 1/12 |
 | Hablador de mesa | `Hablador-mesa_media-carta` | Media carta vertical, para porta-aviso | 3 mm | 2 · 1/12 |
 
 ### Para la imprenta
