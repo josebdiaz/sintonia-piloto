@@ -251,7 +251,13 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
    *  las próximas 3 que caen en sus días (desde mañana, en 2 semanas). */
   var DOW = { 'viernes': [5], 'sábado': [6], 'domingo': [0], 'entre semana': [1, 2, 3, 4] };
   function fechasDe(g) {
-    var d = dispoDe(g); if (d.fechas.length) return { lista: d.fechas, declaradas: true };
+    var d = dispoDe(g);
+    if (d.fechas.length > 4) {   // 2.14.0: quien organiza puede marcar todos los días; el plan usa las 4 con más personas disponibles (empate: la más cercana)
+      var cnt = function (x) { var k = isoDia(x); return ((g && g.miembros) || []).filter(function (m) { return m.disponibilidad && dispoDe(m).fechas.some(function (y) { return isoDia(y) === k; }); }).length; };
+      var top = d.fechas.map(function (x) { return { x: x, n: cnt(x) }; }).sort(function (a, b) { return b.n - a.n || a.x - b.x; }).slice(0, 4).map(function (o) { return o.x; }).sort(function (a, b) { return a - b; });
+      return { lista: top, declaradas: true, recortadas: d.fechas.length };
+    }
+    if (d.fechas.length) return { lista: d.fechas, declaradas: true };
     var hoy = new Date(); hoy.setHours(12, 0, 0, 0); var out = [];
     if (d.dias.length) for (var k = 1; k <= 14 && out.length < 3; k++) { var x = new Date(hoy.getTime() + k * 864e5); if (d.dias.some(function (n) { return (DOW[n] || []).indexOf(x.getDay()) >= 0; })) out.push(x); }
     return { lista: out, declaradas: false };
@@ -262,7 +268,7 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
     var ms = (g && g.miembros) || [], con = ms.filter(function (m) { return m.disponibilidad; }), n = ms.length;
     if (!con.length) return null;
     var cuenta = {}; con.forEach(function (m) { dispoDe(m).fechas.forEach(function (x) { var k = isoDia(x); cuenta[k] = (cuenta[k] || 0) + 1; }); });
-    var base = fechasDe(g).declaradas ? fechasDe(g).lista.map(isoDia) : [];
+    var F = fechasDe(g), base = F.declaradas ? F.lista.map(isoDia) : [];
     var otras = Object.keys(cuenta).filter(function (k) { return base.indexOf(k) < 0 && cuenta[k] >= 2; }).sort(function (a, b) { return cuenta[b] - cuenta[a] || (a < b ? -1 : 1); }).slice(0, 3);
     var dia = function (k) { var q = k.split('-'); return new Date(+q[0], +q[1] - 1, +q[2], 12); };
     return { marcaron: con.length, total: n,
@@ -272,7 +278,8 @@ details.etapa > summary { cursor: pointer; font-size: 1rem; }
   function coincidenciasHtml(g) {
     var c = coincidencias(g); if (!c) return '';
     var f = function (x) { return e(fechaCortaTxt(x.fecha)) + ' <b>' + x.n + ' de ' + c.total + '</b>'; };
-    return '<p style="margin:6px 0 0"><b>Quiénes pueden</b> <span class="muted">(' + c.marcaron + ' de ' + c.total + ' marcaron su disponibilidad)</span>: ' +
+    var F = fechasDe(g);
+    return '<p style="margin:6px 0 0"><b>Quiénes pueden</b> <span class="muted">(' + c.marcaron + ' de ' + c.total + ' marcaron su disponibilidad' + (F.recortadas ? '; de los ' + F.recortadas + ' días que marcó quien organiza, el plan usa los 4 con más personas' : '') + ')</span>: ' +
       (c.base.length ? c.base.map(f).join(' · ') : '<span class="muted">quien organiza no marcó fechas</span>') +
       (c.otras.length ? '<br><span class="muted">Otras fechas con coincidencias:</span> ' + c.otras.map(f).join(' · ') : '') + '</p>';
   }

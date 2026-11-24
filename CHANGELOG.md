@@ -5,6 +5,14 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-23 · Estado visible en las opciones y «Sí a todos» (frontend 2.14.0)
+- **Estado visible:** cada opción de la inscripción, unirse y la encuesta de cierre muestra si está marcada sin depender del color. Las de varias respuestas llevan una casilla (vacía o con ✓); las de una sola, un círculo.
+- **Calendario:**
+  - Tiene un botón «Sí a todos», que pasa a «Quitar todos». Cada día elegido lleva su ✓.
+  - Quien organiza ya no tiene tope de 4 días: marca todos los que les sirvan.
+  - Si marca más de 4, la consola usa para el plan las 4 fechas en que más personas pueden (en empate, la más cercana) y lo dice en «Quiénes pueden». Así, «¿Qué día?» y los mensajes siguen con 4 fechas como máximo.
+- **QA:** backend 108 de 108, recorrido 57 de 57, consola 26 de 26, ola A 21 de 21, auditoría E2E 69 OK sin hallazgos.
+
 ### 2026-11-23 · Backend 2.9.2 desplegado
 - Pegado con «Nueva versión». La propiedad `AVISO_VERSION` pasó a `v2-2026-11`: desde ahora cada inscripción y cada anotación en la lista de espera guardan el aviso v2.
 

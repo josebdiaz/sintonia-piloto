@@ -1,7 +1,7 @@
 ---
 titulo: "Sintonía · Onboarding del monitor"
 subtitulo: "Cómo operar el mago en el piloto de WhatsApp"
-version: "v1.3 · 23 nov 2026 · consola 2.13.0 y backend 2.9.2"
+version: "v1.3 · 23 nov 2026 · consola 2.14.0 y backend 2.9.2"
 audiencia: "Monitor asignado por la maestría (20 h en 2 semanas)"
 autores: "Jose Bolaños · Katherine Castro"
 idioma: "es-CO"
@@ -18,14 +18,14 @@ CÓMO USAR ESTE ARCHIVO EN EL MOTOR DE PRESENTACIONES
   - `> Notas:` son las notas del orador. No van en pantalla.
 - Estilo: el de los decks de Sintonía (DS 3.0). Papel, noche, naranja, mostaza, vitral. Inter + Climate Crisis para el glifo.
 - Fuente de verdad: consola y backend 2.8.1 (22/11/2026). La v1.1 describía la consola 2.2.2; esta versión integra los cambios de la prueba de Juan José (2.7.1), la ola A de la prueba externa (2.8.0) y la auditoría E2E (2.8.1).
-- v1.3 (23/11): «Quiénes pueden» (disponibilidad de cada persona, 2.10), encuesta de cierre por pasos (2.11), encabezado compacto en celular, avisos abajo, mapa con un nombre por momento y «Aceptaron: n de N» (2.12), aviso de privacidad v2 (2.13).
+- v1.3 (23/11): «Quiénes pueden» (disponibilidad de cada persona, 2.10), encuesta de cierre por pasos (2.11), encabezado compacto en celular, avisos abajo, mapa con un nombre por momento y «Aceptaron: n de N» (2.12), aviso de privacidad v2 (2.13), «Sí a todos» en el calendario: si quien organiza marca más de 4 días, la consola usa las 4 con más personas (2.14).
 - El deck `docs/deck-onboarding-monitor.html` está regenerado (22/11) con capturas reales de la consola 2.8.1 en `docs/deck-onboarding-monitor/`.
 - Las cifras de encuesta son datos propios de Sintonía (n = 76, vista parcial al 25/10). Clasificación: emergente.
 -->
 
 ## Bienvenido al piloto de Sintonía
 
-Etiqueta: Onboarding del monitor · consola 2.13.0 · noviembre 2026
+Etiqueta: Onboarding del monitor · consola 2.14.0 · noviembre 2026
 
 **Tu guía para operar el mago, de principio a fin.**
 

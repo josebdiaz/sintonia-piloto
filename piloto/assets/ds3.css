@@ -532,7 +532,13 @@ dialog.hoja::backdrop { background: rgba(31, 33, 38, .45); }
 .s-plan-list details.seccion ol { margin-top: var(--space-4); }
 
 /* Fichas de selección múltiple (días y franjas): ✓ al marcar */
-.chips[role="group"] .chip input:checked + span::before { content: "✓ "; }
+/* 2.14.0: cada opción muestra su estado. Varias respuestas → casilla; una sola → círculo. Marcado o vacío se ve sin depender del color */
+.chip span { display: inline-flex; align-items: center; gap: 8px; }
+.chips .chip span::before { content: ""; flex: none; width: 16px; height: 16px; box-sizing: border-box; border: 2px solid currentColor; opacity: .55; border-radius: 4px; }
+.chips[role="radiogroup"] .chip span::before { border-radius: 50%; }
+.chips .chip input:checked + span::before { opacity: 1; background: var(--color-text-on-brand, #fff); border-color: var(--color-text-on-brand, #fff); }
+.chips[role="group"] .chip input:checked + span::before { content: "✓"; display: grid; place-items: center; color: var(--pine); font-size: 12px; font-weight: 800; line-height: 1; }
+.chips[role="radiogroup"] .chip input:checked + span::before { box-shadow: inset 0 0 0 3px var(--pine); }
 .mago-tira b { font: 700 var(--font-size-16)/1.2 var(--font-family-display); }
 .mago-tira #tiraMin { font-family: var(--font-family-mono); font-variant-numeric: tabular-nums; }
 
@@ -596,6 +602,13 @@ a.brand:focus-visible { outline: 3px solid var(--color-signal-searching, #c2410c
 .agenda .ag-dia input:checked + span b, .agenda .ag-dia input:checked + span small { color: var(--color-text-on-brand, #fff); }
 .agenda .ag-dia input:focus-visible + span { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
 .agenda .ag-pie { margin: 8px 0 0; font-size: .85rem; color: var(--muted); }
+/* 2.14.0: «Sí a todos» y una marca ✓ en cada día elegido */
+.agenda .ag-todos { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 10px; min-height: 40px; padding: 8px 14px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--surface); font: inherit; font-weight: 600; color: var(--ink); cursor: pointer; }
+.agenda .ag-todos::before { content: ""; width: 16px; height: 16px; box-sizing: border-box; border: 2px solid currentColor; border-radius: 4px; opacity: .55; }
+.agenda .ag-todos[hidden] { display: none; }
+.agenda .ag-todos[aria-pressed="true"] { background: var(--pine); border-color: var(--pine); color: var(--color-text-on-brand, #fff); }
+.agenda .ag-todos[aria-pressed="true"]::before { content: "✓"; display: grid; place-items: center; opacity: 1; background: #fff; border-color: #fff; color: var(--pine); font-size: 12px; font-weight: 800; line-height: 1; }
+.agenda .ag-dia input:checked + span::before { content: "✓"; position: absolute; bottom: 2px; right: 5px; font-size: .62rem; font-weight: 800; color: #ebc46a; }
 body.publico .agenda .ag-dia input:checked + span { box-shadow: none; }
 .agenda .ag-mes { display: block; margin: 0 0 1px; line-height: 1; font-style: normal; font-size: .6rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #c23a00; }
 .agenda .ag-dia input:checked + span .ag-mes { color: #ebc46a; }

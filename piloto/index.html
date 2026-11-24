@@ -57,7 +57,7 @@
         <div class="field"><label for="nomGrupo">¿Cómo quieren que se llame el grupo? <span class="muted">(opcional)</span></label><input id="nomGrupo" type="text" maxlength="25" autocomplete="off" placeholder="Ej.: Parche de los jueves"><span class="hint">Así se llamará el grupo de WhatsApp del plan.</span></div>
         <div class="field"><label for="ninv">¿Cuántas personas van a este plan, contándote?</label><input id="ninv" type="number" inputmode="numeric" min="2" max="8" required><span class="hint">Entre 2 y 8. Cada una acepta desde su propio enlace.</span></div>
         <!-- 2.10.0 (sync P8d): «escoge tu disponibilidad» con días concretos de un calendario (antes: «¿qué días suelen poder salir?» y fechas aparte) -->
-        <div class="field"><span class="label" id="agendaLbl">Escoge tu disponibilidad</span><span class="hint" id="agendaPista" style="margin:0 0 8px">Hasta 4 días de las próximas 2 semanas. Así el plan llega con fecha concreta y nadie tiene que preguntar «¿cuándo es esto?».</span><div id="agenda" role="group" aria-labelledby="agendaLbl" aria-describedby="agendaPista"></div></div>
+        <div class="field"><span class="label" id="agendaLbl">Escoge tu disponibilidad</span><span class="hint" id="agendaPista" style="margin:0 0 8px">Marca todos los días de las próximas 2 semanas en que el parche podría salir. Así el plan llega con fecha concreta y nadie tiene que preguntar «¿cuándo es esto?».</span><div id="agenda" role="group" aria-labelledby="agendaLbl" aria-describedby="agendaPista"></div></div>
         <div class="field"><span class="label" id="franjasLbl">¿En qué franja?</span><div class="chips" id="franjas" role="group" aria-labelledby="franjasLbl">
           <label class="chip"><input type="checkbox" value="manana"><span>Mañana</span></label><label class="chip"><input type="checkbox" value="tarde"><span>Tarde</span></label><label class="chip"><input type="checkbox" value="noche"><span>Noche</span></label></div><span class="hint">Marca todas las que apliquen. Cada persona del parche marca la suya al unirse.</span></div>
         <div class="field"><label for="realizados">De los últimos 5 planes que propusieron en el chat del parche, ¿cuántos se hicieron?</label><select id="realizados" required><option value="">Elige…</option><option value="0">Ninguno</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">Los 5</option></select><span class="hint">Un cálculo aproximado está bien.</span></div>
@@ -149,7 +149,7 @@
   function int(id) { var v = S.$(id).value; return v === '' ? '' : parseInt(v, 10); }
   // 2.10.0 (sync P8d): disponibilidad con días concretos (S.agenda); el texto conserva «dias: … · franjas: … · fechas: …» para la consola
   function marcados(id) { return S.$$('#' + id + ' input:checked').map(function (x) { return x.value; }); }
-  var agenda = S.agenda(S.$('#agenda'), { max: 4, vacio: 'Toca los días en que el parche podría salir.' });
+  var agenda = S.agenda(S.$('#agenda'), { vacio: 'Toca los días en que el parche podría salir.' });   // 2.14.0: sin tope; la consola elige las 4 fechas con más coincidencias
   function disponibilidad() { return S.dispoTexto(agenda.fechas(), marcados('franjas')); }
   function valida1() {
     if (!tipo.value()) return 'Elige qué tipo de grupo es.';

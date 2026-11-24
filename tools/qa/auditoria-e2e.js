@@ -18,11 +18,13 @@ const T0=Date.now();
  await po.click('#tipo label:has-text("Amigos")'); await po.fill('#ninv','3'); await po.fill('#nomGrupo','Las del cole');
  // 2.10.0 (sync P8d): «Escoge tu disponibilidad» en un calendario de 2 semanas
  const nDias=(await po.$$('#agenda .ag-dia')).length, nFinde=(await po.$$('#agenda .ag-dia.finde')).length; ok(nDias===14&&nFinde===4,'Activación','El calendario muestra 14 días, 4 de fin de semana',[nDias,nFinde],'BAJA');
- for(let k=0;k<5;k++) await po.click('#agenda .ag-dia >> nth='+k);
- const tope=(await po.$$('#agenda input:checked')).length; ok(tope===4,'Activación','Quien organiza marca hasta 4 días (el quinto se frena con un aviso)',tope,'BAJA');
- for(let k=0;k<4;k++) await po.click('#agenda .ag-dia >> nth='+k);
+ // 2.14.0: «Sí a todos» marca los 14 días y «Quitar todos» los desmarca; las opciones muestran casilla
+ await po.click('#agenda .ag-todos'); const todos=(await po.$$('#agenda input:checked')).length, lbl=await po.$eval('#agenda .ag-todos',e=>e.innerText);
+ await po.click('#agenda .ag-todos'); const ninguno=(await po.$$('#agenda input:checked')).length;
+ ok(todos===14&&ninguno===0&&/Quitar/.test(lbl),'Activación','«Sí a todos» marca los 14 días y se puede deshacer',[todos,ninguno,lbl],'BAJA');
+ const caja=await po.$eval('#franjas .chip span',e=>{const b=getComputedStyle(e,'::before');return b.width+' '+b.borderTopStyle;}); ok(/16px solid/.test(caja),'Activación','Las opciones múltiples muestran una casilla vacía antes de marcarlas',caja,'BAJA');
  await po.click('#agenda .ag-dia.finde >> nth=0'); await po.click('#agenda .ag-dia.finde >> nth=2');
- const pie=await po.$eval('#agenda .ag-pie',e=>e.innerText); ok(/2 días marcados de 4/.test(pie),'Activación','El calendario dice cuántos días van marcados',pie,'BAJA');
+ const pie=await po.$eval('#agenda .ag-pie',e=>e.innerText); ok(/2 días marcados/.test(pie),'Activación','El calendario dice cuántos días van marcados',pie,'BAJA');
  await po.click('#franjas label:has-text("Tarde")'); await po.selectOption('#realizados','1'); await po.click('#fatiga button[data-v="4"]');
  await po.click('[data-step="1"] [data-next="2"]');
  await po.fill('#prefs','Algo tranqui en San Antonio, máximo 50 mil. Ana es diabética y no toma, su cel es 3001239999');

@@ -20,7 +20,7 @@
   var CONFIG = {
     BACKEND_URL: LS.get('SINTONIA_BACKEND_URL') || DEFAULT_BACKEND,
     BASE_PUBLICA: 'https://josebdiaz.github.io/sintonia-piloto/piloto/',
-    FRONTEND_VERSION: '2.13.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
+    FRONTEND_VERSION: '2.14.0',     // SemVer; debe coincidir con el tag piloto/vX.Y.Z y con CHANGELOG.md
     CONTACTO_EMAIL: 'jbolanos.dmi@gmail.com',   // canal de consultas y reclamos (Ley 1581); aviso.html lo muestra
     AVISO_VERSION: 'v2-2026-11',
     TIMEOUT_MS: 30000
@@ -169,14 +169,17 @@
       h += '<label class="ag-dia' + (x.getDay() === 0 || x.getDay() === 6 ? ' finde' : '') + '"><input type="checkbox" value="' + v + '" aria-label="' + DSL[x.getDay()] + ' ' + x.getDate() + ' de ' + MSL[x.getMonth()] + '">' +
         '<span>' + (mes ? '<i class="ag-mes" aria-hidden="true">' + MSC[x.getMonth()] + '</i>' : '') + '<b>' + x.getDate() + '</b><small>' + DSC[x.getDay()] + '</small></span></label>';   // 2.12.0: el día de la semana siempre; el mes, como marca
     });
-    el.classList.add('agenda'); el.innerHTML = h + '</div><p class="ag-pie" aria-live="polite"></p>';
-    var pie = $('.ag-pie', el), prop = [];
+    el.classList.add('agenda'); el.innerHTML = '<button type="button" class="ag-todos" aria-pressed="false">Sí a todos</button>' + h + '</div><p class="ag-pie" aria-live="polite"></p>';
+    var pie = $('.ag-pie', el), prop = [], todos = $('.ag-todos', el);
+    todos.hidden = max < dias;   // con tope, «Sí a todos» no aplica   // 2.14.0: «Sí a todos» marca o desmarca los 14 días
     function fechas() { return $$('input:checked', el).map(function (x) { return x.value; }); }
     function pintar() {
-      var n = fechas().length, t = n ? (n === 1 ? '1 día marcado' : n + ' días marcados') + (max < dias ? ' de ' + max : '') : (opts.vacio || 'Toca los días en que puedes.');
+      var n = fechas().length, todo = n === dias; todos.setAttribute('aria-pressed', String(todo)); todos.textContent = todo ? 'Quitar todos' : 'Sí a todos';
+      var t = n ? (n === 1 ? '1 día marcado' : n + ' días marcados') + (max < dias ? ' de ' + max : '') : (opts.vacio || 'Toca los días en que puedes.');
       if (prop.length) t += ' · Con punto: lo que propuso quien organiza.';
       pie.textContent = t;
     }
+    todos.addEventListener('click', function () { var on = fechas().length !== dias; $$('.ag-dias input', el).forEach(function (x) { x.checked = on; }); pintar(); });
     el.addEventListener('change', function (ev) { if (ev.target.checked && fechas().length > max) { ev.target.checked = false; toast('Marca hasta ' + max + ' días.', true); } pintar(); });
     pintar();
     return { fechas: fechas,
