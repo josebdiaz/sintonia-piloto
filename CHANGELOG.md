@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-24 · Limpieza de archivos (sin cambios de código)
+- **Proyecto de Claude:** la copia del estado tiene nombre fijo, `claude/estado-piloto.md`; la copia con fecha quedó como nota de remisión. Prompt maestro v3.4 (nombre fijo y «lo archivado no es fuente», pendiente 14). `claude/archivo.md` v2: 25 documentos, 7 vigentes y 18 archivados. `claude/wow-sintonia.md` v2.2.
+- **Mac:** la carpeta vieja `Gemini dump/sintonia-piloto` (rama `M2-gemini`) quedó con todo lo no versionado en `_archivo-2026-11-24/` e `INVENTARIO.md` (361 archivos: 217 ya en el repo o su historial, 13 `.gs` de despliegue con correo, 1 en Drive, 8 versiones distintas, 122 únicos). Nada se borró. Se rescataron a `rescatado-de-git/` 4 archivos de commits locales nunca publicados.
+- `docs/protocolo-home.md`: la copia del estado se reemplaza con nombre fijo; prompt v3.4.
+- `ESTADO.md`: «En corto» al día; pendiente 14 hecho; pendientes nuevos 15 (clon como carpeta del Proyecto), 16 (respaldo en Drive de lo único) y 17 (auditoría de estándares).
+
 ### 2026-11-24 · Encuesta de cierre 2.16.0 · publicada (frontend 2.16.0 · backend 2.10.0 desplegado)
 **Aprobada por Néstor (24/11).** Backend 2.10.0 desplegado con `probarMontaje()`. Congelamiento en esta versión: tags `piloto/v2.16.0` y `backend/v2.10.0` creados sobre `2a81fd3`. Detalle y reglas de lectura en `docs/cambio-encuesta-cierre-2.16.md`.
 - **Feedback de Katherine:** sale «¿Qué tal terminó la salida?»; se elimina la página «Después»; «¿Qué tan a gusto…?» pasa a la página de Sintonía; la intención de repetir se reescribe en singular y sobre Sintonía («¿Le pedirías a Sintonía que arme el próximo plan de tu parche?»); la SEQ de continuidad pasa a «Antes». SUS y SEQ no cambian.

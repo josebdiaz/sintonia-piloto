@@ -11,7 +11,8 @@ Resumen para arrancar cualquier conversación. El detalle está en las secciones
 - **Dónde estamos:** la plataforma está lista para la prueba con un grupo de Cali. **No hay resultados con personas reales.** E1.5 (n8n) está aplazado desde el 19/11.
 - **Calendario:** ensayo el 25/11 · congelamiento el 26/11 · prueba con Cali el 27/11 (encuentro a más tardar el 30/11) · entrega el 4/12 · pitch el 12/12.
 - **Regla vigente:** desde el 26/11 la consola no cambia hasta cerrar el análisis.
-- **Frente siguiente (hoy, 24/11):** limpieza de archivos. Repo conectado a GitHub como carpeta del Proyecto, carpeta vieja `Gemini dump/sintonia-piloto` a archivo (mover, no borrar) y nombre fijo para la copia del estado. No toca código.
+- **Limpieza de archivos (24/11):** hecha, salvo conectar el repo como carpeta del Proyecto (pendiente 15). La copia del estado en el Proyecto tiene nombre fijo, `claude/estado-piloto.md`, y las instrucciones van en la v3.4. La carpeta vieja `Gemini dump/sintonia-piloto` quedó en `_archivo-2026-11-24/`, con su inventario; nada se borró.
+- **Frente siguiente:** auditoría de estándares del repo público (reporte de brechas; solo se corrige lo que no es código).
 - **Bloqueos:**
   - El grupo de Cali está sin confirmar.
   - El tótem espera la plantilla de la estructura.
@@ -30,7 +31,7 @@ Resumen para arrancar cualquier conversación. El detalle está en las secciones
 | Backend (Apps Script) | **2.10.0** desplegado el 24/11 | Disposición a pagar de cada persona por plan (`wtp` con `plan_id`, `rol` y 3 preguntas), resumen por rol en el panel. Desde la 2.9.3: reintentos sin duplicados (`req_id`), inscripción y aceptación repetidas devuelven lo mismo, fallos de red en `medicion_consola`, términos sensibles afinados y `AVISO_VERSION` = `v2-2026-11`. `CUPO_ABIERTO` no existe todavía: el backend asume «no» (lista de espera) |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
-| Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main` |
+| Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main`. Falta conectar un clon al día como carpeta del Proyecto en el Mac (pendiente 15) |
 | Tags | `piloto/v2.16.0` · `backend/v2.10.0` | Creados el 24/11 sobre `2a81fd3`: es el congelamiento del piloto. **Faltan** los de las versiones intermedias |
 | Inventario verificado | Hoja del piloto | Revisión de ubicaciones con `probarMontaje()` (2.5.0): **resultado por reportar** |
 
@@ -140,7 +141,10 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | 11 | n8n y licencias: **aplazados** (19/11) hasta tener más pruebas manuales. Cuando se retomen: N1–N11, B1, B5, I5 y C14 | E1.5 | Equipo |
 | 12 | Control de compromisos de los periodos 8 y 9: archivo interno consolidado al cierre | Seguimiento de la maestría | José |
 | 13 | Crear los tags de las versiones intermedias (`piloto/v2.7.1` a `v2.14.0`, `backend/v2.7.3` a `v2.9.2`) | Historial | José |
-| 14 | Agregar a las instrucciones del Proyecto (punto 1) la línea: los documentos de `claude/archivo.md` son historia y no son fuente | Orden del Proyecto | José |
+| 14 | ~~Agregar a las instrucciones del Proyecto que lo archivado no es fuente~~ Hecho en el prompt v3.4 (24/11) | Orden del Proyecto | José |
+| 15 | Renombrar el clon `~/Desktop/sintonia-tags` (p. ej. `~/Documents/sintonia-piloto`) y conectarlo como carpeta del Proyecto. Antes, revisar qué es `~/sintonia-piloto`, para no dejar dos copias | Orden del Mac | José |
+| 16 | Subir al Drive del equipo `_archivo-2026-11-24/Feedback y pruebas de usuario/` (notas y audios con datos de personas, solo están en el Mac) y decidir qué se rescata de lo único del archivo (ver su `INVENTARIO.md`) | Respaldo | José |
+| 17 | Auditoría de estándares, empezando por el repo público (GitHub community standards, OpenSSF Scorecard, SemVer, Keep a Changelog) | Calidad | Equipo, con Claude |
 
 ## 4.2 Prueba externa (semana del 15/11, n = 1, modo prueba)
 

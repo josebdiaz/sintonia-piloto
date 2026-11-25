@@ -41,7 +41,7 @@ python3 tools/home.py --check   # no escribe; falla si algo no cuadra
 
 Antes de cada push a `main`: `python3 tools/home.py --check` tiene que terminar en ✓.
 
-**El Proyecto de Claude** (Sintonía, en claude.ai) guarda una copia del estado. Cuando cambie `ESTADO.md`, súbela como `claude/estado-piloto-AAAA-MM-DD.md`; manda la de fecha más reciente. Las instrucciones del Proyecto (prompt maestro) se actualizan cuando cambian la arquitectura, el glosario o las decisiones (última: v3.1, 17/11).
+**El Proyecto de Claude** (Sintonía, en claude.ai) guarda una copia del estado. Cuando cambie `ESTADO.md`, reemplaza `claude/estado-piloto.md` (nombre fijo, nunca uno con fecha). Las instrucciones del Proyecto (prompt maestro) se actualizan cuando cambian la arquitectura, el glosario o las decisiones (última: v3.4, 24/11). Los documentos superados del Proyecto se listan en `claude/archivo.md`.
 
 ## 4. Reglas
 
