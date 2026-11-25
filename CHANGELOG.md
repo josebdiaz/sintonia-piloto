@@ -6,7 +6,7 @@ Las fechas son de 2026 (hora de Colombia).
 ## Repositorio
 
 ### 2026-11-24 · Encuesta de cierre 2.16.0 · por validar (rama `encuesta-cierre-2.16`, frontend 2.16.0 · backend 2.10.0)
-**No publicado.** Cambia el instrumento: espera el visto bueno de Néstor. Detalle y reglas de lectura en `docs/cambio-encuesta-cierre-2.16.md`.
+**Aprobado por Néstor (24/11).** Se publica después de desplegar el backend 2.10.0. Detalle y reglas de lectura en `docs/cambio-encuesta-cierre-2.16.md`.
 - **Feedback de Katherine:** sale «¿Qué tal terminó la salida?»; se elimina la página «Después»; «¿Qué tan a gusto…?» pasa a la página de Sintonía; la intención de repetir se reescribe en singular y sobre Sintonía («¿Le pedirías a Sintonía que arme el próximo plan de tu parche?»); la SEQ de continuidad pasa a «Antes». SUS y SEQ no cambian.
 - **Precio para todo el parche, por persona:** filtro «¿Pagarías una suscripción mensual…, solo por tu parte?»; Van Westendorp con enunciados cortos solo si responde Sí o Tal vez; «¿Quién debería pagarlo?» con los tres escenarios de cobro; «¿En cuántos parches usarías Sintonía?».
 - **Backend 2.10.0:** `wtp` con `plan_id`, `rol`, `suscripcion`, `quien_paga` y `parches` (correr `probarMontaje`); una fila por persona y plan (resuelve M8); sin precios si responde No. Panel con resumen por rol.
@@ -602,6 +602,13 @@ Marcadores `[n]` bloqueados, menú «⋯» por persona, cola de mensajes, mapa e
 
 Desde la 2.3.3, el detalle de cada versión está en la sección «Repositorio» (arriba). Resumen por versión:
 
+### [2.10.0] · 2026-11-24 · Disposición a pagar para todo el parche · aprobado por Néstor
+`wtp` con `plan_id`, `rol`, `suscripcion`, `quien_paga` y `parches` (correr `probarMontaje`); una fila por persona y plan; sin precios si responde No; `retro.valor_final` queda vacío; panel con `wtp_parche` por rol. La cabecera del archivo se acortó: el historial vive aquí. QA: 131 de 131.
+### [2.9.3] · 2026-11-24 · Reintentos sin duplicados (`req_id`) · desplegado el 24/11
+QA: 114 de 114.
+### [2.9.2] · 2026-11-23 · Términos sensibles afinados; `AVISO_VERSION` v2-2026-11
+### [2.9.1] · 2026-11-23 · Disponibilidad de cada persona en `linea_base`; fechas en `?view=invitacion`
+### [2.9.0] · 2026-11-22 · `?view=cupo` y lista de espera para la landing del QR
 ### [2.8.1] · 2026-11-22 · Datos sensibles fuera de la hoja, marca de la encuesta del mago, títulos en palabra completa · **desplegado el 22/11**
 Tag `backend/v2.8.1` por crear. QA: 95 de 95.
 ### [2.8.0] · 2026-11-22 · Aviso por cada aceptación, hora de aceptación y fechas para Gemini · desplegado el 22/11

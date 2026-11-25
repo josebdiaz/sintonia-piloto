@@ -1,153 +1,24 @@
 /**
- * Sintonía · Piloto v2.10.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
- * ----------------------------------------------------------------------------------
- * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
- * Versión 2.10.0 (24/11, encuesta de cierre 2.16.0: feedback de Katherine; POR VALIDAR CON NÉSTOR antes de desplegar):
- *   - wtp para TODO el parche, por persona («solo por tu parte»): columnas nuevas al final plan_id, rol, suscripcion (si/tal_vez/no),
- *     quien_paga (organiza/dividimos/cada_quien/nadie) y parches (1/2/3_mas). Correr probarMontaje. Los precios solo se guardan si
- *     suscripcion es si o tal_vez. Una fila por persona y plan (wtp_ya_enviada): resuelve M8.
- *   - retro.valor_final («¿Qué tal terminó la salida?») ya no se pregunta: queda vacío en las filas nuevas.
- *   - Panel: wtp_organizadores sigue igual (solo quien organiza); wtp_parche resume suscripción, quién paga y parches por rol, con n.
- * Versión 2.9.3 (24/11, reintentos sin duplicados, aprobado por Néstor):
- *   - Idempotencia: las acciones que escriben (IDEMPOTENTES_) aceptan req_id. Si el mismo req_id vuelve antes de 10 min (un reintento tras
- *     un corte), se devuelve la respuesta guardada en CacheService y no se escribe otra vez. Solo se guardan las respuestas ok.
- *   - Inscripción: si quien organiza vuelve a inscribirse con el mismo número antes de 60 min y su grupo sigue reclutando, se le devuelve
- *     ese grupo (ya_estaba) en vez de crear otro.
- *   - Unirse: si el número ya aceptó en ese grupo, se devuelve su enlace personal (ya_estaba) en vez del error ya_registrado.
- *   - medicion_consola: columnas nuevas fallos_red y fallos_timeout (envíos de la consola que no llegaron). Correr probarMontaje.
- * Versión 2.9.2 (23/11, revisión de Néstor):
- *   - TERMINOS_SENSIBLES_ afinados para no frenar frases inocentes: «enfermera», «judicial», «operador» o «política de no llegar tarde» ya no
- *     cuentan. Salud y religión se buscan por palabra completa donde la raíz era ambigua; política, por expresiones partidistas. Es la misma
- *     lista del formulario (sintonia.js).
- *   - Aviso de privacidad v2 (v2-2026-11): la propiedad AVISO_VERSION debe pasar a v2-2026-11 al desplegar.
- * Versión 2.9.1 (23/11, sync P8d: «escoge tu disponibilidad» para todo el parche):
- *   - linea_base.disponibilidad (columna nueva al final; probarMontaje la agrega sola): la disponibilidad de CADA persona, con el mismo
- *     formato «dias: … · franjas: … · fechas: AAAA/MM/DD, …». La de quien organiza sigue también en linea_base_grupo (la consola la usa
- *     como las fechas del plan). Revocar el consentimiento la borra con el resto de la línea base.
- *   - ?view=invitacion devuelve «fechas», las fechas que propuso quien organiza (sin datos personales), para marcarlas en el calendario de unirse.
- *   - ?view=mago: cada miembro trae su disponibilidad, para contar cuántas personas pueden en cada fecha.
- * Versión 2.9.0 (22/11, landing pública del QR del material POP):
- *   - ?view=cupo (pública): dice si el piloto recibe grupos nuevos. Lo decide la propiedad CUPO_ABIERTO («si»/«no»; por defecto «no»),
- *     para que el QR impreso nunca prometa más grupos de los que el mago puede operar. No cuenta grupos ni devuelve datos.
- *   - Acción lista_espera (pública): nombre de pila, WhatsApp, tamaño del parche y origen de la pieza impresa, con autorización y mayoría
- *     de edad. Hoja nueva 'lista_espera' (correr probarMontaje). Un mismo número no se anota dos veces. El aviso al equipo no lleva ni el
- *     nombre ni el número.
- * Versión 2.8.1 (23/11, auditoría E2E de la 2.8.0):
- *   - Minimización (Ley 1581): las preferencias que mencionen salud, religión, política u orientación sexual se guardan sin esa frase
- *     («[dato sensible omitido]»). Lista cerrada en TERMINOS_SENSIBLES_ (la misma que revisa el formulario). «No toma alcohol» sí se guarda:
- *     es una restricción del plan, no un dato de salud.
- *   - ?view=mago: cada plan trae pulso_mago (si quien operó ya respondió su encuesta), para que la consola no la pierda al cambiar de navegador.
- *   - Los títulos de Gemini se cortan en la última palabra que cabe en 30 caracteres (antes, a 60 y a media palabra).
- * Versión 2.8.0 (22/11, ola A de la prueba externa):
- *   - Aviso al equipo por cada aceptación nueva («Aceptó 1 persona más: 2 de 3»), sin nombres ni números. Se apaga con la propiedad
- *     AVISO_POR_ACEPTACION = no. Cuando acepta la última persona sigue llegando solo «ya aceptaron todos».
- *   - ?view=mago: cada miembro trae la hora en que aceptó (ts), para el reloj «recordar a quien organiza» de la consola.
- *   - proponer_ia recibe «fechas» (las fechas concretas del plan) y las pone en el prompt, para respetar el día de la semana y el horario de cada lugar.
- *   - disponibilidad admite «· fechas: AAAA/MM/DD, …» (la inscripción 2.8.0 pide fechas concretas).
- * Versión 2.7.4 (22/11): Gemini se presenta como «el +1 de confianza» del parche.
- * Versión 2.7.3 (15/11, prueba de Juan José): «Ajustar con Gemini» pone primero la indicación del mago y pide español neutro, sin jerga caleña.
- * Versión 2.7.2 (15/11): «Empezar piloto real» ya no borra 'operacion' ni 'sesiones' (son el registro de horas del monitor; el panel solo
- *   cuenta los minutos de grupos en modo piloto). Las sesiones que se cerraron solas de planes ya borrados no vuelven a pedir minutos.
- * Versión 2.7.1 (15/11): el motor (MOTOR_KEY) puede llamar reabrir_opciones para pedir más opciones en E1.5 sin marcar el plan como caído,
- *   igual que el mago en E1. Solo en planes de E1.5.
- * Versión 2.7.0 (15/11, revisión visual de la consola, F5 «medir la consola»):
- *   - Hoja nueva 'pulso_mago': después de cada plan, quien operó responde SUS (10 ítems, 1–5) y NASA-TLX sin ponderar (6 escalas, 0–100).
- *     Separa «la consola es lenta» de «la tarea es difícil». Acción pulso_mago (requiere ADMIN_KEY).
- *   - Hoja nueva 'medicion_consola': tiempo activo, toques y scroll por etapa del recorrido, medidos en la consola con la sesión de mago abierta.
- *     Acción medicion_consola (requiere ADMIN_KEY). El panel resume las dos por condición (solo grupos en modo piloto).
- * Versión 2.5.0 (15/11, QA de UX, UI y accesibilidad): probarMontaje revisa las ubicaciones del inventario; ?view=mago&inv=0 no envía el
- *   inventario (la consola lo pide una vez y lo guarda): cada actualización pesa una fracción.
- * Versión 2.4.0 (15/11, segunda prueba del 14/11 y su grabación):
- *   - Hoja nueva 'decisiones': el mago registra el resultado de cada ronda de votación (opción ganadora o «ninguna», votaron X de Y y votos por
- *     opción copiados de la encuesta de WhatsApp), no el voto de cada persona. cerrar_plan acepta «decision»; reabrir_opciones devuelve un plan en
- *     votación a borrador para pedir más opciones sin marcarlo como caído. La hoja 'votos' se conserva por compatibilidad (motor y web).
- *   - Gemini propone siempre 3 opciones distintas (exacta, intermedia, diferente), con la disponibilidad del grupo; si devuelve menos, pide otra vez una sola vez.
- *     Las paradas guardan dirección, macro zona y coordenadas para el enlace de Google Maps.
- *   - Modo prueba sin reloj: el pulso y la usabilidad se pueden enviar antes de la hora del encuentro.
- *   - redactar_ia acepta «indicacion» (lo que el mago le pide a Gemini, aparte del texto base).
- *   - grupos.nombre: el organizador le pone nombre al grupo al inscribirse. NOTIFICAR_A (opcional): correo al equipo cuando se inscribe un grupo o aceptan todos.
- * Versión 2.3.6 (14/11): Gemini recibe como máximo 50 lugares, filtrados por zona, franja y presupuesto según lo pedido (antes, los 1000).
- * Versión 2.3.5 (14/11): solo cuenta como activo el lugar con estado «activo» (un estado vacío ya no entra a las propuestas), y probarMontaje
- *   acepta el inventario ampliado de 33 columnas en otro orden, porque el código lee por nombre y no escribe en esa hoja.
- * Versión 2.3.4 (14/11): más rápido. La hoja, cada pestaña y sus filas se leen una vez por consulta (antes, la vista del mago leía
- *   «preferencias» una vez por grupo y abría la hoja en cada lectura). La línea base pregunta «de los últimos 5 planes, ¿cuántos se hicieron?»
- *   y guarda los caídos como 5 − hechos (mismas columnas).
- * Versión 2.3.3 (14/11, test drive 13/11): títulos de Gemini de 30 caracteres como máximo (caben en una encuesta de WhatsApp) y
- *   descripción («por_que») de una o dos frases, porque cada opción ahora se envía en su propio mensaje.
- * Versión 2.3.2 (24/10): eventos msg_ingreso, msg_opciones, msg_confirmado y msg_retro; las sesiones abiertas más de 4 h se cierran solas sin minutos
- *   (cerrada_auto) y se completan con operacion + sesion_id (cerrada_a_mano).
- * Versión 2.3.1 (24/10): rows_ ignora filas completamente vacías (la fila 2 que deja «Empezar piloto real» aparecía como un grupo y un plan fantasma).
- * Versión 2.3.0 (24/10, para el frontend 2.1.0 · Sync P7c, semana de pruebas desde cero):
- *   - E1.5 · WhatsApp automatizado reemplaza a la web app. Usa el valor interno 'E2' (sin cambio de esquema); las dos condiciones corren en WhatsApp.
- *   - Mago in / mago off (sesion_mago): cada sesión guarda inicio, fin y minutos en la hoja 'sesiones' y suma una fila en 'operacion'
- *     (causa 'sesion') ligada al plan. Reemplaza el registro manual de minutos por bloque (I3).
- *   - Motor (n8n): propiedad MOTOR_KEY. Con ella el motor puede llamar evento, operacion, proponer_ia, publicar_plan, cerrar_plan y redactar_ia,
- *     y ?view=resolver&grupo_id=…&wa=… devuelve solo el pid y el rol de ese número (nunca nombres ni la tabla de contactos).
- *   - Inscripción: tamano_grupo pasa a opcional (si falta, vale n_invitados); linea_base_grupo.disponibilidad (días y franjas del organizador).
- *   - Dos planes por grupo: la SEQ de continuidad se pregunta en el plan 2 (sin cambio: ya era desde la ronda 2).
- * Versión 2.2.6 (14/10, para el frontend 2.0.8 · usabilidad SEQ + SUS, sugerencia de Néstor):
- *   - Hoja nueva 'usabilidad': SEQ 1–7 por momento (activación, interacción, continuidad) y SUS de 10 ítems (1–5) con su puntaje 0–100.
- *     La continuidad solo se pregunta desde la ronda 2 (en W1 todavía no hay una segunda salida que evaluar).
- *   - Acción usabilidad: una respuesta por persona y plan, independiente de la retro. Sirve tanto junto al pulso (toma = con_pulso)
- *     como para recoger W1 después (toma = diferida, con dias_desde_encuentro para leer el sesgo de recuerdo).
- *   - Es instrumentación de medición en las dos condiciones: NO cuenta como el cambio W1 → W2 (I4) ni sube la versión del grupo.
- *   - ?view=plan devuelve yo.usabilidad; ?view=mago devuelve retro_pids y usabilidad_pids por plan; el panel reporta SEQ y SUS por ronda y por toma.
- *   - revocar_ también borra la usabilidad de la persona.
- * Versión 2.2.5 (6/10, para el frontend 2.0.7 · recomendaciones de la prueba de punta a punta):
- *   - cerrar_plan no re-cierra un plan cerrado o caído (plan_ya_cerrado): ya no pisa t_cerrado ni la opción elegida. Acepta hora_salida y la guarda en la opción ganadora.
- *   - corregir_plan (equipo): corrige la hora del encuentro y la salida de un plan cerrado; deja la hora anterior en la nota.
- *   - evento: los participantes solo registran me_apunto, no_puedo, checkpoint_llegada, llego_casa y salir.
- *   - crear_plan: un plan a la vez por grupo (plan_en_curso).
- *   - ?view=mago: cada plan trae minutos, bloques y los mensajes del mago marcados (compartidos entre el equipo).
- * Versión 2.2.4 (6/10, para el frontend 2.0.6 · empezar el piloto real):
- *   - limpiar_registros (solo equipo, frase «EMPEZAR PILOTO»): borra los registros de los ensayos y conserva tokens, inventario y bitacora.
- *     Antes copia las pestañas con datos a una hoja de respaldo nueva (sin contactos). Cada reinicio queda en la pestaña bitacora.
- *   - ?view=mago devuelve los conteos por pestaña y los últimos reinicios.
- * Versión 2.2.3 (5/10, para el frontend 2.0.2 · revisión de flujos de navegación):
- *   - registrar: un número de WhatsApp que ya está activo en el grupo no puede aceptar otra vez (ya_registrado). Evita consentimientos duplicados (I9).
- *   - ?view=invitacion&inv=CÓDIGO (pública): estado del grupo y modo, sin datos personales ni condición.
- *   - ?view=plan: al organizador, mientras recluta, le devuelve su enlace de invitación y cuántos aceptaron; error 'revocado' para quien se retiró.
- *   - retro: solo para planes cerrados y desde la hora de encuentro (retro_antes_del_plan).
- * Versión 2.2.2 (4/10, para el frontend 2.0.0 «M2»):
- *   - inventario.telefono_para_llamar (columna 14) y la consola ve los lugares por confirmar, para la ronda de llamadas.
- *   - Cambio de canal (failover E1→E2 u otro): marcar_failover deja el plan marcado y el panel lo saca de la comparación E1/E2.
- * Versión 2.2.1 (4/10, para el frontend M1-Claude):
- *   - participantes.consent_metodo: 'boton_todo' o 'individual' (el botón "Marcar todo" deja rastro).
- *   - ?view=plan sin plan_id: devuelve el plan más reciente del grupo de esa persona, y su propio estado (apuntado, llegó, retro).
- *   - probarMontaje revisa y repara encabezados (si la hoja no tiene datos).
- * Versión 2.2 (4/10): alinea el código con las métricas aprobadas en los tableros 06 y 11.2 (formato InnLab).
- *   - Capa 1: satisfacción con el plan (1–5) → mínimo por plan (least misery).
- *   - Capa 2: hora de encuentro por plan → % de llegadas a tiempo (tolerancia TOLERANCIA_MIN).
- *   - S9: causa estructurada cuando un plan se cae (tráfico, lluvia…).
- *   - Retro: "¿qué le agregarías?" (Validación de mercado).
- *   - Arreglos: "no puedo" ya descuenta un "me apunto"; si revoca el organizador se borra su línea base;
- *     las preferencias se guardan sin correos ni números largos (minimización).
- * Versión 2.1: ajustes I1–I9 del análisis del control de compromisos P6.
- *   I1 línea base POR GRUPO         I2 denominador n_invitados
- *   I3 minutos de operación humana  I4 versionado y change log
- *   I5 WTP y carga solo del organizador
- *   I6 la IA elige desde un inventario verificado
- *   I7 modo prueba excluido del análisis
- *   I8 sin flujo individual
- *   I9 un grupo con consentimiento incompleto o con un retiro queda DESESTIMADO de las pruebas
+ * Sintonía · Piloto v2.10.0 — backend en Google Apps Script
+ * E1 (WhatsApp + mago) y E1.5 (WhatsApp automatizado). Historial de versiones: CHANGELOG.md del repositorio.
+ *
+ * Desplegar: pegar este archivo completo, correr probarMontaje() si hay hojas o columnas nuevas, e Implementar → «Nueva versión».
+ * Zona horaria del proyecto: America/Bogota (la hora_encuentro se interpreta en esa zona).
  *
  * Seguridad
- *   - Las escrituras de los participantes (POST) quedan abiertas; las acciones del equipo exigen ADMIN_KEY.
+ *   - Las escrituras de participantes (POST) son abiertas; las acciones del equipo exigen ADMIN_KEY (MOTOR_KEY para el motor E1.5).
  *   - Las lecturas con datos (mago, panel) exigen ADMIN_KEY. La vista pública del plan solo muestra opciones y conteos.
- *   - Nombre de pila y WhatsApp van solo en 'contactos'. El resto usa ids seudónimos.
- *   - La clave de Gemini vive en Propiedades del script.
+ *   - Nombre de pila y WhatsApp van solo en 'contactos'; el resto usa ids seudónimos.
+ *   - Las preferencias con datos sensibles se guardan sin esa frase (TERMINOS_SENSIBLES_).
  *
- * Propiedades del script:
- *   SHEET_ID, ADMIN_KEY, GEMINI_API_KEY, GEMINI_MODEL (p. ej. gemini-2.5-flash),
- *   PRICE_IN_PER_M, PRICE_OUT_PER_M (USD/millón de tokens, de la página de precios vigente),
- *   COSTO_HORA_HUMANA_COP (valor de referencia para costear minutos del mago; opcional),
- *   AVISO_VERSION (p. ej. v1-2026-10),
- *   TOLERANCIA_MIN (minutos de gracia para contar una llegada "a tiempo"; por defecto 15)
- *   NOTIFICAR_A (opcional, v2.4.0: correo(s) del equipo para avisar inscripciones, separados por coma; sin datos personales)
- *   AVISO_POR_ACEPTACION (opcional, v2.8.0: «no» apaga el aviso por cada aceptación; por defecto se envía)
- *   CUPO_ABIERTO (opcional, v2.9.0: «si» deja que la landing lleve a la inscripción; por defecto «no»: lista de espera)
+ * Reglas del piloto (I1–I9): línea base por grupo · denominador n_invitados · minutos humanos · versionado de cambios ·
+ *   carga del organizador solo de quien organiza · la IA elige del inventario verificado · modo prueba fuera del análisis ·
+ *   sin flujo individual · un grupo con un retiro o sin consentimiento completo queda desestimado.
  *
- * Zona horaria: en Configuración del proyecto, poner America/Bogota. La hora_encuentro se interpreta en esa zona.
+ * Propiedades del script
+ *   SHEET_ID, ADMIN_KEY, MOTOR_KEY, GEMINI_API_KEY, GEMINI_MODEL, PRICE_IN_PER_M, PRICE_OUT_PER_M (USD por millón de tokens)
+ *   AVISO_VERSION (hoy v2-2026-11) · TOLERANCIA_MIN (llegada a tiempo; 15 por defecto) · COSTO_HORA_HUMANA_COP (opcional)
+ *   NOTIFICAR_A (correos del equipo, separados por coma) · AVISO_POR_ACEPTACION («no» lo apaga) · CUPO_ABIERTO («si»/«no»; «no» por defecto)
  */
 
 var PROMPT_VERSION = 'p2-2026-11';
@@ -160,7 +31,7 @@ var SHEETS = {
   contactos:        ['ts','pid','nombre_pila','whatsapp'],
   grupos:           ['ts','grupo_id','experimento','modo','organizador_pid','codigo_invitacion','tipo_grupo','tamano_grupo','n_invitados','estado','motivo','version','nombre'],
   linea_base_grupo: ['ts','grupo_id','tipo_grupo','tamano_grupo','planes_realizados_mes','planes_fallidos_mes','quien_organiza','fatiga_previa_org','disponibilidad','origen'],
-  linea_base:       ['ts','pid','grupo_id','fatiga_previa','disponibilidad'],   // v2.9.1: + disponibilidad de cada persona
+  linea_base:       ['ts','pid','grupo_id','fatiga_previa','disponibilidad'],   // + disponibilidad de cada persona
   preferencias:     ['ts','pid','grupo_id','resumen'],
   inventario:       ['id','categoria','nombre','zona','direccion','costo_aprox','horario','duracion','acceso','apto_para','fuente','verificado_el','estado','telefono_para_llamar'],
   planes:           ['ts','plan_id','grupo_id','experimento','ronda','version','estado','opciones_json','elegida','t_propuesto','t_publicado','t_cerrado','hora_encuentro','n_invitados','n_consentidos','n_apuntados','n_asistentes','causa_caida','nota','failover'],
@@ -168,39 +39,39 @@ var SHEETS = {
   eventos:          ['ts','plan_id','grupo_id','pid','tipo','canal','nota'],
   operacion:        ['ts','plan_id','grupo_id','experimento','actor','minutos','causa','nota'],
   cambios:          ['ts','experimento','version','descripcion','registrado_por'],
-  bitacora:         ['ts','accion','detalle','respaldo_url','registrado_por'],   // v2.2.4: reinicios de la hoja
+  bitacora:         ['ts','accion','detalle','respaldo_url','registrado_por'],   // reinicios de la hoja
   tokens:           ['ts','plan_id','grupo_id','uso','modelo','prompt_version','tokens_in','tokens_out','costo_usd'],
   retro:            ['ts','plan_id','pid','rol','fatiga_post','carga_organizador','satisfaccion_plan','valor_final','repetiria','confort_bot','sentimiento_autodeclarado','que_agregaria','comentario'],
-  wtp:              ['ts','pid','grupo_id','muy_barato','barato','caro','muy_caro','preventa','plan_id','rol','suscripcion','quien_paga','parches'],   // v2.10.0: + plan_id, rol y 3 preguntas
-  // v2.2.6: usabilidad (fuera de I4). SEQ 1–7 por momento; SUS 1–5 × 10 → sus_puntaje 0–100. toma: con_pulso | diferida
+  wtp:              ['ts','pid','grupo_id','muy_barato','barato','caro','muy_caro','preventa','plan_id','rol','suscripcion','quien_paga','parches'],   // + plan_id, rol y 3 preguntas
+  // usabilidad (fuera de I4). SEQ 1–7 por momento; SUS 1–5 × 10 → sus_puntaje 0–100. toma: con_pulso | diferida
   usabilidad:       ['ts','plan_id','pid','grupo_id','rol','experimento','ronda','toma','dias_desde_encuentro','seq_activacion','seq_interaccion','seq_continuidad',
                      'sus_01','sus_02','sus_03','sus_04','sus_05','sus_06','sus_07','sus_08','sus_09','sus_10','sus_puntaje','sus_omitido'],
-  // v2.3.0: mago in / mago off. Una fila por sesión; al cerrarla se suma a 'operacion' con causa 'sesion'
+  // mago in / mago off. Una fila por sesión; al cerrarla se suma a 'operacion' con causa 'sesion'
   sesiones:         ['ts','sesion_id','experimento','grupo_id','plan_id','mago','inicio','fin','minutos','estado'],
-  // v2.4.0: una fila por ronda de votación (no por persona). resultado: índice de la opción ganadora, 'ninguna' o 'mas_opciones'
+  // una fila por ronda de votación (no por persona). resultado: índice de la opción ganadora, 'ninguna' o 'mas_opciones'
   decisiones:       ['ts','plan_id','grupo_id','experimento','ronda_votacion','resultado','votaron','total','votos_opciones','cualquiera','ninguna','nota'],
-  // v2.7.0: carga y usabilidad de la consola para quien opera (después de cada plan). TLX sin ponderar: promedio de 6 escalas 0–100
+  // carga y usabilidad de la consola para quien opera (después de cada plan). TLX sin ponderar: promedio de 6 escalas 0–100
   pulso_mago:       ['ts','plan_id','grupo_id','experimento','ronda','mago','consola_version','sus_01','sus_02','sus_03','sus_04','sus_05','sus_06','sus_07','sus_08','sus_09','sus_10','sus_puntaje',
                      'tlx_mental','tlx_fisica','tlx_temporal','tlx_desempeno','tlx_esfuerzo','tlx_frustracion','tlx_raw','comentario'],
-  // v2.7.0: lo que mide la propia consola, por etapa del mapa (grupo, proponer, decidir, dia, cierre)
-  medicion_consola: ['ts','plan_id','grupo_id','experimento','mago','consola_version','etapa','segundos_activos','toques','scroll_px','fallos_red','fallos_timeout'],   // v2.9.3: + fallos
-  // v2.9.0: quien escanea el QR cuando el piloto no tiene cupo. Datos de contacto con autorización; nada de respuestas de investigación
+  // lo que mide la propia consola, por etapa del mapa (grupo, proponer, decidir, dia, cierre)
+  medicion_consola: ['ts','plan_id','grupo_id','experimento','mago','consola_version','etapa','segundos_activos','toques','scroll_px','fallos_red','fallos_timeout'],   // + fallos
+  // quien escanea el QR cuando el piloto no tiene cupo. Datos de contacto con autorización; nada de respuestas de investigación
   lista_espera:     ['ts','espera_id','nombre_pila','whatsapp','tamano_grupo','origen','autoriza_datos','mayor_18','aviso_version','estado']
 };
 
 var TIPOS_GRUPO  = ['amigos','familia','pareja','trabajo','otro'];
 var TIPOS_EVENTO = ['activacion','recordatorio','me_apunto','no_puedo','salida_sugerida','checkpoint_llegada','llego_casa','cuenta','mensaje_mago','plan_caido','salir','cambio_canal',
   'msg_ingreso','msg_opciones','msg_confirmado','msg_retro',
-  'msg_evento','msg_hoy','msg_checkpoint','msg_todos','msg_en_casa'];   // v2.4.0: más mensajes del recorrido del mago   // v2.3.2: mensajes del mago marcados como enviados (para el recorrido de la consola)
-var EVENTOS_PARTICIPANTE = ['me_apunto', 'no_puedo', 'checkpoint_llegada', 'llego_casa', 'salir'];   // v2.2.5: lo único que un participante registra por sí mismo
-var ACTORES      = ['mago','soporte','tecnico','motor'];   // v2.3.0: motor = n8n
+  'msg_evento','msg_hoy','msg_checkpoint','msg_todos','msg_en_casa'];   // más mensajes del recorrido del mago   // mensajes del mago marcados como enviados (para el recorrido de la consola)
+var EVENTOS_PARTICIPANTE = ['me_apunto', 'no_puedo', 'checkpoint_llegada', 'llego_casa', 'salir'];   // lo único que un participante registra por sí mismo
+var ACTORES      = ['mago','soporte','tecnico','motor'];   // motor = n8n
 var CAUSAS       = ['sesion','coordinacion','redactar_mensaje','resolver_duda','cambio_plan','recordatorio','falla_tecnica','seguridad','otro'];
 var CAUSAS_CAIDA = ['trafico','lluvia','agenda','costo','desinteres','imprevisto','otro'];   // S9 y capa 2; sin causas de salud (dato sensible)
 
 /* ============================== Utilidades ============================== */
 
 function prop_(k, def) { var v = PropertiesService.getScriptProperties().getProperty(k); return (v === null || v === '') ? def : v; }
-/* v2.3.4 · velocidad: la hoja, cada pestaña y sus filas se leen una sola vez por consulta. Cualquier escritura descarta la copia de esa pestaña. */
+/* velocidad: la hoja, cada pestaña y sus filas se leen una sola vez por consulta. Cualquier escritura descarta la copia de esa pestaña. */
 var MEMO_ = { ss: null, sh: {}, rows: {} };
 function memoReset_() { MEMO_ = { ss: null, sh: {}, rows: {} }; }
 function memoSoltar_(name) { if (name) delete MEMO_.rows[name]; else MEMO_.rows = {}; }
@@ -219,14 +90,14 @@ function revisarEncabezados_() {
   Object.keys(SHEETS).forEach(function (n) {
     var sh = sheet_(n), want = SHEETS[n], have = sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), 1)).getValues()[0].filter(function (x) { return x !== ''; });
     if (have.join('|') === want.join('|')) return;
-    if (n === 'inventario' && want.every(function (c) { return have.indexOf(c) >= 0; })) { avisos.push('ℹ️ inventario: las ' + want.length + ' columnas del código están (en otro orden' + (have.length > want.length ? ', con ' + (have.length - want.length) + ' extra' : '') + '). El código lee por nombre y nunca escribe en esta hoja.'); return; }   // v2.3.5
-    if (have.length > want.length && have.slice(0, want.length).join('|') === want.join('|')) { avisos.push('ℹ️ ' + n + ': ' + (have.length - want.length) + ' columnas extra al final (se conservan; el código lee por nombre)'); return; }   // v2.3.0: inventario ampliado
+    if (n === 'inventario' && want.every(function (c) { return have.indexOf(c) >= 0; })) { avisos.push('ℹ️ inventario: las ' + want.length + ' columnas del código están (en otro orden' + (have.length > want.length ? ', con ' + (have.length - want.length) + ' extra' : '') + '). El código lee por nombre y nunca escribe en esta hoja.'); return; }
+    if (have.length > want.length && have.slice(0, want.length).join('|') === want.join('|')) { avisos.push('ℹ️ ' + n + ': ' + (have.length - want.length) + ' columnas extra al final (se conservan; el código lee por nombre)'); return; }   // inventario ampliado
     if (have.length < want.length && want.slice(0, have.length).join('|') === have.join('|')) {   // solo faltan columnas nuevas al final
       sh.getRange(1, have.length + 1, 1, want.length - have.length).setValues([want.slice(have.length)]); avisos.push('🔧 ' + n + ': columnas nuevas agregadas al final'); return; }
     if (sh.getLastRow() <= 1) { sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), want.length)).clearContent(); sh.getRange(1, 1, 1, want.length).setValues([want]); avisos.push('🔧 ' + n + ': encabezado actualizado'); }
     else avisos.push('❌ ' + n + ': el encabezado no coincide y ya hay datos. Borra esas filas de prueba o la hoja y vuelve a correr probarMontaje.');
   });
-  memoSoltar_();   // v2.3.4
+  memoSoltar_();
   return avisos;
 }
 function append_(name, obj) {
@@ -236,7 +107,7 @@ function append_(name, obj) {
 function rows_(name) {
   if (MEMO_.rows[name]) return MEMO_.rows[name].map(function (o) { return Object.assign({}, o); });
   var v = sheet_(name).getDataRange().getValues(), h = v[0], out = [];
-  for (var i = 1; i < v.length; i++) { if (v[i].every(function (x) { return x === '' || x === null; })) continue;   // v2.3.1: ignora la fila vacía que deja «Empezar piloto real»
+  for (var i = 1; i < v.length; i++) { if (v[i].every(function (x) { return x === '' || x === null; })) continue;   // ignora la fila vacía que deja «Empezar piloto real»
     var o = {}; for (var j = 0; j < h.length; j++) o[h[j]] = v[i][j]; o._row = i + 1; out.push(o); }
   MEMO_.rows[name] = out;
   return out.map(function (o) { return Object.assign({}, o); });
@@ -258,26 +129,26 @@ function str_(v, max) { return String(v === undefined || v === null ? '' : v).sl
 function int_(v) { var n = parseInt(v, 10); return isNaN(n) ? '' : n; }
 function bool_(v) { return v === true || v === 'true' || v === 1 || v === '1'; }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
-/** v2.4.0: correo al equipo (propiedad NOTIFICAR_A). Nunca lleva nombres ni números de participantes. */
-var NOTIFICAR_A_POR_DEFECTO = '';   // v2.4.0: correo(s) del equipo, separados por coma. La propiedad NOTIFICAR_A, si existe, manda sobre esto.
+/** correo al equipo (propiedad NOTIFICAR_A). Nunca lleva nombres ni números de participantes. */
+var NOTIFICAR_A_POR_DEFECTO = '';   // correo(s) del equipo, separados por coma. La propiedad NOTIFICAR_A, si existe, manda sobre esto.
 function notificarA_() { return prop_('NOTIFICAR_A', NOTIFICAR_A_POR_DEFECTO); }
 function avisarEquipo_(asunto, cuerpo) {
   var to = notificarA_(); if (!to || typeof MailApp === 'undefined') return;
   try { MailApp.sendEmail(to, asunto, cuerpo); } catch (x) { Logger.log('aviso no enviado: ' + x); }
 }
 function isAdmin_(k) { var a = prop_('ADMIN_KEY', ''); return a !== '' && String(k || '') === a; }
-function isMotor_(k) { var m = prop_('MOTOR_KEY', ''); return m !== '' && String(k || '') === m; }   // v2.3.0
-var MOTOR_ACCIONES = ['evento', 'operacion', 'proponer_ia', 'publicar_plan', 'cerrar_plan', 'redactar_ia', 'reabrir_opciones'];   // v2.7.1: + reabrir_opciones (ronda 2 en E1.5)   // lo único que el motor puede hacer con MOTOR_KEY
+function isMotor_(k) { var m = prop_('MOTOR_KEY', ''); return m !== '' && String(k || '') === m; }
+var MOTOR_ACCIONES = ['evento', 'operacion', 'proponer_ia', 'publicar_plan', 'cerrar_plan', 'redactar_ia', 'reabrir_opciones'];   // + reabrir_opciones (ronda 2 en E1.5)   // lo único que el motor puede hacer con MOTOR_KEY
 function findOne_(name, key, val) { var r = rows_(name); for (var i = 0; i < r.length; i++) if (String(r[i][key]) === String(val)) return r[i]; return null; }
 function activos_(gid) { return rows_('participantes').filter(function (p) { return p.grupo_id === gid && p.estado === 'activo'; }); }
-/** v2.2.3: ¿ese celular ya está activo en el grupo? Compara los últimos 10 dígitos (se guarda como +57…). */
+/** ¿ese celular ya está activo en el grupo? Compara los últimos 10 dígitos (se guarda como +57…). */
 function telEnGrupo_(gid, tel) {
   var act = {}; activos_(gid).forEach(function (p) { act[p.pid] = true; });
   var t = String(tel).replace(/\D/g, '').slice(-10);
   return rows_('contactos').some(function (c) { return act[c.pid] && String(c.whatsapp).replace(/\D/g, '').slice(-10) === t; });
 }
 function escala_(v) { var n = int_(v); return (n !== '' && n >= 1 && n <= 5) ? n : ''; }   // escalas 1–5; fuera de rango queda vacío
-/** v2.8.1: términos que delatan datos sensibles (salud, religión, política, orientación sexual). Se compara sin tildes y por inicio de palabra.
+/** términos que delatan datos sensibles (salud, religión, política, orientación sexual). Se compara sin tildes y por inicio de palabra.
  *  El alcohol y la comida no están: «no toma», «vegetariano» o «sin alcohol» son restricciones del plan. Debe coincidir con S.SENSIBLE (sintonia.js). */
 var TERMINOS_SENSIBLES_ = ['diabet', 'hipertens', 'cancer', 'vih', 'sida', 'epilep', 'asma', 'depresi', 'ansiedad', 'bipolar', 'esquizofren', 'autis', 'tdah',
   'embaraz', 'enfermedad', 'enfermo ', 'enferma ', 'enfermos ', 'enfermas ', 'diagnost', 'medicament', 'pastilla', 'terapia', 'psiquiatr', 'psicolog', 'alergi', 'alergic', 'celiac', 'cirugi', 'operado ', 'operada ', 'me operaron', 'lo operaron', 'la operaron', 'discapacid',
@@ -286,7 +157,7 @@ var TERMINOS_SENSIBLES_ = ['diabet', 'hipertens', 'cancer', 'vih', 'sida', 'epil
   'gay', 'lesbi', 'bisexual', 'homosex', 'orientacion sexual', 'lgbt', 'trans'];
 function sinTildes_(s) { return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
 function esSensible_(frase) { var t = ' ' + sinTildes_(frase).replace(/[^a-z0-9ñ ]/g, ' ') + ' '; return TERMINOS_SENSIBLES_.some(function (k) { return t.indexOf(' ' + k) >= 0 && (k !== 'trans' || / trans /.test(t)); }); }
-/** v2.8.1: la frase (entre comas, puntos o saltos de línea) que mencione un dato sensible se reemplaza; el resto de la preferencia se conserva. */
+/** la frase (entre comas, puntos o saltos de línea) que mencione un dato sensible se reemplaza; el resto de la preferencia se conserva. */
 function quitarSensibles_(s) {
   var partes = String(s).split(/([.,;:!?\n]+)/), out = [], omitida = false;
   partes.forEach(function (x) { if (/^[.,;:!?\n]+$/.test(x)) { out.push(x); return; } if (x.trim() && esSensible_(x)) { if (!omitida) out.push(' [dato sensible omitido]'); omitida = true; } else { out.push(x); omitida = false; } });
@@ -313,14 +184,14 @@ function doPost(e) {
       proponer_ia: proponerIA_, publicar_plan: publicarPlan_, votar: votar_, cerrar_plan: cerrarPlan_, marcar_caido: marcarCaido_, corregir_plan: corregirPlan_, marcar_failover: marcarFailover_,
       evento: evento_, operacion: operacion_, registrar_cambio: registrarCambio_, redactar_ia: redactarIA_,
       retro: retro_, wtp: wtp_, usabilidad: usabilidad_, revocar: revocar_, sesion_mago: sesionMago_, limpiar_registros: limpiarRegistros_,
-      reabrir_opciones: reabrirOpciones_,   // v2.4.0
-      pulso_mago: pulsoMago_, medicion_consola: medicionConsola_,   // v2.7.0
-      lista_espera: listaEspera_   // v2.9.0
+      reabrir_opciones: reabrirOpciones_,
+      pulso_mago: pulsoMago_, medicion_consola: medicionConsola_,
+      lista_espera: listaEspera_
     };
     var a = String(d.action || '');
     if (!H[a]) return json_({ ok: false, error: 'accion_desconocida' });
-    if (isMotor_(d.key) && MOTOR_ACCIONES.indexOf(a) >= 0) { d.key = prop_('ADMIN_KEY', ''); d.por_motor = true; }   // v2.3.0: el motor actúa solo en su lista
-    // v2.9.3: un reintento con el mismo req_id devuelve la respuesta ya dada, sin escribir otra vez
+    if (isMotor_(d.key) && MOTOR_ACCIONES.indexOf(a) >= 0) { d.key = prop_('ADMIN_KEY', ''); d.por_motor = true; }   // el motor actúa solo en su lista
+    // un reintento con el mismo req_id devuelve la respuesta ya dada, sin escribir otra vez
     var rq = IDEMPOTENTES_.indexOf(a) >= 0 && /^[\w-]{8,80}$/.test(String(d.req_id || '')) ? 'rq_' + a + '_' + d.req_id : '', cache = null;
     if (rq) { try { cache = CacheService.getScriptCache(); var ya = cache.get(rq); if (ya) { var o = JSON.parse(ya); o.repetido = true; return json_(o); } } catch (x) { cache = null; } }
     var res = H[a](d);
@@ -331,15 +202,15 @@ function doPost(e) {
   } finally { try { lock.releaseLock(); } catch (x) {} }
 }
 
-/** v2.9.3: acciones que escriben y que un reintento podría duplicar. */
+/** acciones que escriben y que un reintento podría duplicar. */
 var IDEMPOTENTES_ = ['registrar', 'operacion', 'lista_espera', 'wtp', 'pulso_mago', 'evento', 'sesion_mago', 'medicion_consola', 'cerrar_plan', 'publicar_plan', 'crear_plan', 'reabrir_opciones'];
-/** v2.9.3: el pid activo de ese número en el grupo, o ''. */
+/** el pid activo de ese número en el grupo, o ''. */
 function pidTelEnGrupo_(gid, tel) {
   var act = {}; activos_(gid).forEach(function (p) { act[p.pid] = true; });
   var t = String(tel).replace(/\D/g, '').slice(-10), c = rows_('contactos').filter(function (c) { return act[c.pid] && String(c.whatsapp).replace(/\D/g, '').slice(-10) === t; })[0];
   return c ? c.pid : '';
 }
-/** v2.9.3: el grupo que este número acaba de inscribir (menos de 60 min, todavía reclutando), para no crear otro al reintentar. */
+/** el grupo que este número acaba de inscribir (menos de 60 min, todavía reclutando), para no crear otro al reintentar. */
 function grupoRecienteDe_(tel) {
   var t = String(tel).replace(/\D/g, '').slice(-10); if (t.length < 10) return null;
   var limite = Date.now() - 60 * 6e4, pidsTel = {};
@@ -356,7 +227,7 @@ function registrar_(d) {
     return { ok: false, error: 'faltan_autorizaciones' };
   var pid = id_('p'), grupo, rol;
   if (!d.codigo_invitacion) {
-    var previo = grupoRecienteDe_(d.whatsapp);   // v2.9.3: reintento de la misma inscripción
+    var previo = grupoRecienteDe_(d.whatsapp);   // reintento de la misma inscripción
     if (previo) return { ok: true, ya_estaba: true, pid: previo.pid, rol: 'organizador', grupo_id: previo.g.grupo_id, experimento: previo.g.experimento, codigo_invitacion: previo.g.codigo_invitacion };
     rol = 'organizador';
     var tipo = TIPOS_GRUPO.indexOf(String(d.tipo_grupo)) >= 0 ? String(d.tipo_grupo) : '';
@@ -373,34 +244,34 @@ function registrar_(d) {
     append_('linea_base_grupo', { grupo_id: gid, tipo_grupo: tipo, tamano_grupo: int_(d.tamano_grupo) === '' ? nInv : int_(d.tamano_grupo),
       planes_realizados_mes: int_(d.planes_realizados_mes), planes_fallidos_mes: int_(d.planes_fallidos_mes),
       quien_organiza: limpiar_(str_(d.quien_organiza, 40)), fatiga_previa_org: int_(d.fatiga_previa),
-      disponibilidad: limpiar_(str_(d.disponibilidad, 300)), origen: str_(d.origen, 20).replace(/[^\w-]/g, '') });   // v2.3.0: origen = campaña del enlace (p. ej. ig)
+      disponibilidad: limpiar_(str_(d.disponibilidad, 300)), origen: str_(d.origen, 20).replace(/[^\w-]/g, '') });   // origen = campaña del enlace (p. ej. ig)
   } else {
     rol = 'miembro';
     var g = findOne_('grupos', 'codigo_invitacion', str_(d.codigo_invitacion, 20).toUpperCase());
     if (!g) return { ok: false, error: 'invitacion_invalida' };
-    var yaPid0 = str_(d.whatsapp, 20).replace(/\D/g, '') ? pidTelEnGrupo_(g.grupo_id, str_(d.whatsapp, 20).replace(/\D/g, '')) : '';   // v2.9.3: antes que «lleno» o «cerrado»
+    var yaPid0 = str_(d.whatsapp, 20).replace(/\D/g, '') ? pidTelEnGrupo_(g.grupo_id, str_(d.whatsapp, 20).replace(/\D/g, '')) : '';   // antes que «lleno» o «cerrado»
     if (yaPid0) return { ok: true, ya_estaba: true, pid: yaPid0, rol: 'miembro', grupo_id: g.grupo_id, experimento: g.experimento };
     if (g.estado !== 'reclutando') return { ok: false, error: 'reclutamiento_cerrado' };
     if (activos_(g.grupo_id).length >= Math.min(MAX_GRUPO, Number(g.n_invitados) || MAX_GRUPO)) return { ok: false, error: 'grupo_lleno' };
     grupo = { grupo_id: g.grupo_id, experimento: g.experimento, codigo_invitacion: g.codigo_invitacion };
     var tel = str_(d.whatsapp, 20).replace(/\D/g, '');
-    var yaPid = tel ? pidTelEnGrupo_(g.grupo_id, tel) : '';   // v2.2.3: una persona = un consentimiento (I9) · v2.9.3: se le devuelve su enlace
+    var yaPid = tel ? pidTelEnGrupo_(g.grupo_id, tel) : '';   // una persona = un consentimiento (I9) · v2.9.3: se le devuelve su enlace
     if (yaPid) return { ok: true, ya_estaba: true, pid: yaPid, rol: 'miembro', grupo_id: g.grupo_id, experimento: g.experimento };
   }
   append_('participantes', { pid: pid, grupo_id: grupo.grupo_id, rol: rol, experimento: grupo.experimento,
     autoriza_datos: true, optin_whatsapp: true, mayor_18: true, consent_investigacion: true,
     aviso_version: prop_('AVISO_VERSION', 'v1'), estado: 'activo',
-    consent_metodo: d.consent_metodo === 'boton_todo' ? 'boton_todo' : 'individual' });   // v2.2.1: queda registro de si usó "Marcar todo"
+    consent_metodo: d.consent_metodo === 'boton_todo' ? 'boton_todo' : 'individual' });   // queda registro de si usó "Marcar todo"
   append_('contactos', { pid: pid, nombre_pila: str_(d.nombre_pila, 40), whatsapp: str_(d.whatsapp, 20).replace(/[^\d+]/g, '') });
-  if (rol === 'miembro') {   // v2.4.0: aviso cuando aceptan todos · v2.8.0: y por cada aceptación nueva (se apaga con AVISO_POR_ACEPTACION = no)
+  if (rol === 'miembro') {   // aviso cuando aceptan todos · v2.8.0: y por cada aceptación nueva (se apaga con AVISO_POR_ACEPTACION = no)
     var gg = findOne_('grupos', 'grupo_id', grupo.grupo_id), van = gg ? activos_(gg.grupo_id).length : 0, nombreG = gg ? (gg.nombre || gg.tipo_grupo) : '';
     if (gg && van < Number(gg.n_invitados) && String(prop_('AVISO_POR_ACEPTACION', 'si')).toLowerCase() !== 'no')
       avisarEquipo_('Sintonía · aceptó 1 persona más (' + van + ' de ' + gg.n_invitados + ')', 'Aceptó 1 persona más en «' + nombreG + '»: ' + van + ' de ' + gg.n_invitados + '. Consola del mago: https://sintonia.my/piloto/mago.html');
     if (gg && van >= Number(gg.n_invitados)) avisarEquipo_('Sintonía · ya aceptaron todos', 'Ya aceptaron todas las personas del grupo «' + (gg.nombre || gg.tipo_grupo) + '». Cierra el reclutamiento y crea el grupo de WhatsApp: https://sintonia.my/piloto/mago.html');
   }
-  var dispo = limpiar_(str_(d.disponibilidad, 300));   // v2.9.1: la disponibilidad de cada persona, no solo la de quien organiza
+  var dispo = limpiar_(str_(d.disponibilidad, 300));   // la disponibilidad de cada persona, no solo la de quien organiza
   if (int_(d.fatiga_previa) !== '' || dispo) append_('linea_base', { pid: pid, grupo_id: grupo.grupo_id, fatiga_previa: int_(d.fatiga_previa), disponibilidad: dispo });
-  if (d.preferencias) append_('preferencias', { pid: pid, grupo_id: grupo.grupo_id, resumen: quitarSensibles_(limpiar_(str_(d.preferencias, 400))) });   // v2.8.1: + datos sensibles
+  if (d.preferencias) append_('preferencias', { pid: pid, grupo_id: grupo.grupo_id, resumen: quitarSensibles_(limpiar_(str_(d.preferencias, 400))) });   // + datos sensibles
   return { ok: true, pid: pid, rol: rol, grupo_id: grupo.grupo_id, experimento: grupo.experimento,
     codigo_invitacion: rol === 'organizador' ? grupo.codigo_invitacion : undefined };
 }
@@ -421,7 +292,7 @@ function crearPlan_(d) {
   if (g.estado !== 'activo') return { ok: false, error: 'grupo_no_elegible:' + g.estado };
   var delGrupo = rows_('planes').filter(function (p) { return p.grupo_id === g.grupo_id; });
   var enCurso = delGrupo.filter(function (p) { return ['borrador', 'en_revision', 'votando'].indexOf(p.estado) >= 0; })[0];
-  if (enCurso) return { ok: false, error: 'plan_en_curso', plan_id: enCurso.plan_id };   // v2.2.5: un plan a la vez por grupo
+  if (enCurso) return { ok: false, error: 'plan_en_curso', plan_id: enCurso.plan_id };   // un plan a la vez por grupo
   var ronda = delGrupo.length + 1;
   var pl = id_('pl');
   append_('planes', { plan_id: pl, grupo_id: g.grupo_id, experimento: g.experimento, ronda: ronda, version: g.version || 'v1',
@@ -429,12 +300,12 @@ function crearPlan_(d) {
   return { ok: true, plan_id: pl, ronda: ronda, version: g.version || 'v1' };
 }
 
-/* v2.3.5: solo cuenta como activo lo marcado «activo». Antes, un estado vacío contaba como activo (1000 filas sin verificar entraban a las propuestas). */
+/* solo cuenta como activo lo marcado «activo». Antes, un estado vacío contaba como activo (1000 filas sin verificar entraban a las propuestas). */
 function esActivo_(i) { return String(i.estado || '').trim().toLowerCase() === 'activo'; }
 function inventarioPendiente_() { return rows_('inventario').filter(function (i) { return i.id !== '' && !esActivo_(i); }); }
 function inventarioActivo_() { return rows_('inventario').filter(function (i) { return esActivo_(i) && i.id !== ''; }); }
 
-/** v2.3.6 · velocidad: antes de llamar a Gemini se filtra el inventario activo con lo que pidió el grupo (zona, franja y presupuesto)
+/** velocidad: antes de llamar a Gemini se filtra el inventario activo con lo que pidió el grupo (zona, franja y presupuesto)
  *  y se envían como máximo 50 lugares, en vez de los 1000. Si un filtro deja menos de 15, se afloja (primero zona, luego franja, luego costo).
  *  Las ids que devuelve Gemini se siguen validando contra TODO el inventario activo. */
 function preFiltro_(inv, texto) {
@@ -464,10 +335,10 @@ function proponerIA_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
   var inv = inventarioActivo_(); if (!inv.length) return { ok: false, error: 'inventario_vacio' };
-  var cand = preFiltro_(inv, String(d.restricciones || '') + ' ' + rows_('preferencias').filter(function (r) { return r.grupo_id === p.grupo_id; }).map(function (r) { return r.resumen; }).join(' '));   // v2.3.6
+  var cand = preFiltro_(inv, String(d.restricciones || '') + ' ' + rows_('preferencias').filter(function (r) { return r.grupo_id === p.grupo_id; }).map(function (r) { return r.resumen; }).join(' '));
   var invTxt = cand.map(function (i) { return [i.id, i.categoria, i.nombre, i.zona, i.costo_aprox, i.horario, i.franja_horaria || '', i.duracion, i.apto_para].join(' | '); }).join('\n');
   var prefs = rows_('preferencias').filter(function (r) { return r.grupo_id === p.grupo_id; }).map(function (r) { return '- ' + r.resumen; }).join('\n') || '- (sin preferencias declaradas)';
-  var lb = findOne_('linea_base_grupo', 'grupo_id', p.grupo_id), dispo = lb && lb.disponibilidad ? String(lb.disponibilidad) : 'sin dato';   // v2.4.0
+  var lb = findOne_('linea_base_grupo', 'grupo_id', p.grupo_id), dispo = lb && lb.disponibilidad ? String(lb.disponibilidad) : 'sin dato';
   var prompt =
     'Eres Sintonía, «el +1 de confianza» del parche, que coordina planes de grupos que ya existen en Cali, Colombia. Tu única tarea es proponer planes.\n' +
     'Arma EXACTAMENTE 3 opciones USANDO SOLO lugares del INVENTARIO (por id). Prohibido inventar lugares, eventos, precios u horarios.\n' +
@@ -479,14 +350,14 @@ function proponerIA_(d) {
     '(5) "titulo": máximo 30 caracteres, sin emojis (va como opción de una encuesta de WhatsApp); ' +
     '"por_que": una frase, máximo 120 caracteres, sobre qué van a hacer.\n\n' +
     'Disponibilidad del grupo (días y franjas que marcó quien organiza): ' + str_(dispo, 200) + '\n' +
-    (d.fechas ? 'Fecha(s) concreta(s) del plan: ' + str_(d.fechas, 200) + '. Cada lugar tiene que estar abierto ese día de la semana y en esa franja (mira su horario).\n' : '') +   // v2.8.0
+    (d.fechas ? 'Fecha(s) concreta(s) del plan: ' + str_(d.fechas, 200) + '. Cada lugar tiene que estar abierto ese día de la semana y en esa franja (mira su horario).\n' : '') +
     'Lo que dijeron para este plan (puede ser el chat pegado): ' + str_(d.restricciones, 1500) + '\n' +
     'Preferencias del grupo (resumidas):\n' + prefs + '\n\n' +
     'INVENTARIO (id | categoría | nombre | zona | costo | horario | franja | duración | apto para):\n' + invTxt + '\n\n' +
     'Responde SOLO JSON: {"opciones":[{"tipo":"exacta|intermedia|diferente","titulo":"","paradas_ids":["INV-01"],"hora_salida":"","presupuesto_aprox":"","por_que":""}]}';
   var byId = {}; inv.forEach(function (i) { byId[i.id] = i; });
   var descartadas = 0, r = null, ops = [], usos = { in: 0, out: 0, costo_usd: 0 };
-  for (var intento = 0; intento < 2 && ops.length < 3; intento++) {   // v2.4.0: si devuelve menos de 3, se pide una vez más
+  for (var intento = 0; intento < 2 && ops.length < 3; intento++) {   // si devuelve menos de 3, se pide una vez más
     r = gemini_(intento ? prompt + '\nOJO: la respuesta anterior trajo menos de 3 opciones válidas. Devuelve 3, con ids del inventario.' : prompt, true, p.plan_id, p.grupo_id, 'propuesta');
     if (!r.ok) return r;
     usos.in += r.usage.in; usos.out += r.usage.out; usos.costo_usd += r.usage.costo_usd;
@@ -502,9 +373,9 @@ function proponerIA_(d) {
   return { ok: true, opciones: ops, ids_descartados: descartadas, tokens: usos };
 }
 
-/** v2.8.1: título de hasta 30 caracteres, cortado en la última palabra completa (va en la encuesta de WhatsApp). */
+/** título de hasta 30 caracteres, cortado en la última palabra completa (va en la encuesta de WhatsApp). */
 function tituloCorto_(t) { t = str_(t, 120).trim(); if (t.length <= 30) return t; var c = t.slice(0, 31), k = c.lastIndexOf(' '); return (k > 10 ? c.slice(0, k) : t.slice(0, 30)).replace(/[\s,;:·—-]+$/, '').replace(/\s+(con|de|del|en|y|a|al|la|el|los|las|para|por|o)$/i, ''); }
-/** v2.4.0: lo que se guarda de cada parada (sirve para el mensaje, la ubicación del evento y el enlace de Google Maps). */
+/** lo que se guarda de cada parada (sirve para el mensaje, la ubicación del evento y el enlace de Google Maps). */
 function parada_(i) { return { id: i.id, nombre: i.nombre, zona: i.zona, macro_zona: i.macro_zona || '', direccion: i.direccion || '', latitud: i.latitud || '', longitud: i.longitud || '', costo_aprox: i.costo_aprox, horario: i.horario }; }
 
 /** Humano en el loop: el mago revisa o edita antes de publicar. */
@@ -532,20 +403,20 @@ function votar_(d) {
 function cerrarPlan_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
-  if (p.estado === 'cerrado' || p.estado === 'caido') return { ok: false, error: 'plan_ya_cerrado' };   // v2.2.5: no pisa t_cerrado ni la opción elegida (usar corregir_plan)
+  if (p.estado === 'cerrado' || p.estado === 'caido') return { ok: false, error: 'plan_ya_cerrado' };   // no pisa t_cerrado ni la opción elegida (usar corregir_plan)
   var caido = bool_(d.caido), hora = fecha_(d.hora_encuentro);
   var causa = CAUSAS_CAIDA.indexOf(String(d.causa_caida)) >= 0 ? String(d.causa_caida) : '';
   if (caido && !causa) return { ok: false, error: 'falta_causa_caida', opciones: CAUSAS_CAIDA };
   if (!caido && !hora) return { ok: false, error: 'falta_hora_encuentro', formato: 'YYYY-MM-DD HH:mm' };   // capa 2: sin hora no se mide la puntualidad
   var patch = { estado: caido ? 'caido' : 'cerrado', elegida: int_(d.elegida), t_cerrado: new Date(),
     hora_encuentro: hora, causa_caida: caido ? causa : '', nota: str_(d.nota, 300) };
-  if (!caido && d.hora_salida !== undefined) patch.opciones_json = conSalida_(p.opciones_json, int_(d.elegida), d.hora_salida);   // v2.2.5: la salida queda coherente con el encuentro
-  if (!caido && d.decision) decision_(p, d.decision, int_(d.elegida));   // v2.4.0
+  if (!caido && d.hora_salida !== undefined) patch.opciones_json = conSalida_(p.opciones_json, int_(d.elegida), d.hora_salida);   // la salida queda coherente con el encuentro
+  if (!caido && d.decision) decision_(p, d.decision, int_(d.elegida));
   updateRow_('planes', p._row, patch);
   return { ok: true };
 }
 
-/** v2.4.0 · Se registra la decisión de cada ronda, no el voto de cada persona (minimización y menos minutos del mago).
+/** Se registra la decisión de cada ronda, no el voto de cada persona (minimización y menos minutos del mago).
  *  dec = { votaron, total, votos: [n por opción], cualquiera, ninguna, nota }. resultado: índice ganador, 'ninguna' o 'mas_opciones'. */
 function decision_(p, dec, resultado) {
   dec = dec || {};
@@ -557,12 +428,12 @@ function decision_(p, dec, resultado) {
   return previas + 1;
 }
 
-/** v2.4.0 · «Pedir más opciones» durante la votación: queda la decisión de la ronda y el plan vuelve a borrador (no se marca como caído). */
+/** «Pedir más opciones» durante la votación: queda la decisión de la ronda y el plan vuelve a borrador (no se marca como caído). */
 function reabrirOpciones_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
   if (p.estado !== 'votando' && p.estado !== 'en_revision') return { ok: false, error: 'plan_no_reabrible' };
-  if (d.por_motor && p.experimento !== 'E2') return { ok: false, error: 'solo_e15' };   // v2.7.1: el motor no toca planes de E1
+  if (d.por_motor && p.experimento !== 'E2') return { ok: false, error: 'solo_e15' };   // el motor no toca planes de E1
   var ronda = p.estado === 'votando' ? decision_(p, d.decision, d.resultado === 'ninguna' ? 'ninguna' : 'mas_opciones') : 0;
   updateRow_('planes', p._row, { estado: 'borrador', opciones_json: '', nota: str_((p.nota ? p.nota + ' · ' : '') + 'más opciones' + (ronda ? ' (ronda ' + ronda + ')' : ''), 300) });
   append_('eventos', { plan_id: p.plan_id, grupo_id: p.grupo_id, tipo: 'activacion', canal: p.experimento, nota: 'más opciones' });
@@ -575,7 +446,7 @@ function conSalida_(json, i, salida) {
   return JSON.stringify(ops);
 }
 
-/** v2.2.5: corrige la hora del encuentro (y la salida) de un plan ya cerrado sin tocar t_cerrado ni la opción elegida. */
+/** corrige la hora del encuentro (y la salida) de un plan ya cerrado sin tocar t_cerrado ni la opción elegida. */
 function corregirPlan_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
@@ -599,12 +470,12 @@ function marcarCaido_(d) {
   return { ok: true };
 }
 
-/** v2.2.2: si un plan tuvo que cambiar de canal (p. ej. WhatsApp bloqueado y el grupo siguió por la web), queda marcado
+/** si un plan tuvo que cambiar de canal (p. ej. WhatsApp bloqueado y el grupo siguió por la web), queda marcado
  *  y el panel lo reporta aparte: no entra en la comparación E1/E2. */
 function marcarFailover_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = findOne_('planes', 'plan_id', d.plan_id); if (!p) return { ok: false, error: 'plan_no_existe' };
-  var hacia = ['web', 'mago'].indexOf(String(d.hacia)) >= 0 ? String(d.hacia) : 'web';   // v2.3.0: web (contingencia de WhatsApp) o mago (el motor de E1.5 falló)
+  var hacia = ['web', 'mago'].indexOf(String(d.hacia)) >= 0 ? String(d.hacia) : 'web';   // web (contingencia de WhatsApp) o mago (el motor de E1.5 falló)
   updateRow_('planes', p._row, { failover: p.experimento + '>' + hacia });
   append_('eventos', { plan_id: p.plan_id, grupo_id: p.grupo_id, tipo: 'cambio_canal', canal: hacia, nota: str_(d.motivo, 200) });
   return { ok: true, failover: p.experimento + '>' + hacia };
@@ -616,13 +487,13 @@ function evento_(d) {
   var p = d.plan_id ? findOne_('planes', 'plan_id', d.plan_id) : null;
   var gid = p ? p.grupo_id : str_(d.grupo_id, 20);
   if (!isAdmin_(d.key) && !miembroValido_(d.pid, gid)) return { ok: false, error: 'no_miembro' };
-  if (!isAdmin_(d.key) && EVENTOS_PARTICIPANTE.indexOf(tipo) < 0) return { ok: false, error: 'no_autorizado' };   // v2.2.5
+  if (!isAdmin_(d.key) && EVENTOS_PARTICIPANTE.indexOf(tipo) < 0) return { ok: false, error: 'no_autorizado' };
   append_('eventos', { plan_id: p ? p.plan_id : '', grupo_id: gid, pid: str_(d.pid, 20), tipo: tipo, canal: p ? p.experimento : str_(d.canal, 4), nota: str_(d.nota, 300) });
   if (p && (tipo === 'me_apunto' || tipo === 'no_puedo' || tipo === 'checkpoint_llegada')) recontar_(p);
   return { ok: true };
 }
 
-/** v2.2: cuenta el ÚLTIMO estado de cada persona ("no puedo" anula un "me apunto"); quien llega cuenta como apuntado. */
+/** cuenta el ÚLTIMO estado de cada persona ("no puedo" anula un "me apunto"); quien llega cuenta como apuntado. */
 function recontar_(p) {
   var ev = rows_('eventos').filter(function (e) { return e.plan_id === p.plan_id && e.pid !== ''; })
     .sort(function (x, y) { return new Date(x.ts) - new Date(y.ts); });
@@ -645,7 +516,7 @@ function operacion_(d) {
   var min = int_(d.minutos); if (min === '' || min < 0 || min > 600) return { ok: false, error: 'minutos_invalidos' };
   append_('operacion', { plan_id: p ? p.plan_id : '', grupo_id: p ? p.grupo_id : str_(d.grupo_id, 20), experimento: p ? p.experimento : str_(d.experimento, 4),
     actor: actor, minutos: min, causa: causa, nota: str_(d.nota, 300) });
-  if (d.sesion_id) rows_('sesiones').forEach(function (r) { if (r.sesion_id === d.sesion_id && r.estado === 'cerrada_auto') updateRow_('sesiones', r._row, { minutos: min, estado: 'cerrada_a_mano' }); });   // v2.3.2
+  if (d.sesion_id) rows_('sesiones').forEach(function (r) { if (r.sesion_id === d.sesion_id && r.estado === 'cerrada_auto') updateRow_('sesiones', r._row, { minutos: min, estado: 'cerrada_a_mano' }); });
   return { ok: true };
 }
 
@@ -665,7 +536,7 @@ function redactarIA_(d) {
   var p = d.plan_id ? findOne_('planes', 'plan_id', d.plan_id) : null;
   var prompt =
     'Eres Sintonía, «el +1 de confianza» de un grupo de amigos. Redacta UN mensaje de WhatsApp (máx. 60 palabras) para el paso: ' + str_(d.paso, 40) + '.\n' +
-    (d.indicacion ? 'LO MÁS IMPORTANTE · indicación del equipo, aplícala tal cual si no contradice las reglas: ' + str_(d.indicacion, 200) + '\n' : '') +   // v2.4.0 · v2.7.3: la indicación manda
+    (d.indicacion ? 'LO MÁS IMPORTANTE · indicación del equipo, aplícala tal cual si no contradice las reglas: ' + str_(d.indicacion, 200) + '\n' : '') +   // v2.7.3: la indicación manda
     'Tono: ' + str_(d.tono || 'plan tranqui', 40) + '. Español neutro de Colombia, cercano, sin culpa ni presión, máximo un emoji. ' +
     'No uses jerga regional ni caleña (nada de «parce», «mor», «ve», «oís», «pues») salvo que la indicación lo pida.\n' +
     'Datos del plan: ' + str_(d.datos || (p ? p.opciones_json : ''), 900) + '\n' +
@@ -682,8 +553,8 @@ function retro_(d) {
   if (rows_('retro').some(function (r) { return r.plan_id === p.plan_id && r.pid === d.pid; })) return { ok: false, error: 'retro_ya_enviada' };
   if (p.estado !== 'cerrado') return { ok: false, error: 'plan_no_cerrado' };
   var he = p.hora_encuentro ? new Date(p.hora_encuentro) : null;
-  var gp = findOne_('grupos', 'grupo_id', p.grupo_id) || {};   // v2.4.0: en modo prueba no hay reloj
-  if (gp.modo !== 'prueba' && he && !isNaN(he.getTime()) && new Date() < he) return { ok: false, error: 'retro_antes_del_plan' };   // v2.2.3: el pulso es sobre una salida que ya pasó   // una retro por persona y plan
+  var gp = findOne_('grupos', 'grupo_id', p.grupo_id) || {};   // en modo prueba no hay reloj
+  if (gp.modo !== 'prueba' && he && !isNaN(he.getTime()) && new Date() < he) return { ok: false, error: 'retro_antes_del_plan' };   // el pulso es sobre una salida que ya pasó   // una retro por persona y plan
   append_('retro', { plan_id: p.plan_id, pid: d.pid, rol: m.rol, fatiga_post: escala_(d.fatiga_post),
     carga_organizador: m.rol === 'organizador' ? escala_(d.carga_organizador) : '',
     satisfaccion_plan: escala_(d.satisfaccion_plan), valor_final: escala_(d.valor_final),
@@ -698,7 +569,7 @@ function retro_(d) {
  * Fuera de I4: es medición en ambas condiciones, no un cambio del tratamiento. Una respuesta por persona y plan.
  */
 function seq_(v) { var n = int_(v); return (n !== '' && n >= 1 && n <= 7) ? n : ''; }
-/** v2.7.0: pulso del mago y medición por etapa, para los planes de una condición */
+/** pulso del mago y medición por etapa, para los planes de una condición */
 function resumenConsola_(ids, mean) {
   var pm = rows_('pulso_mago').filter(function (r) { return ids.indexOf(r.plan_id) >= 0; });
   var mc = rows_('medicion_consola').filter(function (r) { return ids.indexOf(r.plan_id) >= 0; });
@@ -715,7 +586,7 @@ function susPuntaje_(r) {
   if (r.some(function (x) { return x === ''; })) return '';
   return r.reduce(function (s, x, i) { return s + (i % 2 === 0 ? x - 1 : 5 - x); }, 0) * 2.5;
 }
-/** v2.7.0 · Pulso de quien opera la consola: SUS + NASA-TLX sin ponderar, uno por plan y persona (el último reemplaza al anterior). */
+/** Pulso de quien opera la consola: SUS + NASA-TLX sin ponderar, uno por plan y persona (el último reemplaza al anterior). */
 var ETAPAS_CONSOLA = ['grupo', 'proponer', 'decidir', 'dia', 'cierre'];
 function pulsoMago_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
@@ -732,13 +603,13 @@ function pulsoMago_(d) {
   append_('pulso_mago', fila);
   return { ok: true, sus_puntaje: fila.sus_puntaje, tlx_raw: fila.tlx_raw };
 }
-/** v2.7.0 · Medición de la consola por etapa (la envía la consola al cerrar la sesión de mago o al responder el pulso del mago). */
+/** Medición de la consola por etapa (la envía la consola al cerrar la sesión de mago o al responder el pulso del mago). */
 function medicionConsola_(d) {
   if (!isAdmin_(d.key)) return { ok: false, error: 'no_autorizado' };
   var p = d.plan_id ? findOne_('planes', 'plan_id', str_(d.plan_id, 40)) : null;
   var g = p ? findOne_('grupos', 'grupo_id', p.grupo_id) : (d.grupo_id ? findOne_('grupos', 'grupo_id', str_(d.grupo_id, 40)) : null);
   if (!g) return { ok: false, error: 'grupo_no_encontrado' };
-  var filas = Array.isArray(d.filas) ? d.filas.slice(0, 10) : [], n = 0, fr = Math.max(0, Math.min(1000, int_(d.fallos_red) || 0)), ft = Math.max(0, Math.min(1000, int_(d.fallos_timeout) || 0));   // v2.9.3
+  var filas = Array.isArray(d.filas) ? d.filas.slice(0, 10) : [], n = 0, fr = Math.max(0, Math.min(1000, int_(d.fallos_red) || 0)), ft = Math.max(0, Math.min(1000, int_(d.fallos_timeout) || 0));
   filas.forEach(function (f) {
     var et = String(f && f.etapa || ''); if (ETAPAS_CONSOLA.indexOf(et) < 0) return;
     var sg = Math.max(0, Math.min(36000, Math.round(Number(f.segundos) || 0))), tq = Math.max(0, Math.min(5000, int_(f.toques) || 0)), sc = Math.max(0, Math.min(1e6, int_(f.scroll) || 0));
@@ -755,7 +626,7 @@ function usabilidad_(d) {
   if (!m || m.grupo_id !== p.grupo_id || m.estado !== 'activo') return { ok: false, error: 'no_miembro' };
   if (p.estado !== 'cerrado') return { ok: false, error: 'plan_no_cerrado' };
   var he = p.hora_encuentro ? new Date(p.hora_encuentro) : null;
-  var gp = findOne_('grupos', 'grupo_id', p.grupo_id) || {};   // v2.4.0: en modo prueba no hay reloj
+  var gp = findOne_('grupos', 'grupo_id', p.grupo_id) || {};   // en modo prueba no hay reloj
   if (gp.modo !== 'prueba' && he && !isNaN(he.getTime()) && new Date() < he) return { ok: false, error: 'retro_antes_del_plan' };
   if (rows_('usabilidad').some(function (r) { return r.plan_id === p.plan_id && r.pid === d.pid; })) return { ok: false, error: 'usabilidad_ya_enviada' };
   var ronda = Number(p.ronda) || 1;
@@ -772,7 +643,7 @@ function usabilidad_(d) {
   return { ok: true, sus_puntaje: fila.sus_puntaje };
 }
 
-/** v2.10.0: disposición a pagar de CADA persona del parche, por su parte (antes, I5: solo el organizador). Una fila por persona y plan. */
+/** disposición a pagar de CADA persona del parche, por su parte (antes, I5: solo el organizador). Una fila por persona y plan. */
 function wtp_(d) {
   var m = findOne_('participantes', 'pid', d.pid); if (!m || m.estado !== 'activo') return { ok: false, error: 'no_miembro' };
   var planId = str_(d.plan_id, 60);
@@ -794,7 +665,7 @@ function revocar_(d) {
   var pid = m.pid, gid = m.grupo_id;
   ['contactos', 'votos', 'retro', 'wtp', 'usabilidad', 'linea_base', 'preferencias'].forEach(function (n) { deleteWhere_(n, function (r) { return r.pid === pid; }); });
   deleteWhere_('eventos', function (r) { return r.pid === pid; });
-  if (m.rol === 'organizador') deleteWhere_('linea_base_grupo', function (r) { return r.grupo_id === gid; });   // v2.2: la línea base del grupo la declaró el organizador (incluye su fatiga)
+  if (m.rol === 'organizador') deleteWhere_('linea_base_grupo', function (r) { return r.grupo_id === gid; });   // la línea base del grupo la declaró el organizador (incluye su fatiga)
   updateRow_('participantes', findOne_('participantes', 'pid', pid)._row, { estado: 'revocado' });
   var g = findOne_('grupos', 'grupo_id', gid); if (g) updateRow_('grupos', g._row, { estado: 'excluido', motivo: 'retiro_de_un_miembro' });
   return { ok: true };
@@ -859,8 +730,8 @@ function doGet(e) {
   try {
     if (q.view === 'plan') return json_(vistaPlan_(q));
     if (q.view === 'invitacion') return json_(vistaInvitacion_(q));
-    if (q.view === 'cupo') return json_({ ok: true, abierto: cupoAbierto_() });   // v2.9.0: pública, sin datos
-    if (q.view === 'resolver' && (isMotor_(q.key) || isAdmin_(q.key))) return json_(vistaResolver_(q));   // v2.3.0
+    if (q.view === 'cupo') return json_({ ok: true, abierto: cupoAbierto_() });   // pública, sin datos
+    if (q.view === 'resolver' && (isMotor_(q.key) || isAdmin_(q.key))) return json_(vistaResolver_(q));
     if (!isAdmin_(q.key)) return json_({ ok: false, error: 'no_autorizado' });
     if (q.view === 'mago') return json_(vistaMago_(q));
     if (q.view === 'panel') return json_(vistaPanel_());
@@ -868,7 +739,7 @@ function doGet(e) {
   } catch (err) { return json_({ ok: false, error: String(err) }); }
 }
 
-/** v2.3.0: para el motor. Número de WhatsApp → pid y rol de esa persona en el grupo activo. Nunca devuelve nombres ni otros números. */
+/** para el motor. Número de WhatsApp → pid y rol de esa persona en el grupo activo. Nunca devuelve nombres ni otros números. */
 function vistaResolver_(q) {
   var t = String(q.wa || '').replace(/\D/g, '').slice(-10); if (t.length < 7 || !q.grupo_id) return { ok: false, error: 'faltan_datos' };
   var act = {}; activos_(String(q.grupo_id)).forEach(function (p) { act[p.pid] = p.rol; });
@@ -876,9 +747,9 @@ function vistaResolver_(q) {
   return c ? { ok: true, pid: c.pid, rol: act[c.pid] } : { ok: false, error: 'no_miembro' };
 }
 
-/** v2.9.0: ¿el piloto recibe grupos nuevos desde la landing? Lo decide el equipo (propiedad CUPO_ABIERTO), no un conteo. */
+/** ¿el piloto recibe grupos nuevos desde la landing? Lo decide el equipo (propiedad CUPO_ABIERTO), no un conteo. */
 function cupoAbierto_() { return String(prop_('CUPO_ABIERTO', 'no')).toLowerCase() === 'si'; }
-/** v2.9.0: lista de espera de la landing. Minimización: nombre de pila y WhatsApp, solo con autorización y mayoría de edad. */
+/** lista de espera de la landing. Minimización: nombre de pila y WhatsApp, solo con autorización y mayoría de edad. */
 function listaEspera_(d) {
   if (!(bool_(d.autoriza_datos) && bool_(d.mayor_18))) return { ok: false, error: 'faltan_autorizaciones' };
   var nombre = limpiar_(str_(d.nombre_pila, 40)).trim(), tel = str_(d.whatsapp, 20).replace(/\D/g, '');
@@ -895,17 +766,17 @@ function listaEspera_(d) {
   return { ok: true };
 }
 
-/** v2.2.3: vista pública de una invitación. Solo estado y modo: ni nombres, ni condición E1/E2, ni conteos. */
+/** vista pública de una invitación. Solo estado y modo: ni nombres, ni condición E1/E2, ni conteos. */
 function vistaInvitacion_(q) {
   var g = findOne_('grupos', 'codigo_invitacion', str_(q.inv, 20).toUpperCase());
   if (!g) return { ok: false, error: 'invitacion_invalida' };
   var n = activos_(g.grupo_id).length, inv = Number(g.n_invitados) || MAX_GRUPO;
-  var lb = findOne_('linea_base_grupo', 'grupo_id', g.grupo_id), fx = String((lb && lb.disponibilidad) || '').match(/fechas:\s*([^·]*)/);   // v2.9.1
+  var lb = findOne_('linea_base_grupo', 'grupo_id', g.grupo_id), fx = String((lb && lb.disponibilidad) || '').match(/fechas:\s*([^·]*)/);
   var fechas = fx ? fx[1].split(',').map(function (x) { return x.trim(); }).filter(function (x) { return /^\d{4}\/\d{2}\/\d{2}$/.test(x); }) : [];
   return { ok: true, estado: g.estado, modo: g.modo || 'piloto', lleno: n >= Math.min(MAX_GRUPO, inv), fechas: fechas };
 }
 
-/** v2.2.1: sin plan_id, devuelve el plan más reciente del grupo de esa persona (un solo enlace por grupo). */
+/** sin plan_id, devuelve el plan más reciente del grupo de esa persona (un solo enlace por grupo). */
 function vistaPlan_(q) {
   var me0 = findOne_('participantes', 'pid', q.pid);
   if (me0 && me0.estado === 'revocado') return { ok: false, error: 'revocado' };
@@ -916,7 +787,7 @@ function vistaPlan_(q) {
   if (!p) {
     var res = { ok: true, estado: 'sin_plan', grupo_estado: g.estado, experimento: me0.experimento, rol: me0.rol, modo: g.modo || 'piloto',
       n_invitados: Number(g.n_invitados) || '', n_consentidos: activos_(me0.grupo_id).length };
-    if (me0.rol === 'organizador' && g.estado === 'reclutando') res.codigo_invitacion = g.codigo_invitacion;   // v2.2.3: el organizador recupera su invitación
+    if (me0.rol === 'organizador' && g.estado === 'reclutando') res.codigo_invitacion = g.codigo_invitacion;   // el organizador recupera su invitación
     return res;
   }
   if (!miembroValido_(q.pid, p.grupo_id)) return { ok: false, error: 'no_miembro' };
@@ -929,39 +800,39 @@ function vistaPlan_(q) {
   var apuntado = false, llego = false;
   ev.forEach(function (e) { if (e.tipo === 'me_apunto') apuntado = true; if (e.tipo === 'no_puedo') apuntado = false; if (e.tipo === 'checkpoint_llegada') { llego = true; apuntado = true; } });
   var ya_retro = rows_('retro').some(function (r) { return r.plan_id === p.plan_id && r.pid === q.pid; });
-  var ya_usab = rows_('usabilidad').some(function (r) { return r.plan_id === p.plan_id && r.pid === q.pid; });   // v2.2.6
+  var ya_usab = rows_('usabilidad').some(function (r) { return r.plan_id === p.plan_id && r.pid === q.pid; });
   return { ok: true, plan_id: p.plan_id, experimento: p.experimento, failover: p.failover || '', estado: p.estado, modo: g.modo || 'piloto', ronda: p.ronda, opciones: JSON.parse(p.opciones_json || '[]'), conteo: conteo, vetos: vetos,
     mi_voto: mio, rol: me ? me.rol : '', elegida: p.elegida === '' ? null : p.elegida, hora_encuentro: p.hora_encuentro || '',
     n_invitados: p.n_invitados, n_apuntados: p.n_apuntados, n_votos: votos.length, yo: { apuntado: apuntado, llego: llego, retro: ya_retro, usabilidad: ya_usab } };
 }
 
 function vistaMago_(q) {
-  var conInv = !q || String(q.inv) !== '0';   // v2.5.0: la consola pide el inventario una vez y lo guarda
+  var conInv = !q || String(q.inv) !== '0';   // la consola pide el inventario una vez y lo guarda
   var nombres = {}; rows_('contactos').forEach(function (c) { nombres[c.pid] = { nombre: c.nombre_pila, whatsapp: c.whatsapp }; });
   var part = rows_('participantes').filter(function (p) { return p.estado === 'activo'; });
   var lbs = {}; rows_('linea_base_grupo').forEach(function (b) { lbs[b.grupo_id] = b; });
-  var dispoP = {}; rows_('linea_base').forEach(function (b) { if (b.disponibilidad) dispoP[b.pid] = String(b.disponibilidad); });   // v2.9.1
+  var dispoP = {}; rows_('linea_base').forEach(function (b) { if (b.disponibilidad) dispoP[b.pid] = String(b.disponibilidad); });
   var grupos = rows_('grupos').map(function (g) {
     return { grupo_id: g.grupo_id, experimento: g.experimento, modo: g.modo, estado: g.estado, motivo: g.motivo, version: g.version,
       tipo_grupo: g.tipo_grupo, n_invitados: g.n_invitados, codigo_invitacion: g.codigo_invitacion, nombre: g.nombre || '',
-      disponibilidad: (lbs[g.grupo_id] || {}).disponibilidad || '',   // v2.4.0
+      disponibilidad: (lbs[g.grupo_id] || {}).disponibilidad || '',
       miembros: part.filter(function (p) { return p.grupo_id === g.grupo_id; }).map(function (p) {
-        return { pid: p.pid, rol: p.rol, ts: p.ts, nombre: (nombres[p.pid] || {}).nombre || '', whatsapp: (nombres[p.pid] || {}).whatsapp || '', disponibilidad: dispoP[p.pid] || '' }; }),   // v2.9.1: + disponibilidad   // v2.8.0: + ts (hora en que aceptó)
+        return { pid: p.pid, rol: p.rol, ts: p.ts, nombre: (nombres[p.pid] || {}).nombre || '', whatsapp: (nombres[p.pid] || {}).whatsapp || '', disponibilidad: dispoP[p.pid] || '' }; }),   // + disponibilidad   // + ts (hora en que aceptó)
       preferencias: rows_('preferencias').filter(function (r) { return r.grupo_id === g.grupo_id; }).map(function (r) { return r.resumen; }) };
   });
   var votos = rows_('votos'), evs = rows_('eventos'), oper = rows_('operacion'), rts = rows_('retro'), usb = rows_('usabilidad'), decs = rows_('decisiones'), pmg = rows_('pulso_mago');
   var planes = rows_('planes').map(function (p) {
     var o = {}; SHEETS.planes.forEach(function (c) { o[c] = p[c]; });
-    o.decisiones = decs.filter(function (x) { return x.plan_id === p.plan_id; }).map(function (x) { return { ronda_votacion: x.ronda_votacion, resultado: x.resultado, votaron: x.votaron, total: x.total, votos_opciones: x.votos_opciones, cualquiera: x.cualquiera, ninguna: x.ninguna, ts: x.ts }; });   // v2.4.0
-    // v2.2.6: quién ya respondió el pulso y la usabilidad (para enviar el complemento de W1 solo a quien falta)
-    o.pulso_mago = pmg.some(function (x) { return x.plan_id === p.plan_id; });   // v2.8.1
+    o.decisiones = decs.filter(function (x) { return x.plan_id === p.plan_id; }).map(function (x) { return { ronda_votacion: x.ronda_votacion, resultado: x.resultado, votaron: x.votaron, total: x.total, votos_opciones: x.votos_opciones, cualquiera: x.cualquiera, ninguna: x.ninguna, ts: x.ts }; });
+    // quién ya respondió el pulso y la usabilidad (para enviar el complemento de W1 solo a quien falta)
+    o.pulso_mago = pmg.some(function (x) { return x.plan_id === p.plan_id; });
     o.retro_pids = rts.filter(function (r) { return r.plan_id === p.plan_id; }).map(function (r) { return r.pid; });
     o.usabilidad_pids = usb.filter(function (r) { return r.plan_id === p.plan_id; }).map(function (r) { return r.pid; });
-    // v2.2.1: la consola ve el conteo y el estado de cada persona (para registrar lo que pasa en el chat del E1)
+    // la consola ve el conteo y el estado de cada persona (para registrar lo que pasa en el chat del E1)
     o.conteo = {}; o.vetos = 0; o.votos_por_pid = {};
     votos.filter(function (v) { return v.plan_id === p.plan_id; }).forEach(function (v) {
       if (bool_(v.veto)) { o.vetos++; o.votos_por_pid[v.pid] = 'veto'; } else { o.conteo[v.opcion] = (o.conteo[v.opcion] || 0) + 1; o.votos_por_pid[v.pid] = v.opcion; } });
-    // v2.2.5: minutos humanos registrados (I3) y mensajes del mago marcados, visibles para todo el equipo
+    // minutos humanos registrados (I3) y mensajes del mago marcados, visibles para todo el equipo
     var op = oper.filter(function (x) { return x.plan_id === p.plan_id; });
     o.minutos = op.reduce(function (s, x) { return s + (Number(x.minutos) || 0); }, 0); o.bloques = op.length;
     o.mensajes = {};
@@ -972,14 +843,14 @@ function vistaMago_(q) {
         if (e.tipo === 'checkpoint_llegada') { s.llego = true; s.apuntado = true; } if (e.tipo === 'llego_casa') s.casa = true; o.estado_por_pid[e.pid] = s; });
     return o;
   });
-  var copia = function (i) { var o = {}; SHEETS.inventario.concat(['macro_zona', 'latitud', 'longitud', 'franja_horaria']).forEach(function (c) { if (i[c] !== undefined) o[c] = i[c]; }); return o; };   // v2.4.0: + coordenadas para Maps
+  var copia = function (i) { var o = {}; SHEETS.inventario.concat(['macro_zona', 'latitud', 'longitud', 'franja_horaria']).forEach(function (c) { if (i[c] !== undefined) o[c] = i[c]; }); return o; };   // + coordenadas para Maps
   var inventario = conInv ? inventarioActivo_().map(copia) : null, pendiente = conInv ? inventarioPendiente_().map(copia) : null;
-  // v2.3.2: una sesión abierta hace más de 4 h se cierra sola SIN sumar minutos (estado cerrada_auto); la consola pide registrar los reales a mano
+  // una sesión abierta hace más de 4 h se cierra sola SIN sumar minutos (estado cerrada_auto); la consola pide registrar los reales a mano
   var ses = rows_('sesiones'), limite = Date.now() - 4 * 36e5;
   ses.forEach(function (r) { if (r.estado === 'abierta' && new Date(r.inicio).getTime() < limite) { updateRow_('sesiones', r._row, { fin: new Date(), minutos: '', estado: 'cerrada_auto' }); r.estado = 'cerrada_auto'; } });
-  var sesionesAbiertas = ses.filter(function (r) { return r.estado === 'abierta'; }).map(function (r) {   // v2.3.0
+  var sesionesAbiertas = ses.filter(function (r) { return r.estado === 'abierta'; }).map(function (r) {
     return { sesion_id: r.sesion_id, mago: r.mago, plan_id: r.plan_id, grupo_id: r.grupo_id, experimento: r.experimento, inicio: r.inicio }; });
-  var planIds = {}; planes.forEach(function (p) { planIds[p.plan_id] = 1; });   // v2.7.2: no pide minutos de planes borrados al empezar el piloto
+  var planIds = {}; planes.forEach(function (p) { planIds[p.plan_id] = 1; });   // no pide minutos de planes borrados al empezar el piloto
   var sesionesPorRevisar = ses.filter(function (r) { return r.estado === 'cerrada_auto' && (!r.plan_id || planIds[r.plan_id]); }).map(function (r) {
     return { sesion_id: r.sesion_id, mago: r.mago, plan_id: r.plan_id, grupo_id: r.grupo_id, inicio: r.inicio }; });
   return { ok: true, sesiones_abiertas: sesionesAbiertas, sesiones_por_revisar: sesionesPorRevisar, grupos: grupos, planes: planes, inventario: inventario, inventario_pendiente: pendiente, n_inventario: inventarioActivo_().length, cambios: rows_('cambios').map(function (c) { return { ts: c.ts, experimento: c.experimento, version: c.version, descripcion: c.descripcion }; }),
@@ -1000,12 +871,12 @@ function vistaPanel_() {
   var porExp = {};
   ['E1', 'E2'].forEach(function (x) {
     var gs = Object.keys(validos).filter(function (k) { return validos[k].experimento === x; });
-    var pl = planes.filter(function (p) { return p.experimento === x && validos[p.grupo_id] && !p.failover; });   // v2.2.2: sin planes con cambio de canal
+    var pl = planes.filter(function (p) { return p.experimento === x && validos[p.grupo_id] && !p.failover; });   // sin planes con cambio de canal
     var ids = pl.map(function (p) { return p.plan_id; });
     var cerr = pl.filter(function (p) { return p.estado === 'cerrado'; });
     var decs = rows_('decisiones');
     var sinVeto = cerr.filter(function (p) { return !votos.some(function (v) { return v.plan_id === p.plan_id && bool_(v.veto); }) &&
-      !decs.some(function (x) { return x.plan_id === p.plan_id && (x.resultado === 'ninguna' || Number(x.ninguna) > 0); }); });   // v2.4.0: también con decisiones por ronda
+      !decs.some(function (x) { return x.plan_id === p.plan_id && (x.resultado === 'ninguna' || Number(x.ninguna) > 0); }); });   // también con decisiones por ronda
     var rondas = cerr.map(function (p) { var k = decs.filter(function (x) { return x.plan_id === p.plan_id; }).length; return k || ''; });
     var horas = cerr.map(function (p) { return p.t_publicado && p.t_cerrado ? (new Date(p.t_cerrado) - new Date(p.t_publicado)) / 36e5 : ''; });
     var rOrg = retro.filter(function (q) { return ids.indexOf(q.plan_id) >= 0 && q.rol === 'organizador'; });
@@ -1015,7 +886,7 @@ function vistaPanel_() {
     var minutos = sum(op, 'minutos'), usd = sum(tk, 'costo_usd');
     var cerradosPorGrupo = {}; cerr.forEach(function (p) { cerradosPorGrupo[p.grupo_id] = (cerradosPorGrupo[p.grupo_id] || 0) + 1; });
     var causas = {}; op.forEach(function (o) { causas[o.causa] = (causas[o.causa] || 0) + (Number(o.minutos) || 0); });
-    // Capa 2 (v2.2): primera llegada de cada persona vs. hora de encuentro + tolerancia
+    // Capa 2: primera llegada de cada persona vs. hora de encuentro + tolerancia
     var llegadas = 0, aTiempo = 0;
     pl.forEach(function (p) {
       if (!p.hora_encuentro) return;
@@ -1024,7 +895,7 @@ function vistaPanel_() {
         var t = new Date(e.ts).getTime(); if (!(e.pid in primera) || t < primera[e.pid]) primera[e.pid] = t; } });
       Object.keys(primera).forEach(function (k) { llegadas++; if (primera[k] <= limite) aTiempo++; });
     });
-    // Capa 1 (v2.2): least misery = satisfacción MÍNIMA del grupo con el plan; se promedia entre planes cerrados con retro
+    // Capa 1: least misery = satisfacción MÍNIMA del grupo con el plan; se promedia entre planes cerrados con retro
     var minimos = cerr.map(function (p) {
       var s = rTodos.filter(function (q) { return q.plan_id === p.plan_id && q.satisfaccion_plan !== ''; }).map(function (q) { return Number(q.satisfaccion_plan); });
       return s.length ? Math.min.apply(null, s) : '';
@@ -1042,7 +913,7 @@ function vistaPanel_() {
       llegaron_sobre_apuntados: sum(pl, 'n_apuntados') ? sum(pl, 'n_asistentes') / sum(pl, 'n_apuntados') : null,
       cierres_sin_veto: cerr.length ? sinVeto.length / cerr.length : null,
       horas_a_cierre_prom: mean(horas),
-      rondas_votacion_prom: mean(rondas), rondas_votacion_n: rondas.filter(function (x) { return x !== ''; }).length,   // v2.4.0
+      rondas_votacion_prom: mean(rondas), rondas_votacion_n: rondas.filter(function (x) { return x !== ''; }).length,
       repeticion_grupos_2_planes: Object.keys(cerradosPorGrupo).filter(function (k) { return cerradosPorGrupo[k] >= 2; }).length,
       organizador: { carga_prom: mean(rOrg.map(function (q) { return q.carga_organizador; })), fatiga_post_prom: mean(rOrg.map(function (q) { return q.fatiga_post; })), n: rOrg.length },
       todos: { valor_final_prom: mean(rTodos.map(function (q) { return q.valor_final; })), confort_bot_prom: mean(rTodos.map(function (q) { return q.confort_bot; })),
@@ -1051,8 +922,8 @@ function vistaPanel_() {
         costo_humano_cop: costoHora ? minutos / 60 * costoHora : null,
         usd_tokens_por_plan_cerrado: cerr.length ? usd / cerr.length : null, minutos_por_plan_cerrado: cerr.length ? minutos / cerr.length : null },
       versiones: pl.reduce(function (o, p) { o[p.version] = (o[p.version] || 0) + 1; return o; }, {}),
-      usabilidad: resumenUsab_(usb.filter(function (u) { return ids.indexOf(u.plan_id) >= 0; }), mean),   // v2.2.6 · fuera de I4
-      consola: resumenConsola_(ids, mean)   // v2.7.0 · la propia herramienta del mago
+      usabilidad: resumenUsab_(usb.filter(function (u) { return ids.indexOf(u.plan_id) >= 0; }), mean),   // fuera de I4
+      consola: resumenConsola_(ids, mean)   // la propia herramienta del mago
     };
   });
   var lb = lbg.filter(function (b) { return validos[b.grupo_id]; });
@@ -1067,12 +938,12 @@ function vistaPanel_() {
       planes_fallidos_mes_prom: mean(lb.map(function (b) { return b.planes_fallidos_mes; })), fatiga_previa_org_prom: mean(lb.map(function (b) { return b.fatiga_previa_org; })) },
     por_experimento: porExp,
     wtp_organizadores: wtp.filter(function (w) { return validos[w.grupo_id] && (!w.rol || w.rol === 'organizador'); }).map(function (w) { return { muy_barato: w.muy_barato, barato: w.barato, caro: w.caro, muy_caro: w.muy_caro, preventa: bool_(w.preventa) }; }),
-    wtp_parche: resumenWtp_(wtp.filter(function (w) { return validos[w.grupo_id] && w.rol; })),   // v2.10.0
+    wtp_parche: resumenWtp_(wtp.filter(function (w) { return validos[w.grupo_id] && w.rol; })),
     cambios: rows_('cambios').map(function (c) { return { experimento: c.experimento, version: c.version, descripcion: c.descripcion }; })
   };
 }
 
-/** v2.10.0: conteos por rol (organizador / miembro) de suscripción, quién paga y parches, con los precios de quien respondió Sí o Tal vez. */
+/** conteos por rol (organizador / miembro) de suscripción, quién paga y parches, con los precios de quien respondió Sí o Tal vez. */
 function resumenWtp_(w) {
   var out = {};
   ['organizador', 'miembro'].forEach(function (rol) {
@@ -1084,7 +955,7 @@ function resumenWtp_(w) {
   return out;
 }
 
-/** v2.2.6: SEQ y SUS por ronda y por toma (con_pulso vs. diferida). Cada valor lleva su n. */
+/** SEQ y SUS por ronda y por toma (con_pulso vs. diferida). Cada valor lleva su n. */
 function resumenUsab_(u, mean) {
   function bloque(a) {
     var s = a.filter(function (x) { return x.sus_puntaje !== ''; });
@@ -1108,7 +979,7 @@ function resumenUsab_(u, mean) {
  * Antes de borrar copia las pestañas con datos a una hoja de respaldo nueva en el Drive del dueño del script,
  * sin la pestaña contactos (minimización: los nombres y números de los ensayos no se copian).
  */
-var CONSERVAR_AL_LIMPIAR = ['tokens', 'inventario', 'bitacora', 'operacion', 'sesiones', 'lista_espera'];   // v2.9.0: + lista de espera (personas reales, no ensayos)   // v2.7.2: los minutos y las sesiones del mago son el registro de horas del monitor; no se borran. El panel solo cuenta los de grupos en modo piloto
+var CONSERVAR_AL_LIMPIAR = ['tokens', 'inventario', 'bitacora', 'operacion', 'sesiones', 'lista_espera'];   // + lista de espera (personas reales, no ensayos)   // los minutos y las sesiones del mago son el registro de horas del monitor; no se borran. El panel solo cuenta los de grupos en modo piloto
 var NO_RESPALDAR = ['contactos'];
 var FRASE_LIMPIAR = 'EMPEZAR PILOTO';
 function hojasALimpiar_(conservarCambios) {
@@ -1131,7 +1002,7 @@ function limpiarRegistros_(d) {
     sh.getRange(2, 1, last - 1, Math.max(sh.getLastColumn(), 1)).clearContent();   // Sheets no deja borrar TODAS las filas no congeladas
     if (last > 2) sh.deleteRows(3, last - 2);
   });
-  memoSoltar_();   // v2.3.4
+  memoSoltar_();
   append_('bitacora', { accion: 'limpiar_registros', detalle: JSON.stringify(antes), respaldo_url: bk.getUrl(), registrado_por: str_(d.registrado_por, 40) });
   return { ok: true, borradas: antes, total: total, respaldo: bk.getUrl() };
 }
@@ -1157,14 +1028,14 @@ function probarMontaje() {
   ['SHEET_ID', 'ADMIN_KEY', 'GEMINI_API_KEY', 'GEMINI_MODEL', 'PRICE_IN_PER_M', 'PRICE_OUT_PER_M', 'AVISO_VERSION'].forEach(function (k) {
     r.push((prop_(k, '') ? '✅ ' : '❌ falta ') + k);
   });
-  r.push(prop_('MOTOR_KEY', '') ? (prop_('MOTOR_KEY', '') === prop_('ADMIN_KEY', '') ? '❌ MOTOR_KEY no puede ser igual a ADMIN_KEY' : '✅ MOTOR_KEY (motor n8n)') : '⚠️ sin MOTOR_KEY: el motor de E1.5 no puede escribir');   // v2.3.0
+  r.push(prop_('MOTOR_KEY', '') ? (prop_('MOTOR_KEY', '') === prop_('ADMIN_KEY', '') ? '❌ MOTOR_KEY no puede ser igual a ADMIN_KEY' : '✅ MOTOR_KEY (motor n8n)') : '⚠️ sin MOTOR_KEY: el motor de E1.5 no puede escribir');
   try { var ss = ss_(); r.push('✅ Hoja: ' + ss.getName()); } catch (x) { r.push('❌ No abre la hoja (revisa SHEET_ID): ' + x); Logger.log(r.join('\n')); return; }
   Object.keys(SHEETS).forEach(function (n) { sheet_(n); }); r.push('✅ ' + Object.keys(SHEETS).length + ' hojas listas');
   var enc = revisarEncabezados_(); r.push(enc.length ? enc.join('\n') : '✅ Encabezados al día (v2.9.3)');
   if (notificarA_()) { try { MailApp.sendEmail(notificarA_(), 'Sintonía · prueba de avisos', 'Si te llegó este correo, los avisos de inscripción de la consola del mago funcionan.'); r.push('✅ Avisos por correo a ' + notificarA_() + ' (correo de prueba enviado; cupo diario: ' + MailApp.getRemainingDailyQuota() + ')'); } catch (x) { r.push('❌ Avisos por correo: ' + x); } }
   else r.push('ℹ️ sin NOTIFICAR_A: no se envían avisos de inscripción por correo (opcional)');
   var inv = inventarioActivo_(); r.push((inv.length ? '✅ ' : '⚠️ ') + 'Inventario activo: ' + inv.length + ' lugares (meta 12–15)');
-  if (inv.length) r.push(revisarUbicaciones_(inv));   // v2.5.0
+  if (inv.length) r.push(revisarUbicaciones_(inv));
   r.push('Zona horaria del proyecto: ' + Session.getScriptTimeZone() + (Session.getScriptTimeZone() === 'America/Bogota' ? ' ✅' : ' ⚠️ cambiar a America/Bogota'));
   if (prop_('GEMINI_API_KEY', '')) {
     var t0 = Date.now(), g = gemini_('Responde solo: ok', false, '', '', 'prueba_montaje');
@@ -1172,7 +1043,7 @@ function probarMontaje() {
   }
   Logger.log(r.join('\n'));
 }
-/** v2.5.0 · Calidad de las ubicaciones del inventario activo (los enlaces de Google Maps se arman con nombre, dirección y coordenadas).
+/** Calidad de las ubicaciones del inventario activo (los enlaces de Google Maps se arman con nombre, dirección y coordenadas).
  *  «Leídas con la configuración regional»: la hoja convirtió 3.4516 en 34516 (en español el punto es de miles). */
 function revisarUbicaciones_(inv) {
   var sinDir = 0, sinCoord = 0, regional = 0, fuera = 0, ej = [];
@@ -1195,6 +1066,6 @@ function borrarDatosEstudio() {
   ['contactos', 'preferencias'].forEach(function (n) { var sh = sheet_(n); if (sh.getLastRow() > 1) sh.deleteRows(2, sh.getLastRow() - 1); });
   var r = sheet_('retro');
   ['comentario', 'que_agregaria'].forEach(function (col) { var c = SHEETS.retro.indexOf(col) + 1; if (r.getLastRow() > 1) r.getRange(2, c, r.getLastRow() - 1, 1).clearContent(); });
-  memoSoltar_();   // v2.3.4
+  memoSoltar_();
   ui.alert('Listo. Quedan solo métricas con ids seudónimos.');
 }

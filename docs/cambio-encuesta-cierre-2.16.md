@@ -1,6 +1,6 @@
 # Cambio de instrumento · Encuesta de cierre 2.16.0 (backend 2.10.0)
 
-> **Estado: por validar con Néstor.** Vive en la rama `encuesta-cierre-2.16` y no está publicado en sintonia.my. Cambia el instrumento, así que no se publica sin su visto bueno.
+> **Estado: aprobado por Néstor (24/11).** Vive en la rama `encuesta-cierre-2.16`; se publica después de desplegar el backend 2.10.0.
 > Origen: revisión de Katherine página por página (24/11) y análisis de los escenarios de pago del equipo (24/11).
 > Para verlo sin grupo ni backend: `piloto/retro.html?revisar=organiza` o `?revisar=miembro` (añade `&ronda=2` para el plan 2).
 
