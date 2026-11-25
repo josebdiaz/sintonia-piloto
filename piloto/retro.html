@@ -64,6 +64,9 @@ fieldset.paso[hidden] { display: none !important; }
         <div class="field f-retro"><span class="label" id="l2">Con este plan, ¿qué tan desgastante fue cuadrar la salida?</span><div id="fatiga" aria-labelledby="l2"></div></div>
         <div class="field hidden" id="bloqueCarga"><span class="label" id="l3">¿Cuánto del trabajo de organizar recayó en ti?</span><span class="hint" style="margin:-2px 0 8px">Esta solo te la hacemos a ti, que organizaste.</span><div id="carga" aria-labelledby="l3"></div></div>
         <div class="field f-usab"><span class="label" id="ls1">En general, ¿qué tan difícil o fácil fue <b>unirte y elegir el plan</b> con tu grupo (aceptar, ver las opciones y votar)?</span><div id="seqActivacion" aria-labelledby="ls1"></div></div>
+        <!-- 2.16.0: la SEQ de continuidad (solo plan 2) pasa aquí; armar el plan 2 es «volver a armar» -->
+        <div class="field f-usab hidden" id="bloqueSeqCont"><span class="label" id="ls3">En general, ¿qué tan difícil o fácil fue <b>volver a armar un plan con este mismo grupo</b>?</span><div id="seqContinuidad" aria-labelledby="ls3"></div>
+          <label class="check" style="margin-top:6px"><input type="checkbox" id="seqContNa"><span>No participé en armar este segundo plan.</span></label></div>
       </fieldset>
 
       <fieldset class="card paso" data-paso="durante" hidden>
@@ -72,45 +75,48 @@ fieldset.paso[hidden] { display: none !important; }
         <h2>El día del plan</h2>
         <p class="small muted enc-bajada">Piensa en la salida, de principio a fin.</p>
         <div class="field f-retro"><span class="label" id="l1">¿Qué tan bien les funcionó el plan que eligieron?</span><div id="satisfaccion" aria-labelledby="l1"></div></div>
-        <div class="field f-retro"><span class="label" id="l4">¿Qué tal terminó la salida?</span><div id="final" aria-labelledby="l4"></div></div>
         <div class="field f-usab"><span class="label" id="ls2">En general, ¿qué tan difícil o fácil fue <b>coordinar el día del encuentro</b> (confirmar si ibas, la hora de salida y avisar que llegaste)?</span><div id="seqInteraccion" aria-labelledby="ls2"></div></div>
         <div class="field f-retro"><span class="label" id="l6">¿Cómo te sentiste? <span class="muted">(opcional)</span></span><div id="sentimiento" aria-labelledby="l6"></div></div>
       </fieldset>
 
-      <fieldset class="card paso" data-paso="despues" hidden>
-        <legend class="sr">Después: lo que sigue</legend>
-        <p class="enc-ojo">Después</p>
-        <h2>Lo que sigue</h2>
-        <p class="small muted enc-bajada">Sobre el parche y sobre Sintonía <span class="canalU">en el chat</span>.</p>
-        <div class="field f-retro"><span class="label" id="l7">¿Repetirían un plan así con este grupo?</span><div id="repetiria" aria-labelledby="l7"></div></div>
-        <div class="field f-retro"><span class="label" id="l5">¿Qué tan a gusto te sentiste con Sintonía <span id="canal">en el chat</span>?</span><div id="confort" aria-labelledby="l5"></div></div>
-        <div class="field hidden" id="bloqueSeqCont"><span class="label" id="ls3">En general, ¿qué tan difícil o fácil fue <b>volver a armar un plan con este mismo grupo</b>?</span><div id="seqContinuidad" aria-labelledby="ls3"></div>
-          <label class="check" style="margin-top:6px"><input type="checkbox" id="seqContNa"><span>No participé en armar este segundo plan.</span></label></div>
-      </fieldset>
-
-      <!-- 2.0.8 · SUS: 10 ítems 1–5, en el orden estándar. Se puede omitir. -->
-      <fieldset class="card paso f-usab" data-paso="frases" id="bloqueUsab" hidden>
-        <legend class="sr">Diez frases sobre Sintonía</legend>
+      <!-- 2.16.0 (feedback de Katherine, 24/11): se elimina la página «Después». «¿Qué tan a gusto…?» pasa a la página de Sintonía y
+           «¿Repetirían…?» se reescribe sobre Sintonía (la intención de repetir sigue siendo la métrica de continuidad, campo repetiria).
+           SUS: 10 ítems 1–5, en el orden estándar; se pueden omitir. -->
+      <fieldset class="card paso" data-paso="sintonia" id="bloqueUsab" hidden>
+        <legend class="sr">Sobre Sintonía</legend>
         <p class="enc-ojo">Sintonía</p>
-        <h2>Diez frases rápidas</h2>
-        <p class="small muted enc-bajada">¿Qué tan de acuerdo estás con cada una? Piensa solo en Sintonía, no en el plan ni en el grupo. Lo primero que se te venga está bien.</p>
-        <p class="enc-leyenda" aria-hidden="true"><span>1 · Totalmente en desacuerdo</span><span>5 · Totalmente de acuerdo</span></p>
-        <p class="enc-cuenta" id="susCuenta" aria-live="polite">Llevas 0 de 10</p>
-        <div id="susItems"></div>
-        <label class="check"><input type="checkbox" id="susOmitir"><span>Prefiero saltarme estas frases.</span></label>
+        <h2>Sobre Sintonía</h2>
+        <p class="small muted enc-bajada">Piensa solo en Sintonía, no en el plan ni en el grupo.</p>
+        <div class="field f-retro"><span class="label" id="l5">¿Qué tan a gusto te sentiste con Sintonía <span id="canal">en el chat</span>?</span><div id="confort" aria-labelledby="l5"></div></div>
+        <div class="field f-retro"><span class="label" id="l7">¿Le pedirías a Sintonía que arme el próximo plan de tu parche?</span><div id="repetiria" aria-labelledby="l7"></div></div>
+        <div class="f-usab">
+          <p class="small muted enc-bajada">Ahora, diez frases rápidas. ¿Qué tan de acuerdo estás con cada una? Lo primero que se te venga está bien.</p>
+          <p class="enc-leyenda" aria-hidden="true"><span>1 · Totalmente en desacuerdo</span><span>5 · Totalmente de acuerdo</span></p>
+          <p class="enc-cuenta" id="susCuenta" aria-live="polite">Llevas 0 de 10</p>
+          <div id="susItems"></div>
+          <label class="check"><input type="checkbox" id="susOmitir"><span>Prefiero saltarme estas frases.</span></label>
+        </div>
       </fieldset>
 
-      <!-- Van Westendorp + preventa: solo organizador (I5). Opcional. -->
-      <fieldset class="card paso honey hidden" data-paso="precio" id="bloqueWtp" hidden>
-        <legend class="sr">Precio, solo para quien organiza</legend>
-        <p class="enc-ojo">Solo para ti, que organizaste</p>
-        <h2>¿Cuánto pagarías?</h2>
-        <p class="small enc-bajada">Imagina una suscripción mensual a Sintonía que coordina los planes de tu parche. La pagaría solo quien organiza. Responde en pesos por mes. <b>Es opcional:</b> si no sabes, sigue.</p>
-        <div class="field"><label for="muyBarato">¿A qué precio te parecería tan barata que dudarías de que funcione bien?</label><div class="prefix"><span>$</span><input id="muyBarato" type="number" inputmode="numeric" min="0" step="1000"></div></div>
-        <div class="field"><label for="barato">¿A qué precio te parecería una buena compra, una ganga?</label><div class="prefix"><span>$</span><input id="barato" type="number" inputmode="numeric" min="0" step="1000"></div></div>
-        <div class="field"><label for="caro">¿A qué precio te empezaría a parecer cara, aunque todavía la pagarías?</label><div class="prefix"><span>$</span><input id="caro" type="number" inputmode="numeric" min="0" step="1000"></div></div>
-        <div class="field"><label for="muyCaro">¿A qué precio te parecería tan cara que no la pagarías?</label><div class="prefix"><span>$</span><input id="muyCaro" type="number" inputmode="numeric" min="0" step="1000"></div></div>
-        <label class="consent"><span class="check" style="margin:0"><input type="checkbox" id="preventa"><span>Quiero apartar un cupo con precio fundador cuando Sintonía salga. <b>Hoy no se cobra nada</b> y no me compromete a pagar.</span></span></label>
+      <!-- 2.16.0: disposición a pagar para TODO el parche, por persona («solo por tu parte»). Filtro de suscripción; Van Westendorp
+           con enunciados cortos solo si responde Sí o Tal vez (precios opcionales); quién debería pagar y en cuántos parches lo usaría. -->
+      <fieldset class="card paso honey" data-paso="precio" id="bloqueWtp" hidden>
+        <legend class="sr">Precio</legend>
+        <p class="enc-ojo">Precio</p>
+        <h2>¿Pagarías por Sintonía?</h2>
+        <p class="small enc-bajada">Imagina una suscripción mensual a Sintonía que coordina los planes de tu parche. Responde solo por tu parte.</p>
+        <div class="field"><span class="label" id="lsub">¿Pagarías una suscripción mensual a Sintonía, solo por tu parte?</span><div id="suscripcion" aria-labelledby="lsub"></div></div>
+        <div class="hidden" id="bloquePrecios">
+          <p class="label" style="margin:0 0 2px;font-weight:700">¿Qué precio mensual, solo por tu parte, te parecería…?</p>
+          <p class="hint" style="margin:0 0 10px">En pesos por mes. <b>Es opcional:</b> si no sabes, déjalos vacíos.</p>
+          <div class="field"><label for="muyBarato">Tan barato que desconfiarías.</label><div class="prefix"><span>$</span><input id="muyBarato" type="number" inputmode="numeric" min="0" step="1000"></div></div>
+          <div class="field"><label for="barato">Una muy buena compra.</label><div class="prefix"><span>$</span><input id="barato" type="number" inputmode="numeric" min="0" step="1000"></div></div>
+          <div class="field"><label for="caro">Caro, pero aún lo pagarías.</label><div class="prefix"><span>$</span><input id="caro" type="number" inputmode="numeric" min="0" step="1000"></div></div>
+          <div class="field"><label for="muyCaro">Demasiado caro para pagarlo.</label><div class="prefix"><span>$</span><input id="muyCaro" type="number" inputmode="numeric" min="0" step="1000"></div></div>
+          <label class="consent"><span class="check" style="margin:0"><input type="checkbox" id="preventa"><span>Quiero apartar un cupo con precio fundador cuando Sintonía salga. <b>Hoy no se cobra nada</b> y no me compromete a pagar.</span></span></label>
+        </div>
+        <div class="field"><span class="label" id="lpaga">Si Sintonía costara, ¿quién debería pagarlo en tu parche?</span><div id="quienPaga" aria-labelledby="lpaga"></div></div>
+        <div class="field"><span class="label" id="lparches">¿En cuántos parches usarías Sintonía?</span><div id="parches" aria-labelledby="lparches"></div></div>
       </fieldset>
 
       <fieldset class="card paso f-retro" data-paso="cierre" hidden>
@@ -151,9 +157,17 @@ fieldset.paso[hidden] { display: none !important; }
   var sat = S.scale(S.$('#satisfaccion'), ['Nada bien', 'Muy bien']);
   var fat = S.scale(S.$('#fatiga'), ['Nada', 'Muchísimo']);
   var car = S.scale(S.$('#carga'), ['Casi nada', 'Todo']);
-  var fin = S.scale(S.$('#final'), ['Mal', 'Muy bien']);
   var con = S.scale(S.$('#confort'), ['Nada', 'Mucho']);
   var rep = S.chips(S.$('#repetiria'), 'rep', [['si', 'Sí'], ['tal_vez', 'Tal vez'], ['no', 'No']]);
+  // 2.16.0 · disposición a pagar para todo el parche
+  var sub = S.chips(S.$('#suscripcion'), 'sub', [['si', 'Sí'], ['tal_vez', 'Tal vez, dependiendo del precio'], ['no', 'No']]);
+  var pag = S.chips(S.$('#quienPaga'), 'pag', [['organiza', 'Quien organiza'], ['dividimos', 'Lo dividimos entre todos'], ['cada_quien', 'Cada quien su propia suscripción, para todos sus parches'], ['nadie', 'Nadie lo pagaría']]);
+  var par = S.chips(S.$('#parches'), 'par', [['1', '1'], ['2', '2'], ['3_mas', '3 o más']]);
+  function conPrecio() { return sub.value() === 'si' || sub.value() === 'tal_vez'; }
+  S.$('#suscripcion').addEventListener('change', function () {
+    S.show('#bloquePrecios', conPrecio());
+    if (!conPrecio()) { ['#muyBarato', '#barato', '#caro', '#muyCaro'].forEach(function (k) { S.$(k).value = ''; }); S.$('#preventa').checked = false; }
+  });
   var sen = S.chips(S.$('#sentimiento'), 'sen', [['contento', '😊 Contento'], ['tranqui', '😌 Tranqui'], ['normal', '😐 Normal'], ['cansado', '😮‍💨 Cansado'], ['incomodo', '😕 Incómodo']]);
 
   S.counter(S.$('#agregaria'), S.$('#agrN')); S.counter(S.$('#comentario'), S.$('#comN'));
@@ -204,7 +218,7 @@ fieldset.paso[hidden] { display: none !important; }
     S.$$('.f-usab').forEach(function (x) { S.show(x, conUsab); });
     S.show('#bloqueSeqCont', conUsab && ronda >= 2);
     S.show('#bloqueCarga', rol === 'organizador' && !soloUsab);
-    S.show('#bloqueWtp', rol === 'organizador' && !soloUsab);
+    S.show('#bloqueWtp', !soloUsab);   // 2.16.0: todo el parche
     pasos = S.$$('fieldset.paso').filter(function (p) { return !p.classList.contains('hidden') && S.$$('.field', p).some(function (f) { var a = f; while (a && a !== p) { if (a.classList.contains('hidden')) return false; a = a.parentElement; } return true; }); });
     if (soloUsab && !S.$('#bloqueUsab').classList.contains('hidden') && pasos.indexOf(S.$('#bloqueUsab')) < 0) pasos.push(S.$('#bloqueUsab'));
     if (!soloUsab && !revisar) S.$('#heroP').textContent = 'Son ' + pasos.length + ' pasos cortos, uno por cada momento del plan. No hay respuestas buenas ni malas.';
@@ -220,27 +234,21 @@ fieldset.paso[hidden] { display: none !important; }
     S.$('#atras').hidden = idx === 0;
     var ultimo = idx === pasos.length - 1;
     S.show('#seguir', !ultimo); S.show('#enviar', ultimo);
-    etiquetaSeguir();
   }
-  function etiquetaSeguir() {   // en el paso del precio, si no escribió nada, el botón dice que puede saltarlo
-    var p = pasos[idx]; if (!p) return;
-    var vacio = p.id === 'bloqueWtp' && ['#muyBarato', '#barato', '#caro', '#muyCaro'].every(function (k) { return S.$(k).value === ''; }) && !S.$('#preventa').checked;
-    S.$('#seguir').textContent = vacio ? 'Saltar este paso' : 'Seguir';
-  }
-  S.$('#bloqueWtp').addEventListener('input', etiquetaSeguir); S.$('#preventa').addEventListener('change', etiquetaSeguir);
   /** Lo que falta en el paso actual. Marca cada pregunta pendiente y devuelve el mensaje, o '' si está completo. */
   function faltaEnPaso(p) {
-    var REQ = [['#fatiga', fat], ['#carga', car], ['#seqActivacion', seqA], ['#satisfaccion', sat], ['#final', fin], ['#seqInteraccion', seqI], ['#repetiria', rep], ['#confort', con]];
-    var faltan = [];
+    var REQ = [['#fatiga', fat], ['#carga', car], ['#seqActivacion', seqA], ['#satisfaccion', sat], ['#seqInteraccion', seqI], ['#confort', con], ['#repetiria', rep],
+      ['#suscripcion', sub], ['#quienPaga', pag], ['#parches', par]];
+    var faltan = [], frases = 0;
     REQ.forEach(function (r) { var el = S.$(r[0]); if (p.contains(el) && visible(el) && !r[1].value()) faltan.push(el.closest('.field')); });
     var c = S.$('#seqContinuidad'); if (p.contains(c) && visible(c) && !seqC.value() && !S.$('#seqContNa').checked) faltan.push(c.closest('.field'));
-    if (p.id === 'bloqueUsab' && !S.$('#susOmitir').checked) sus.forEach(function (x, i) { if (!x.value()) faltan.push(S.$('#lsus' + i).closest('.field')); });
+    if (p.id === 'bloqueUsab' && conUsab && !S.$('#susOmitir').checked) sus.forEach(function (x, i) { if (!x.value()) { faltan.push(S.$('#lsus' + i).closest('.field')); frases++; } });
     S.$$('.falta', p).forEach(function (f) { f.classList.remove('falta'); });
     faltan.forEach(function (f) { f.classList.add('falta'); });
     if (faltan.length) { faltan[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
-      if (p.id === 'bloqueUsab') return faltan.length === 1 ? 'Te falta 1 frase. Si prefieres, puedes saltártelas al final.' : 'Te faltan ' + faltan.length + ' frases. Si prefieres, puedes saltártelas al final.';
+      if (frases === faltan.length) return frases === 1 ? 'Te falta 1 frase. Si prefieres, puedes saltártelas al final.' : 'Te faltan ' + frases + ' frases. Si prefieres, puedes saltártelas al final.';
       return faltan.length === 1 ? 'Te falta 1 respuesta en este paso.' : 'Te faltan ' + faltan.length + ' respuestas en este paso.'; }
-    if (p.id === 'bloqueWtp') {
+    if (p.id === 'bloqueWtp' && conPrecio()) {
       var w = [n('#muyBarato'), n('#barato'), n('#caro'), n('#muyCaro')];
       if (w.some(function (x) { return x !== ''; }) && w.some(function (x) { return x === ''; })) return 'Llena los 4 precios, o déjalos todos vacíos para saltar este paso.';
       if (w.every(function (x) { return x !== ''; }) && !(w[0] <= w[1] && w[1] <= w[2] && w[2] <= w[3])) return 'Revisa los precios: van del más bajo al más alto.';
@@ -303,18 +311,20 @@ fieldset.paso[hidden] { display: none !important; }
       return S.busy(S.$('#enviar'), function () { return post(usabPayload(false)); }).then(fin_);
     }
     for (var k = 0; k < pasos.length; k++) { var fk = faltaEnPaso(pasos[k]); if (fk) { ir(k); return S.toast(fk, true); } }   // red de seguridad
-    if (!sat.value() || !fat.value() || !fin.value() || !con.value() || !rep.value()) return S.toast('Te falta alguna respuesta. Revisa los pasos anteriores.', true);
+    if (!sat.value() || !fat.value() || !con.value() || !rep.value()) return S.toast('Te falta alguna respuesta. Revisa los pasos anteriores.', true);
     if (rol === 'organizador' && !car.value()) return S.toast('Te falta contarnos cuánto del trabajo recayó en ti.', true);
+    if (!sub.value() || !pag.value() || !par.value()) return S.toast('Te falta alguna respuesta en el paso del precio.', true);
     if (conUsab) { var fu = usabOk(); if (fu) return S.toast(fu, true); }
-    var w = { muy_barato: n('#muyBarato'), barato: n('#barato'), caro: n('#caro'), muy_caro: n('#muyCaro') };
-    var hayWtp = rol === 'organizador' && (w.muy_barato !== '' || w.barato !== '' || w.caro !== '' || w.muy_caro !== '' || S.$('#preventa').checked);
-    if (hayWtp) {
+    var w = conPrecio() ? { muy_barato: n('#muyBarato'), barato: n('#barato'), caro: n('#caro'), muy_caro: n('#muyCaro') } : { muy_barato: '', barato: '', caro: '', muy_caro: '' };
+    var hayPrecios = w.muy_barato !== '' || w.barato !== '' || w.caro !== '' || w.muy_caro !== '';
+    if (hayPrecios) {
       if ([w.muy_barato, w.barato, w.caro, w.muy_caro].some(function (x) { return x === ''; })) return S.toast('Llena los 4 precios, o déjalos todos vacíos.', true);
       if (!(w.muy_barato <= w.barato && w.barato <= w.caro && w.caro <= w.muy_caro)) return S.toast('Revisa los precios: van del más bajo al más alto.', true);
     }
     S.busy(S.$('#enviar'), function () {
+      // 2.16.0: «¿Qué tal terminó la salida?» se eliminó; valor_final va vacío para no romper las columnas de la hoja retro
       return post({ action: 'retro', plan_id: planId, pid: pid, satisfaccion_plan: sat.value(), fatiga_post: fat.value(), carga_organizador: rol === 'organizador' ? car.value() : '',
-        valor_final: fin.value(), repetiria: rep.value(), confort_bot: con.value(), sentimiento: sen.value(),
+        valor_final: '', repetiria: rep.value(), confort_bot: con.value(), sentimiento: sen.value(),
         que_agregaria: S.$('#agregaria').value.trim(), comentario: S.$('#comentario').value.trim() })
       .then(function (r) {   // 2.0.8: después de la retro va la usabilidad (si el backend la tiene); un reintento la tolera ya enviada
         if (!r || (!r.ok && r.error !== 'retro_ya_enviada') || !conUsab) return r;
@@ -322,8 +332,9 @@ fieldset.paso[hidden] { display: none !important; }
       })
       .then(function (r) {
         if (!r || (!r.ok && r.error !== 'retro_ya_enviada')) return r;
-        if (!hayWtp) return r;   // si la retro ya estaba (reintento tras una falla), igual se intenta guardar el precio
-        return post(Object.assign({ action: 'wtp', pid: pid, preventa: S.$('#preventa').checked }, w));
+        // si la retro ya estaba (reintento tras una falla), igual se intenta guardar el precio; un reintento lo tolera ya enviado
+        return post(Object.assign({ action: 'wtp', pid: pid, plan_id: planId, suscripcion: sub.value(), quien_paga: pag.value(), parches: par.value(),
+          preventa: conPrecio() && S.$('#preventa').checked }, w)).then(function (x) { return x && x.error === 'wtp_ya_enviada' ? { ok: true } : x; });
       });
     }).then(fin_);
   }); }

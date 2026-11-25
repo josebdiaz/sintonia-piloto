@@ -8,6 +8,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 Resumen para arrancar cualquier conversación. El detalle está en las secciones de abajo. La forma de trabajar está en `claude/wow-sintonia.md` (Proyecto) y, en versión visual, en el deck [`docs/deck-wow.html`](docs/deck-wow.html). Los documentos superados del Proyecto no se borran: se listan en `claude/archivo.md` y no son fuente.
 
 - **Versiones:** frontend **2.15.0** (sintonia.my) y backend **2.9.3**, desplegados el 24/11. Aviso de privacidad **v2-2026-11** publicado.
+- **Por validar:** encuesta de cierre 2.16.0 y backend 2.10.0 en la rama `encuesta-cierre-2.16` (feedback de Katherine y precio para todo el parche). Néstor la revisa antes del ensayo del 25/11; si la aprueba, se congela en 2.16.0. Detalle: [`docs/cambio-encuesta-cierre-2.16.md`](docs/cambio-encuesta-cierre-2.16.md).
 - **Dónde estamos:** la plataforma está lista para la prueba con un grupo de Cali. **No hay resultados con personas reales.** E1.5 (n8n) está aplazado desde el 19/11.
 - **Calendario:** ensayo el 25/11 · congelamiento el 26/11 · prueba con Cali el 27/11 (encuentro a más tardar el 30/11) · entrega el 4/12 · pitch el 12/12.
 - **Regla vigente:** desde el 26/11 la consola no cambia hasta cerrar el análisis.
@@ -126,12 +127,13 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
+| 0 | Validar con Néstor la encuesta 2.16.0 (rama `encuesta-cierre-2.16`): preguntas de precio, regla de conteo de «repetir» y si sube la versión del aviso. Si la aprueba: desplegar el backend 2.10.0 y unir la rama | Ensayo (25/11) y congelamiento | Néstor · José |
 | 1 | Ensayo con WhatsApp real el miércoles 25 (guion en «Insumos para los agregados», Proyecto). Antes: probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso» | Prueba con Cali (viernes 27) | Equipo · Juan José |
 | 2 | Congelar el jueves 26: tags `piloto/v2.15.0` y `backend/v2.9.3`, y «Empezar piloto real» después del ensayo | Prueba con Cali | José |
 | 3 | Confirmar el grupo de Cali (o el plan B de Katherine) y la fecha del encuentro, a más tardar el 30/11. Modo piloto y encuesta actual (recomendado) | Prueba con Cali | Katherine |
 | 4 | Imprimir la oleada 1 del material POP (pines, stickers, tarjetas y volante); el tótem espera la plantilla de Juan Carlos; falta el logo vectorial de Icesi | Material POP | Equipo |
 | 5 | Cargar los stickers en el número Sintonía | Prueba con Cali | José |
-| 6 | Disposición a pagar también para miembros (prompt 6) y modelo de negocio con varios pagadores (prompt 7): después de Cali | Sustentación (4/12) | Katherine, con José |
+| 6 | Disposición a pagar para miembros (prompt 6): **en la encuesta 2.16.0, por validar**. Modelo de negocio con varios pagadores (prompt 7): después de Cali | Sustentación (4/12) | Katherine, con José |
 | 7 | Activar en GitHub *secret scanning*, *push protection* y la protección de `main`, sin exigir pull requests (pasos en «Insumos para los agregados») | Seguridad del repo | José |
 | 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |
 | 9 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |

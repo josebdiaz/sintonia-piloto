@@ -1,7 +1,13 @@
 /**
- * Sintonía · Piloto v2.9.3 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
+ * Sintonía · Piloto v2.10.0 (E1 WhatsApp + mago · E1.5 WhatsApp automatizado) — backend en Google Apps Script
  * ----------------------------------------------------------------------------------
  * Proyecto y hoja NUEVOS, independientes del recolector H1 anterior.
+ * Versión 2.10.0 (24/11, encuesta de cierre 2.16.0: feedback de Katherine; POR VALIDAR CON NÉSTOR antes de desplegar):
+ *   - wtp para TODO el parche, por persona («solo por tu parte»): columnas nuevas al final plan_id, rol, suscripcion (si/tal_vez/no),
+ *     quien_paga (organiza/dividimos/cada_quien/nadie) y parches (1/2/3_mas). Correr probarMontaje. Los precios solo se guardan si
+ *     suscripcion es si o tal_vez. Una fila por persona y plan (wtp_ya_enviada): resuelve M8.
+ *   - retro.valor_final («¿Qué tal terminó la salida?») ya no se pregunta: queda vacío en las filas nuevas.
+ *   - Panel: wtp_organizadores sigue igual (solo quien organiza); wtp_parche resume suscripción, quién paga y parches por rol, con n.
  * Versión 2.9.3 (24/11, reintentos sin duplicados, aprobado por Néstor):
  *   - Idempotencia: las acciones que escriben (IDEMPOTENTES_) aceptan req_id. Si el mismo req_id vuelve antes de 10 min (un reintento tras
  *     un corte), se devuelve la respuesta guardada en CacheService y no se escribe otra vez. Solo se guardan las respuestas ok.
@@ -165,7 +171,7 @@ var SHEETS = {
   bitacora:         ['ts','accion','detalle','respaldo_url','registrado_por'],   // v2.2.4: reinicios de la hoja
   tokens:           ['ts','plan_id','grupo_id','uso','modelo','prompt_version','tokens_in','tokens_out','costo_usd'],
   retro:            ['ts','plan_id','pid','rol','fatiga_post','carga_organizador','satisfaccion_plan','valor_final','repetiria','confort_bot','sentimiento_autodeclarado','que_agregaria','comentario'],
-  wtp:              ['ts','pid','grupo_id','muy_barato','barato','caro','muy_caro','preventa'],
+  wtp:              ['ts','pid','grupo_id','muy_barato','barato','caro','muy_caro','preventa','plan_id','rol','suscripcion','quien_paga','parches'],   // v2.10.0: + plan_id, rol y 3 preguntas
   // v2.2.6: usabilidad (fuera de I4). SEQ 1–7 por momento; SUS 1–5 × 10 → sus_puntaje 0–100. toma: con_pulso | diferida
   usabilidad:       ['ts','plan_id','pid','grupo_id','rol','experimento','ronda','toma','dias_desde_encuentro','seq_activacion','seq_interaccion','seq_continuidad',
                      'sus_01','sus_02','sus_03','sus_04','sus_05','sus_06','sus_07','sus_08','sus_09','sus_10','sus_puntaje','sus_omitido'],
@@ -766,11 +772,19 @@ function usabilidad_(d) {
   return { ok: true, sus_puntaje: fila.sus_puntaje };
 }
 
-/** I5: disposición a pagar SOLO del organizador (Van Westendorp + preventa sin cobro). */
+/** v2.10.0: disposición a pagar de CADA persona del parche, por su parte (antes, I5: solo el organizador). Una fila por persona y plan. */
 function wtp_(d) {
   var m = findOne_('participantes', 'pid', d.pid); if (!m || m.estado !== 'activo') return { ok: false, error: 'no_miembro' };
-  if (m.rol !== 'organizador') return { ok: false, error: 'solo_organizador' };
-  append_('wtp', { pid: d.pid, grupo_id: m.grupo_id, muy_barato: int_(d.muy_barato), barato: int_(d.barato), caro: int_(d.caro), muy_caro: int_(d.muy_caro), preventa: bool_(d.preventa) });
+  var planId = str_(d.plan_id, 60);
+  if (planId) { var p = findOne_('planes', 'plan_id', planId); if (!p || p.grupo_id !== m.grupo_id) return { ok: false, error: 'plan_no_existe' }; }
+  if (planId && rows_('wtp').some(function (r) { return r.plan_id === planId && r.pid === d.pid; })) return { ok: false, error: 'wtp_ya_enviada' };
+  var enumv = function (v, ok) { v = String(v === undefined || v === null ? '' : v); return ok.indexOf(v) >= 0 ? v : ''; };
+  var suscripcion = enumv(d.suscripcion, ['si', 'tal_vez', 'no']);
+  var conPrecio = suscripcion !== 'no';   // sin respuesta (frontend anterior) se guardan los precios como antes
+  append_('wtp', { pid: d.pid, grupo_id: m.grupo_id, plan_id: planId, rol: m.rol, suscripcion: suscripcion,
+    quien_paga: enumv(d.quien_paga, ['organiza', 'dividimos', 'cada_quien', 'nadie']), parches: enumv(d.parches, ['1', '2', '3_mas']),
+    muy_barato: conPrecio ? int_(d.muy_barato) : '', barato: conPrecio ? int_(d.barato) : '', caro: conPrecio ? int_(d.caro) : '', muy_caro: conPrecio ? int_(d.muy_caro) : '',
+    preventa: conPrecio && bool_(d.preventa) });
   return { ok: true };
 }
 
@@ -1052,9 +1066,22 @@ function vistaPanel_() {
     linea_base_grupos: { n: lb.length, planes_realizados_mes_prom: mean(lb.map(function (b) { return b.planes_realizados_mes; })),
       planes_fallidos_mes_prom: mean(lb.map(function (b) { return b.planes_fallidos_mes; })), fatiga_previa_org_prom: mean(lb.map(function (b) { return b.fatiga_previa_org; })) },
     por_experimento: porExp,
-    wtp_organizadores: wtp.filter(function (w) { return validos[w.grupo_id]; }).map(function (w) { return { muy_barato: w.muy_barato, barato: w.barato, caro: w.caro, muy_caro: w.muy_caro, preventa: bool_(w.preventa) }; }),
+    wtp_organizadores: wtp.filter(function (w) { return validos[w.grupo_id] && (!w.rol || w.rol === 'organizador'); }).map(function (w) { return { muy_barato: w.muy_barato, barato: w.barato, caro: w.caro, muy_caro: w.muy_caro, preventa: bool_(w.preventa) }; }),
+    wtp_parche: resumenWtp_(wtp.filter(function (w) { return validos[w.grupo_id] && w.rol; })),   // v2.10.0
     cambios: rows_('cambios').map(function (c) { return { experimento: c.experimento, version: c.version, descripcion: c.descripcion }; })
   };
+}
+
+/** v2.10.0: conteos por rol (organizador / miembro) de suscripción, quién paga y parches, con los precios de quien respondió Sí o Tal vez. */
+function resumenWtp_(w) {
+  var out = {};
+  ['organizador', 'miembro'].forEach(function (rol) {
+    var r = w.filter(function (x) { return rol === 'organizador' ? x.rol === 'organizador' : x.rol !== 'organizador'; });
+    var cuenta = function (k) { var o = {}; r.forEach(function (x) { var v = String(x[k] || 'sin_respuesta'); o[v] = (o[v] || 0) + 1; }); return o; };
+    out[rol] = { n: r.length, suscripcion: cuenta('suscripcion'), quien_paga: cuenta('quien_paga'), parches: cuenta('parches'),
+      precios: r.filter(function (x) { return x.muy_barato !== '' && x.muy_caro !== ''; }).map(function (x) { return { muy_barato: x.muy_barato, barato: x.barato, caro: x.caro, muy_caro: x.muy_caro, preventa: bool_(x.preventa) }; }) };
+  });
+  return out;
 }
 
 /** v2.2.6: SEQ y SUS por ronda y por toma (con_pulso vs. diferida). Cada valor lleva su n. */

@@ -143,12 +143,12 @@ const T0=Date.now();
    const u=h.match(/https?:\/\/\S+retro\.html\S+/)[0].replace('https://sintonia.my',B); const x=await movil('iPhone 13'); await x.p.goto(u); await x.p.waitForSelector('#vistaForm:not(.hidden)',{timeout:8000});
    if(i===0){ await axe(x.p,'encuesta de cierre'); await scrollX(x.p,'encuesta de cierre'); }
    // 2.11.0: la encuesta va por pasos; en cada uno se responde lo visible y se sigue
-   const esOrg=await x.p.$eval('#bloqueWtp',e=>!e.classList.contains('hidden')).catch(()=>false);
-   const nPasos=await x.p.$eval('#encPaso',e=>e.innerText); if(i===0) ok(/Paso 1 de (5|6)/.test(nPasos),'Continuidad','2.11.0: la encuesta de cierre va por pasos (5 para miembros, 6 para quien organiza)',nPasos,'MEDIA');
+   const esOrg=await x.p.$eval('#bloqueCarga',e=>!e.classList.contains('hidden')).catch(()=>false);
+   const nPasos=await x.p.$eval('#encPaso',e=>e.innerText); if(i===0) ok(/Paso 1 de 5/.test(nPasos),'Continuidad','2.16.0: la encuesta de cierre va en 5 pasos para todo el parche',nPasos,'MEDIA');
    for(let k=0;k<8;k++){
      await x.p.$$eval('[role=radiogroup]',gs=>gs.forEach(g=>{const bs=g.querySelectorAll('button[data-v]');if(bs.length&&g.offsetParent)bs[Math.min(3,bs.length-1)].click();}));
      await x.p.$$eval('.chips',gs=>gs.forEach(g=>{const r=g.querySelector('input');if(r&&g.offsetParent)r.click();}));
-     if(esOrg&&await x.p.$eval('#bloqueWtp',e=>!e.hidden)){ await x.p.fill('#muyBarato','3000'); await x.p.fill('#barato','8000'); await x.p.fill('#caro','20000'); await x.p.fill('#muyCaro','35000'); }
+     if(esOrg&&await x.p.$eval('#bloquePrecios',e=>!e.classList.contains('hidden')&&!e.closest('fieldset').hidden)){ await x.p.fill('#muyBarato','3000'); await x.p.fill('#barato','8000'); await x.p.fill('#caro','20000'); await x.p.fill('#muyCaro','35000'); }
      if(await x.p.$eval('#enviar',e=>!e.classList.contains('hidden'))) break;
      await x.p.click('#seguir'); await x.p.waitForTimeout(80);
    }
@@ -158,7 +158,7 @@ const T0=Date.now();
    const n=await x.p.$$eval('#vistaForm .field, #vistaForm fieldset .field',x=>x.length).catch(()=>0); if(i===0) H(n>25?'CONOCIDO':'OK','Continuidad','Largo de la encuesta de cierre: '+n+' campos (M9: se cronometra en el ensayo del 25/11)',n);
    await x.c.close();
  }
- const D=(await qa()).dump; ok(D.wtp.length===2,'Negocio','Disposición a pagar guardada para quien organiza',D.wtp.length-1);
+ const D=(await qa()).dump; ok(D.wtp.length===encs.length+1,'Negocio','2.16.0: disposición a pagar guardada para cada persona del parche',D.wtp.length-1);
  H(D.wtp[0].indexOf('plan_id')>=0?'OK':'CONOCIDO','Negocio','La fila de disposición a pagar no guarda el plan (wtp sin plan_id; M8, prompt 6): si quien organiza responde en el plan 1 y el plan 2, no se sabe cuál es cuál y no hay control de duplicados','columnas: '+D.wtp[0].join(','));
  // ===== Pulso del mago (2.8.1: es un paso del recorrido)
  await m.click('#recargar'); await wait(600);

@@ -97,6 +97,17 @@ for (const exp of ['E1', 'E2']) {
     const urow = SHEETS.usabilidad.rows.slice(-1)[0], H = SHEETS.usabilidad.rows[0];
     chk(exp + ' plan ' + ronda + ' SEQ continuidad ' + (ronda === 2 ? 'guardada' : 'vacía'), (urow[H.indexOf('seq_continuidad')] === '') === (ronda === 1), urow[H.indexOf('seq_continuidad')]);
     chk(exp + ' plan ' + ronda + ' SUS = 75', urow[H.indexOf('sus_puntaje')] === 75, urow[H.indexOf('sus_puntaje')]);
+    // 2.10.0: disposición a pagar para todo el parche, una fila por persona y plan
+    const w0 = SHEETS.wtp.rows.length, HW = SHEETS.wtp.rows[0];
+    const wo = post({ action: 'wtp', pid: org.pid, plan_id: cp.plan_id, suscripcion: 'si', quien_paga: 'organiza', parches: '2', muy_barato: 3000, barato: 8000, caro: 15000, muy_caro: 25000, preventa: true });
+    const wm1 = post({ action: 'wtp', pid: m1.pid, plan_id: cp.plan_id, suscripcion: 'no', quien_paga: 'nadie', parches: '1', muy_barato: 1000, barato: 2000, caro: 3000, muy_caro: 4000, preventa: true });
+    const wm2 = post({ action: 'wtp', pid: m2.pid, plan_id: cp.plan_id, suscripcion: 'tal_vez', quien_paga: 'cada_quien', parches: '3_mas' });
+    const wdup = post({ action: 'wtp', pid: m2.pid, plan_id: cp.plan_id, suscripcion: 'si', quien_paga: 'organiza', parches: '1' });
+    const fm1 = SHEETS.wtp.rows[w0 + 1];
+    chk(exp + ' plan ' + ronda + ' 2.10.0 wtp de quien organiza y de los miembros', wo.ok && wm1.ok && wm2.ok && SHEETS.wtp.rows.length === w0 + 3, [wo, wm1, wm2]);
+    chk(exp + ' plan ' + ronda + ' 2.10.0 si responde No, no se guardan precios ni preventa', fm1[HW.indexOf('suscripcion')] === 'no' && fm1[HW.indexOf('muy_barato')] === '' && fm1[HW.indexOf('preventa')] === false && fm1[HW.indexOf('rol')] === 'miembro' && fm1[HW.indexOf('plan_id')] === cp.plan_id, fm1);
+    chk(exp + ' plan ' + ronda + ' 2.10.0 una fila por persona y plan (wtp_ya_enviada)', wdup.error === 'wtp_ya_enviada' && SHEETS.wtp.rows.length === w0 + 3, wdup);
+    chk(exp + ' plan ' + ronda + ' 2.10.0 un plan de otro grupo se rechaza', post({ action: 'wtp', pid: org.pid, plan_id: 'otro', suscripcion: 'si' }).error === 'plan_no_existe', null);
   }
   // simula 25 minutos de sesión y cierra
   const sr = SHEETS.sesiones.rows, sh = sr[0]; const abierta = sr.filter((r, i) => i > 0 && r[sh.indexOf('estado')] === 'abierta').pop();
@@ -119,6 +130,8 @@ const pan = get({ view: 'panel', key: A });
   chk('panel ' + x + ': llegada 100 % y minutos humanos > 0', e.metrica_principal_llegaron_sobre_invitados === 1 && e.costo.minutos_humanos > 0, [e.metrica_principal_llegaron_sobre_invitados, e.costo.minutos_humanos]);
   chk('panel ' + x + ': Nivel 2 (repetirían) 6 de 6', e.todos.repetiria_si === 6 && e.todos.n === 6, e.todos);
 });
+chk('2.10.0 panel: precios de organizadores (n = 4) y resumen del parche por rol', pan.wtp_organizadores.length === 4 && pan.wtp_parche.organizador.n === 4 && pan.wtp_parche.miembro.n === 8
+  && pan.wtp_parche.miembro.suscripcion.no === 4 && pan.wtp_parche.miembro.quien_paga.cada_quien === 4 && pan.wtp_parche.organizador.precios.length === 4 && pan.wtp_parche.miembro.precios.length === 0, pan.wtp_parche);
 
 // 2.3.2: mensajes marcados y cierre automático de sesiones
 const g2 = post(Object.assign({ action: 'registrar', experimento: 'E1', modo: 'piloto', tipo_grupo: 'amigos', n_invitados: 2, nombre_pila: 'Z', whatsapp: '+573009990001' }, cons));

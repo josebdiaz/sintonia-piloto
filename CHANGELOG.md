@@ -5,6 +5,14 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-24 · Encuesta de cierre 2.16.0 · por validar (rama `encuesta-cierre-2.16`, frontend 2.16.0 · backend 2.10.0)
+**No publicado.** Cambia el instrumento: espera el visto bueno de Néstor. Detalle y reglas de lectura en `docs/cambio-encuesta-cierre-2.16.md`.
+- **Feedback de Katherine:** sale «¿Qué tal terminó la salida?»; se elimina la página «Después»; «¿Qué tan a gusto…?» pasa a la página de Sintonía; la intención de repetir se reescribe en singular y sobre Sintonía («¿Le pedirías a Sintonía que arme el próximo plan de tu parche?»); la SEQ de continuidad pasa a «Antes». SUS y SEQ no cambian.
+- **Precio para todo el parche, por persona:** filtro «¿Pagarías una suscripción mensual…, solo por tu parte?»; Van Westendorp con enunciados cortos solo si responde Sí o Tal vez; «¿Quién debería pagarlo?» con los tres escenarios de cobro; «¿En cuántos parches usarías Sintonía?».
+- **Backend 2.10.0:** `wtp` con `plan_id`, `rol`, `suscripcion`, `quien_paga` y `parches` (correr `probarMontaje`); una fila por persona y plan (resuelve M8); sin precios si responde No. Panel con resumen por rol.
+- **Aviso:** la línea del precio ya no dice «solo para quien organiza». Por decidir si sube `AVISO_VERSION`.
+- **QA:** backend 131 de 131 · recorrido 57 de 57 · consola 26 de 26 · ola A 21 de 21 · auditoría E2E 70 OK, 0 graves · contraste y axe sin fallas.
+
 ### 2026-11-24 · Deck «Cómo trabajamos con Claude»
 - `docs/deck-wow.html`: 15 diapositivas que explican la forma de trabajo sin remitir a secciones numeradas. Cubre el ciclo (abrir, trabajar, cerrar), el árbol «¿Sigo aquí o abro otra?», qué pegar al abrir, el traspaso de 3 líneas, cómo nombrar las conversaciones, los seis frentes, dónde vive cada cosa, la cadencia, las reglas, quién decide, el archivo y una chuleta.
 - Enlazado en el home, en «Presentaciones». El texto en el Proyecto (`claude/wow-sintonia.md` v2.1) ya no usa «§».
