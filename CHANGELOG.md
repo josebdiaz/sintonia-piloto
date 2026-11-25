@@ -6,7 +6,7 @@ Las fechas son de 2026 (hora de Colombia).
 ## Repositorio
 
 ### 2026-11-24 · Encuesta de cierre 2.16.0 · publicada (frontend 2.16.0 · backend 2.10.0 desplegado)
-**Aprobada por Néstor (24/11).** Backend 2.10.0 desplegado con `probarMontaje()`. Congelamiento: tags `piloto/v2.16.0` y `backend/v2.10.0`. Detalle y reglas de lectura en `docs/cambio-encuesta-cierre-2.16.md`.
+**Aprobada por Néstor (24/11).** Backend 2.10.0 desplegado con `probarMontaje()`. Congelamiento en esta versión; tags `piloto/v2.16.0` y `backend/v2.10.0` por crear. Detalle y reglas de lectura en `docs/cambio-encuesta-cierre-2.16.md`.
 - **Feedback de Katherine:** sale «¿Qué tal terminó la salida?»; se elimina la página «Después»; «¿Qué tan a gusto…?» pasa a la página de Sintonía; la intención de repetir se reescribe en singular y sobre Sintonía («¿Le pedirías a Sintonía que arme el próximo plan de tu parche?»); la SEQ de continuidad pasa a «Antes». SUS y SEQ no cambian.
 - **Precio para todo el parche, por persona:** filtro «¿Pagarías una suscripción mensual…, solo por tu parte?»; Van Westendorp con enunciados cortos solo si responde Sí o Tal vez; «¿Quién debería pagarlo?» con los tres escenarios de cobro; «¿En cuántos parches usarías Sintonía?».
 - **Backend 2.10.0:** `wtp` con `plan_id`, `rol`, `suscripcion`, `quien_paga` y `parches` (correr `probarMontaje`); una fila por persona y plan (resuelve M8); sin precios si responde No. Panel con resumen por rol.

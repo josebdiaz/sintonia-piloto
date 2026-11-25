@@ -30,7 +30,7 @@ Resumen para arrancar cualquier conversación. El detalle está en las secciones
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
 | Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main` |
-| Tags | `piloto/v2.16.0` · `backend/v2.10.0` | Creados el 24/11 (congelamiento). **Faltan** los de las versiones intermedias |
+| Tags | `piloto/v2.7.0` · `backend/v2.7.2` | **Por crear desde el Mac** (la sesión de Claude no puede subir tags): `piloto/v2.16.0` y `backend/v2.10.0` sobre el commit publicado el 24/11, más los de las versiones intermedias |
 | Inventario verificado | Hoja del piloto | Revisión de ubicaciones con `probarMontaje()` (2.5.0): **resultado por reportar** |
 
 ## 2. Qué cambió desde el 6/11 (consola 2.3.1 → 2.8.1, backend 2.3.x → 2.8.1)
@@ -127,7 +127,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
 | 1 | Ensayo con WhatsApp real el miércoles 25 (guion en «Insumos para los agregados», Proyecto). Antes: probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso» | Prueba con Cali (viernes 27) | Equipo · Juan José |
-| 2 | Congelar el jueves 26 en `piloto/v2.16.0` y `backend/v2.10.0` (tags ya creados el 24/11), y «Empezar piloto real» después del ensayo | Prueba con Cali | José |
+| 2 | Congelar el jueves 26 en `piloto/v2.16.0` y `backend/v2.10.0` (tags por crear desde el Mac), y «Empezar piloto real» después del ensayo | Prueba con Cali | José |
 | 3 | Confirmar el grupo de Cali (o el plan B de Katherine) y la fecha del encuentro, a más tardar el 30/11. Modo piloto y encuesta actual (recomendado) | Prueba con Cali | Katherine |
 | 4 | Imprimir la oleada 1 del material POP (pines, stickers, tarjetas y volante); el tótem espera la plantilla de Juan Carlos; falta el logo vectorial de Icesi | Material POP | Equipo |
 | 5 | Cargar los stickers en el número Sintonía | Prueba con Cali | José |
