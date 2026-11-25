@@ -128,7 +128,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
 | 1 | Ensayo con WhatsApp real el miércoles 25 (guion en «Insumos para los agregados», Proyecto). Antes: probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso» | Prueba con Cali (viernes 27) | Equipo · Juan José |
-| 2 | Congelado en `piloto/v2.16.0` y `backend/v2.10.0` (tags del 24/11). Falta solo «Empezar piloto real» después del ensayo, y «Empezar piloto real» después del ensayo | Prueba con Cali | José |
+| 2 | Congelado en `piloto/v2.16.0` y `backend/v2.10.0` (tags del 24/11). Falta solo «Empezar piloto real» después del ensayo | Prueba con Cali | José |
 | 3 | Confirmar el grupo de Cali (o el plan B de Katherine) y la fecha del encuentro, a más tardar el 30/11. Modo piloto y encuesta actual (recomendado) | Prueba con Cali | Katherine |
 | 4 | Imprimir la oleada 1 del material POP (pines, stickers, tarjetas y volante); el tótem espera la plantilla de Juan Carlos; falta el logo vectorial de Icesi | Material POP | Equipo |
 | 5 | Cargar los stickers en el número Sintonía | Prueba con Cali | José |
