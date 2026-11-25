@@ -27,7 +27,7 @@ El perfil de la comunidad marca **28 %** (API `community/profile`, 24/11).
 | Correo de contacto publicado | Es la excepción documentada (canal de la Ley 1581 en el aviso de privacidad), pero es un buzón personal | Baja | Decisión: un buzón de rol (p. ej. en sintonia.my) cuando se descongele el código, porque el correo también vive en `piloto/assets/sintonia.js` |
 | LICENSE | ✗ No hay | **Alta** | **Decisión del equipo** (ver §5). Sin licencia el material queda con todos los derechos reservados por defecto: nadie puede reutilizarlo y Scorecard lo penaliza |
 | Descripción, sitio y temas | ✗ Vacíos | Baja | Settings → About: descripción corta, `https://sintonia.my` y temas (pendiente 7) |
-| CONTRIBUTING | ✗ No hay. `CLAUDE.md` y «Cómo trabajar» del README cumplen esa función para el equipo | Baja | Opcional: un CONTRIBUTING de 5 líneas que remita a esos dos |
+| CONTRIBUTING | Faltaba | Baja | **Agregado:** `CONTRIBUTING.md`, que remite a `CLAUDE.md`, al README y a SECURITY.md |
 | Código de conducta | ✗ No hay | Baja | Opcional: el repo no recibe contribuciones externas |
 | Plantillas de issues y PR | ✗ No hay | Baja | Opcional, por la misma razón |
 | Wiki y Projects | Activos y sin uso | Baja | Desactivarlos en Settings → General |
@@ -67,7 +67,7 @@ El perfil de la comunidad marca **28 %** (API `community/profile`, 24/11).
 | Código = tag | ✓ Los tags `piloto/v2.16.0` y `backend/v2.10.0` apuntan a `2a81fd3`, y desde ahí no hay cambios en `piloto/` ni en `backend/` | — | El congelamiento está íntegro |
 | Un tag por versión publicada | ✗ Faltan los tags de **unas 50 versiones** (28 del frontend, 22 del backend): frontend 2.0.4, 2.0.6, 2.0.8, 2.1.0–2.6.0 y 2.7.1–2.15.0; backend 2.2.0, 2.2.4, 2.2.6, 2.3.0–2.7.1 y 2.7.3–2.9.3; datos v3 | Media | Ya es el pendiente 13. Cada fila de medición guarda `consola_version`: sin tag, no se puede reconstruir la versión exacta que usó un grupo. Método: ubicar con `git log -S "FRONTEND_VERSION: '2.x.y'"` el commit donde cambió cada versión y crear el tag ahí |
 | Tags anotados | ✗ Los del congelamiento son **ligeros**: no guardan fecha, autor ni mensaje. El README pide `git tag -a` | Media | Recrearlos como anotados **sobre el mismo commit** (no cambia código): `git tag -fa piloto/v2.16.0 2a81fd3 -m "…"` y `git push -f origin piloto/v2.16.0`; igual para el backend (pendiente 13) |
-| Orden de fechas | 2.4.0 figura con fecha 15/11 y 2.5.0 con 14/11, en el frontend y en el backend | Baja | `[Por verificar]`: probablemente es un error de fecha en el CHANGELOG, no de versión |
+| Orden de fechas | 2.4.0 figuraba con fecha 15/11 y 2.5.0 con 14/11, en el frontend y en el backend | Baja | **Corregido:** según los commits, las dos son del 14/11 (2.4.0 a las 9:51 p. m.) |
 | Datos | El inventario usa v1, v2 y v3, sin SemVer | Baja | Aceptable y documentado |
 
 ## 4. Keep a Changelog 1.1.0
@@ -98,6 +98,24 @@ El perfil de la comunidad marca **28 %** (API `community/profile`, 24/11).
 - `README.md`: estado y tabla de versiones al día (2.16.0 · 2.10.0, tags del congelamiento) y nota de que esos tags son ligeros.
 - `docs/seguridad-repo.md`: el escaneo de secretos y la *push protection* figuran como activos (verificado el 24/11). Se agrega el reporte privado de vulnerabilidades como control por activar.
 - `ESTADO.md` y `CHANGELOG.md`: este frente cerrado y los pendientes nuevos.
+
+## 7. Plan de acción (24/11)
+
+**Hecho desde la sesión de Claude:** este reporte, el README, `docs/seguridad-repo.md`, `CONTRIBUTING.md`, las fechas de la 2.4.0 y `tools/crear-tags.sh`. Las 47 versiones intermedias quedaron ubicadas con la regla «último commit que modifica el componente con esa versión». La regla se validó contra los tags que ya existían: 13 de 14 dan el mismo código. La excepción es `piloto/v2.0.7`, que apunta al commit que subió la versión y no se toca.
+
+**No se pudo desde la sesión:** GitHub responde 403 a los cambios de configuración, a subir tags y a borrar ramas. Quedan para el Mac o el navegador:
+
+| # | Paso | Dónde | Tiempo |
+|---|---|---|---|
+| 1 | Correr `bash tools/crear-tags.sh` en el clon al día, después de `git pull`. Si Git reclama por tags que «ya existen» en el Mac, el script ya trae `git fetch --tags --force` | Terminal del Mac | 1 min |
+| 2 | Proteger `main` con un *ruleset*: *Restrict deletions* y *Block force pushes*. **Sin** exigir PR ni chequeos, para que el bot del home siga publicando | Settings → Rules → Rulesets → New branch ruleset · objetivo: rama por defecto | 3 min |
+| 3 | Activar *Private vulnerability reporting* | Settings → Code security | 30 s |
+| 4 | About: descripción, sitio `https://sintonia.my` y temas (innovacion, diseno-de-servicios, whatsapp, wizard-of-oz, cali, universidad-icesi) | Página del repo → engranaje de «About» | 1 min |
+| 5 | Apagar Wiki y Projects; activar *Automatically delete head branches* | Settings → General | 1 min |
+| 6 | Borrar las ramas ya integradas: `e3-ds-3.0`, `encuesta-cierre-2.16`, `publicar-v230`. **No borrar** `docs/identidad-visual-v1.7` ni `ux-writing-v1`: tienen un commit cada una que no está en `main` | Página del repo → Branches | 1 min |
+| 7 | D1 · licencia: decidir con Katherine y, si hace falta, con Icesi. Cuando esté, Claude agrega el archivo `LICENSE` | Reunión de equipo | — |
+
+Lo de CI y el CHANGELOG sigue en el pendiente 18, después del análisis.
 
 ## Implicaciones
 

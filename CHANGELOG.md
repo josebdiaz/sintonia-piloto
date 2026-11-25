@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-24 · Plan de acción de la auditoría (sin cambios de código)
+- `CONTRIBUTING.md`: forma de trabajo, versiones, privacidad y congelamiento (el perfil de comunidad de GitHub lo pide).
+- `tools/crear-tags.sh`: crea como anotados los 47 tags de versiones intermedias y recrea como anotados los 2 del congelamiento, sobre el mismo commit. Se corre desde el Mac, porque desde la sesión de Claude GitHub no deja subir tags (403). Probado en una copia: 68 tags, todos anotados.
+- Fechas de la 2.4.0 (frontend y backend) corregidas al 14/11, según el commit.
+- La configuración de GitHub (About, protección de `main`, reporte privado, Wiki, Projects y ramas) no se puede cambiar desde la sesión: queda con pasos en `docs/auditoria-estandares.md` §7.
+
 ### 2026-11-24 · Auditoría de estándares del repo público (sin cambios de código)
 - `docs/auditoria-estandares.md`: brechas frente a los estándares de comunidad de GitHub (perfil: 28 %), OpenSSF Scorecard (estimación manual; nunca se ha corrido), SemVer y Keep a Changelog. Lo más grave es que no hay licencia (decisión D1) y que `main` está sin protección. El código coincide con los tags del congelamiento.
 - `README.md`: versiones al día (2.16.0 · 2.10.0) y enlace a la auditoría.
@@ -495,7 +501,7 @@ Marcadores `[n]` bloqueados, menú «⋯» por persona, cola de mensajes, mapa e
 ### [2.6.0] · 2026-11-15 · Mapa del recorrido (2 planes × 5 etapas) y relojes que se apagan
 ### [2.5.1] · 2026-11-14 · QA visual (radios y alturas, barra flotante, mensajes recortados)
 ### [2.5.0] · 2026-11-14 · Marca actual, enlaces de Google Maps, relojes, atajos y accesibilidad (axe 0)
-### [2.4.0] · 2026-11-15 · El mago como usuario: decisión por ronda, encuesta nativa, textos nuevos, formularios que no se borran
+### [2.4.0] · 2026-11-14 · El mago como usuario: decisión por ronda, encuesta nativa, textos nuevos, formularios que no se borran
 ### [2.3.2] · 2026-11-14 · Marca en las páginas de participantes
 ### [2.3.1] · 2026-11-14 · QA de punta a punta de la consola
 ### [2.3.0] · 2026-11-14 · Ajustes del test drive, velocidad y look & feel
@@ -637,7 +643,7 @@ Tag `backend/v2.7.2` (creado el 15/11). QA: 85 de 85. Incluye 2.7.0 y 2.7.1.
 ### [2.7.1] · 2026-11-15 · `reabrir_opciones` en `MOTOR_ACCIONES` (solo planes de E1.5)
 ### [2.7.0] · 2026-11-15 · Hojas `pulso_mago` y `medicion_consola`; panel «La consola del mago»
 ### [2.5.0] · 2026-11-14 · Revisión de ubicaciones en `probarMontaje`; `?view=mago&inv=0`
-### [2.4.0] · 2026-11-15 · Hoja `decisiones`, `reabrir_opciones`, Gemini con 3 opciones, eventos nuevos, correos al equipo, modo prueba sin reloj
+### [2.4.0] · 2026-11-14 · Hoja `decisiones`, `reabrir_opciones`, Gemini con 3 opciones, eventos nuevos, correos al equipo, modo prueba sin reloj
 ### [2.3.6] · 2026-11-14 · Propuestas más rápidas
 ### [2.3.5] · 2026-11-14 · Inventario verificado
 ### [2.3.4] · 2026-11-14 · Velocidad y línea base

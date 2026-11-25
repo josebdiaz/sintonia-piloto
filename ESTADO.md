@@ -135,13 +135,13 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | 4 | Imprimir la oleada 1 del material POP (pines, stickers, tarjetas y volante); el tótem espera la plantilla de Juan Carlos; falta el logo vectorial de Icesi | Material POP | Equipo |
 | 5 | Cargar los stickers en el número Sintonía | Prueba con Cali | José |
 | 6 | Disposición a pagar para miembros (prompt 6): **hecho en la 2.16.0**. Modelo de negocio con varios pagadores (prompt 7): después de Cali | Sustentación (4/12) | Katherine, con José |
-| 7 | En GitHub: *secret scanning* y *push protection* **ya activos** (24/11). Falta: proteger `main` sin exigir pull requests (probar que el bot del home pueda seguir publicando), activar el reporte privado de vulnerabilidades, llenar About (descripción, sitio y temas) y apagar Wiki y Projects | Seguridad del repo | José |
+| 7 | En GitHub (*secret scanning* y *push protection* ya activos): proteger `main` con un *ruleset* sin PR ni chequeos (solo bloquear borrado y *force push*), reporte privado de vulnerabilidades, About, apagar Wiki y Projects, borrar 3 ramas integradas. Pasos 2 a 6 en `docs/auditoria-estandares.md` §7 (~7 min) | Seguridad del repo | José |
 | 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |
 | 9 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
 | 10 | Ola 2 de la auditoría UI/UX (una sola guía en la consola, inscripción en 3 pasos): después de Cali | Siguiente fase | José |
 | 11 | n8n y licencias: **aplazados** (19/11) hasta tener más pruebas manuales. Cuando se retomen: N1–N11, B1, B5, I5 y C14 | E1.5 | Equipo |
 | 12 | Control de compromisos de los periodos 8 y 9: archivo interno consolidado al cierre | Seguimiento de la maestría | José |
-| 13 | Recrear como anotados los tags del congelamiento (mismo commit, `git tag -fa`) y crear los de las versiones intermedias (frontend 2.0.4 a 2.15.0, backend 2.2.0 a 2.9.3, datos v3; método en `docs/auditoria-estandares.md` §3) | Trazabilidad del análisis | José |
+| 13 | Correr `bash tools/crear-tags.sh` en el clon al día: crea los 47 tags intermedios y deja anotados los 2 del congelamiento (mismo commit). Desde la sesión de Claude GitHub no deja subir tags | Trazabilidad del análisis | José |
 | 14 | ~~Agregar a las instrucciones del Proyecto que lo archivado no es fuente~~ Hecho en el prompt v3.4 (24/11) | Orden del Proyecto | José |
 | 15 | Renombrar el clon `~/Desktop/sintonia-tags` (p. ej. `~/Documents/sintonia-piloto`) y conectarlo como carpeta del Proyecto. Antes, revisar qué es `~/sintonia-piloto`, para no dejar dos copias | Orden del Mac | José |
 | 16 | Subir al Drive del equipo `_archivo-2026-11-24/Feedback y pruebas de usuario/` (notas y audios con datos de personas, solo están en el Mac) y decidir qué se rescata de lo único del archivo (ver su `INVENTARIO.md`) | Respaldo | José |
