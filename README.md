@@ -4,7 +4,7 @@ Proyecto de la Maestría en Gestión de la Innovación (Universidad Icesi) · Jo
 Sintonía es un sistema que coordina planes para grupos de amigos que ya existen en Cali («tu +1 de confianza»).
 El piloto compara dos condiciones en WhatsApp: **E1**, con un mago humano (Mago de Oz), y **E1.5**, automatizada con n8n y una persona que aprueba y pega (valor interno `E2`). Las dos usan el mismo backend.
 
-**Estado actual, versiones e implicaciones pendientes: [`ESTADO.md`](ESTADO.md)** (17/11/2026 · frontend 2.7.1 · backend 2.7.3 en vivo). El menú del home se genera desde el repo: [`docs/protocolo-home.md`](docs/protocolo-home.md).
+**Estado actual, versiones e implicaciones pendientes: [`ESTADO.md`](ESTADO.md)** (24/11/2026 · frontend 2.16.0 · backend 2.10.0 en vivo, congelados para el piloto). El menú del home se genera desde el repo: [`docs/protocolo-home.md`](docs/protocolo-home.md).
 
 Sitio publicado (GitHub Pages, rama `main`): https://sintonia.my
 
@@ -69,9 +69,11 @@ Cada componente tiene su propia versión [SemVer](https://semver.org/lang/es/) y
 
 | Componente | Versión actual | Dónde se declara | Tag |
 |---|---|---|---|
-| Frontend del piloto | 2.7.1 | `piloto/assets/sintonia.js` → `FRONTEND_VERSION` (se ve en el pie de página) | `piloto/v2.7.0` (falta `v2.7.1`) |
-| Backend (Apps Script) | 2.7.3 | Encabezado de `backend/Codigo_Piloto.gs` | `backend/v2.7.2` (falta `v2.7.3`) |
+| Frontend del piloto | 2.16.0 | `piloto/assets/sintonia.js` → `FRONTEND_VERSION` (se ve en el pie de página) | `piloto/v2.16.0` (congelamiento; faltan los de las versiones intermedias) |
+| Backend (Apps Script) | 2.10.0 | Encabezado de `backend/Codigo_Piloto.gs` | `backend/v2.10.0` (congelamiento; faltan los de las versiones intermedias) |
 | Inventario | 3 (4/10/2026 · 17 activos) | `datos/Inventario_Planes_Cali.csv` (la hoja manda) | sin tag (v1 y v2 tienen tag) |
+
+Los tags del congelamiento (`piloto/v2.16.0`, `backend/v2.10.0`) se crearon ligeros; se recrean como anotados sobre el mismo commit (pendiente 13 de `ESTADO.md`). Brechas frente a SemVer, Keep a Changelog, OpenSSF Scorecard y los estándares de comunidad de GitHub: [`docs/auditoria-estandares.md`](docs/auditoria-estandares.md).
 
 - **MAYOR**: cambia el diseño del experimento o rompe compatibilidad (p. ej. M1 → M2).
 - **MENOR**: función nueva compatible (una columna nueva, una vista nueva).

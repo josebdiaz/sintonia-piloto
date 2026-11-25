@@ -12,7 +12,8 @@ Resumen para arrancar cualquier conversación. El detalle está en las secciones
 - **Calendario:** ensayo el 25/11 · congelamiento el 26/11 · prueba con Cali el 27/11 (encuentro a más tardar el 30/11) · entrega el 4/12 · pitch el 12/12.
 - **Regla vigente:** desde el 26/11 la consola no cambia hasta cerrar el análisis.
 - **Limpieza de archivos (24/11):** hecha, salvo conectar el repo como carpeta del Proyecto (pendiente 15). La copia del estado en el Proyecto tiene nombre fijo, `claude/estado-piloto.md`, y las instrucciones van en la v3.4. La carpeta vieja `Gemini dump/sintonia-piloto` quedó en `_archivo-2026-11-24/`, con su inventario; nada se borró.
-- **Frente siguiente:** auditoría de estándares del repo público (reporte de brechas; solo se corrige lo que no es código).
+- **Auditoría de estándares (24/11):** hecha, en [`docs/auditoria-estandares.md`](docs/auditoria-estandares.md). Lo más grave: **no hay licencia** (decisión D1) y **`main` está sin protección**. El escaneo de secretos y la *push protection* ya están activos. Lo de CI y el CHANGELOG va después del análisis (pendiente 18).
+- **Frente siguiente:** ensayo con WhatsApp real (pendiente 1).
 - **Bloqueos:**
   - El grupo de Cali está sin confirmar.
   - El tótem espera la plantilla de la estructura.
@@ -31,8 +32,8 @@ Resumen para arrancar cualquier conversación. El detalle está en las secciones
 | Backend (Apps Script) | **2.10.0** desplegado el 24/11 | Disposición a pagar de cada persona por plan (`wtp` con `plan_id`, `rol` y 3 preguntas), resumen por rol en el panel. Desde la 2.9.3: reintentos sin duplicados (`req_id`), inscripción y aceptación repetidas devuelven lo mismo, fallos de red en `medicion_consola`, términos sensibles afinados y `AVISO_VERSION` = `v2-2026-11`. `CUPO_ABIERTO` no existe todavía: el backend asume «no» (lista de espera) |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
-| Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main`. Falta conectar un clon al día como carpeta del Proyecto en el Mac (pendiente 15) |
-| Tags | `piloto/v2.16.0` · `backend/v2.10.0` | Creados el 24/11 sobre `2a81fd3`: es el congelamiento del piloto. **Faltan** los de las versiones intermedias |
+| Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales. *Secret scanning* y *push protection* **activos** (API, 24/11); **por activar:** protección de `main` y reporte privado de vulnerabilidades. Perfil de comunidad de GitHub: 28 %, sin licencia (`docs/auditoria-estandares.md`). Falta conectar un clon al día como carpeta del Proyecto en el Mac (pendiente 15) |
+| Tags | `piloto/v2.16.0` · `backend/v2.10.0` | Creados el 24/11 sobre `2a81fd3`: es el congelamiento del piloto. Son **ligeros**: recrearlos como anotados sobre el mismo commit. **Faltan** los de unas 50 versiones intermedias (pendiente 13) |
 | Inventario verificado | Hoja del piloto | Revisión de ubicaciones con `probarMontaje()` (2.5.0): **resultado por reportar** |
 
 ## 2. Qué cambió desde el 6/11 (consola 2.3.1 → 2.8.1, backend 2.3.x → 2.8.1)
@@ -134,17 +135,18 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | 4 | Imprimir la oleada 1 del material POP (pines, stickers, tarjetas y volante); el tótem espera la plantilla de Juan Carlos; falta el logo vectorial de Icesi | Material POP | Equipo |
 | 5 | Cargar los stickers en el número Sintonía | Prueba con Cali | José |
 | 6 | Disposición a pagar para miembros (prompt 6): **hecho en la 2.16.0**. Modelo de negocio con varios pagadores (prompt 7): después de Cali | Sustentación (4/12) | Katherine, con José |
-| 7 | Activar en GitHub *secret scanning*, *push protection* y la protección de `main`, sin exigir pull requests (pasos en «Insumos para los agregados») | Seguridad del repo | José |
+| 7 | En GitHub: *secret scanning* y *push protection* **ya activos** (24/11). Falta: proteger `main` sin exigir pull requests (probar que el bot del home pueda seguir publicando), activar el reporte privado de vulnerabilidades, llenar About (descripción, sitio y temas) y apagar Wiki y Projects | Seguridad del repo | José |
 | 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |
 | 9 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
 | 10 | Ola 2 de la auditoría UI/UX (una sola guía en la consola, inscripción en 3 pasos): después de Cali | Siguiente fase | José |
 | 11 | n8n y licencias: **aplazados** (19/11) hasta tener más pruebas manuales. Cuando se retomen: N1–N11, B1, B5, I5 y C14 | E1.5 | Equipo |
 | 12 | Control de compromisos de los periodos 8 y 9: archivo interno consolidado al cierre | Seguimiento de la maestría | José |
-| 13 | Crear los tags de las versiones intermedias (`piloto/v2.7.1` a `v2.14.0`, `backend/v2.7.3` a `v2.9.2`) | Historial | José |
+| 13 | Recrear como anotados los tags del congelamiento (mismo commit, `git tag -fa`) y crear los de las versiones intermedias (frontend 2.0.4 a 2.15.0, backend 2.2.0 a 2.9.3, datos v3; método en `docs/auditoria-estandares.md` §3) | Trazabilidad del análisis | José |
 | 14 | ~~Agregar a las instrucciones del Proyecto que lo archivado no es fuente~~ Hecho en el prompt v3.4 (24/11) | Orden del Proyecto | José |
 | 15 | Renombrar el clon `~/Desktop/sintonia-tags` (p. ej. `~/Documents/sintonia-piloto`) y conectarlo como carpeta del Proyecto. Antes, revisar qué es `~/sintonia-piloto`, para no dejar dos copias | Orden del Mac | José |
 | 16 | Subir al Drive del equipo `_archivo-2026-11-24/Feedback y pruebas de usuario/` (notas y audios con datos de personas, solo están en el Mac) y decidir qué se rescata de lo único del archivo (ver su `INVENTARIO.md`) | Respaldo | José |
-| 17 | Auditoría de estándares, empezando por el repo público (GitHub community standards, OpenSSF Scorecard, SemVer, Keep a Changelog) | Calidad | Equipo, con Claude |
+| 17 | ~~Auditoría de estándares del repo público~~ Hecha el 24/11: `docs/auditoria-estandares.md`. Decisiones abiertas: D1 licencia (equipo, con Icesi), D2 buzón de rol, D3 CHANGELOG | Calidad | Equipo, con Claude |
+| 18 | Después del análisis: permisos mínimos en `home.yml`, acciones fijadas por SHA, lockfile de `tools/qa`, Dependabot, CodeQL, la acción de OpenSSF Scorecard y un CHANGELOG por componente con tipos de cambio | Calidad | José |
 
 ## 4.2 Prueba externa (semana del 15/11, n = 1, modo prueba)
 

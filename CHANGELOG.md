@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-24 · Auditoría de estándares del repo público (sin cambios de código)
+- `docs/auditoria-estandares.md`: brechas frente a los estándares de comunidad de GitHub (perfil: 28 %), OpenSSF Scorecard (estimación manual; nunca se ha corrido), SemVer y Keep a Changelog. Lo más grave es que no hay licencia (decisión D1) y que `main` está sin protección. El código coincide con los tags del congelamiento.
+- `README.md`: versiones al día (2.16.0 · 2.10.0) y enlace a la auditoría.
+- `docs/seguridad-repo.md`: *secret scanning* y *push protection* figuran como activos (verificado por la API); se agrega el reporte privado de vulnerabilidades, por activar.
+- `ESTADO.md`: pendientes 7 y 13 al día, 17 hecho, 18 nuevo (CI y CHANGELOG después del análisis).
+
 ### 2026-11-24 · Limpieza de archivos (sin cambios de código)
 - **Proyecto de Claude:** la copia del estado tiene nombre fijo, `claude/estado-piloto.md`; la copia con fecha quedó como nota de remisión. Prompt maestro v3.4 (nombre fijo y «lo archivado no es fuente», pendiente 14). `claude/archivo.md` v2: 25 documentos, 7 vigentes y 18 archivados. `claude/wow-sintonia.md` v2.2.
 - **Mac:** la carpeta vieja `Gemini dump/sintonia-piloto` (rama `M2-gemini`) quedó con todo lo no versionado en `_archivo-2026-11-24/` e `INVENTARIO.md` (361 archivos: 217 ya en el repo o su historial, 13 `.gs` de despliegue con correo, 1 en Drive, 8 versiones distintas, 122 únicos). Nada se borró. Se rescataron a `rescatado-de-git/` 4 archivos de commits locales nunca publicados.
