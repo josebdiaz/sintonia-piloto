@@ -10,6 +10,7 @@ Las fechas son de 2026 (hora de Colombia).
 - **Feedback de Katherine:** sale «¿Qué tal terminó la salida?»; se elimina la página «Después»; «¿Qué tan a gusto…?» pasa a la página de Sintonía; la intención de repetir se reescribe en singular y sobre Sintonía («¿Le pedirías a Sintonía que arme el próximo plan de tu parche?»); la SEQ de continuidad pasa a «Antes». SUS y SEQ no cambian.
 - **Precio para todo el parche, por persona:** filtro «¿Pagarías una suscripción mensual…, solo por tu parte?»; Van Westendorp con enunciados cortos solo si responde Sí o Tal vez; «¿Quién debería pagarlo?» con los tres escenarios de cobro; «¿En cuántos parches usarías Sintonía?».
 - **Backend 2.10.0:** `wtp` con `plan_id`, `rol`, `suscripcion`, `quien_paga` y `parches` (correr `probarMontaje`); una fila por persona y plan (resuelve M8); sin precios si responde No. Panel con resumen por rol.
+- **Inscripción, paso 2:** sin la repetición «¿Qué le gusta a tu parche?» / «Cómo es el parche». El campo se llama «Presupuesto, zona de Cali y lo que no les sirve» y la bajada queda en «Del grupo en general y a ojo».
 - **Aviso:** la línea del precio ya no dice «solo para quien organiza». Por decidir si sube `AVISO_VERSION`.
 - **QA:** backend 131 de 131 · recorrido 57 de 57 · consola 26 de 26 · ola A 21 de 21 · auditoría E2E 70 OK, 0 graves · contraste y axe sin fallas.
 
