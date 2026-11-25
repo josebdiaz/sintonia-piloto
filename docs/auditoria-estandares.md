@@ -115,6 +115,8 @@ El perfil de la comunidad marca **28 %** (API `community/profile`, 24/11).
 | 6 | Borrar las ramas ya integradas: `e3-ds-3.0`, `encuesta-cierre-2.16`, `publicar-v230`. **No borrar** `docs/identidad-visual-v1.7` ni `ux-writing-v1`: tienen un commit cada una que no está en `main` | Página del repo → Branches | 1 min |
 | 7 | D1 · licencia: decidir con Katherine y, si hace falta, con Icesi. Cuando esté, Claude agrega el archivo `LICENSE` | Reunión de equipo | — |
 
+**Estado al 24/11, 8:35 p. m. (verificado por la API):** los pasos 1 a 6 están hechos: 68 tags anotados, regla `main-protegida` activa, reporte privado activo, About lleno, Wiki y Projects apagados, quedan solo las ramas `main`, `docs/identidad-visual-v1.7` y `ux-writing-v1`. El perfil de comunidad pasó de 28 % a 57 %. Falta *Automatically delete head branches* y la D1 (licencia).
+
 Lo de CI y el CHANGELOG sigue en el pendiente 18, después del análisis.
 
 ## Implicaciones

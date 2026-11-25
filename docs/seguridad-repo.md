@@ -28,10 +28,10 @@ El repositorio `josebdiaz/sintonia-piloto` **sigue siendo público**, como excep
 | Buscadores fuera | `robots.txt` (`Disallow: /`) y `<meta name="robots" content="noindex">` en las páginas | Activo |
 | Páginas del equipo con clave | La consola y el panel piden ADMIN_KEY; el backend valida la clave en cada acción | Activo |
 | Escaneo de secretos de GitHub y protección al hacer push | Settings → Code security → *Secret scanning* y *Push protection* | Activo (verificado por la API el 24/11) |
-| Proteger `main`: exigir que pasen «Seguridad de datos» y «Home al día» | Settings → Branches → *Branch protection rule* | **Por activar** |
+| Proteger `main`: exigir que pasen «Seguridad de datos» y «Home al día» | Settings → Rules → Rulesets (`main-protegida`: sin borrado ni *force push*; no exige PR ni chequeos, para no bloquear al bot del home) | Activo desde el 24/11 |
 | Rotar ADMIN_KEY al terminar el periodo del monitor | Propiedades del script | **Pendiente** (al cierre) |
 | Reporte de fallas | `SECURITY.md` | Activo |
-| Reporte privado de vulnerabilidades en GitHub | Settings → Code security → *Private vulnerability reporting* | **Por activar** |
+| Reporte privado de vulnerabilidades en GitHub | Settings → Advanced Security → *Private vulnerability reporting* | Activo desde el 24/11 |
 
 ## 4. Revisión del 22/11/2026
 

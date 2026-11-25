@@ -32,8 +32,8 @@ Resumen para arrancar cualquier conversación. El detalle está en las secciones
 | Backend (Apps Script) | **2.10.0** desplegado el 24/11 | Disposición a pagar de cada persona por plan (`wtp` con `plan_id`, `rol` y 3 preguntas), resumen por rol en el panel. Desde la 2.9.3: reintentos sin duplicados (`req_id`), inscripción y aceptación repetidas devuelven lo mismo, fallos de red en `medicion_consola`, términos sensibles afinados y `AVISO_VERSION` = `v2-2026-11`. `CUPO_ABIERTO` no existe todavía: el backend asume «no» (lista de espera) |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
-| Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales. *Secret scanning* y *push protection* **activos** (API, 24/11); **por activar:** protección de `main` y reporte privado de vulnerabilidades. Perfil de comunidad de GitHub: 28 %, sin licencia (`docs/auditoria-estandares.md`). Falta conectar un clon al día como carpeta del Proyecto en el Mac (pendiente 15) |
-| Tags | `piloto/v2.16.0` · `backend/v2.10.0` | Creados el 24/11 sobre `2a81fd3`: es el congelamiento del piloto. Son **ligeros**: recrearlos como anotados sobre el mismo commit. **Faltan** los de unas 50 versiones intermedias (pendiente 13) |
+| Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; *secret scanning*, *push protection*, reporte privado de vulnerabilidades y regla `main-protegida` (sin borrado ni *force push*) **activos** (verificado por la API el 24/11). Perfil de comunidad: 57 %; falta la licencia (D1). Falta conectar un clon al día como carpeta del Proyecto en el Mac (pendiente 15) |
+| Tags | 68 tags anotados | Congelamiento: `piloto/v2.16.0` y `backend/v2.10.0` sobre `2a81fd3`. Las versiones intermedias tienen tag desde el 24/11 (`tools/crear-tags.sh`) |
 | Inventario verificado | Hoja del piloto | Revisión de ubicaciones con `probarMontaje()` (2.5.0): **resultado por reportar** |
 
 ## 2. Qué cambió desde el 6/11 (consola 2.3.1 → 2.8.1, backend 2.3.x → 2.8.1)
@@ -135,13 +135,13 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | 4 | Imprimir la oleada 1 del material POP (pines, stickers, tarjetas y volante); el tótem espera la plantilla de Juan Carlos; falta el logo vectorial de Icesi | Material POP | Equipo |
 | 5 | Cargar los stickers en el número Sintonía | Prueba con Cali | José |
 | 6 | Disposición a pagar para miembros (prompt 6): **hecho en la 2.16.0**. Modelo de negocio con varios pagadores (prompt 7): después de Cali | Sustentación (4/12) | Katherine, con José |
-| 7 | En GitHub (*secret scanning* y *push protection* ya activos): proteger `main` con un *ruleset* sin PR ni chequeos (solo bloquear borrado y *force push*), reporte privado de vulnerabilidades, About, apagar Wiki y Projects, borrar 3 ramas integradas. Pasos 2 a 6 en `docs/auditoria-estandares.md` §7 (~7 min) | Seguridad del repo | José |
+| 7 | ~~Configuración de GitHub~~ Hecha el 24/11: regla `main-protegida`, reporte privado, About, sin Wiki ni Projects, 3 ramas borradas. Queda **solo** marcar *Automatically delete head branches* (Settings → General → Pull Requests) | Seguridad del repo | José |
 | 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |
 | 9 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
 | 10 | Ola 2 de la auditoría UI/UX (una sola guía en la consola, inscripción en 3 pasos): después de Cali | Siguiente fase | José |
 | 11 | n8n y licencias: **aplazados** (19/11) hasta tener más pruebas manuales. Cuando se retomen: N1–N11, B1, B5, I5 y C14 | E1.5 | Equipo |
 | 12 | Control de compromisos de los periodos 8 y 9: archivo interno consolidado al cierre | Seguimiento de la maestría | José |
-| 13 | Correr `bash tools/crear-tags.sh` en el clon al día: crea los 47 tags intermedios y deja anotados los 2 del congelamiento (mismo commit). Desde la sesión de Claude GitHub no deja subir tags | Trazabilidad del análisis | José |
+| 13 | ~~Tags de las versiones intermedias~~ Hecho el 24/11: 68 tags, todos anotados | Trazabilidad del análisis | José |
 | 14 | ~~Agregar a las instrucciones del Proyecto que lo archivado no es fuente~~ Hecho en el prompt v3.4 (24/11) | Orden del Proyecto | José |
 | 15 | Renombrar el clon `~/Desktop/sintonia-tags` (p. ej. `~/Documents/sintonia-piloto`) y conectarlo como carpeta del Proyecto. Antes, revisar qué es `~/sintonia-piloto`, para no dejar dos copias | Orden del Mac | José |
 | 16 | Subir al Drive del equipo `_archivo-2026-11-24/Feedback y pruebas de usuario/` (notas y audios con datos de personas, solo están en el Mac) y decidir qué se rescata de lo único del archivo (ver su `INVENTARIO.md`) | Respaldo | José |
