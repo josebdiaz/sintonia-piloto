@@ -135,7 +135,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | 4 | Imprimir la oleada 1 del material POP (pines, stickers, tarjetas y volante); el tótem espera la plantilla de Juan Carlos; falta el logo vectorial de Icesi | Material POP | Equipo |
 | 5 | Cargar los stickers en el número Sintonía | Prueba con Cali | José |
 | 6 | Disposición a pagar para miembros (prompt 6): **hecho en la 2.16.0**. Modelo de negocio con varios pagadores (prompt 7): después de Cali | Sustentación (4/12) | Katherine, con José |
-| 7 | ~~Configuración de GitHub~~ Hecha el 24/11: regla `main-protegida`, reporte privado, About, sin Wiki ni Projects, 3 ramas borradas. Queda **solo** marcar *Automatically delete head branches* (Settings → General → Pull Requests) | Seguridad del repo | José |
+| 7 | ~~Configuración de GitHub~~ Hecha el 24/11: regla `main-protegida`, reporte privado, About, sin Wiki ni Projects, ramas borradas y borrado automático al integrar. Opcional: sitio en `https://` y «su +1» en la descripción | Seguridad del repo | José |
 | 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |
 | 9 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |
 | 10 | Ola 2 de la auditoría UI/UX (una sola guía en la consola, inscripción en 3 pasos): después de Cali | Siguiente fase | José |

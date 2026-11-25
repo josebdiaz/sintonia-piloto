@@ -7,7 +7,7 @@ Las fechas son de 2026 (hora de Colombia).
 
 ### 2026-11-24 · Configuración de GitHub y tags hechos (sin cambios de código)
 - José corrió `tools/crear-tags.sh` (68 tags, todos anotados; el congelamiento sigue sobre `2a81fd3`) y aplicó en GitHub la regla `main-protegida` (sin borrado ni *force push*), el reporte privado de vulnerabilidades y el About, además de apagar Wiki y Projects y borrar 3 ramas integradas. Verificado por la API. Perfil de comunidad: 57 %.
-- Pendientes 7 y 13 cerrados, salvo *Automatically delete head branches*.
+- Pendientes 7 y 13 cerrados, con *Automatically delete head branches* activo.
 
 ### 2026-11-24 · Plan de acción de la auditoría (sin cambios de código)
 - `CONTRIBUTING.md`: forma de trabajo, versiones, privacidad y congelamiento (el perfil de comunidad de GitHub lo pide).
