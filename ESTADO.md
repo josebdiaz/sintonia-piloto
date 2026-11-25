@@ -7,8 +7,7 @@ Este archivo reemplaza como punto de partida a los estados anteriores (6/10 en `
 
 Resumen para arrancar cualquier conversación. El detalle está en las secciones de abajo. La forma de trabajar está en `claude/wow-sintonia.md` (Proyecto) y, en versión visual, en el deck [`docs/deck-wow.html`](docs/deck-wow.html). Los documentos superados del Proyecto no se borran: se listan en `claude/archivo.md` y no son fuente.
 
-- **Versiones:** frontend **2.15.0** (sintonia.my) y backend **2.9.3**, desplegados el 24/11. Aviso de privacidad **v2-2026-11** publicado.
-- **Por validar:** encuesta de cierre 2.16.0 y backend 2.10.0 en la rama `encuesta-cierre-2.16` (feedback de Katherine y precio para todo el parche). Néstor la revisa antes del ensayo del 25/11; si la aprueba, se congela en 2.16.0. Detalle: [`docs/cambio-encuesta-cierre-2.16.md`](docs/cambio-encuesta-cierre-2.16.md).
+- **Versiones:** frontend **2.16.0** (sintonia.my) y backend **2.10.0**, desplegados el 24/11 (encuesta de cierre con precio para todo el parche, aprobada por Néstor). Aviso de privacidad **v2-2026-11** publicado.
 - **Dónde estamos:** la plataforma está lista para la prueba con un grupo de Cali. **No hay resultados con personas reales.** E1.5 (n8n) está aplazado desde el 19/11.
 - **Calendario:** ensayo el 25/11 · congelamiento el 26/11 · prueba con Cali el 27/11 (encuentro a más tardar el 30/11) · entrega el 4/12 · pitch el 12/12.
 - **Regla vigente:** desde el 26/11 la consola no cambia hasta cerrar el análisis.
@@ -26,12 +25,12 @@ Resumen para arrancar cualquier conversación. El detalle está en las secciones
 
 | Componente | Versión | Estado |
 |---|---|---|
-| Frontend (consola, panel, páginas de participante) | **2.15.0** | Publicado en https://sintonia.my el 24/11. La 2.15.0 evita duplicados cuando se reintenta tras un corte. La 2.14.0 muestra el estado de cada opción (casilla o círculo) y agrega «Sí a todos» al calendario, sin tope de días para quien organiza. La 2.13.0 publica el aviso de privacidad v2 y afina los términos sensibles. La 2.12.0 aplica la ola 1 de la auditoría UI/UX: claim, calendario, sistema visual de la landing en participantes, sin jerga interna, aviso con resumen y la consola compacta en celular. La 2.11.0 pone la encuesta de cierre por pasos (antes, durante, después, frases, precio y cierre). La 2.10.0 (sync P8d) Trae «Escoge tu disponibilidad» con calendario para todo el parche, «Quiénes pueden» en la consola, el claim «Menos vueltas, más plan», «Regístrate aquí» con 3 pasos y la vista de revisión de la encuesta de cierre. La 2.9.x trajo la landing del QR (con lista de espera), el logo nuevo y el arreglo del menú |
-| Backend (Apps Script) | **2.9.3** desplegado el 24/11 | Reintentos sin duplicados (`req_id`), inscripción y aceptación repetidas devuelven lo mismo, fallos de red en `medicion_consola`, términos sensibles afinados y `AVISO_VERSION` = `v2-2026-11`. `CUPO_ABIERTO` no existe todavía: el backend asume «no» (lista de espera) |
+| Frontend (consola, panel, páginas de participante) | **2.16.0** | Publicado en https://sintonia.my el 24/11. La 2.16.0 trae la encuesta de cierre con precio para todo el parche (aprobada por Néstor), UX writing sin repeticiones y el paso 2 de la inscripción más claro. La 2.15.0 evita duplicados cuando se reintenta tras un corte. La 2.14.0 muestra el estado de cada opción (casilla o círculo) y agrega «Sí a todos» al calendario, sin tope de días para quien organiza. La 2.13.0 publica el aviso de privacidad v2 y afina los términos sensibles. La 2.12.0 aplica la ola 1 de la auditoría UI/UX: claim, calendario, sistema visual de la landing en participantes, sin jerga interna, aviso con resumen y la consola compacta en celular. La 2.11.0 pone la encuesta de cierre por pasos (antes, durante, después, frases, precio y cierre). La 2.10.0 (sync P8d) Trae «Escoge tu disponibilidad» con calendario para todo el parche, «Quiénes pueden» en la consola, el claim «Menos vueltas, más plan», «Regístrate aquí» con 3 pasos y la vista de revisión de la encuesta de cierre. La 2.9.x trajo la landing del QR (con lista de espera), el logo nuevo y el arreglo del menú |
+| Backend (Apps Script) | **2.10.0** desplegado el 24/11 | Disposición a pagar de cada persona por plan (`wtp` con `plan_id`, `rol` y 3 preguntas), resumen por rol en el panel. Desde la 2.9.3: reintentos sin duplicados (`req_id`), inscripción y aceptación repetidas devuelven lo mismo, fallos de red en `medicion_consola`, términos sensibles afinados y `AVISO_VERSION` = `v2-2026-11`. `CUPO_ABIERTO` no existe todavía: el backend asume «no» (lista de espera) |
 | Motor E1.5 (n8n Cloud, 9 flujos) | Sin cambios desde el 30/10 | **Sin probar contra el backend.** Ver §3.1 |
 | Home (sintonia.my) | Generado desde el repo | Desde el 17/11 las tarjetas del menú salen de `home.json` y de este archivo (`tools/home.py`); el código secreto funciona en celular. Ver `docs/protocolo-home.md` |
 | Repositorio | Público, excepción documentada | `docs/seguridad-repo.md`: revisión automática de claves y datos personales; **por activar** en GitHub: *secret scanning*, *push protection* y protección de `main` |
-| Tags | `piloto/v2.7.0` · `backend/v2.7.2` | Creados el 15/11. **Faltan** los de las versiones intermedias y, al congelar el jueves 26, `piloto/v2.15.0` y `backend/v2.9.3` |
+| Tags | `piloto/v2.16.0` · `backend/v2.10.0` | Creados el 24/11 (congelamiento). **Faltan** los de las versiones intermedias |
 | Inventario verificado | Hoja del piloto | Revisión de ubicaciones con `probarMontaje()` (2.5.0): **resultado por reportar** |
 
 ## 2. Qué cambió desde el 6/11 (consola 2.3.1 → 2.8.1, backend 2.3.x → 2.8.1)
@@ -127,13 +126,12 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién |
 |---|---|---|---|
-| 0 | Validar con Néstor la encuesta 2.16.0 (rama `encuesta-cierre-2.16`): preguntas de precio, regla de conteo de «repetir» y si sube la versión del aviso. Si la aprueba: desplegar el backend 2.10.0 y unir la rama | Ensayo (25/11) y congelamiento | Néstor · José |
 | 1 | Ensayo con WhatsApp real el miércoles 25 (guion en «Insumos para los agregados», Proyecto). Antes: probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso» | Prueba con Cali (viernes 27) | Equipo · Juan José |
-| 2 | Congelar el jueves 26: tags `piloto/v2.15.0` y `backend/v2.9.3`, y «Empezar piloto real» después del ensayo | Prueba con Cali | José |
+| 2 | Congelar el jueves 26 en `piloto/v2.16.0` y `backend/v2.10.0` (tags ya creados el 24/11), y «Empezar piloto real» después del ensayo | Prueba con Cali | José |
 | 3 | Confirmar el grupo de Cali (o el plan B de Katherine) y la fecha del encuentro, a más tardar el 30/11. Modo piloto y encuesta actual (recomendado) | Prueba con Cali | Katherine |
 | 4 | Imprimir la oleada 1 del material POP (pines, stickers, tarjetas y volante); el tótem espera la plantilla de Juan Carlos; falta el logo vectorial de Icesi | Material POP | Equipo |
 | 5 | Cargar los stickers en el número Sintonía | Prueba con Cali | José |
-| 6 | Disposición a pagar para miembros (prompt 6): **en la encuesta 2.16.0, por validar**. Modelo de negocio con varios pagadores (prompt 7): después de Cali | Sustentación (4/12) | Katherine, con José |
+| 6 | Disposición a pagar para miembros (prompt 6): **hecho en la 2.16.0**. Modelo de negocio con varios pagadores (prompt 7): después de Cali | Sustentación (4/12) | Katherine, con José |
 | 7 | Activar en GitHub *secret scanning*, *push protection* y la protección de `main`, sin exigir pull requests (pasos en «Insumos para los agregados») | Seguridad del repo | José |
 | 8 | Confirmar con el monitor su respuesta de Desempeño en la encuesta del mago (escala anterior) | Dato del mago | José |
 | 9 | Reportar la línea «Ubicaciones» de `probarMontaje()` | Enlaces de Maps confiables | José |

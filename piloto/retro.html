@@ -22,7 +22,6 @@ fieldset.paso[hidden] { display: none !important; }
 .enc-barra { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
 .enc-barra span { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--pine); transition: width .25s ease; }
 @media (prefers-reduced-motion: reduce) { .enc-barra span { transition: none; } }
-.enc-ojo { margin: 0 0 2px; font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #c23a00; }
 .paso h2 { margin: 0 0 4px; }
 .enc-bajada { margin: 0 0 16px; }
 .enc-cuenta { margin: 0 0 10px; font-size: .85rem; font-weight: 700; color: var(--pine); }
@@ -49,7 +48,7 @@ fieldset.paso[hidden] { display: none !important; }
          sobre Sintonía, el precio (solo quien organiza) y un cierre abierto. Las preguntas validadas (SEQ, SUS, Van Westendorp) no cambian. -->
     <div class="hero" id="hero">
       <h1 id="heroT">¿Cómo les fue?</h1>
-      <p id="heroP">Son unos pasos cortos, uno por cada momento del plan. No hay respuestas buenas ni malas.</p>
+      <p id="heroP">Cinco pasos cortos. No hay respuestas buenas ni malas.</p>
     </div>
     <div class="enc-nav" id="encNav" aria-live="polite">
       <p class="enc-paso" id="encPaso">Paso 1 de 5</p>
@@ -58,11 +57,10 @@ fieldset.paso[hidden] { display: none !important; }
     <form id="form" novalidate>
       <fieldset class="card paso" data-paso="antes">
         <legend class="sr">Antes: armar el plan</legend>
-        <p class="enc-ojo">Antes</p>
         <h2>Armar el plan</h2>
-        <p class="small muted enc-bajada">Desde que llegó la invitación hasta que eligieron qué hacer.</p>
-        <div class="field f-retro"><span class="label" id="l2">Con este plan, ¿qué tan desgastante fue cuadrar la salida?</span><div id="fatiga" aria-labelledby="l2"></div></div>
-        <div class="field hidden" id="bloqueCarga"><span class="label" id="l3">¿Cuánto del trabajo de organizar recayó en ti?</span><span class="hint" style="margin:-2px 0 8px">Esta solo te la hacemos a ti, que organizaste.</span><div id="carga" aria-labelledby="l3"></div></div>
+        <p class="small muted enc-bajada">Desde la invitación hasta elegir qué hacer.</p>
+        <div class="field f-retro"><span class="label" id="l2">¿Qué tan desgastante fue cuadrarlo?</span><div id="fatiga" aria-labelledby="l2"></div></div>
+        <div class="field hidden" id="bloqueCarga"><span class="label" id="l3">¿Cuánto del trabajo de organizar recayó en ti?</span><span class="hint" style="margin:-2px 0 8px">Solo para quien organiza.</span><div id="carga" aria-labelledby="l3"></div></div>
         <div class="field f-usab"><span class="label" id="ls1">En general, ¿qué tan difícil o fácil fue <b>unirte y elegir el plan</b> con tu grupo (aceptar, ver las opciones y votar)?</span><div id="seqActivacion" aria-labelledby="ls1"></div></div>
         <!-- 2.16.0: la SEQ de continuidad (solo plan 2) pasa aquí; armar el plan 2 es «volver a armar» -->
         <div class="field f-usab hidden" id="bloqueSeqCont"><span class="label" id="ls3">En general, ¿qué tan difícil o fácil fue <b>volver a armar un plan con este mismo grupo</b>?</span><div id="seqContinuidad" aria-labelledby="ls3"></div>
@@ -71,10 +69,8 @@ fieldset.paso[hidden] { display: none !important; }
 
       <fieldset class="card paso" data-paso="durante" hidden>
         <legend class="sr">Durante: el día del plan</legend>
-        <p class="enc-ojo">Durante</p>
         <h2>El día del plan</h2>
-        <p class="small muted enc-bajada">Piensa en la salida, de principio a fin.</p>
-        <div class="field f-retro"><span class="label" id="l1">¿Qué tan bien les funcionó el plan que eligieron?</span><div id="satisfaccion" aria-labelledby="l1"></div></div>
+        <div class="field f-retro"><span class="label" id="l1">¿Qué tan bien les funcionó el plan?</span><div id="satisfaccion" aria-labelledby="l1"></div></div>
         <div class="field f-usab"><span class="label" id="ls2">En general, ¿qué tan difícil o fácil fue <b>coordinar el día del encuentro</b> (confirmar si ibas, la hora de salida y avisar que llegaste)?</span><div id="seqInteraccion" aria-labelledby="ls2"></div></div>
         <div class="field f-retro"><span class="label" id="l6">¿Cómo te sentiste? <span class="muted">(opcional)</span></span><div id="sentimiento" aria-labelledby="l6"></div></div>
       </fieldset>
@@ -84,13 +80,12 @@ fieldset.paso[hidden] { display: none !important; }
            SUS: 10 ítems 1–5, en el orden estándar; se pueden omitir. -->
       <fieldset class="card paso" data-paso="sintonia" id="bloqueUsab" hidden>
         <legend class="sr">Sobre Sintonía</legend>
-        <p class="enc-ojo">Sintonía</p>
-        <h2>Sobre Sintonía</h2>
-        <p class="small muted enc-bajada">Piensa solo en Sintonía, no en el plan ni en el grupo.</p>
+        <h2>Tu +1 de confianza</h2>
+        <p class="small muted enc-bajada">Ahora piensa solo en Sintonía, no en el plan ni en el grupo.</p>
         <div class="field f-retro"><span class="label" id="l5">¿Qué tan a gusto te sentiste con Sintonía <span id="canal">en el chat</span>?</span><div id="confort" aria-labelledby="l5"></div></div>
         <div class="field f-retro"><span class="label" id="l7">¿Le pedirías a Sintonía que arme el próximo plan de tu parche?</span><div id="repetiria" aria-labelledby="l7"></div></div>
         <div class="f-usab">
-          <p class="small muted enc-bajada">Ahora, diez frases rápidas. ¿Qué tan de acuerdo estás con cada una? Lo primero que se te venga está bien.</p>
+          <p class="small muted enc-bajada">Diez frases. ¿Qué tan de acuerdo estás con cada una?</p>
           <p class="enc-leyenda" aria-hidden="true"><span>1 · Totalmente en desacuerdo</span><span>5 · Totalmente de acuerdo</span></p>
           <p class="enc-cuenta" id="susCuenta" aria-live="polite">Llevas 0 de 10</p>
           <div id="susItems"></div>
@@ -100,32 +95,30 @@ fieldset.paso[hidden] { display: none !important; }
 
       <!-- 2.16.0: disposición a pagar para TODO el parche, por persona («solo por tu parte»). Filtro de suscripción; Van Westendorp
            con enunciados cortos solo si responde Sí o Tal vez (precios opcionales); quién debería pagar y en cuántos parches lo usaría. -->
-      <fieldset class="card paso honey" data-paso="precio" id="bloqueWtp" hidden>
+      <fieldset class="card paso" data-paso="precio" id="bloqueWtp" hidden>
         <legend class="sr">Precio</legend>
-        <p class="enc-ojo">Precio</p>
-        <h2>¿Pagarías por Sintonía?</h2>
-        <p class="small enc-bajada">Imagina una suscripción mensual a Sintonía que coordina los planes de tu parche. Responde solo por tu parte.</p>
-        <div class="field"><span class="label" id="lsub">¿Pagarías una suscripción mensual a Sintonía, solo por tu parte?</span><div id="suscripcion" aria-labelledby="lsub"></div></div>
+        <h2>Si Sintonía costara</h2>
+        <p class="small muted enc-bajada">Imagina una suscripción mensual que coordina los planes de tu parche. Responde solo por tu parte.</p>
+        <div class="field"><span class="label" id="lsub">¿La pagarías?</span><div id="suscripcion" aria-labelledby="lsub"></div></div>
         <div class="hidden" id="bloquePrecios">
-          <p class="label" style="margin:0 0 2px;font-weight:700">¿Qué precio mensual, solo por tu parte, te parecería…?</p>
-          <p class="hint" style="margin:0 0 10px">En pesos por mes. <b>Es opcional:</b> si no sabes, déjalos vacíos.</p>
+          <span class="label" style="display:block">¿Qué precio al mes te parecería…?</span>
+          <span class="hint" style="display:block;margin:0 0 10px">En pesos. Opcional: si no sabes, déjalos vacíos.</span>
           <div class="field"><label for="muyBarato">Tan barato que desconfiarías.</label><div class="prefix"><span>$</span><input id="muyBarato" type="number" inputmode="numeric" min="0" step="1000"></div></div>
           <div class="field"><label for="barato">Una muy buena compra.</label><div class="prefix"><span>$</span><input id="barato" type="number" inputmode="numeric" min="0" step="1000"></div></div>
           <div class="field"><label for="caro">Caro, pero aún lo pagarías.</label><div class="prefix"><span>$</span><input id="caro" type="number" inputmode="numeric" min="0" step="1000"></div></div>
           <div class="field"><label for="muyCaro">Demasiado caro para pagarlo.</label><div class="prefix"><span>$</span><input id="muyCaro" type="number" inputmode="numeric" min="0" step="1000"></div></div>
           <label class="consent"><span class="check" style="margin:0"><input type="checkbox" id="preventa"><span>Quiero apartar un cupo con precio fundador cuando Sintonía salga. <b>Hoy no se cobra nada</b> y no me compromete a pagar.</span></span></label>
         </div>
-        <div class="field"><span class="label" id="lpaga">Si Sintonía costara, ¿quién debería pagarlo en tu parche?</span><div id="quienPaga" aria-labelledby="lpaga"></div></div>
-        <div class="field"><span class="label" id="lparches">¿En cuántos parches usarías Sintonía?</span><div id="parches" aria-labelledby="lparches"></div></div>
+        <div class="field"><span class="label" id="lpaga">¿Quién debería pagarla en tu parche?</span><div id="quienPaga" aria-labelledby="lpaga"></div></div>
+        <div class="field"><span class="label" id="lparches">¿En cuántos parches la usarías?</span><div id="parches" aria-labelledby="lparches"></div></div>
       </fieldset>
 
       <fieldset class="card paso f-retro" data-paso="cierre" hidden>
         <legend class="sr">Para cerrar</legend>
-        <p class="enc-ojo">Para cerrar</p>
-        <h2>¿Algo más?</h2>
-        <p class="small muted enc-bajada">Opcional. Aquí cabe lo que no te preguntamos.</p>
-        <div class="field"><label for="agregaria">¿Qué le agregarías o le cambiarías a Sintonía? <span class="counter" id="agrN"></span></label><textarea id="agregaria" maxlength="300" placeholder="Una función, un tipo de plan, algo que sobró…"></textarea></div>
-        <div class="field"><label for="comentario">¿Algo más que quieras contarnos? <span class="counter" id="comN"></span></label><textarea id="comentario" maxlength="600"></textarea><span class="hint">No incluyas datos de otras personas.</span></div>
+        <h2>Para cerrar</h2>
+        <p class="small muted enc-bajada">Opcional.</p>
+        <div class="field"><label for="agregaria">¿Qué le cambiarías o le agregarías a Sintonía? <span class="counter" id="agrN"></span></label><textarea id="agregaria" maxlength="300" placeholder="Una función, un tipo de plan, algo que sobró…"></textarea></div>
+        <div class="field"><label for="comentario">¿Qué más quieres contarnos? <span class="counter" id="comN"></span></label><textarea id="comentario" maxlength="600"></textarea><span class="hint">Sin datos de otras personas.</span></div>
       </fieldset>
 
       <div class="actions split enc-botones">
@@ -160,8 +153,8 @@ fieldset.paso[hidden] { display: none !important; }
   var con = S.scale(S.$('#confort'), ['Nada', 'Mucho']);
   var rep = S.chips(S.$('#repetiria'), 'rep', [['si', 'Sí'], ['tal_vez', 'Tal vez'], ['no', 'No']]);
   // 2.16.0 · disposición a pagar para todo el parche
-  var sub = S.chips(S.$('#suscripcion'), 'sub', [['si', 'Sí'], ['tal_vez', 'Tal vez, dependiendo del precio'], ['no', 'No']]);
-  var pag = S.chips(S.$('#quienPaga'), 'pag', [['organiza', 'Quien organiza'], ['dividimos', 'Lo dividimos entre todos'], ['cada_quien', 'Cada quien su propia suscripción, para todos sus parches'], ['nadie', 'Nadie lo pagaría']]);
+  var sub = S.chips(S.$('#suscripcion'), 'sub', [['si', 'Sí'], ['tal_vez', 'Tal vez, según el precio'], ['no', 'No']]);
+  var pag = S.chips(S.$('#quienPaga'), 'pag', [['organiza', 'Quien organiza'], ['dividimos', 'La dividimos entre todos'], ['cada_quien', 'Cada quien la suya, para todos sus parches'], ['nadie', 'Nadie la pagaría']]);
   var par = S.chips(S.$('#parches'), 'par', [['1', '1'], ['2', '2'], ['3_mas', '3 o más']]);
   function conPrecio() { return sub.value() === 'si' || sub.value() === 'tal_vez'; }
   S.$('#suscripcion').addEventListener('change', function () {
@@ -221,7 +214,7 @@ fieldset.paso[hidden] { display: none !important; }
     S.show('#bloqueWtp', !soloUsab);   // 2.16.0: todo el parche
     pasos = S.$$('fieldset.paso').filter(function (p) { return !p.classList.contains('hidden') && S.$$('.field', p).some(function (f) { var a = f; while (a && a !== p) { if (a.classList.contains('hidden')) return false; a = a.parentElement; } return true; }); });
     if (soloUsab && !S.$('#bloqueUsab').classList.contains('hidden') && pasos.indexOf(S.$('#bloqueUsab')) < 0) pasos.push(S.$('#bloqueUsab'));
-    if (!soloUsab && !revisar) S.$('#heroP').textContent = 'Son ' + pasos.length + ' pasos cortos, uno por cada momento del plan. No hay respuestas buenas ni malas.';
+    if (!soloUsab && !revisar) S.$('#heroP').textContent = (pasos.length === 5 ? 'Cinco' : pasos.length) + ' pasos cortos. No hay respuestas buenas ni malas.';
     ir(0);
   }
   function visible(el) { var a = el; while (a && a.tagName !== 'FORM') { if (a.classList.contains('hidden')) return false; a = a.parentElement; } return true; }
@@ -230,7 +223,7 @@ fieldset.paso[hidden] { display: none !important; }
     S.$$('fieldset.paso').forEach(function (p) { p.hidden = p !== pasos[idx]; });
     S.$('#encPaso').innerHTML = 'Paso <b>' + (idx + 1) + '</b> de ' + pasos.length;
     S.$('#encBarra').style.width = Math.round((idx + 1) / pasos.length * 100) + '%';
-    S.$('#heroP').hidden = idx > 0;   // el título queda en todos los pasos (un h1 por página)
+    S.$('#heroP').hidden = idx > 0; S.$('#hero').classList.toggle('sr', idx > 0);   // 2.16.0: el h1 solo se ve en el paso 1 (queda para lectores de pantalla)
     S.$('#atras').hidden = idx === 0;
     var ultimo = idx === pasos.length - 1;
     S.show('#seguir', !ultimo); S.show('#enviar', ultimo);

@@ -1,6 +1,6 @@
 # Cambio de instrumento · Encuesta de cierre 2.16.0 (backend 2.10.0)
 
-> **Estado: aprobado por Néstor (24/11).** Vive en la rama `encuesta-cierre-2.16`; se publica después de desplegar el backend 2.10.0.
+> **Estado: aprobado por Néstor y publicado (24/11).** Backend 2.10.0 desplegado; frontend 2.16.0 en sintonia.my.
 > Origen: revisión de Katherine página por página (24/11) y análisis de los escenarios de pago del equipo (24/11).
 > Para verlo sin grupo ni backend: `piloto/retro.html?revisar=organiza` o `?revisar=miembro` (añade `&ronda=2` para el plan 2).
 
@@ -21,11 +21,13 @@ El SUS, las tres SEQ y sus escalas **no cambian** (validados con Néstor). La en
 
 | # | Pregunta | Opciones | Obligatoria |
 |---|---|---|---|
-| 11 | ¿Pagarías una suscripción mensual a Sintonía, solo por tu parte? | Sí · Tal vez, dependiendo del precio · No | Sí |
-| 11a–d | ¿Qué precio mensual, solo por tu parte, te parecería…? Tan barato que desconfiarías · Una muy buena compra · Caro, pero aún lo pagarías · Demasiado caro para pagarlo | COP/mes | No (los 4 o ninguno, de menor a mayor). Solo si 11 = Sí o Tal vez |
+| 11 | ¿La pagarías? (con la bajada: «Imagina una suscripción mensual que coordina los planes de tu parche. Responde solo por tu parte.») | Sí · Tal vez, según el precio · No | Sí |
+| 11a–d | ¿Qué precio al mes te parecería…? Tan barato que desconfiarías · Una muy buena compra · Caro, pero aún lo pagarías · Demasiado caro para pagarlo | COP/mes | No (los 4 o ninguno, de menor a mayor). Solo si 11 = Sí o Tal vez |
 | — | Preventa (sin cambios en el texto) | Casilla | No. Solo si 11 = Sí o Tal vez |
-| 12 | Si Sintonía costara, ¿quién debería pagarlo en tu parche? | Quien organiza · Lo dividimos entre todos · Cada quien su propia suscripción, para todos sus parches · Nadie lo pagaría | Sí, también si 11 = No |
-| 13 | ¿En cuántos parches usarías Sintonía? | 1 · 2 · 3 o más | Sí |
+| 12 | ¿Quién debería pagarla en tu parche? | Quien organiza · La dividimos entre todos · Cada quien la suya, para todos sus parches · Nadie la pagaría | Sí, también si 11 = No |
+| 13 | ¿En cuántos parches la usarías? | 1 · 2 · 3 o más | Sí |
+
+**Ajuste de redacción después de la aprobación (24/11):** se quitaron repeticiones entre el título del paso, la bajada y las preguntas («suscripción mensual», «solo por tu parte», «Si Sintonía costara»). El significado de cada pregunta y sus opciones no cambia, y SUS y SEQ siguen textuales.
 
 **Decisiones de diseño:**
 - **Por persona, no por parche.** Cada quien responde solo por lo que sale de su bolsillo, que es lo único que sabe. Con eso se arman los tres escenarios de cobro: paga quien organiza (su respuesta), el grupo divide (suma de las respuestas) y cada quien tiene la suya (respuestas individuales más la pregunta 13).

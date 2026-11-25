@@ -5,11 +5,13 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
-### 2026-11-24 · Encuesta de cierre 2.16.0 · por validar (rama `encuesta-cierre-2.16`, frontend 2.16.0 · backend 2.10.0)
-**Aprobado por Néstor (24/11).** Se publica después de desplegar el backend 2.10.0. Detalle y reglas de lectura en `docs/cambio-encuesta-cierre-2.16.md`.
+### 2026-11-24 · Encuesta de cierre 2.16.0 · publicada (frontend 2.16.0 · backend 2.10.0 desplegado)
+**Aprobada por Néstor (24/11).** Backend 2.10.0 desplegado con `probarMontaje()`. Congelamiento: tags `piloto/v2.16.0` y `backend/v2.10.0`. Detalle y reglas de lectura en `docs/cambio-encuesta-cierre-2.16.md`.
 - **Feedback de Katherine:** sale «¿Qué tal terminó la salida?»; se elimina la página «Después»; «¿Qué tan a gusto…?» pasa a la página de Sintonía; la intención de repetir se reescribe en singular y sobre Sintonía («¿Le pedirías a Sintonía que arme el próximo plan de tu parche?»); la SEQ de continuidad pasa a «Antes». SUS y SEQ no cambian.
 - **Precio para todo el parche, por persona:** filtro «¿Pagarías una suscripción mensual…, solo por tu parte?»; Van Westendorp con enunciados cortos solo si responde Sí o Tal vez; «¿Quién debería pagarlo?» con los tres escenarios de cobro; «¿En cuántos parches usarías Sintonía?».
 - **Backend 2.10.0:** `wtp` con `plan_id`, `rol`, `suscripcion`, `quien_paga` y `parches` (correr `probarMontaje`); una fila por persona y plan (resuelve M8); sin precios si responde No. Panel con resumen por rol.
+- **UX writing de la encuesta:** un solo encabezado por paso (sin etiquetas «Antes», «Precio»…); «¿Cómo les fue?» solo se ve en el paso 1; títulos que no repiten la primera pregunta («Para cerrar» en vez de «¿Algo más?»; «Si Sintonía costara» + «¿La pagarías?»; «Tu +1 de confianza»); bajadas solo donde agregan algo. SUS y SEQ textuales.
+- **Paso del precio sin amarillo sobre amarillo:** tarjeta blanca como los otros pasos.
 - **Inscripción, paso 2:** sin la repetición «¿Qué le gusta a tu parche?» / «Cómo es el parche». El campo se llama «Presupuesto, zona de Cali y lo que no les sirve» y la bajada queda en «Del grupo en general y a ojo».
 - **Aviso:** la línea del precio ya no dice «solo para quien organiza». Por decidir si sube `AVISO_VERSION`.
 - **QA:** backend 131 de 131 · recorrido 57 de 57 · consola 26 de 26 · ola A 21 de 21 · auditoría E2E 70 OK, 0 graves · contraste y axe sin fallas.
