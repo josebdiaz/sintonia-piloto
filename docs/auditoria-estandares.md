@@ -25,7 +25,7 @@ El perfil de la comunidad marca **28 %** (API `community/profile`, 24/11).
 | SECURITY.md | ✓ Canal privado y plazo de respuesta de 3 días hábiles | — | — |
 | Reporte privado de vulnerabilidades | ✗ Desactivado | Baja | Settings → Code security → *Private vulnerability reporting* (pendiente 7) |
 | Correo de contacto publicado | Es la excepción documentada (canal de la Ley 1581 en el aviso de privacidad), pero es un buzón personal | Baja | Decisión: un buzón de rol (p. ej. en sintonia.my) cuando se descongele el código, porque el correo también vive en `piloto/assets/sintonia.js` |
-| LICENSE | ✗ No hay | **Alta** | **Decisión del equipo** (ver §5). Sin licencia el material queda con todos los derechos reservados por defecto: nadie puede reutilizarlo y Scorecard lo penaliza |
+| LICENSE | **Resuelto el 24/11** (opción C): método con CC BY-NC 4.0; código, contenido, datos y marca con todos los derechos reservados | — | **Decisión del equipo** (ver §5). Sin licencia el material queda con todos los derechos reservados por defecto: nadie puede reutilizarlo y Scorecard lo penaliza |
 | Descripción, sitio y temas | ✗ Vacíos | Baja | Settings → About: descripción corta, `https://sintonia.my` y temas (pendiente 7) |
 | CONTRIBUTING | Faltaba | Baja | **Agregado:** `CONTRIBUTING.md`, que remite a `CLAUDE.md`, al README y a SECURITY.md |
 | Código de conducta | ✗ No hay | Baja | Opcional: el repo no recibe contribuciones externas |
@@ -89,7 +89,7 @@ El perfil de la comunidad marca **28 %** (API `community/profile`, 24/11).
 
 | # | Decisión | Opciones | Quién |
 |---|---|---|---|
-| D1 | **Licencia** del repo | (a) Una licencia de software para el código y otra de contenido para los textos y decks; (b) declarar «todos los derechos reservados» de forma explícita; (c) consultar primero las reglas de propiedad intelectual de Icesi para trabajos de grado | Equipo, con la universidad. Las implicaciones legales no se resuelven en este reporte |
+| D1 | ~~Licencia~~ **Decidida el 24/11: opción C.** Método con CC BY-NC 4.0; el resto, todos los derechos reservados (`LICENSE`). Siguen por verificar dos cosas: si Icesi tiene un reglamento de propiedad intelectual aparte para trabajos de maestría, y si hubo aportes de terceros | Equipo |
 | D2 | Buzón de rol para el canal de privacidad y de seguridad | Mantener el actual (excepción documentada) o crear uno en sintonia.my al descongelar | Equipo |
 | D3 | Reestructurar el CHANGELOG (§4) | Después del análisis o al cierre de la maestría | José |
 

@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-24 · Licencia del repositorio (opción C, sin cambios de código)
+- `LICENSE`: el método de investigación (plan de pruebas, protocolo M2, encuesta de cierre 2.16 y guías del monitor, de la prueba con Cali y del protocolo E2) va con CC BY-NC 4.0. El código, el contenido, los datos y el archivo quedan con todos los derechos reservados; la marca queda reservada aparte; el contenido de terceros conserva su licencia.
+- `README.md`: sección «Licencia». `docs/auditoria-estandares.md`: D1 decidida. `ESTADO.md`: pendiente 17 al día.
+
 ### 2026-11-24 · Configuración de GitHub y tags hechos (sin cambios de código)
 - José corrió `tools/crear-tags.sh` (68 tags, todos anotados; el congelamiento sigue sobre `2a81fd3`) y aplicó en GitHub la regla `main-protegida` (sin borrado ni *force push*), el reporte privado de vulnerabilidades y el About, además de apagar Wiki y Projects y borrar 3 ramas integradas. Verificado por la API. Perfil de comunidad: 57 %.
 - Pendientes 7 y 13 cerrados, con *Automatically delete head branches* activo.

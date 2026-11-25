@@ -91,6 +91,10 @@ Historial anterior conservado como tags: `p4/final` (cierre de P4, antes del piv
 5. Backend: pegar `backend/Codigo_Piloto.gs` en el editor de Apps Script → Implementar → Administrar implementaciones → editar la implementación actual → **Nueva versión**. Así la URL `/exec` no cambia. Anotar en el CHANGELOG el número de versión de la implementación.
 6. Entre W1 y W2 solo se permite **un** cambio por condición (I4): registrarlo también en la consola del mago (pestaña Cambios).
 
+## Licencia
+
+Ver [`LICENSE`](LICENSE). El **método de investigación** (plan de pruebas, protocolo, encuesta de cierre y guías del monitor y de la prueba con Cali) va con [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.es). El **código**, el contenido, los datos y la **marca** quedan con todos los derechos reservados. Que el repositorio sea público no da permiso de reutilizarlo.
+
 ## Datos y seguridad
 
 - El repositorio no contiene datos de participantes. Las respuestas viven en la hoja de Google del piloto.

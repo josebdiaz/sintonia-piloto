@@ -1,0 +1,50 @@
+Sintonía · Licencia del repositorio
+Copyright © 2026 José Bolaños y Katherine Castro
+
+Este repositorio es público para publicar el sitio del piloto (https://sintonia.my)
+y para que se pueda evaluar el anteproyecto de la Maestría en Gestión de la
+Innovación (Universidad Icesi). Que sea público no da permiso de reutilizarlo:
+cada parte tiene sus propias condiciones.
+
+1. MÉTODO DE INVESTIGACIÓN · CC BY-NC 4.0
+
+   Estos archivos se pueden compartir y adaptar, sin fines comerciales, citando
+   a los autores y a Sintonía:
+
+   - docs/plan-pruebas-usuario.html y docs/plan-pruebas-usuario.pdf
+   - docs/protocolo-m2.md
+   - docs/cambio-encuesta-cierre-2.16.md
+   - docs/guias/onboarding-monitor.md
+   - docs/guias/prueba-cali.md
+   - docs/guias/e2-autonoma-protocolo.html
+
+   Licencia: Creative Commons Atribución-NoComercial 4.0 Internacional
+   https://creativecommons.org/licenses/by-nc/4.0/deed.es
+   Texto legal: https://creativecommons.org/licenses/by-nc/4.0/legalcode.es
+
+   Cita sugerida: Bolaños, J. y Castro, K. (2026). Sintonía · [nombre del
+   documento]. Maestría en Gestión de la Innovación, Universidad Icesi.
+   https://github.com/josebdiaz/sintonia-piloto
+
+2. CÓDIGO, CONTENIDO Y DATOS · Todos los derechos reservados
+
+   Todo lo que no aparece en el punto 1: el código del frontend (piloto/), del
+   backend (backend/), de las herramientas (tools/), del motor (n8n/) y de las
+   demás carpetas; los decks; los textos para participantes; el inventario de
+   lugares (datos/) y el material archivado (archivo/).
+   Se puede ver y bifurcar dentro de GitHub según los Términos de Servicio de
+   GitHub. Para cualquier otro uso, escribir a los autores.
+
+3. MARCA · Todos los derechos reservados
+
+   El nombre «Sintonía», el logo, el lema «Menos vueltas, más plan», la voz
+   «tu / su +1 de confianza», los stickers (docs/stickers/) y el material POP
+   (docs/pop/) no se licencian bajo ningún punto de este archivo, ni siquiera
+   dentro de los documentos del punto 1.
+
+4. CONTENIDO DE TERCEROS
+
+   Las escalas e instrumentos de otros autores que usan los documentos (SUS,
+   SEQ, NASA-TLX, Van Westendorp), las bibliotecas, las fuentes tipográficas y
+   los logos institucionales conservan sus propias licencias y derechos. Este
+   archivo no los licencia.

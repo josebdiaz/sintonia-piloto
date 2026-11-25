@@ -12,7 +12,7 @@ Resumen para arrancar cualquier conversación. El detalle está en las secciones
 - **Calendario:** ensayo el 25/11 · congelamiento el 26/11 · prueba con Cali el 27/11 (encuentro a más tardar el 30/11) · entrega el 4/12 · pitch el 12/12.
 - **Regla vigente:** desde el 26/11 la consola no cambia hasta cerrar el análisis.
 - **Limpieza de archivos (24/11):** hecha, salvo conectar el repo como carpeta del Proyecto (pendiente 15). La copia del estado en el Proyecto tiene nombre fijo, `claude/estado-piloto.md`, y las instrucciones van en la v3.4. La carpeta vieja `Gemini dump/sintonia-piloto` quedó en `_archivo-2026-11-24/`, con su inventario; nada se borró.
-- **Auditoría de estándares (24/11):** hecha, en [`docs/auditoria-estandares.md`](docs/auditoria-estandares.md). Lo más grave: **no hay licencia** (decisión D1) y **`main` está sin protección**. El escaneo de secretos y la *push protection* ya están activos. Lo de CI y el CHANGELOG va después del análisis (pendiente 18).
+- **Auditoría de estándares (24/11):** hecha, en [`docs/auditoria-estandares.md`](docs/auditoria-estandares.md). GitHub quedó configurado (`main` protegida, reporte privado, 68 tags anotados) y la licencia es la opción C (`LICENSE`): método con CC BY-NC 4.0 y el resto con todos los derechos reservados. Lo de CI y el CHANGELOG va después del análisis (pendiente 18).
 - **Frente siguiente:** ensayo con WhatsApp real (pendiente 1).
 - **Bloqueos:**
   - El grupo de Cali está sin confirmar.
@@ -145,7 +145,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | 14 | ~~Agregar a las instrucciones del Proyecto que lo archivado no es fuente~~ Hecho en el prompt v3.4 (24/11) | Orden del Proyecto | José |
 | 15 | Renombrar el clon `~/Desktop/sintonia-tags` (p. ej. `~/Documents/sintonia-piloto`) y conectarlo como carpeta del Proyecto. Antes, revisar qué es `~/sintonia-piloto`, para no dejar dos copias | Orden del Mac | José |
 | 16 | Subir al Drive del equipo `_archivo-2026-11-24/Feedback y pruebas de usuario/` (notas y audios con datos de personas, solo están en el Mac) y decidir qué se rescata de lo único del archivo (ver su `INVENTARIO.md`) | Respaldo | José |
-| 17 | ~~Auditoría de estándares del repo público~~ Hecha el 24/11: `docs/auditoria-estandares.md`. Decisiones abiertas: D1 licencia (equipo, con Icesi), D2 buzón de rol, D3 CHANGELOG | Calidad | Equipo, con Claude |
+| 17 | ~~Auditoría de estándares del repo público~~ Hecha el 24/11: `docs/auditoria-estandares.md`. D1 licencia: **opción C** (`LICENSE`); falta verificar con Icesi si hay reglamento de propiedad intelectual para trabajos de maestría. Abiertas: D2 buzón de rol y D3 CHANGELOG | Calidad | Equipo, con Claude |
 | 18 | Después del análisis: permisos mínimos en `home.yml`, acciones fijadas por SHA, lockfile de `tools/qa`, Dependabot, CodeQL, la acción de OpenSSF Scorecard y un CHANGELOG por componente con tipos de cambio | Calidad | José |
 
 ## 4.2 Prueba externa (semana del 15/11, n = 1, modo prueba)
