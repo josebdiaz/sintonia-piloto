@@ -10,6 +10,7 @@ Las fechas son de 2026 (hora de Colombia).
 - `decks/` y `equipo/`: atajos `sintonia.my/decks` y `sintonia.my/equipo` (redirigen al home, `noindex`).
 - `home.json`: «Presentaciones» pasa a ser la primera tarjeta del equipo; «Cómo trabajamos con Claude» sale del archivo (es vigente). `tools/home.py`: `id` opcional por tarjeta.
 - `tools/qa-home.js`: pruebas de los toques y de `/decks` y `#equipo` (29 OK en iPhone 13, Pixel 7 y escritorio). Sin cambio de versión del frontend ni del backend.
+- `ESTADO.md` (26/11): §0, §1 (fila Home) y pendiente 19 (probar en un teléfono real).
 
 ### 2026-11-24 · Licencia del repositorio (opción C, sin cambios de código)
 - `LICENSE`: el método de investigación (plan de pruebas, protocolo M2, encuesta de cierre 2.16 y guías del monitor, de la prueba con Cali y del protocolo E2) va con CC BY-NC 4.0. El código, el contenido, los datos y el archivo quedan con todos los derechos reservados; la marca queda reservada aparte; el contenido de terceros conserva su licencia.
