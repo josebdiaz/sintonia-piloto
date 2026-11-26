@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-25 · Home: decks fáciles de encontrar y código secreto en celular
+- `index.html`: en celular, además de los deslizamientos, 5 toques seguidos sobre el glifo abren «Detrás de escena» (en teléfonos reales el gesto fallaba con facilidad). `sintonia.my/#equipo` abre el menú y `sintonia.my/#decks` lo abre en «Presentaciones»; al cerrar se quita el ancla.
+- `decks/` y `equipo/`: atajos `sintonia.my/decks` y `sintonia.my/equipo` (redirigen al home, `noindex`).
+- `home.json`: «Presentaciones» pasa a ser la primera tarjeta del equipo; «Cómo trabajamos con Claude» sale del archivo (es vigente). `tools/home.py`: `id` opcional por tarjeta.
+- `tools/qa-home.js`: pruebas de los toques y de `/decks` y `#equipo` (29 OK en iPhone 13, Pixel 7 y escritorio). Sin cambio de versión del frontend ni del backend.
+
 ### 2026-11-24 · Licencia del repositorio (opción C, sin cambios de código)
 - `LICENSE`: el método de investigación (plan de pruebas, protocolo M2, encuesta de cierre 2.16 y guías del monitor, de la prueba con Cali y del protocolo E2) va con CC BY-NC 4.0. El código, el contenido, los datos y el archivo quedan con todos los derechos reservados; la marca queda reservada aparte; el contenido de terceros conserva su licencia.
 - `README.md`: sección «Licencia». `docs/auditoria-estandares.md`: D1 decidida. `ESTADO.md`: pendiente 17 al día.

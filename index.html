@@ -128,6 +128,7 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
 .card{border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .card.now{background:var(--mostaza);color:var(--noche)}
 .card.team{background:#1f2226;border:1px solid var(--papel-700)}
+#decks{scroll-margin-top:40px} #decks:focus{outline:none}   /* home 25 nov: /decks abre aquí; deja aire para la entrada escalonada */
 .card.arch{background:transparent;border:1px dashed var(--papel-700)}
 .card .tag{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--naranja)}
 .card.now .tag{color:var(--naranja-700)}
@@ -279,11 +280,26 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
           <li><a href="piloto/aviso.html">Aviso de privacidad</a></li>
         </ul>
       </section>
+      <section class="card team" id="decks" tabindex="-1">
+        <span class="tag">Equipo · decks</span>
+        <h3>Presentaciones</h3>
+        <p class="muted">De la más reciente a la más antigua. Enlace directo: sintonia.my/decks</p>
+        <ul>
+          <li><a href="docs/deck-wow.html">Cómo trabajamos con Claude</a> <span class="muted">· 24 nov · forma de trabajo v2</span></li>
+          <li><a href="docs/deck-pitch-final.html">Pitch final</a> <span class="muted">· 12 dic · actualizado 22 nov</span></li>
+          <li><a href="docs/deck-onboarding-monitor.html">Onboarding del monitor</a> <span class="muted">· 22 nov · consola 2.8.1</span></li>
+          <li><a href="docs/deck-pitch-tecnico.html">Pitch técnico · motor y agente</a> <span class="muted">· 30 oct</span></li>
+          <li><a href="docs/deck-status-26oct.html">Status</a> <span class="muted">· 26 oct</span></li>
+          <li><a href="docs/deck-status-interno-p7.html">Status interno P7</a> <span class="muted">· 15 oct</span></li>
+          <li><a href="docs/deck-metodo-interno-p7.html">Método interno P7</a></li>
+          <li><a href="docs/deck-pivote.html">Tutoría P6 · pivote</a></li>
+        </ul>
+      </section>
       <section class="card team estado">
         <span class="tag">Estado del repo · 24 nov 2026</span>
         <h3>En qué va</h3>
         <p class="versiones"><b>Frontend 2.16.0</b> · <b>Backend 2.10.0</b></p>
-        <p class="muted">Último cambio: 2026-11-24 · Licencia del repositorio (opción C, sin cambios de código)</p>
+        <p class="muted">Último cambio: 2026-11-25 · Home: decks fáciles de encontrar y código secreto en celular</p>
         <p class="muted" style="margin-top:6px">Pendientes que siguen:</p>
         <ol class="pend"><li>Ensayo con WhatsApp real el miércoles 25 (guion en «Insumos para los agregados», Proyecto). Antes: probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso»</li><li>Congelado en piloto/v2.16.0 y backend/v2.10.0 (tags del 24/11). Falta solo «Empezar piloto real» después del ensayo</li><li>Confirmar el grupo de Cali (o el plan B de Katherine) y la fecha del encuentro, a más tardar el 30/11. Modo piloto y encuesta actual (recomendado)</li></ol>
         <ul><li><a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/ESTADO.md" target="_blank" rel="noopener">Estado del proyecto</a> <span class="muted">· todo el detalle</span></li></ul>
@@ -299,21 +315,6 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
           <li><a href="docs/deck-onboarding-monitor.html">Onboarding del monitor</a></li>
           <li><a href="docs/stickers/hoja-de-contacto.png">Stickers de Sintonía</a> <span class="muted">· 14, para el WhatsApp del número</span> <span class="muted">· <a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/stickers/README.md" target="_blank" rel="noopener">cómo usarlos</a></span></li>
           <li><a href="docs/pop/">QR del material POP</a> <span class="muted">· uno por pieza impresa</span></li>
-        </ul>
-      </section>
-      <section class="card team">
-        <span class="tag">Equipo · decks</span>
-        <h3>Presentaciones</h3>
-        <p class="muted">De la más reciente a la más antigua.</p>
-        <ul>
-          <li><a href="docs/deck-wow.html">Cómo trabajamos con Claude</a> <span class="muted">· 24 nov · forma de trabajo v2</span></li>
-          <li><a href="docs/deck-pitch-final.html">Pitch final</a> <span class="muted">· 12 dic · actualizado 22 nov</span></li>
-          <li><a href="docs/deck-onboarding-monitor.html">Onboarding del monitor</a> <span class="muted">· 22 nov · consola 2.8.1</span></li>
-          <li><a href="docs/deck-pitch-tecnico.html">Pitch técnico · motor y agente</a> <span class="muted">· 30 oct</span></li>
-          <li><a href="docs/deck-status-26oct.html">Status</a> <span class="muted">· 26 oct</span></li>
-          <li><a href="docs/deck-status-interno-p7.html">Status interno P7</a> <span class="muted">· 15 oct</span></li>
-          <li><a href="docs/deck-metodo-interno-p7.html">Método interno P7</a></li>
-          <li><a href="docs/deck-pivote.html">Tutoría P6 · pivote</a></li>
         </ul>
       </section>
       <section class="card team">
@@ -337,7 +338,6 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
         <span class="tag">Archivo · solo lectura</span>
         <h3>Versiones anteriores</h3>
         <ul>
-          <li><a href="docs/deck-wow.html">Cómo trabajamos con Claude</a> <span class="muted">· 24 nov · forma de trabajo v2</span></li>
           <li><a href="docs/deck-business-case.html">Business case</a> <span class="muted">· octubre · superado (E2 web y W1/W2, antes de D1)</span></li>
           <li><a href="archivo/p4-pre-pivote/researchers/index.html">Periodo 4 · H1–H4 e investigadores</a> <span class="muted">antes del pivote</span></li>
           <li><a href="archivo/piloto-m1-claude/index.html">Piloto 1.0.0 («M1»)</a></li>
@@ -391,6 +391,7 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
     const done = () => { menu.hidden = true; document.documentElement.classList.remove('menu-abierto'); menu.removeEventListener('transitionend', done); };
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) done(); else menu.addEventListener('transitionend', done);
     if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true});
+    if (/^#(equipo|decks)$/.test(location.hash)) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
   }
 
   document.addEventListener('keydown', e => {
@@ -417,6 +418,27 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
     step(ax > ay ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'), true);
   }, {passive:true});
   document.addEventListener('touchcancel', () => { vivo = false; }, {passive:true});
+
+  // Home 25 nov · Atajo táctil más fácil: 5 toques seguidos sobre el glifo (en teléfonos reales los deslizamientos fallaban con facilidad).
+  let toques = 0, tToques = null;
+  glifo.addEventListener('click', () => {
+    if (!menu.hidden) return;
+    toques++; clearTimeout(tToques); tToques = setTimeout(() => { toques = 0; }, 1800);
+    if (toques >= 5) { toques = 0; vibra([18, 40, 18]); open(); }
+  });
+
+  // Home 25 nov · Enlaces directos para el equipo: sintonia.my/#equipo abre el menú y sintonia.my/#decks (o /decks) lo abre en las presentaciones.
+  function porAncla(){
+    const h = location.hash.slice(1);
+    if (h !== 'equipo' && h !== 'decks') return;
+    if (menu.hidden) open();
+    if (h === 'decks') {
+      const d = document.getElementById('decks');
+      if (d) setTimeout(() => { d.scrollIntoView({block:'start', behavior:'instant'}); d.focus({preventScroll:true}); }, 60);
+    }
+  }
+  porAncla();
+  window.addEventListener('hashchange', porAncla);
 
   /* ---------- Landing (2.9.0): origen de la pieza impresa, cupo, lista de espera y «ver mi grupo» ---------- */
   const qs = new URLSearchParams(location.search);

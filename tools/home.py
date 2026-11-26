@@ -71,7 +71,7 @@ def tarjeta(t, h):
                 '        <ul><li>%s <span class="muted">· todo el detalle</span></li></ul>\n      </section>') % (
             html.escape(h['fecha_estado']), h['frontend'], h['backend'], html.escape(h['ultimo']), p,
             a('https://github.com/josebdiaz/sintonia-piloto/blob/main/ESTADO.md', 'Estado del proyecto'))
-    out = ['      <section class="card %s">' % t['clase'], '        <span class="tag">%s</span>' % html.escape(t['etiqueta']),
+    out = ['      <section class="card %s"%s>' % (t['clase'], ' id="%s" tabindex="-1"' % html.escape(t['id']) if t.get('id') else ''), '        <span class="tag">%s</span>' % html.escape(t['etiqueta']),
            '        <h3>%s</h3>' % html.escape(t['titulo'])]
     if t.get('texto'):
         out.append('        <p%s>%s</p>' % (' class="muted"' if t.get('texto_suave') else '', html.escape(t['texto'])))

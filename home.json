@@ -15,6 +15,55 @@
     },
     {
       "clase": "team",
+      "etiqueta": "Equipo · decks",
+      "titulo": "Presentaciones",
+      "texto": "De la más reciente a la más antigua. Enlace directo: sintonia.my/decks",
+      "texto_suave": true,
+      "decks": true,
+      "enlaces": [
+        {
+          "texto": "Cómo trabajamos con Claude",
+          "href": "docs/deck-wow.html",
+          "nota": "24 nov · forma de trabajo v2"
+        },
+        {
+          "texto": "Pitch final",
+          "href": "docs/deck-pitch-final.html",
+          "nota": "12 dic · actualizado 22 nov"
+        },
+        {
+          "texto": "Onboarding del monitor",
+          "href": "docs/deck-onboarding-monitor.html",
+          "nota": "22 nov · consola 2.8.1"
+        },
+        {
+          "texto": "Pitch técnico · motor y agente",
+          "href": "docs/deck-pitch-tecnico.html",
+          "nota": "30 oct"
+        },
+        {
+          "texto": "Status",
+          "href": "docs/deck-status-26oct.html",
+          "nota": "26 oct"
+        },
+        {
+          "texto": "Status interno P7",
+          "href": "docs/deck-status-interno-p7.html",
+          "nota": "15 oct"
+        },
+        {
+          "texto": "Método interno P7",
+          "href": "docs/deck-metodo-interno-p7.html"
+        },
+        {
+          "texto": "Tutoría P6 · pivote",
+          "href": "docs/deck-pivote.html"
+        }
+      ],
+      "id": "decks"
+    },
+    {
+      "clase": "team",
       "auto": "estado"
     },
     {
@@ -57,54 +106,6 @@
           "texto": "QR del material POP",
           "href": "docs/pop/",
           "nota": "uno por pieza impresa"
-        }
-      ]
-    },
-    {
-      "clase": "team",
-      "etiqueta": "Equipo · decks",
-      "titulo": "Presentaciones",
-      "texto": "De la más reciente a la más antigua.",
-      "texto_suave": true,
-      "decks": true,
-      "enlaces": [
-        {
-          "texto": "Cómo trabajamos con Claude",
-          "href": "docs/deck-wow.html",
-          "nota": "24 nov · forma de trabajo v2"
-        },
-        {
-          "texto": "Pitch final",
-          "href": "docs/deck-pitch-final.html",
-          "nota": "12 dic · actualizado 22 nov"
-        },
-        {
-          "texto": "Onboarding del monitor",
-          "href": "docs/deck-onboarding-monitor.html",
-          "nota": "22 nov · consola 2.8.1"
-        },
-        {
-          "texto": "Pitch técnico · motor y agente",
-          "href": "docs/deck-pitch-tecnico.html",
-          "nota": "30 oct"
-        },
-        {
-          "texto": "Status",
-          "href": "docs/deck-status-26oct.html",
-          "nota": "26 oct"
-        },
-        {
-          "texto": "Status interno P7",
-          "href": "docs/deck-status-interno-p7.html",
-          "nota": "15 oct"
-        },
-        {
-          "texto": "Método interno P7",
-          "href": "docs/deck-metodo-interno-p7.html"
-        },
-        {
-          "texto": "Tutoría P6 · pivote",
-          "href": "docs/deck-pivote.html"
         }
       ]
     },
@@ -170,11 +171,6 @@
       "titulo": "Versiones anteriores",
       "decks": true,
       "enlaces": [
-        {
-          "texto": "Cómo trabajamos con Claude",
-          "href": "docs/deck-wow.html",
-          "nota": "24 nov · forma de trabajo v2"
-        },
         {
           "texto": "Business case",
           "href": "docs/deck-business-case.html",

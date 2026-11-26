@@ -1,4 +1,4 @@
-// QA del código secreto del home: deslizamientos reales (CDP) sobre el glifo en iPhone 13 y Pixel 7, y teclado en escritorio.
+// QA del código secreto del home (home 25 nov: también 5 toques en el glifo y los enlaces /decks y #equipo): deslizamientos reales (CDP) sobre el glifo en iPhone 13 y Pixel 7, y teclado en escritorio.
 // Desde la landing 2.9.0 la página se desplaza: solo los trazos que empiezan en el glifo cuentan.
 // Uso: python3 -m http.server 8768 (en la raíz del repo) y luego node tools/qa-home.js http://localhost:8768 <carpeta_capturas>
 const {chromium,devices}=require('playwright');const B=process.argv[2]||'http://localhost:8768';const OUT=process.argv[3]||'.';
@@ -29,10 +29,26 @@ async function swipe(cdp,x0,y0,x1,y1){await cdp.send('Input.dispatchTouchEvent',
   await p.click('#close');await p.waitForTimeout(1200);
   for(const d of ['up','up','down']){await swipe(cdp,...mv[d]);await p.waitForTimeout(3000);}
   ok(name+': con 3 s entre deslizamientos no se reinicia',(await p.$$eval('#keys i.on',x=>x.length))===3,await p.$$eval('#keys i.on',x=>x.length));
+  // home 25 nov: 5 toques sobre el glifo abren el menú; 4 no
+  await p.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await p.waitForTimeout(4800);
+  for(let k=0;k<4;k++){await p.tap('#glifo');await p.waitForTimeout(120);}
+  ok(name+': 4 toques no abren',await p.evaluate(()=>document.getElementById('menu').hidden),'');
+  await p.waitForTimeout(2000);
+  for(let k=0;k<5;k++){await p.tap('#glifo');await p.waitForTimeout(120);}await p.waitForTimeout(1200);
+  ok(name+': 5 toques sobre el glifo abren el menú',await p.evaluate(()=>!document.getElementById('menu').hidden),'');
+  await p.click('#close');await p.waitForTimeout(1200);
+  // home 25 nov: /decks lleva al menú abierto en las presentaciones
+  await p.goto(B+'/decks/');await p.waitForTimeout(1500);
+  ok(name+': /decks abre el menú',await p.evaluate(()=>!document.getElementById('menu').hidden),'');
+  ok(name+': /decks muestra las presentaciones arriba',await p.evaluate(()=>{const r=document.getElementById('decks').getBoundingClientRect();return r.top>=-2&&r.top<innerHeight/2;}),await p.evaluate(()=>document.getElementById('decks').getBoundingClientRect().top));
+  await p.screenshot({path:OUT+'/home-decks-'+name.replace(/ /g,'')+'.png'});
+  await p.click('#close');await p.waitForTimeout(1200);
+  ok(name+': al cerrar se quita el ancla',await p.evaluate(()=>location.hash===''),await p.evaluate(()=>location.hash));
   ok(name+': sin errores',!errs.length,errs.join('|'));
   await c.close();}
  const c=await b.newContext({viewport:{width:1300,height:900}});const p=await c.newPage();await p.goto(B+'/index.html');await p.waitForTimeout(400);
  for(const k of ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight'])await p.keyboard.press(k);await p.waitForTimeout(1200);
  ok('Escritorio: el teclado abre el menú',await p.evaluate(()=>!document.getElementById('menu').hidden),'');
  await p.keyboard.press('Escape');await p.waitForTimeout(1200);ok('Escritorio: Esc cierra',await p.evaluate(()=>document.getElementById('menu').hidden),'');
+ await p.goto(B+'/index.html#equipo');await p.waitForTimeout(1200);ok('Escritorio: #equipo abre el menú',await p.evaluate(()=>!document.getElementById('menu').hidden),'');
  await b.close();console.log(log.join('\n'));console.log(log.filter(x=>x.startsWith('OK')).length+' OK · '+log.filter(x=>!x.startsWith('OK')).length+' fallas');})();
