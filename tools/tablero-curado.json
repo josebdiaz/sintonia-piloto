@@ -75,11 +75,12 @@
       "nota": "Bloquea la prueba con Cali"
     },
     "8": {
-      "frente": "operacion"
+      "frente": "operacion",
+      "nota": "Mensaje listo: falta enviarlo"
     },
     "9": {
       "frente": "operacion",
-      "nota": "Sin fecha; afecta los enlaces de Maps de la prueba"
+      "nota": "Instrucciones listas: José corre probarMontaje()"
     },
     "10": {
       "frente": "plataforma",
@@ -93,7 +94,7 @@
     },
     "16": {
       "frente": "casa",
-      "nota": "Incluye conectar el clon de trabajo como carpeta del Proyecto (antes 15)"
+      "nota": "Feedback en el Drive (27/11): falta INVENTARIO y conectar la carpeta"
     },
     "18": {
       "frente": "plataforma",
@@ -102,19 +103,22 @@
     },
     "24": {
       "frente": "investigacion",
-      "fecha": "2026-11-27"
+      "fecha": "2026-11-27",
+      "nota": "Borrador listo (27/11): falta que el equipo elija"
     },
     "25": {
       "frente": "investigacion",
-      "fecha": "2026-11-27"
+      "fecha": "2026-11-27",
+      "nota": "Definiciones decididas (27/11): falta la regla de salida"
     },
     "26": {
       "frente": "investigacion",
-      "nota": "Se define antes del grupo de E1.5"
+      "nota": "Opciones listas: van a Néstor (d3 y d4)"
     },
     "27": {
       "frente": "investigacion",
-      "fecha": "2026-11-29"
+      "fecha": "2026-11-29",
+      "nota": "Borrador listo (27/11): falta revisión del equipo"
     },
     "28": {
       "frente": "investigacion",
@@ -122,22 +126,23 @@
     },
     "29": {
       "frente": "pitch",
-      "fecha": "2026-12-01"
+      "fecha": "2026-12-01",
+      "nota": "Borrador listo: falta aprobación de José"
     },
     "30": {
       "frente": "pitch",
-      "fecha": "2026-12-01"
+      "fecha": "2026-12-01",
+      "nota": "Borrador listo: falta aprobación del equipo"
     },
     "31": {
       "frente": "investigacion",
-      "fecha": "2026-12-03"
+      "fecha": "2026-12-03",
+      "nota": "Opciones listas: decide el equipo a más tardar el 3/12"
     },
     "32": {
       "frente": "investigacion",
-      "fecha": "2026-12-04"
-    },
-    "33": {
-      "frente": "investigacion"
+      "fecha": "2026-12-04",
+      "nota": "Borrador listo: falta aprobación del equipo"
     },
     "34": {
       "frente": "motor",
@@ -173,11 +178,6 @@
       "frente": "motor",
       "estado": "espera",
       "nota": "Después de cerrar E1"
-    },
-    "41": {
-      "frente": "casa",
-      "fecha": "2026-11-28",
-      "nota": "Sesión nueva; las reglas de 24 y 25 van antes del encuentro con Cali"
     }
   },
   "hitos": [
@@ -201,7 +201,7 @@
     },
     {
       "fecha": "2026-11-27",
-      "hito": "Reglas de descarte y tabla de métricas, antes de los datos",
+      "hito": "Reglas de descarte y tabla de métricas, antes de los datos (borrador listo; falta elegir)",
       "frente": "investigacion",
       "estado": "hoy"
     },
@@ -322,7 +322,7 @@
     },
     {
       "orden": 4,
-      "accion": "Escribir las reglas de descarte y la tabla de métricas antes de ver datos",
+      "accion": "Escribir las reglas de descarte y la tabla de métricas antes de ver datos (borrador listo el 27/11; falta que el equipo elija)",
       "frente": "investigacion",
       "dueno": "Katherine, con José",
       "cuando": "Hoy",
@@ -390,7 +390,7 @@
       "dueno": "José",
       "cuando": "Esta semana",
       "esfuerzo": "30 min",
-      "estado": "pendiente"
+      "estado": "hecho"
     },
     {
       "orden": 12,

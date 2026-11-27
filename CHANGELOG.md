@@ -5,6 +5,14 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Taskforce «Tareas de José» corrido (sin cambios de consola ni backend)
+- Proyecto: borradores con opciones y una recomendada, revisados por un verificador independiente: `claude/reglas-antes-de-los-datos.md` (pendientes 24, 25, 26 y 31), `claude/canvas-9-bloques.md` (27, con 4 variantes de pagadores), `claude/pitch-lecturas-29-30-32.md` (29, 30 y 32) y `claude/casa-8-9-16.md` (8, 9 y 16).
+- Decidido por el equipo antes de ver datos: el 60 % de llegadas se calcula sobre quienes confirmaron «Voy»; un parche tiene intención de repetir cuando la mayoría dice que volvería a usar Sintonía para el próximo plan; más de 2 preguntas de vuelta después del cierre (A3) indican que el cierre no funcionó; las metas se leen con al menos 2 parches por condición. Las metas no se mueven. Lo de Néstor (qué es error en E1.5 y la tabla por tipo de mensaje) queda listo para llevárselo.
+- Pendiente 33 hecho: el JTBD nuevo («quiero que conectar con los míos sea tan fácil como mandar un mensaje») en el doc de las lecturas y en las notas de la diapositiva 6 de `docs/deck-pitch-final.html` (aprobado por el equipo).
+- Pendiente 16: `Feedback y pruebas de usuario/` subido al Drive del equipo (carpeta `Sintonía`, 6 de 6 verificados); el original sigue en el Mac.
+- `tools/tablero-html.py` y `tools/tablero-plantilla.html`: página HTML compartible del Tablero de frentes, armada desde el JSON de `tools/tablero.py` (sin el código del generador).
+- `ESTADO.md` §0, §1 y §4 (41 y 33 fuera; en cada pendiente queda solo lo que falta) y `tools/tablero-curado.json` (pendientes 41 y 33 fuera, acción 11 del plan hecha).
+
 ### 2026-11-27 · Taskforce «Tareas de José» preparado (sin cambios de consola ni backend)
 - Proyecto: `claude/prompt-taskforce-tareas-jose.md`, con 5 subagentes (reglas antes de los datos, pitch y lecturas, canvas, casa y un verificador independiente) para los pendientes 24 a 27, 29 a 33, 8, 9 y 16. Claude prepara borradores y opciones; las reglas y decisiones siguen siendo del equipo.
 - `ESTADO.md`: pendiente 41 (correr el taskforce en una sesión nueva) y resumen del sprint del fin de semana en el §0.
