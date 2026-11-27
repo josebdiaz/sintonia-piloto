@@ -5,6 +5,9 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Bienvenida automática: el código del grupo va en la descripción (decisión de José)
+- Quien crea el grupo de WhatsApp pone el código del grupo de la consola en la descripción; W0 lo lee al entrar el número. `n8n/PRUEBA-E2E.md` §5.
+
 ### 2026-11-27 · Ruta A con formularios temporales que se integran al backend (decisión de José)
 - Regla: cada flujo con formulario temporal tiene una segunda entrada automática hacia el mismo nodo «Normalizar entrada»; al abrir el backend se apaga el formulario sin reescribir (`n8n/PRUEBA-E2E.md` §5). W0 y W3 se automatizan ya; W1 espera `crear_plan` para el motor y `view=motor`.
 - `ESTADO.md`: pendiente 48 con la regla y pendiente 49 nuevo (quitar el formulario de W1 al abrir el backend).

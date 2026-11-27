@@ -61,7 +61,7 @@ Lo automatizado reemplaza las tareas que hoy hace una persona del equipo en E1.5
 
 | Tarea | Disparador automático | Qué hace falta | ¿Toca el backend? |
 |---|---|---|---|
-| Bienvenida | Evolution avisa que el número entró a un grupo | Activar el evento de participantes en Evolution; quien crea el grupo pone el código del grupo de la consola en la descripción (es parte de crearlo); tabla `e15_grupos` (JID → `grupo_id`) | No |
+| Bienvenida | Evolution avisa que el número entró a un grupo | Activar el evento de participantes en Evolution; quien crea el grupo pone el código del grupo de la consola en la **descripción** del grupo de WhatsApp (decisión de José, 27/11; es parte de crearlo); tabla `e15_grupos` (JID → `grupo_id`) | No |
 | Votos y eventos al backend | Cada mensaje (E15-00) | `e15_grupos` para saber el `grupo_id`; `view=resolver` (número → `pid`, ya permitido al motor) y `votar` / `evento` con `req_id` | No |
 | Crear el plan | Después de la bienvenida | `crear_plan` en la lista de acciones del motor (`MOTOR_ACCIONES`, una línea) | **Sí** |
 | Fechas con más coincidencias | Al crear el plan | Disponibilidad por persona: `view=motor` (`n8n.N27`) | **Sí** |
