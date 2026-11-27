@@ -1,6 +1,6 @@
 # Motor E1.5 · plan para pasar a agentes (v0.1, 27/11/2026)
 
-> **Decisión (27/11):** Néstor dio luz verde al *qué* y al *cómo* de un motor con agentes, según José. **Falta por escrito** (d5). Reemplaza la recomendación del 27/11 de «flujos fijos, ningún agente le habla al grupo» (`ESTADO.md` §0) y la §7.1 de `n8n/PLAN-construccion.md`. El resto de ese plan (fases 1–6, tramos T1–T3) sigue vigente: este documento cambia **quién redacta**, no cómo se prueba.
+> **Decisión (27/11):** Néstor dio luz verde al *qué* y al *cómo* de un motor con agentes, confirmada por José el 27/11. Reemplaza la recomendación del 27/11 de «flujos fijos, ningún agente le habla al grupo» (`ESTADO.md` §0) y la §7.1 de `n8n/PLAN-construccion.md`. El resto de ese plan (fases 1–6, tramos T1–T3) sigue vigente: este documento cambia **quién redacta**, no cómo se prueba.
 > Construye el equipo con Claude. No toca la consola ni el backend (congelados). E1.5 no corre con personas hasta cerrar E1. Todo aquí es verificación técnica (n = 0).
 
 ## 0. En corto
@@ -54,7 +54,7 @@
 | **A3 · Intérprete** | `no_entendido` de E15-00 → Intérprete. Casos con mensajes que intentan darle órdenes («ignora tus reglas…») | Claude | Salida siempre dentro de la lista cerrada; lo dudoso escala | A1 |
 | **A4 · Continuidad** | W3 salida, W4, W5 con el Redactor | Claude | Tramo T3 con relojes cortos | `view=motor` (`n8n.N27`) |
 | **A5 · Asistente de operación** | *n8n Agent* interno: lee `e15_entrada`, `e15_mensajes` y ejecuciones; resume para el equipo. Nunca le habla al grupo ni ve datos de personas | Claude | Resumen diario útil con datos de prueba | A2 |
-| **A6 · Antes de una persona real** | Aviso v3 nombra al proveedor del modelo como encargado y dice que los mensajes los redacta una IA y los revisa otra. d3 con textos generados. d4 firmada. Luz verde de Néstor por escrito (d5) | Equipo y Néstor | Todo por escrito | Cerrar E1 (3/12) |
+| **A6 · Antes de una persona real** | Aviso v3 nombra al proveedor del modelo como encargado y dice que los mensajes los redacta una IA y los revisa otra. d3 con textos generados. d4 firmada. Aviso v3 aprobado (d5) | Equipo y Néstor | Todo por escrito | Cerrar E1 (3/12) |
 
 ## 5. Por decidir (equipo)
 

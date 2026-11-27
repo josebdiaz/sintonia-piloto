@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Cierre: luz verde de Néstor confirmada para el motor con agentes
+- La luz verde de Néstor al motor E1.5 con agentes queda confirmada (José, 27/11); d5 queda solo para el aviso v3.
+- `ESTADO.md` §0 y pendiente 45; `n8n/PLAN-agentico.md` (encabezado y fase A6); `tools/tablero-curado.json` (d5).
+
 ### 2026-11-27 · Motor E1.5: plan para pasar a agentes (sin cambios de consola, backend ni flujos)
 - `n8n/PLAN-agentico.md` v0.1: Redactor con la voz de Sintonía alrededor de un bloque de datos fijo, guardas en código, Revisor (QA) independiente y plantilla de E1 si algo falla; seguridad con plantilla y escalamiento; relojes de E1 sin cambios. Carriles por tipo de mensaje para d4, fases A0–A6, decisiones y riesgos.
 - Decisión del 27/11: luz verde de Néstor al qué y al cómo, según José; falta por escrito (d5). Reemplaza la recomendación de flujos fijos (`ESTADO.md` §0; `n8n/PLAN-construccion.md` §7.1).
