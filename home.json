@@ -122,6 +122,11 @@
           "nota": "empieza aquí"
         },
         {
+          "texto": "Tablero de frentes",
+          "href": "tablero/",
+          "nota": "se regenera en cada cierre"
+        },
+        {
           "texto": "Guion de la prueba con Cali (27 nov)",
           "href": "https://github.com/josebdiaz/sintonia-piloto/blob/main/docs/guias/prueba-cali.md",
           "nota": "22 nov"

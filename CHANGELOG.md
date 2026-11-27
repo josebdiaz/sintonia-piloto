@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Tablero de frentes en el sitio, una sola vista (sin cambios de consola ni backend)
+- `tablero/index.html` (sintonia.my/tablero): la página del Tablero de frentes, generada por `tools/tablero-html.py` desde el JSON de `tools/tablero.py`; ahora escribe en el repo con su propio `<head>`. Enlace en «Detrás de escena» → Documentación (`home.json`).
+- Una sola vista: el tablero de tipo Data y la página privada en HTML quedan retirados y ya no se actualizan (decisión del equipo, 27/11). Actualizarlo cuesta lo mismo que cualquier push.
+- `ESTADO.md` §0 y §1.
+
 ### 2026-11-27 · Pendientes 8 y 9 hechos (sin cambios de consola ni backend)
 - Pendiente 8: el monitor confirmó su respuesta de Desempeño (escala anterior a la consola 2.7.1). Pendiente 9: `probarMontaje()` corrido. Aviso del equipo, 27/11. Quedan como `[Dato pendiente]` el texto de la línea «Ubicaciones» (ESTADO §1) y si cambió algo en `pulso_mago` (§4.1).
 - `tools/tablero-curado.json`: 8 y 9 fuera; acción 12 del plan (repartir 8 y 9) hecha.
