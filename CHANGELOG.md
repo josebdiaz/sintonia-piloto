@@ -5,6 +5,13 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Tablero de frentes y auditoría de la casa (sin cambios de consola ni backend)
+- `tools/tablero.py`: genera el JSON del Tablero de frentes desde `ESTADO.md` (§0, §1 y §4), `tools/tablero-curado.json` y git (commits sin subir, carpetas sueltas, `tools/home.py --check`). Reglas de estado: vencido, bloqueado, en espera, hecho por retirar y abierto; salud por frente.
+- `tools/tablero-curado.json`: frente de cada pendiente, hitos hasta el pitch, 7 decisiones abiertas, plan de 12 acciones y hallazgos manuales de la auditoría.
+- `.gitignore`: `_archivo-2026-11-24/` (notas y audios con datos de personas) y `Claude outputs/`.
+- Tablero privado con la capa de marca (artefacto, fuera del repo). Skill «sintonia-tablero» y paso 3.4b de «sintonia-wow» propuestos; prompt del taskforce en el Proyecto.
+- `ESTADO.md`: §0 (tablero), §1 (fila nueva) y pendiente 22.
+
 ### 2026-11-27 · Deck de las lecturas al día y respuestas propias a A y C (sin cambios de código)
 - Deck «Seis lecturas, un rumbo» (artefacto privado): diapositiva 9 con el orden E1 → E1.5, A1–A6 como diagnóstico del flujo manual y el modelo de negocio en construcción; fila del 2/12 resuelta (E1.5 después de cerrar E1, que se define el 3/12).
 - JTBD del deck: «quiero que conectar con los míos sea tan fácil como mandar un mensaje» (reemplaza «que alguien proponga…»). Falta llevarlo al doc de las lecturas.

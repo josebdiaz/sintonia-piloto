@@ -1,0 +1,417 @@
+{
+  "_nota": "Capa curada del tablero de frentes. NO es fuente de pendientes: esos salen de ESTADO.md §4. Aquí va solo lo que ESTADO no dice (frente de cada pendiente, fecha límite, estado de gestión), los hitos, las decisiones abiertas y el plan de acción. Lo actualiza la skill sintonia-tablero al cerrar cada frente. Cuando §4 tenga columna «Frente», esa columna manda sobre este mapa.",
+  "actualizado": "2026-11-27",
+  "frentes": [
+    {
+      "id": "operacion",
+      "nombre": "Operación del piloto (E1)",
+      "dueno": "Katherine y José",
+      "critico": true,
+      "foco": "Prueba con Cali en E1: grupo, encuentro y registro"
+    },
+    {
+      "id": "investigacion",
+      "nombre": "Investigación y modelo",
+      "dueno": "Katherine, con José",
+      "critico": true,
+      "foco": "Reglas antes de los datos, canvas y matriz"
+    },
+    {
+      "id": "pitch",
+      "nombre": "Pitch (12/12)",
+      "dueno": "José y Katherine",
+      "critico": false,
+      "foco": "Deck de 13 pasos sin cifras inexistentes"
+    },
+    {
+      "id": "motor",
+      "nombre": "Motor E1.5 (n8n)",
+      "dueno": "Equipo, con Claude",
+      "critico": false,
+      "foco": "Construir ya; ejecutar después de cerrar E1"
+    },
+    {
+      "id": "pop",
+      "nombre": "Material POP",
+      "dueno": "Equipo",
+      "critico": false,
+      "foco": "Oleada 1 impresa"
+    },
+    {
+      "id": "plataforma",
+      "nombre": "Plataforma",
+      "dueno": "José",
+      "critico": false,
+      "foco": "Consola congelada; solo pruebas y lo de después del análisis"
+    },
+    {
+      "id": "casa",
+      "nombre": "Orden de la casa",
+      "dueno": "José",
+      "critico": false,
+      "foco": "Repo, Proyecto, Mac y respaldo al día"
+    }
+  ],
+  "pendientes": {
+    "1": {
+      "frente": "operacion",
+      "fecha": "2026-11-25",
+      "nota": "Fecha pasada y sin resultado registrado en ESTADO"
+    },
+    "2": {
+      "frente": "operacion",
+      "fecha": "2026-11-27"
+    },
+    "3": {
+      "frente": "operacion",
+      "fecha": "2026-11-30",
+      "estado": "bloqueado",
+      "nota": "Grupo sin confirmar: es el camino crítico"
+    },
+    "21": {
+      "frente": "investigacion",
+      "fecha": "2026-11-27",
+      "tipo": "epica",
+      "nota": "9 entregas con fechas del 27/11 al 4/12 en una sola fila"
+    },
+    "4": {
+      "frente": "pop",
+      "estado": "bloqueado",
+      "nota": "Espera plantilla del tótem y logo vectorial de Icesi"
+    },
+    "5": {
+      "frente": "operacion",
+      "fecha": "2026-11-30",
+      "nota": "Bloquea la prueba con Cali"
+    },
+    "6": {
+      "frente": "investigacion",
+      "fecha": "2026-11-29",
+      "nota": "Mitad hecha (2.16.0); queda el canvas"
+    },
+    "7": {
+      "frente": "plataforma",
+      "estado": "hecho"
+    },
+    "8": {
+      "frente": "operacion"
+    },
+    "9": {
+      "frente": "operacion",
+      "nota": "Sin fecha; afecta los enlaces de Maps de la prueba"
+    },
+    "10": {
+      "frente": "plataforma",
+      "estado": "espera",
+      "nota": "Después de Cali"
+    },
+    "11": {
+      "frente": "motor",
+      "estado": "espera",
+      "tipo": "epica",
+      "nota": "Unas 15 tareas en una fila; se ejecuta después de cerrar E1"
+    },
+    "12": {
+      "frente": "investigacion"
+    },
+    "13": {
+      "frente": "casa",
+      "estado": "hecho"
+    },
+    "14": {
+      "frente": "casa",
+      "estado": "hecho"
+    },
+    "15": {
+      "frente": "casa",
+      "nota": "El clon de trabajo real es Gemini dump/sintonia-piloto"
+    },
+    "16": {
+      "frente": "casa",
+      "nota": "Datos de personas solo en el Mac y dentro del clon"
+    },
+    "17": {
+      "frente": "casa",
+      "nota": "Hecha; quedan Icesi, D2 y D3"
+    },
+    "18": {
+      "frente": "plataforma",
+      "estado": "espera",
+      "nota": "Después del análisis"
+    },
+    "19": {
+      "frente": "plataforma"
+    },
+    "20": {
+      "frente": "casa",
+      "estado": "hecho",
+      "nota": "Las instrucciones del Proyecto ya dicen v3.6"
+    },
+    "22": {
+      "frente": "casa",
+      "nota": "Taskforce con subagentes; prompt en el Proyecto"
+    }
+  },
+  "hitos": [
+    {
+      "fecha": "2026-11-25",
+      "hito": "Ensayo con WhatsApp real",
+      "frente": "operacion",
+      "estado": "sin registro"
+    },
+    {
+      "fecha": "2026-11-26",
+      "hito": "Congelamiento de la consola",
+      "frente": "plataforma",
+      "estado": "hecho"
+    },
+    {
+      "fecha": "2026-11-27",
+      "hito": "Prueba con Cali (E1)",
+      "frente": "operacion",
+      "estado": "en riesgo"
+    },
+    {
+      "fecha": "2026-11-27",
+      "hito": "Reglas de descarte y tabla de métricas, antes de los datos",
+      "frente": "investigacion",
+      "estado": "hoy"
+    },
+    {
+      "fecha": "2026-11-29",
+      "hito": "Canvas de 9 bloques con estatus y n",
+      "frente": "investigacion",
+      "estado": "próximo"
+    },
+    {
+      "fecha": "2026-11-30",
+      "hito": "Encuentro de Cali (límite) y aplicar las reglas",
+      "frente": "operacion",
+      "estado": "en riesgo"
+    },
+    {
+      "fecha": "2026-12-01",
+      "hito": "Diapositiva 5, respuesta sobre Meta, cuadro estratégico y ERIC",
+      "frente": "pitch",
+      "estado": "próximo"
+    },
+    {
+      "fecha": "2026-12-03",
+      "hito": "Definir qué cuenta como «cerrar E1»",
+      "frente": "investigacion",
+      "estado": "próximo"
+    },
+    {
+      "fecha": "2026-12-04",
+      "hito": "«No hacer nada» en la matriz (hito de trabajo, no entrega)",
+      "frente": "investigacion",
+      "estado": "próximo"
+    },
+    {
+      "fecha": "2026-12-12",
+      "hito": "Pitch final",
+      "frente": "pitch",
+      "estado": "próximo"
+    }
+  ],
+  "decisiones": [
+    {
+      "id": "d1",
+      "decision": "Plan B escrito si Cali no confirma: qué grupo, qué fecha y quién lo activa",
+      "decide": "Katherine y José",
+      "fecha": "2026-11-28",
+      "frente": "operacion",
+      "por_que": "Sin grupo al 30/11, E1 llega al pitch con n = 0 y E1.5 no puede correr"
+    },
+    {
+      "id": "d2",
+      "decision": "Qué cuenta como «cerrar E1» (adelantarla del 3/12)",
+      "decide": "José y Katherine",
+      "fecha": "2026-12-03",
+      "frente": "investigacion",
+      "por_que": "Abre la puerta de E1.5; cuanto antes, más margen antes del 12/12"
+    },
+    {
+      "id": "d3",
+      "decision": "Qué cuenta como error en E1.5 y sobre qué base se calcula el 40 %",
+      "decide": "Equipo; Néstor valida la métrica",
+      "fecha": "",
+      "frente": "motor",
+      "por_que": "Tiene que quedar escrito antes del grupo de E1.5"
+    },
+    {
+      "id": "d4",
+      "decision": "Tabla de automatización por tipo de mensaje y dueño de cada carril",
+      "decide": "Equipo; Néstor por seguridad",
+      "fecha": "",
+      "frente": "motor",
+      "por_que": "Define qué sale solo y qué pasa por una persona"
+    },
+    {
+      "id": "d5",
+      "decision": "Luz verde de Néstor por escrito (n8n.N25) y aviso v3",
+      "decide": "Néstor",
+      "fecha": "",
+      "frente": "motor",
+      "por_que": "Privacidad: el aviso v3 se publica antes del grupo real"
+    },
+    {
+      "id": "d6",
+      "decision": "SUS de quien opera en E1.5: por «Telegram + consola» u omitirlo (n8n.N11)",
+      "decide": "Néstor",
+      "fecha": "",
+      "frente": "motor",
+      "por_que": "Comparabilidad de la carga del mago entre condiciones"
+    },
+    {
+      "id": "d7",
+      "decision": "Cuál clon queda como carpeta del Proyecto (pendiente 15)",
+      "decide": "José",
+      "fecha": "",
+      "frente": "casa",
+      "por_que": "Hoy se trabaja en la carpeta que el estado llama vieja"
+    }
+  ],
+  "plan": [
+    {
+      "orden": 1,
+      "accion": "Ignorar en git _archivo-2026-11-24/ y Claude outputs/ para que nada con datos de personas llegue al repo público",
+      "frente": "casa",
+      "dueno": "José, con Claude",
+      "cuando": "Hoy",
+      "esfuerzo": "5 min",
+      "estado": "hecho"
+    },
+    {
+      "orden": 2,
+      "accion": "Verificar que main tenga los últimos commits del cierre (ya estaban: la referencia local estaba vieja)",
+      "frente": "casa",
+      "dueno": "José",
+      "cuando": "Hoy",
+      "esfuerzo": "10 min",
+      "estado": "hecho"
+    },
+    {
+      "orden": 3,
+      "accion": "Confirmar el grupo de Cali y dejar escrito el plan B (decisión d1)",
+      "frente": "operacion",
+      "dueno": "Katherine",
+      "cuando": "28/11",
+      "esfuerzo": "1 h",
+      "estado": "pendiente"
+    },
+    {
+      "orden": 4,
+      "accion": "Escribir las reglas de descarte y la tabla de métricas antes de ver datos",
+      "frente": "investigacion",
+      "dueno": "Katherine, con José",
+      "cuando": "Hoy",
+      "esfuerzo": "2 h",
+      "estado": "pendiente"
+    },
+    {
+      "orden": 5,
+      "accion": "Registrar el resultado del ensayo del 25/11 o reprogramarlo (pendiente 1)",
+      "frente": "operacion",
+      "dueno": "Juan José",
+      "cuando": "Hoy",
+      "esfuerzo": "15 min",
+      "estado": "pendiente"
+    },
+    {
+      "orden": 6,
+      "accion": "Cargar los stickers en el número Sintonía antes del encuentro (pendiente 5)",
+      "frente": "operacion",
+      "dueno": "José",
+      "cuando": "29/11",
+      "esfuerzo": "20 min",
+      "estado": "pendiente"
+    },
+    {
+      "orden": 7,
+      "accion": "Limpiar ESTADO §4: retirar 7, 13, 14 y 20 al CHANGELOG; corregir licencia en §1, el 4/12 de §4.2 y el pago de n8n en §3.1",
+      "frente": "casa",
+      "dueno": "Claude, en el próximo cierre",
+      "cuando": "Próximo cierre",
+      "esfuerzo": "15 min",
+      "estado": "pendiente"
+    },
+    {
+      "orden": 8,
+      "accion": "Partir las épicas 11 y 21 en tareas de una fecha y un dueño cada una",
+      "frente": "casa",
+      "dueno": "Claude propone, el equipo aprueba",
+      "cuando": "Próximo cierre",
+      "esfuerzo": "30 min",
+      "estado": "pendiente"
+    },
+    {
+      "orden": 9,
+      "accion": "Agregar la columna «Frente» a ESTADO §4 para que el tablero no dependa de la capa curada",
+      "frente": "casa",
+      "dueno": "Claude",
+      "cuando": "Próximo cierre",
+      "esfuerzo": "10 min",
+      "estado": "pendiente"
+    },
+    {
+      "orden": 10,
+      "accion": "Actualizar wow-sintonia.md: prompt v3.6, tablero derivado y briefs de Motor E1.5 y Orden de la casa",
+      "frente": "casa",
+      "dueno": "Claude",
+      "cuando": "Próximo cierre",
+      "esfuerzo": "20 min",
+      "estado": "pendiente"
+    },
+    {
+      "orden": 11,
+      "accion": "Subir al Drive Feedback y pruebas de usuario (pendiente 16)",
+      "frente": "casa",
+      "dueno": "José",
+      "cuando": "Esta semana",
+      "esfuerzo": "30 min",
+      "estado": "pendiente"
+    },
+    {
+      "orden": 12,
+      "accion": "Repartir carga: José tiene la mayoría de los pendientes abiertos; pasar 8, 9 y 19 a otra persona",
+      "frente": "casa",
+      "dueno": "José y Katherine",
+      "cuando": "Próxima sync",
+      "esfuerzo": "10 min",
+      "estado": "pendiente"
+    }
+  ],
+  "casa_manual": [
+    {
+      "chequeo": "ESTADO §0 y pendiente 20 dicen que falta pegar la v3.6",
+      "estado": "warn",
+      "detalle": "Las instrucciones del Proyecto ya son la v3.6",
+      "accion": "Plan 7"
+    },
+    {
+      "chequeo": "§1 dice «falta la licencia (aud.D1)»",
+      "estado": "warn",
+      "detalle": "§0 dice que la licencia opción C está hecha",
+      "accion": "Plan 7"
+    },
+    {
+      "chequeo": "§4.2 conserva «la entrega final es el 4/12»",
+      "estado": "warn",
+      "detalle": "El 27/11 el equipo aclaró que el 4/12 no es entrega",
+      "accion": "Plan 7"
+    },
+    {
+      "chequeo": "wow-sintonia.md desactualizado",
+      "estado": "warn",
+      "detalle": "Cita el prompt v3.4, dice que no hace falta tablero y no tiene brief de Motor E1.5",
+      "accion": "Plan 10"
+    },
+    {
+      "chequeo": "Pendientes como épicas",
+      "estado": "warn",
+      "detalle": "11 y 21 mezclan muchas tareas; no se ve el avance",
+      "accion": "Plan 8"
+    }
+  ]
+}

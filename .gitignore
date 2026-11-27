@@ -2,3 +2,7 @@
 *.tmp
 node_modules/
 __pycache__/
+
+# Fuera del repo público: datos de personas y salidas locales de Claude
+_archivo-2026-11-24/
+Claude outputs/
