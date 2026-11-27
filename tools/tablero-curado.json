@@ -69,11 +69,6 @@
       "estado": "bloqueado",
       "nota": "Espera plantilla del tótem y logo vectorial de Icesi"
     },
-    "5": {
-      "frente": "operacion",
-      "fecha": "2026-11-30",
-      "nota": "Bloquea la prueba con Cali"
-    },
     "8": {
       "frente": "operacion",
       "nota": "Mensaje listo: falta enviarlo"
@@ -349,7 +344,7 @@
       "dueno": "José",
       "cuando": "29/11",
       "esfuerzo": "20 min",
-      "estado": "pendiente"
+      "estado": "hecho"
     },
     {
       "orden": 7,

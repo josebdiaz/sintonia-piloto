@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Stickers cargados en el número Sintonía (sin cambios de consola ni backend)
+- Pendiente 5 hecho: el paquete v1 de `docs/stickers/` quedó cargado en el WhatsApp del número Sintonía antes del encuentro con Cali (aviso del equipo, 27/11).
+- `ESTADO.md` §0, §4 y §4.1; `tools/tablero-curado.json` (pendiente 5 fuera, acción 6 del plan hecha).
+
 ### 2026-11-27 · Pasada final del verificador del taskforce (sin cambios de consola ni backend)
 - `ESTADO.md`: definiciones precisadas antes de ver datos (decisión del equipo): la base del 60 % son quienes se apuntaron («se apuntó» en la consola); la intención de repetir cuenta cuando la mayoría de quienes respondieron la encuesta de cierre dice «Sí» a pedirle a Sintonía el próximo plan («Tal vez» no cuenta). d3 y d4 escritos con su significado. Nota de herencia de accesos en el pendiente 16. Pendiente 42 nuevo: llevar «al menos 2 parches por condición» a las instrucciones (v3.7) y a la base de conocimiento.
 - `tools/tablero-curado.json`: la acción 4 del plan vuelve a pendiente (las reglas tienen borrador, falta elegir) y el pendiente 42 en el frente casa.
