@@ -5,6 +5,9 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Home: guía de la prueba de entrada para el celular
+- `docs/prueba-entrada.html`: los 18 pasos de `prueba.P1` como tarjetas con «Copiar» y «Lo mandé», barra de avance y la misma estética del home (crema, noche, naranja, Inter). Recuerda el avance en el teléfono; no manda nada a ningún lado. Enlazada en «Operación del piloto» (`home.json`).
+
 ### 2026-11-27 · Motor E1.5, Ruta A (1/4): bienvenida y envío (flujos inactivos, nada enviado al grupo)
 - Decisión de José: la transparencia sobre la IA va en el aviso v3, no en la bienvenida. Para las pruebas, la bienvenida de E1 sin «una persona del equipo revisa todo» (`n8n/agentes/bienvenida.md`, pendiente 46).
 - En n8n, por MCP, y espejado en `n8n/flujos/`: W0 con esa bienvenida y sin corchetes de respaldo (el bloqueo `n8n.N3` de W0 queda en 0); `SW · Enviar mensaje` con la credencial «Evolution API · Hostinger», freno de corchetes y llaves antes de enviar y `req_id` al registrar el evento (`n8n.N20`); `SW · Avisar revisor` con la misma credencial. Siguen inactivos.

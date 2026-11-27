@@ -82,6 +82,11 @@
           "href": "piloto/panel.html"
         },
         {
+          "texto": "Prueba de entrada del motor",
+          "href": "docs/prueba-entrada.html",
+          "nota": "27 nov · mensajes para copiar y pegar"
+        },
+        {
           "texto": "Plan de pruebas de usuario",
           "href": "docs/plan-pruebas-usuario.html",
           "extra": {

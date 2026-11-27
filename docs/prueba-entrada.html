@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Sintonía · Prueba de entrada</title>
+<meta name="description" content="Mensajes para copiar y pegar en el grupo del equipo: prueba de entrada del motor E1.5 (n = 0).">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --papel-0:#ffffff; --papel-50:#faf9f6; --papel-100:#efede7; --papel-300:#dad6cc; --papel-700:#47494d; --papel-900:#1f2226;
+  --noche:#0e1116; --naranja:#ff4f00; --naranja-700:#c23a00; --mostaza:#ebc46a; --crema:#f3e9b8; --vitral:#2c6a86;
+  --f:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif; --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --ok:#1d6b45;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--crema);color:var(--noche);font-family:var(--f);-webkit-font-smoothing:antialiased;line-height:1.45}
+.wrap{max-width:640px;margin:0 auto;padding:24px 16px 96px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:28px}
+.wm{font-weight:800;letter-spacing:-.045em;display:inline-block;line-height:1;font-size:26px;color:var(--noche);text-decoration:none}
+.wm .i{position:relative;display:inline-block}
+.wm .i::after{content:"";position:absolute;width:.30em;height:.10em;border-radius:.05em;left:.02em;top:.2em;transform:rotate(-40deg);transform-origin:left center;background:var(--naranja-700)}
+.n0{font:700 13px/1 var(--f);background:var(--noche);color:var(--papel-50);padding:8px 12px;border-radius:999px;white-space:nowrap}
+h1{font-weight:800;font-size:clamp(34px,9vw,52px);letter-spacing:-.035em;line-height:1;margin:0;text-wrap:balance}
+.lede{font-size:18px;margin:14px 0 0;color:var(--papel-900);max-width:36ch}
+.antes{margin:28px 0 0;background:var(--papel-50);border:2px solid var(--noche);border-radius:16px;padding:18px 18px 8px}
+.antes h2{font-size:17px;margin:0 0 10px}
+.antes ol{margin:0;padding-left:22px}
+.antes li{margin:0 0 10px;font-size:16px}
+.progreso{position:sticky;top:0;z-index:5;margin:28px -16px 0;padding:12px 16px;background:var(--crema);border-bottom:2px solid var(--noche);display:flex;align-items:center;gap:12px}
+.barra{flex:1;height:10px;background:var(--papel-50);border:2px solid var(--noche);border-radius:999px;overflow:hidden}
+.barra i{display:block;height:100%;width:0;background:var(--naranja-700);transition:width .3s cubic-bezier(.2,.8,.2,1)}
+.cuenta{font:700 15px/1 var(--f);min-width:56px;text-align:right}
+section{margin-top:32px}
+section > h2{font-size:22px;letter-spacing:-.02em;margin:0 0 6px}
+section > p.ayuda{margin:0 0 14px;color:var(--papel-900);font-size:15px}
+.paso{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;background:var(--papel-50);border:2px solid var(--noche);border-radius:16px;padding:14px;margin:0 0 12px}
+.paso.hecho{background:var(--papel-100);border-color:var(--papel-700)}
+.num{width:40px;height:40px;border-radius:50%;background:var(--noche);color:var(--papel-50);display:grid;place-items:center;font:800 16px/1 var(--f)}
+.paso.hecho .num{background:var(--ok)}
+.cuerpo{min-width:0}
+.msj{font:700 20px/1.3 var(--mono);color:var(--noche);margin:6px 0 4px;word-break:break-word}
+.accion{font-size:17px;font-weight:600;margin:6px 0 4px}
+.espera{font-size:14px;color:var(--papel-700);margin:0}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button{font:700 16px/1 var(--f);min-height:44px;padding:12px 18px;border-radius:999px;cursor:pointer;border:2px solid var(--noche)}
+.copiar{background:var(--noche);color:var(--papel-50)}
+.copiar.ok{background:var(--ok);border-color:var(--ok)}
+.listo{background:var(--papel-0);color:var(--noche)}
+.paso.hecho .listo{background:var(--noche);color:var(--papel-50)}
+button:focus-visible{outline:3px solid var(--naranja-700);outline-offset:3px}
+.fuera{background:var(--papel-0);border:2px dashed var(--noche);border-radius:16px;padding:16px;margin:0 0 12px}
+.fin{margin-top:36px;background:var(--noche);color:var(--papel-50);border-radius:20px;padding:22px 20px}
+.fin h2{margin:0 0 8px;font-size:22px}
+.fin p{margin:0;font-size:16px;color:var(--papel-100)}
+.reiniciar{margin-top:16px;background:transparent;color:var(--papel-50);border-color:var(--papel-50)}
+footer{margin-top:28px;font-size:14px;color:var(--papel-700)}
+footer a{color:var(--noche)}
+@media (prefers-reduced-motion:reduce){.barra i{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top">
+    <a class="wm" href="../#equipo" aria-label="Sintonía · menú del equipo">sinton<span class="i">ı</span>a</a>
+    <span class="n0">Prueba · n = 0</span>
+  </div>
+
+  <h1>Prueba de entrada del motor</h1>
+  <p class="lede">Copia y pega cada mensaje en el grupo del equipo, en orden. El motor solo escucha y anota: no va a responder nada.</p>
+
+  <div class="antes">
+    <h2>Antes de empezar</h2>
+    <ol>
+      <li>Escribe desde <strong>tu</strong> teléfono, no desde el número de Sintonía. Lo que manda ese número no se cuenta.</li>
+      <li>Avísale a José la hora en que empiezas.</li>
+      <li>Deja unos <strong>5 segundos</strong> entre un mensaje y otro.</li>
+      <li>Escribe solo lo que dice cada tarjeta. Mayúsculas y tildes dan igual.</li>
+    </ol>
+  </div>
+
+  <div class="progreso" aria-live="polite">
+    <div class="barra" aria-hidden="true"><i id="barra"></i></div>
+    <span class="cuenta" id="cuenta">0 de 18</span>
+  </div>
+
+  <section aria-labelledby="s1">
+    <h2 id="s1">Votos</h2>
+    <p class="ayuda">Como si votaras por una opción del plan.</p>
+    <div class="paso" data-n="1"><span class="num">1</span><div class="cuerpo"><p class="msj">2</p><div class="btns"><button class="copiar" data-copiar="2">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="2"><span class="num">2</span><div class="cuerpo"><p class="msj">la 3</p><div class="btns"><button class="copiar" data-copiar="la 3">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="3"><span class="num">3</span><div class="cuerpo"><p class="msj">TODAS</p><div class="btns"><button class="copiar" data-copiar="TODAS">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="4"><span class="num">4</span><div class="cuerpo"><p class="msj">NINGUNA</p><div class="btns"><button class="copiar" data-copiar="NINGUNA">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+  </section>
+
+  <section aria-labelledby="s2">
+    <h2 id="s2">Eventos</h2>
+    <p class="ayuda">Nadie sale del grupo con «SALIR»: el motor todavía no responde.</p>
+    <div class="paso" data-n="5"><span class="num">5</span><div class="cuerpo"><p class="msj">ME APUNTO</p><div class="btns"><button class="copiar" data-copiar="ME APUNTO">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="6"><span class="num">6</span><div class="cuerpo"><p class="msj">LLEGUÉ</p><div class="btns"><button class="copiar" data-copiar="LLEGUÉ">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="7"><span class="num">7</span><div class="cuerpo"><p class="msj">YA EN CASA</p><div class="btns"><button class="copiar" data-copiar="YA EN CASA">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="8"><span class="num">8</span><div class="cuerpo"><p class="msj">SALIR</p><div class="btns"><button class="copiar" data-copiar="SALIR">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+  </section>
+
+  <section aria-labelledby="s3">
+    <h2 id="s3">Pedir ayuda</h2>
+    <p class="ayuda">Son de prueba: no hay ninguna emergencia.</p>
+    <div class="paso" data-n="9"><span class="num">9</span><div class="cuerpo"><p class="msj">HUMANO</p><div class="btns"><button class="copiar" data-copiar="HUMANO">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="10"><span class="num">10</span><div class="cuerpo"><p class="msj">tuve un accidente (prueba)</p><div class="btns"><button class="copiar" data-copiar="tuve un accidente (prueba)">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="11"><span class="num">11</span><div class="cuerpo"><p class="msj">llamen al 123 (prueba)</p><div class="btns"><button class="copiar" data-copiar="llamen al 123 (prueba)">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="12"><span class="num">12</span><div class="cuerpo"><p class="msj">jajaja</p><div class="btns"><button class="copiar" data-copiar="jajaja">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+  </section>
+
+  <section aria-labelledby="s4">
+    <h2 id="s4">Sin copiar y pegar</h2>
+    <p class="ayuda">Estos se hacen con los botones de WhatsApp.</p>
+    <div class="paso" data-n="13"><span class="num">13</span><div class="cuerpo"><p class="accion">Stickers de Sintonía, en este orden: 01, 01, 05, 05, 08, 08</p><p class="espera">«¡Hay plan!», «Me apunto» y «¡Ya llegué!», dos veces cada uno. Usa los instalados, no reenviados de otro chat.</p><div class="btns"><button class="listo">Los mandé</button></div></div></div>
+    <div class="paso" data-n="14"><span class="num">14</span><div class="cuerpo"><p class="accion">Adjuntar → Encuesta</p><p class="espera">Pregunta «Prueba», opciones «A» y «B». Vota «A» y pide a otra persona del grupo que vote «B».</p><div class="btns"><button class="listo">Listo</button></div></div></div>
+    <div class="paso" data-n="15"><span class="num">15</span><div class="cuerpo"><p class="accion">Adjuntar → Ubicación → «Enviar ubicación»</p><p class="espera">Mueve el pin a cualquier lugar. Nunca la ubicación en tiempo real ni la tuya.</p><div class="btns"><button class="listo">La mandé</button></div></div></div>
+    <div class="paso" data-n="16"><span class="num">16</span><div class="cuerpo"><p class="accion">Una nota de voz de un segundo</p><p class="espera">Lo que digas no importa: no se guarda.</p><div class="btns"><button class="listo">La mandé</button></div></div></div>
+  </section>
+
+  <section aria-labelledby="s5">
+    <h2 id="s5">Fuera del grupo</h2>
+    <p class="ayuda">Estos <strong>no</strong> deben anotarse. Pídele a José el número de Sintonía.</p>
+    <div class="paso" data-n="17"><span class="num">17</span><div class="cuerpo"><p class="accion">Por chat privado al número de Sintonía:</p><p class="msj">2</p><div class="btns"><button class="copiar" data-copiar="2">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="18"><span class="num">18</span><div class="cuerpo"><p class="accion">En otro grupo donde esté el número (si no hay, márcalo y sigue):</p><p class="msj">2</p><div class="btns"><button class="copiar" data-copiar="2">Copiar</button><button class="listo">Listo</button></div></div></div>
+  </section>
+
+  <div class="fin">
+    <h2>¿Terminaste?</h2>
+    <p>Avísale a José «terminé». Claude revisa qué anotó el motor y le cuenta qué pasó con cada mensaje.</p>
+    <button class="reiniciar" id="reiniciar">Empezar de nuevo</button>
+  </div>
+
+  <footer>Verificación técnica del motor E1.5 con el grupo del equipo (n = 0). Guía completa: <a href="https://github.com/josebdiaz/sintonia-piloto/blob/main/n8n/PRUEBA-P1.md">PRUEBA-P1.md</a>.</footer>
+</main>
+<script>
+(function () {
+  var CLAVE = 'sintonia_prueba_entrada';
+  var pasos = Array.prototype.slice.call(document.querySelectorAll('.paso'));
+  var hechos = {};
+  try { hechos = JSON.parse(localStorage.getItem(CLAVE) || '{}') || {}; } catch (e) { hechos = {}; }
+  function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(hechos)); } catch (e) {} }
+  function pintar() {
+    var n = 0;
+    pasos.forEach(function (p) {
+      var h = !!hechos[p.dataset.n];
+      p.classList.toggle('hecho', h);
+      var b = p.querySelector('.listo');
+      if (b) b.setAttribute('aria-pressed', h ? 'true' : 'false');
+      if (h) n++;
+    });
+    document.getElementById('cuenta').textContent = n + ' de ' + pasos.length;
+    document.getElementById('barra').style.width = (100 * n / pasos.length) + '%';
+  }
+  pasos.forEach(function (p) {
+    var b = p.querySelector('.listo');
+    b.addEventListener('click', function () {
+      hechos[p.dataset.n] = !hechos[p.dataset.n]; guardar(); pintar();
+      if (hechos[p.dataset.n]) {
+        var sig = pasos[pasos.indexOf(p) + 1];
+        if (sig) sig.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+      }
+    });
+  });
+  document.querySelectorAll('.copiar').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.dataset.copiar, ok = function () { b.textContent = 'Copiado'; b.classList.add('ok'); setTimeout(function () { b.textContent = 'Copiar'; b.classList.remove('ok'); }, 1600); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, function () { respaldo(t); ok(); });
+      else { respaldo(t); ok(); }
+    });
+  });
+  function respaldo(t) {
+    var a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.style.position = 'fixed'; a.style.opacity = '0';
+    document.body.appendChild(a); a.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(a);
+  }
+  document.getElementById('reiniciar').addEventListener('click', function () { hechos = {}; guardar(); pintar(); window.scrollTo(0, 0); });
+  pintar();
+})();
+</script>
+</body>
+</html>
