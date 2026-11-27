@@ -182,6 +182,11 @@
       "frente": "motor",
       "estado": "espera",
       "nota": "Ruta A: bienvenida, envío, respuesta y aviso hechos; faltan backend, W1, W3 y relojes"
+    },
+    "49": {
+      "frente": "motor",
+      "estado": "espera",
+      "nota": "Quitar el formulario temporal de W1 al abrir el backend"
     }
   },
   "hitos": [

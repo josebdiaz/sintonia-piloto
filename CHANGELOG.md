@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Ruta A con formularios temporales que se integran al backend (decisión de José)
+- Regla: cada flujo con formulario temporal tiene una segunda entrada automática hacia el mismo nodo «Normalizar entrada»; al abrir el backend se apaga el formulario sin reescribir (`n8n/PRUEBA-E2E.md` §5). W0 y W3 se automatizan ya; W1 espera `crear_plan` para el motor y `view=motor`.
+- `ESTADO.md`: pendiente 48 con la regla y pendiente 49 nuevo (quitar el formulario de W1 al abrir el backend).
+
 ### 2026-11-27 · Motor E1.5: lo automatizado reemplaza las tareas del equipo (decisión de José)
 - `n8n/PRUEBA-E2E.md` §5: los formularios de W0, W1 y W3 pasan a disparadores automáticos (evento de participantes de Evolution, bienvenida → plan, cierre por votos o plazo). Solo quedan en una persona crear el grupo de WhatsApp (`n8n.N16`) y HUMANO.
 - Sin tocar el backend: bienvenida automática, votos y eventos al backend, cierre automático. Con un backend nuevo después del congelamiento: `crear_plan` para el motor y `view=motor` (pendiente 37).

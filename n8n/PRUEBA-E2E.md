@@ -68,6 +68,14 @@ Lo automatizado reemplaza las tareas que hoy hace una persona del equipo en E1.5
 | Cerrar la votación | Votaron todos o se venció el plazo (reloj) | Conteos desde E15-00; `cerrar_plan` ya está permitido | No |
 | Recordatorio, `/salida`, `/hoy`, llegadas, `/en_casa`, `/retro` | Relojes de E1 (`n8n.N5`) | `view=motor` para llegadas y enlaces personales | Sí, solo `view=motor` |
 
+**Formularios temporales (decisión de José, 27/11: Ruta A solo si se integran al backend después del congelamiento).** Se cumple con una regla de construcción: cada flujo tiene **dos entradas que llegan al mismo nodo «Normalizar entrada»**, el formulario temporal y el disparador automático, y todo lo que sigue es igual. Al abrir el backend se apaga el formulario y no se reescribe nada.
+
+| Flujo | Formulario temporal | Lo reemplaza | Cuándo |
+|---|---|---|---|
+| W0 | «Grupo creado» | Evento de participantes de Evolution + `e15_grupos` | Ya (no toca el backend) |
+| W1 | «Plan creado» (`plan_id`, `fechas`) | `crear_plan` por el motor + `view=motor` | Después del congelamiento (pendiente 37) |
+| W3 | «Cerrar plan» | Cierre por votos o plazo | Ya (no toca el backend) |
+
 **Orden:** primero lo que no toca el backend (bienvenida automática, votos al backend, cierre automático). Los dos cambios de backend (`crear_plan` para el motor y `view=motor`) van juntos en un backend nuevo después del congelamiento; mientras tanto, crear el plan sigue en la consola y es la única tarea que no se automatiza todavía.
 
 ## 4. Si algo falla
