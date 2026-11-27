@@ -45,5 +45,17 @@ for (const [nombre, entrada, esperado, c] of casos) {
 const f = E.clasificar(txt('2'), Object.assign({ sonda: true }, cfg)).forma;
 const fs = JSON.stringify(f);
 if (/NO-DEBE-SALIR|Nombre Ficticio|ABC|1764280800/.test(fs) || f.data.message.conversation !== 'string') { fallas++; console.log('✗ sonda', fs); }
-console.log(fallas ? `✗ ${fallas} de ${casos.length + 1} casos fallan` : `✓ ${casos.length + 1} casos de entrada (ficticios, n = 0)`);
+// Respuesta de prueba: una por acción, sin nombres ni texto del grupo, máximo un emoji, y nada para lo ignorado
+const ecos = [
+  [txt('2'), 'voto por la opción 2'], [txt('TODAS'), 'cualquiera'], [txt('NINGUNA'), 'ninguna opción'],
+  [txt('ME APUNTO'), 'te apuntas'], [txt('HUMANO'), 'persona del equipo'], [txt('accidente'), '123'], [txt('jajaja'), 'no lo entendí'],
+];
+for (const [m, frag] of ecos) {
+  const e = E.eco(E.clasificar(m, cfg));
+  const emojis = (e.match(/\p{Extended_Pictographic}/gu) || []).length;
+  if (!e.includes(frag) || emojis > 1 || /Nombre Ficticio|jajaja|accidente/.test(e)) { fallas++; console.log('✗ eco', frag, e); }
+}
+if (E.eco(E.clasificar(msg({ conversation: '2' }, { key: { remoteJid: OTRO, fromMe: false, id: 'X' } }), cfg)) !== '') { fallas++; console.log('✗ eco de lo ignorado'); }
+const extra = ecos.length + 1;
+console.log(fallas ? `✗ ${fallas} de ${casos.length + 1 + extra} casos fallan` : `✓ ${casos.length + 1 + extra} casos de entrada (ficticios, n = 0)`);
 process.exit(fallas ? 1 : 0);

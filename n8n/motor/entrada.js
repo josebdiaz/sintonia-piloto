@@ -1,4 +1,4 @@
-// Sintonía · E1.5 · entrada del motor (v0.1, 27/11/2026)
+// Sintonía · E1.5 · entrada del motor (v0.2, 27/11/2026: + respuesta de prueba `eco` y veto en la tabla)
 // Clasifica lo que Evolution API manda al webhook de n8n y devuelve SOLO lo mínimo.
 // Se pega completo en el nodo Code «Clasificar» de E15-00 y se prueba con `node n8n/motor/prueba-entrada.js`.
 // No devuelve el texto, el nombre (pushName) ni la apikey que Evolution incluye en el cuerpo.
@@ -100,6 +100,25 @@ const ENTRADA = (() => {
     return fin({ accion: 'escalar', tipo: 'otro', motivo: 'medio_no_soportado' });
   }
 
-  return { clasificar, interpretarTexto, forma };
+  // Respuesta de prueba (solo grupo del equipo, `eco` en Config): dice qué entendió el motor. En el piloto real no existe:
+  // el mago de E1 no contesta cada voto. Una idea, máximo un emoji, sin nombres ni datos (voz de Sintonía).
+  const EVENTOS = { me_apunto: 'te apuntas', no_puedo: 'no puedes ir', checkpoint_llegada: 'ya llegaste',
+    llego_casa: 'ya estás en casa', salir: 'quieres salir del grupo; en el piloto, una persona del equipo te saca' };
+  const ESCALAR = { pidio_humano: 'esto pasaría a una persona del equipo',
+    sensible: 'esto es sensible y pasaría a una persona del equipo. Si es una emergencia, llamen al 123',
+    no_entendido: 'no lo entendí, así que pasaría a una persona del equipo', vacio: 'llegó un mensaje vacío',
+    sticker: 'recibí un sticker y lo anoté', voto_sin_descifrar: 'llegó un voto de la encuesta, pero cifrado',
+    medio_no_soportado: 'este tipo de mensaje no lo leo, así que pasaría a una persona del equipo' };
+  function eco(r) {
+    const p = '🧪 Prueba · ';
+    if (!r || r.accion === 'ignorar') return '';
+    if (r.accion === 'voto') return p + (r.veto ? 'entendí: ninguna opción te sirve.' : r.opcion === -1 ? 'entendí: te sirve cualquiera.' : 'entendí: voto por la opción ' + (r.opcion + 1) + '.');
+    if (r.accion === 'voto_encuesta') return p + 'llegó tu voto de la encuesta.';
+    if (r.accion === 'evento') return p + 'entendí: ' + (EVENTOS[r.evento] || 'un evento') + '.';
+    if (r.accion === 'registrar') return p + (ESCALAR[r.motivo] || 'lo anoté') + '.';
+    return p + (ESCALAR[r.motivo] || 'esto pasaría a una persona del equipo') + '.';
+  }
+
+  return { clasificar, interpretarTexto, forma, eco };
 })();
 if (typeof module !== 'undefined') module.exports = ENTRADA;

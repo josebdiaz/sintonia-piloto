@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · E15-00: respuesta de prueba en el grupo del equipo y veto en la tabla (n = 0)
+- `prueba.P1` en curso: «2», «la 3», «TODAS» y «NINGUNA» llegaron y se clasificaron bien (6:36–6:37 p. m.). Hallazgo: `e15_entrada` no guardaba el veto, así que «NINGUNA» y «TODAS» quedaban iguales; columna `veto` nueva.
+- `n8n/motor/entrada.js` v0.2: `eco()` arma una respuesta de prueba por acción («🧪 Prueba · entendí: voto por la opción 2»), sin nombres ni texto del grupo y con un emoji. E15-00 la manda al grupo del equipo con `eco = true`, usando la URL y la instancia que Evolution trae en cada mensaje. En el piloto real va apagada: el mago de E1 no contesta cada voto. `prueba-entrada.js`: 32 casos ✓. Publicado en n8n por MCP.
+- `docs/prueba-entrada.html` y `n8n/PRUEBA-P1.md` dicen que ahora hay respuesta.
+
 ### 2026-11-27 · Home: guía de la prueba de entrada para el celular
 - `docs/prueba-entrada.html`: los 18 pasos de `prueba.P1` como tarjetas con «Copiar» y «Lo mandé», barra de avance y la misma estética del home (crema, noche, naranja, Inter). Recuerda el avance en el teléfono; no manda nada a ningún lado. Enlazada en «Operación del piloto» (`home.json`).
 

@@ -1,6 +1,6 @@
 # Prueba `prueba.P1` · entrada en el grupo del equipo, paso a paso (27/11/2026)
 
-> Pendiente 44. Capa P1 de [`PLAN-pruebas.md`](PLAN-pruebas.md) (`tramo.T1` de [`PLAN-construccion.md`](PLAN-construccion.md)). Prueba qué entiende `E15-00 · Entrada` de lo que se escribe en el grupo. **No responde nada al grupo:** solo registra. Verificación técnica (n = 0).
+> Pendiente 44. Capa P1 de [`PLAN-pruebas.md`](PLAN-pruebas.md) (`tramo.T1` de [`PLAN-construccion.md`](PLAN-construccion.md)). Prueba qué entiende `E15-00 · Entrada` de lo que se escribe en el grupo. Desde el 27/11 (6:50 p. m.) responde en el grupo del equipo qué entendió, marcado «🧪 Prueba» (`eco` en Config; en el piloto real va apagado). Verificación técnica (n = 0).
 > Toma unos 20 minutos. José escribe en el grupo; Claude lee la tabla `e15_entrada` por MCP y compara.
 
 ## 0. Antes de empezar (5 min)

@@ -16,7 +16,13 @@ const cfg = {
   sonda: String(c.sonda) === 'true',
   sticker_entrante: c.sticker_entrante,
 };
-return $('Evolution (entrada)').all().map(i => ({ json: ENTRADA.clasificar(i.json, cfg) }));
+const eco = String(c.eco) === 'true';   // respuesta de prueba en el grupo del equipo; en el piloto real va en false
+return $('Evolution (entrada)').all().map(i => {
+  const r = ENTRADA.clasificar(i.json, cfg);
+  const b = i.json && i.json.body && !i.json.event ? i.json.body : (i.json || {});   // Evolution trae su URL e instancia en el cuerpo
+  return { json: Object.assign(r, { veto: r.veto === true, eco_texto: eco ? ENTRADA.eco(r) : '',
+    evo_url: eco ? String(b.server_url || '').replace(/\/$/, '') : '', evo_instancia: eco ? String(b.instance || '') : '' }) };
+});
 """
 def nid(n): return str(uuid.uuid5(uuid.NAMESPACE_URL, 'sintonia/e15-00/' + n))
 
@@ -30,7 +36,8 @@ nodos = [
    "parameters": {"mode": "manual", "includeOtherFields": False, "assignments": {"assignments": [
      {"id": "c1", "name": "grupos_permitidos", "value": "PEGAR_JID_DEL_GRUPO_DE_PRUEBA", "type": "string"},
      {"id": "c2", "name": "sonda", "value": "true", "type": "string"},
-     {"id": "c3", "name": "sticker_entrante", "value": "escalar", "type": "string"}]}, "options": {}}},
+     {"id": "c3", "name": "sticker_entrante", "value": "escalar", "type": "string"},
+     {"id": "c4", "name": "eco", "value": "true", "type": "string"}]}, "options": {}}},
   {"id": nid('code'), "name": "Clasificar (entrada.js)", "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [440, 200],
    "parameters": {"jsCode": js + pie}},
   {"id": nid('if'), "name": "¿Se atiende?", "type": "n8n-nodes-base.if", "typeVersion": 2.2, "position": [660, 200],
@@ -44,8 +51,20 @@ nodos = [
         "hora": "={{ $json.hora }}", "id_mensaje": "={{ $json.id_mensaje }}", "accion": "={{ $json.accion }}",
         "tipo": "={{ $json.tipo || '' }}", "motivo": "={{ $json.motivo || '' }}", "evento": "={{ $json.evento || '' }}",
         "opcion": "={{ $json.opcion ?? '' }}", "sticker": "={{ $json.sticker || '' }}", "sticker_sha": "={{ $json.sticker_sha || '' }}",
-        "tipo_whatsapp": "={{ $json.tipo_whatsapp }}", "forma": "={{ $json.forma ? JSON.stringify($json.forma) : '' }}"},
+        "tipo_whatsapp": "={{ $json.tipo_whatsapp }}", "forma": "={{ $json.forma ? JSON.stringify($json.forma) : '' }}",
+        "veto": "={{ $json.veto ? 'si' : '' }}"},
        "matchingColumns": [], "schema": []}, "options": {}},
+   "onError": "continueRegularOutput"},
+  {"id": nid('eco_if'), "name": "¿Responder (prueba)?", "type": "n8n-nodes-base.if", "typeVersion": 2.2, "position": [880, 380],
+   "parameters": {"conditions": {"options": {"caseSensitive": True, "leftValue": "", "typeValidation": "loose", "version": 2},
+     "conditions": [{"id": "e1", "leftValue": "={{ $json.eco_texto }}", "rightValue": "", "operator": {"type": "string", "operation": "notEmpty", "singleValue": True}},
+                    {"id": "e2", "leftValue": "={{ $json.evo_url }}", "rightValue": "", "operator": {"type": "string", "operation": "notEmpty", "singleValue": True}}],
+     "combinator": "and"}, "options": {}}},
+  {"id": nid('eco_http'), "name": "Responder en el grupo (prueba)", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [1100, 380],
+   "parameters": {"method": "POST", "url": "={{ $json.evo_url }}/message/sendText/{{ $json.evo_instancia }}",
+     "authentication": "genericCredentialType", "genericAuthType": "httpHeaderAuth", "sendBody": True, "contentType": "json",
+     "specifyBody": "json", "jsonBody": "={{ JSON.stringify({ number: $json.grupo, text: $json.eco_texto }) }}", "options": {}},
+   "credentials": {"httpHeaderAuth": {"name": "Evolution API · Hostinger"}},
    "onError": "continueRegularOutput"},
   {"id": nid('nota'), "name": "Nota", "type": "n8n-nodes-base.stickyNote", "typeVersion": 1, "position": [0, -160],
    "parameters": {"width": 900, "height": 300, "content":
@@ -54,14 +73,15 @@ nodos = [
      "1. Credencial *Header Auth* «Sintonia Evolution webhook (header)» (la misma del ping).\n"
      "2. En **Config** pega el JID del grupo de prueba (aquí, nunca en el repo).\n"
      "3. `sonda = true` guarda la *forma* del mensaje (llaves y tipos, sin valores): sirve para V1 y para el sha de los stickers.\n"
-     "4. Todavía **no responde al grupo**: solo observa. Responder es la fase 2.\n\n"
+     "4. Con `eco = true` (solo el grupo del equipo) responde qué entendió, marcado «🧪 Prueba». En el piloto real va en false.\n\n"
      "Se genera con `python3 n8n/motor/construir.py`; la lógica vive en `n8n/motor/entrada.js`."}},
 ]
 con = {
   "Evolution (entrada)": {"main": [[{"node": "Config", "type": "main", "index": 0}]]},
   "Config": {"main": [[{"node": "Clasificar (entrada.js)", "type": "main", "index": 0}]]},
   "Clasificar (entrada.js)": {"main": [[{"node": "¿Se atiende?", "type": "main", "index": 0}]]},
-  "¿Se atiende?": {"main": [[{"node": "Registrar en e15_entrada", "type": "main", "index": 0}], []]},
+  "¿Se atiende?": {"main": [[{"node": "Registrar en e15_entrada", "type": "main", "index": 0}, {"node": "¿Responder (prueba)?", "type": "main", "index": 0}], []]},
+  "¿Responder (prueba)?": {"main": [[{"node": "Responder en el grupo (prueba)", "type": "main", "index": 0}], []]},
 }
 wf = {"name": "E15-00 · Entrada (modo prueba)", "nodes": nodos, "connections": con, "pinData": {},
       "settings": {"executionOrder": "v1", "timezone": "America/Bogota", "saveDataSuccessExecution": "none",
