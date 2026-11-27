@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Motor E1.5: lo automatizado reemplaza las tareas del equipo (decisión de José)
+- `n8n/PRUEBA-E2E.md` §5: los formularios de W0, W1 y W3 pasan a disparadores automáticos (evento de participantes de Evolution, bienvenida → plan, cierre por votos o plazo). Solo quedan en una persona crear el grupo de WhatsApp (`n8n.N16`) y HUMANO.
+- Sin tocar el backend: bienvenida automática, votos y eventos al backend, cierre automático. Con un backend nuevo después del congelamiento: `crear_plan` para el motor y `view=motor` (pendiente 37).
+- `n8n/GUIA-CONTINUACION.md` §9; `ESTADO.md` pendientes 37 y 48.
+
 ### 2026-11-27 · Cierre del día: `prueba.P1` 12 de 18 (n = 0)
 - Kathe escribió en el grupo del equipo de 6:36 a 6:44 p. m. (hora de Bogotá). Casos 1–12 bien clasificados: votos («2», «la 3», «TODAS», «NINGUNA»), eventos («ME APUNTO», «LLEGUÉ», «YA EN CASA», «SALIR»), HUMANO, dos sensibles y charla. Cada fila llegó en 1–2 s y ninguna trae texto, nombre ni número. Desde las 6:42 p. m. Sintonía responde en el grupo lo que entendió.
 - Faltan los casos 13–18 (stickers, encuesta V1, ubicación, audio, chat privado y otro grupo) y probar el aviso a una persona cuando José ponga `revisor_wa`.

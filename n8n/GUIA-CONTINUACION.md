@@ -247,6 +247,7 @@ Lo que E1 cambió **en el backend** ya aplica a E1.5, porque los dos pasan por A
 | N17 · `/ingreso` | La bienvenida de la consola 2.16.0 dice «En este piloto una persona del equipo revisa todo» | En E1.5 con agentes eso ya no es cierto. E1.5 necesita su propia bienvenida (y su plantilla de respaldo), con lo que diga el aviso v3. La consola no cambia | **Nuevo · Bloquea** (antes del grupo real) |
 | N3 | Freno de corchetes en `SW · Enviar` | También en las guardas (`n8n/motor/guardas.js`), sobre el texto final con el bloque | Sigue **Bloquea** |
 | N10 · N11 · N19 | Minutos, NASA-TLX y SUS de quien revisa cada mensaje | En E1.5 nadie revisa cada mensaje: se mide a quien atiende los escalamientos (tiempo por escalamiento y cuántos). Lo decide el equipo con d6 | **Por redefinir** (d6) |
+| W0 · W1 · W3 (formularios) | Una persona del equipo llena «Grupo creado», «Plan creado» y «Cerrar plan» | Disparadores automáticos: evento de participantes de Evolution, bienvenida → plan, cierre por votos o plazo (`n8n/PRUEBA-E2E.md` §5). Crear el plan por el motor necesita `crear_plan` en `MOTOR_ACCIONES` (backend) | **Cambia** (decisión de José, 27/11) |
 | E1.5-01 | Voto pegado a mano en un formulario | Lo reemplaza `E15-00 · Entrada`, que lee lo que llega de Evolution. Se queda en la instancia, inactivo, como referencia | **Superado** |
 
 **Orden vigente** (reemplaza §8.4):

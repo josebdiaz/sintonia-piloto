@@ -36,11 +36,11 @@ Hay dos tipos de disparador: un **formulario de n8n** que llena una persona del 
 
 | Paso | Quién lo dispara | Cómo | Qué debe pasar en el grupo | Qué revisa Claude |
 |---|---|---|---|---|
-| **1 · Ingreso** | Operación | Formulario **«Grupo creado»** (W0): `grupo_id` de la consola y `grupo_wa` (JID del grupo) | La bienvenida de E1.5, una vez | Que salió una sola vez y con el enlace del aviso |
-| **2 · Opciones** | Operación | Crear el plan en la consola y llenar el formulario **«Plan creado»** (W1): `plan_id`, `pid_organizador`, `grupo_wa` | `/opciones`, las 3 opciones y la encuesta, en ese orden. El plan pasa a `votando` | Mismo texto que daría la consola 2.16.0; `publicar_plan` antes de que alguien vote (`n8n.B5`); nada con corchetes |
+| **1 · Ingreso** | Evolution, cuando el número entra al grupo | Evento de participantes de Evolution → E15-00 lee el código del grupo en la descripción y llama a W0. Hoy, mientras se construye: formulario «Grupo creado» | La bienvenida de E1.5, una vez | Que salió una sola vez y con el enlace del aviso |
+| **2 · Opciones** | El motor, después de la bienvenida | W1 crea el plan, elige las fechas (`SINTONIA.fechasPlan`) y llama `proponer_ia`. **Necesita backend** (§5); mientras tanto: el plan se crea en la consola y el formulario «Plan creado» trae las fechas | `/opciones`, las 3 opciones y la encuesta, en ese orden. El plan pasa a `votando` | Mismo texto que daría la consola 2.16.0; `publicar_plan` antes de que alguien vote (`n8n.B5`); nada con corchetes |
 | **3 · Votos** | El grupo | Votar en la encuesta, o escribir «1», «2», «3», «TODAS», «NINGUNA» | Nada (el motor no contesta votos) | Una fila por voto en `e15_entrada` y el voto en la consola. Un voto repetido no duplica |
 | **4 · Recordatorio** | Reloj (W2) | Esperar 2 minutos sin que voten todos | `/recordatorio` con «Van X de Y votos» | Que no sale si ya votaron todos (`n8n.N15`) ni dos veces |
-| **5 · Confirmado** | Operación | Formulario **«Cerrar plan»** (W3): `plan_id`, resultado, opción ganadora, fecha y hora, hora de salida, dirección | Los tres mensajes de `/confirmado` y el evento del grupo | Plan `cerrado` en la consola con hora y `decision` (`n8n.N1`, `n8n.N21`); mismo título y precio que en las opciones |
+| **5 · Confirmado** | El motor, cuando votaron todos o se vence el plazo | W3 cuenta los votos que registra E15-00, decide (empate → `/empate`; ninguna → ronda 2) y llama `cerrar_plan` con la opción, la fecha votada y la hora de la opción | Los tres mensajes de `/confirmado` y el evento del grupo | Plan `cerrado` en la consola con hora y `decision` (`n8n.N1`, `n8n.N21`); mismo título y precio que en las opciones |
 | **6 · Salida** | Reloj (W3) | Poner el encuentro a 2 h + 5 min; en modo prueba, la espera se acorta | `/salida` con la hora sugerida | Que no sale antes del plazo para confirmar (`n8n.N13`) |
 | **7 · Día del plan** | Reloj (W4) | — | `/hoy`, `/checkpoint` y «Ya estamos todos» | **Bloqueado** por `n8n.N27`: el motor no puede saber quién llegó |
 | **8 · En casa y cierre** | Reloj (W5) | — | `/en_casa` y `/retro` con enlace personal | **Bloqueado** por `n8n.N27` |
@@ -54,6 +54,21 @@ Hay dos tipos de disparador: un **formulario de n8n** que llena una persona del 
 4. Al terminar, Claude revisa `e15_entrada`, la consola y las ejecuciones de n8n, y deja el resultado en `CHANGELOG.md` con «n = 0».
 
 **Listo cuando** (`prueba.P4`): cada mensaje sale en el momento en que lo daría la consola 2.16.0, con datos idénticos al backend, sin corchetes y sin duplicados, y HUMANO escala sin respuesta del motor. Con la Ruta B, además, cada mensaje tiene su fila en `e15_mensajes`.
+
+## 5. Sin formularios: lo que reemplaza las tareas del equipo (decisión de José, 27/11)
+
+Lo automatizado reemplaza las tareas que hoy hace una persona del equipo en E1.5. Solo quedan en manos de una persona **crear el grupo de WhatsApp** (WhatsApp no deja agregar a quien no es contacto, `n8n.N16`) y **HUMANO y lo sensible**.
+
+| Tarea | Disparador automático | Qué hace falta | ¿Toca el backend? |
+|---|---|---|---|
+| Bienvenida | Evolution avisa que el número entró a un grupo | Activar el evento de participantes en Evolution; quien crea el grupo pone el código del grupo de la consola en la descripción (es parte de crearlo); tabla `e15_grupos` (JID → `grupo_id`) | No |
+| Votos y eventos al backend | Cada mensaje (E15-00) | `e15_grupos` para saber el `grupo_id`; `view=resolver` (número → `pid`, ya permitido al motor) y `votar` / `evento` con `req_id` | No |
+| Crear el plan | Después de la bienvenida | `crear_plan` en la lista de acciones del motor (`MOTOR_ACCIONES`, una línea) | **Sí** |
+| Fechas con más coincidencias | Al crear el plan | Disponibilidad por persona: `view=motor` (`n8n.N27`) | **Sí** |
+| Cerrar la votación | Votaron todos o se venció el plazo (reloj) | Conteos desde E15-00; `cerrar_plan` ya está permitido | No |
+| Recordatorio, `/salida`, `/hoy`, llegadas, `/en_casa`, `/retro` | Relojes de E1 (`n8n.N5`) | `view=motor` para llegadas y enlaces personales | Sí, solo `view=motor` |
+
+**Orden:** primero lo que no toca el backend (bienvenida automática, votos al backend, cierre automático). Los dos cambios de backend (`crear_plan` para el motor y `view=motor`) van juntos en un backend nuevo después del congelamiento; mientras tanto, crear el plan sigue en la consola y es la única tarea que no se automatiza todavía.
 
 ## 4. Si algo falla
 
