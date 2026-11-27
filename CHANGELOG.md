@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Orquestación de E1.5 y Nod (sin cambios de consola, backend ni flujos)
+- `ESTADO.md` §0: recomendación (no decisión) de flujos fijos en n8n con IA solo para clasificar con salida cerrada; Nod fuera del grupo y como asistente personal del equipo, sin datos de participantes; vigilancia de sintonia.my cada 6 horas en Claude; propuesta de la columna «quién interpreta» para d4.
+- `ESTADO.md` §4: pendiente 43 nuevo (alinear `n8n/README.md` con la decisión del 26/11).
+
 ### 2026-11-27 · Tablero de frentes en el sitio, una sola vista (sin cambios de consola ni backend)
 - `tablero/index.html` (sintonia.my/tablero): la página del Tablero de frentes, generada por `tools/tablero-html.py` desde el JSON de `tools/tablero.py`; ahora escribe en el repo con su propio `<head>`. Enlace en «Detrás de escena» → Documentación (`home.json`).
 - Una sola vista: el tablero de tipo Data y la página privada en HTML quedan retirados y ya no se actualizan (decisión del equipo, 27/11). Actualizarlo cuesta lo mismo que cualquier push.

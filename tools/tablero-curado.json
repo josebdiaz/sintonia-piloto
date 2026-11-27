@@ -169,6 +169,10 @@
     "42": {
       "frente": "casa",
       "nota": "Instrucciones v3.7 y base §4 con lo decidido el 27/11"
+    },
+    "43": {
+      "frente": "motor",
+      "nota": "README de n8n desalineado con la decisión del 26/11"
     }
   },
   "hitos": [
