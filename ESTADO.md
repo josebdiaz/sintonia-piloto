@@ -154,7 +154,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 | 17 | ~~Auditoría de estándares del repo público~~ Hecha el 24/11: `docs/auditoria-estandares.md`. D1 licencia: **opción C** (`LICENSE`); falta verificar con Icesi si hay reglamento de propiedad intelectual para trabajos de maestría. Abiertas: D2 buzón de rol y D3 CHANGELOG | Calidad | Equipo, con Claude |
 | 18 | Después del análisis: permisos mínimos en `home.yml`, acciones fijadas por SHA, lockfile de `tools/qa`, Dependabot, CodeQL, la acción de OpenSSF Scorecard y un CHANGELOG por componente con tipos de cambio | Calidad | José |
 | 19 | Probar en un teléfono real (iPhone y Android) los 5 toques sobre el glifo, `sintonia.my/decks` y `sintonia.my/equipo`. Si falla, reportar el modelo y el navegador | Acceso del equipo a los decks | Equipo |
-| 20 | ~~Prompt maestro v3.5~~ Lista en el Proyecto el 26/11 (`claude/prompt-maestro-v3.5.md`): E1 y E1.5 definidas (§4.1), sin «automatización aplazada», A1–A6 como diagnóstico y regla de códigos. Base de conocimiento y `claude/archivo.md` al día. **Falta pegarla en las instrucciones del Proyecto** | Coherencia del Proyecto | José |
+| 20 | ~~Prompt maestro v3.5~~ Hecho: lista en el Proyecto el 26/11 (`claude/prompt-maestro-v3.5.md`): E1 y E1.5 definidas (§4.1), sin «automatización aplazada», A1–A6 como diagnóstico y regla de códigos. Base de conocimiento y `claude/archivo.md` al día. Pegada en las instrucciones del Proyecto el 27/11 | Coherencia del Proyecto | José |
 
 ## 4.2 Prueba externa (semana del 15/11, n = 1, modo prueba)
 
