@@ -16,7 +16,7 @@
 | Fase | Qué | Quién | Listo cuando | Estado |
 |---|---|---|---|---|
 | 0 · Base sin red | `n8n/qa/revisar-flujos.py` · `n8n/motor/entrada.js` + `prueba-entrada.js` · `n8n/E15-00-entrada.json` (generado con `motor/construir.py`) | Claude | Revisor ✓ sobre E15-00 · 24 casos ✓ · snippets ✓ (753) | **Hecho 27/11** |
-| 1 · Conectar | Ver §2 (empieza por §2.0, el MCP de n8n) | José | Claude ve la instancia por MCP · E15-00 activo y registrando en `e15_entrada`; 9 flujos exportados sin URL ni claves | Pendiente |
+| 1 · Conectar | Ver §2 (empieza por §2.0, el MCP de n8n) | José | Claude ve la instancia por MCP · E15-00 activo y registrando en `e15_entrada`; 9 flujos exportados sin URL ni claves | **En curso:** MCP, tabla y E15-00 (inactivo) hechos el 27/11; faltan JID, activar, Evolution y exponer los 9 flujos |
 | 2 · Tramo T1, entrada | Casos de §3 con el número de prueba | José manda, Claude lee la tabla | Todos los casos dan la `accion` esperada; V1 resuelto (¿llega el voto descifrado? ¿con qué forma?) | Pendiente |
 | 3 · Salida | (+ verificador independiente, §7) `SW · Enviar` v2: textos de los snippets, freno de corchetes (`n8n.N3`), `req_id` (`n8n.N20`), reintentos, flujo de errores `E15-ERR`. W0 y W1 con textos 2.16.0 (`n8n.N17`, `n8n.N14`) y relojes cortos de prueba (`n8n.N23`) | Claude construye, José importa | Revisor sin bloqueos en W0, W1, SW · Enviar | Pendiente |
 | 4 · Tramo T2, activación | Plan de prueba en el grupo de prueba: ingreso → opciones → encuesta → voto → `/confirmado` | Equipo | El grupo de prueba recibe los mismos textos que daría la consola 2.16.0, sin corchetes y sin duplicados | Pendiente |
@@ -46,7 +46,7 @@ Reglas de uso:
 ### 2.1 Tabla, flujo y conector
 
 1. **Data Table `e15_entrada`** con columnas de texto: `hora`, `id_mensaje`, `accion`, `tipo`, `motivo`, `evento`, `opcion`, `sticker`, `sticker_sha`, `tipo_whatsapp`, `forma`. No lleva texto, nombre ni número: no los necesita.
-2. **Importar `n8n/E15-00-entrada.json`.** Enlazar la credencial *Header Auth* del ping («Sintonia Evolution webhook (header)»), elegir la tabla en el último nodo y pegar en **Config** el JID del grupo de prueba (solo ahí, nunca en el repo). Activar.
+2. **Importar `n8n/E15-00-entrada.json`.** Enlazar la credencial *Header Auth* del ping (en la instancia se llama «Evolution API · Hostinger», encabezado `apikey`; es la única de ese tipo), elegir la tabla en el último nodo y pegar en **Config** el JID del grupo de prueba (solo ahí, nunca en el repo). Activar.
 3. **Evolution:** el webhook apunta a la URL de producción de E15-00 con el mismo encabezado del ping. Eventos `MESSAGES_UPSERT` y, para V1, `MESSAGES_UPDATE`.
 4. **Exportar los 9 flujos actuales** (pendiente desde el 3/11) → `python3 n8n/separar_respaldo.py <archivo>` → `python3 n8n/qa/revisar-flujos.py n8n/flujos/`. El revisor marca corchetes que irían al grupo, credenciales sin enlazar, escrituras sin `req_id` y la falta de flujo de errores.
 5. Con el MCP conectado (§2.0), Claude hace los pasos 1, 2 y 4 por su cuenta y sigue la lista de validación de las skills oficiales (`validate_workflow`, revisar conexiones, `test_workflow` con permiso). José solo pega el JID y la credencial, que Claude no debe ver.
