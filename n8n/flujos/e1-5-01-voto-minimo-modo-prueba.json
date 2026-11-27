@@ -1,0 +1,488 @@
+{
+  "name": "E1.5-01 · Voto mínimo (modo prueba)",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "E1.5 · Mensaje del grupo (modo prueba)",
+        "formDescription": "Pega el mensaje tal como llegó al grupo. No se guarda el texto. Solo modo prueba con el equipo.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "grupo_id",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "plan_id",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Número de WhatsApp de quien escribió (con +57)",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Texto del mensaje",
+              "fieldType": "textarea",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Procesar",
+          "path": "e15-mensaje"
+        }
+      },
+      "id": "e24a537d-0212-4e78-80e8-d3b5b2ad6905",
+      "name": "Mensaje del grupo",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        160
+      ],
+      "webhookId": "3feb6996-e2b9-4c34-8408-a1c401a98297"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8f3b2677-31b8-4e30-a465-c59f70dca7f3",
+              "name": "backend_url",
+              "value": "https://script.google.com/macros/s/AKfycbwbh_qzXHXpeY5Z3LiTsoH855lDFE3Ezd45PFQqyKRjEFQaRkydhHFto_-OSae_U9Mf/exec",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "16016502-b496-4083-acc8-a234d48ca46a",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Interpreta el texto pegado desde el grupo. No guarda ni devuelve el texto original.\nconst f = Object.assign({}, $input.first().json, $('Mensaje del grupo').first().json);\nconst rawTexto = f.texto ?? f['Texto del mensaje'] ?? '';\nconst rawWa = f.wa ?? f['Número de WhatsApp de quien escribió (con +57)'] ?? '';\nconst rawGrupo = f.grupo_id ?? f['grupo_id'] ?? '';\nconst rawPlan = f.plan_id ?? f['plan_id'] ?? '';\nconst norm = String(rawTexto).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/[^a-z0-9\\s]/g, ' ').replace(/\\s+/g, ' ').trim();\n\nconst SENSIBLE = /\\b(emergencia|urgente|accidente|hospital|ambulancia|policia|peligro|socorro|ayuda|enfermo|enferma|dolor|me siento mal|salud|ubicacion|donde estoy)\\b/;\nlet r;\nif (!norm) r = { accion: 'escalar', motivo: 'vacio' };\nelse if (SENSIBLE.test(norm)) r = { accion: 'escalar', motivo: 'sensible' };\nelse if (/^humano$/.test(norm)) r = { accion: 'escalar', motivo: 'pidio_humano' };\nelse {\n  let m;\n  if ((m = norm.match(/^(?:opcion |la |el |voto |voto por la |voy con la )?([123])$/))) r = { accion: 'voto', opcion: Number(m[1]) - 1, veto: false, etiqueta: 'opción ' + m[1] };\n  else if (/^todas$/.test(norm)) r = { accion: 'voto', opcion: -1, veto: false, etiqueta: 'TODAS' };\n  else if (/^ninguna$/.test(norm)) r = { accion: 'voto', opcion: -1, veto: true, etiqueta: 'NINGUNA (veto)' };\n  else if (/^me apunto$/.test(norm)) r = { accion: 'evento', tipo: 'me_apunto', etiqueta: 'ME APUNTO' };\n  else if (/^no puedo$/.test(norm)) r = { accion: 'evento', tipo: 'no_puedo', etiqueta: 'NO PUEDO' };\n  else if (/^llegue$/.test(norm)) r = { accion: 'evento', tipo: 'checkpoint_llegada', etiqueta: 'LLEGUÉ' };\n  else if (/^(ya en casa|llegue a casa)$/.test(norm)) r = { accion: 'evento', tipo: 'llego_casa', etiqueta: 'YA EN CASA' };\n  else if (/^salir$/.test(norm)) r = { accion: 'evento', tipo: 'salir', etiqueta: 'SALIR', aviso_equipo: true };\n  else r = { accion: 'escalar', motivo: 'no_entendido' };\n}\nreturn [{ json: { grupo_id: String(rawGrupo).trim(), plan_id: String(rawPlan).trim(), wa: String(rawWa).trim(), ...r } }];\n"
+      },
+      "id": "97ba557b-65b3-4cb7-8840-393d211d4763",
+      "name": "Interpretar texto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "327e2c05-f9b0-47e7-a058-e6d9e04fbecf",
+              "leftValue": "={{ $json.accion }}",
+              "rightValue": "escalar",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c704b505-ed8c-4180-946e-bab798fb306b",
+      "name": "¿Escalar?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Escalar a una persona",
+        "completionMessage": "=No respondas solo. Motivo: {{ $('Interpretar texto').item.json.motivo }}. Si hay una emergencia, llama al 123.",
+        "options": {}
+      },
+      "id": "caa70575-da0b-4bf0-a71e-0f2606905b58",
+      "name": "Fin: escalar",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        912,
+        0
+      ],
+      "webhookId": "a26c9bdc-0f93-4eb4-bbae-cb65b8a0d0e7"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config').item.json.backend_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "view",
+              "value": "resolver"
+            },
+            {
+              "name": "grupo_id",
+              "value": "={{ $('Interpretar texto').item.json.grupo_id }}"
+            },
+            {
+              "name": "wa",
+              "value": "={{ $('Interpretar texto').item.json.wa }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "e4f424ce-4e5a-42c2-a3d7-b2dc582ad6c8",
+      "name": "Resolver pid",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        320
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "wENvHiRm2KwdjAQ2",
+          "name": "Sintonia MOTOR_KEY (qs)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8a27c502-2e76-4bc2-b199-cc1c081755f8",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "de4df156-e4ce-46b2-affa-3b80dc81f2af",
+      "name": "¿Es del grupo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Número no reconocido",
+        "completionMessage": "Ese número no es de un miembro activo del grupo indicado. Escala a una persona; no respondas solo.",
+        "options": {}
+      },
+      "id": "0a826d7b-9ac1-4900-9b3c-ae1b3efbbcc2",
+      "name": "Fin: no es miembro",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        464
+      ],
+      "webhookId": "67c2c8ec-8027-415e-a7be-7c4e6de7fb36"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "83f7d7e2-2cea-4756-a1ea-5f1697647b67",
+              "leftValue": "={{ $('Interpretar texto').item.json.accion }}",
+              "rightValue": "voto",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e55fdd60-e657-4707-8720-b90a2948e150",
+      "name": "¿Voto o evento?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1360,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').item.json.backend_url }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'votar', plan_id: $('Interpretar texto').item.json.plan_id, pid: $('Resolver pid').item.json.pid, opcion: $('Interpretar texto').item.json.opcion, veto: $('Interpretar texto').item.json.veto }) }}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "0b46856c-04e6-4a4d-a27c-2a8e1e5b5d38",
+      "name": "Votar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1600,
+        144
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').item.json.backend_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'evento', plan_id: $('Interpretar texto').item.json.plan_id, pid: $('Resolver pid').item.json.pid, tipo: $('Interpretar texto').item.json.tipo, nota: '' }) }}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "4e4acc6b-93da-4d31-9df0-bf7bfaf8ba80",
+      "name": "Registrar evento",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1600,
+        352
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "Ejk44b6kRLGGSchK",
+          "name": "Sintonia MOTOR_KEY (body)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Resume el resultado para quien revisa. No incluye texto original, nombres ni números.\nconst i = $('Interpretar texto').first().json;\nconst r = $input.first().json || {};\nconst ok = r.ok === true;\nconst errores = {\n  plan_no_votable: 'El plan no está en votación (¿ya se cerró o aún no se publica?).',\n  no_miembro: 'Esa persona no es miembro activo de este grupo.',\n  plan_no_existe: 'El plan_id no existe.',\n  tipo_invalido: 'Tipo de evento no válido en el backend.',\n  no_autorizado: 'El backend rechazó la clave del motor (revisa la credencial).'\n};\nlet titulo, mensaje;\nif (ok) {\n  titulo = 'Registrado: ' + i.etiqueta;\n  mensaje = 'Se envió al backend. Verifica en la consola que aparezca.';\n  if (i.aviso_equipo) mensaje += ' AVISA a una persona del equipo: el retiro con borrado de datos se hace desde la consola.';\n} else {\n  titulo = 'No se registró';\n  const e = r.error || (r.message ? 'error_de_red' : 'desconocido');\n  mensaje = (errores[e] || ('Error del backend: ' + e)) + ' Escala a una persona; no respondas solo.';\n}\nreturn [{ json: { titulo, mensaje } }];"
+      },
+      "id": "caf86d8e-2fee-49ba-a358-3181f64a4136",
+      "name": "Resumen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "={{ $json.titulo }}",
+        "completionMessage": "={{ $json.mensaje }}",
+        "options": {}
+      },
+      "id": "92506b07-02af-4eda-9f74-58b5cd8e5c22",
+      "name": "Fin: listo",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        2064,
+        240
+      ],
+      "webhookId": "b9a22251-5c3f-4dd1-90b7-46c603e6174f"
+    }
+  ],
+  "connections": {
+    "Mensaje del grupo": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Interpretar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Interpretar texto": {
+      "main": [
+        [
+          {
+            "node": "¿Escalar?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Escalar?": {
+      "main": [
+        [
+          {
+            "node": "Fin: escalar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resolver pid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolver pid": {
+      "main": [
+        [
+          {
+            "node": "¿Es del grupo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es del grupo?": {
+      "main": [
+        [
+          {
+            "node": "¿Voto o evento?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fin: no es miembro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Voto o evento?": {
+      "main": [
+        [
+          {
+            "node": "Votar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar evento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Votar": {
+      "main": [
+        [
+          {
+            "node": "Resumen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar evento": {
+      "main": [
+        [
+          {
+            "node": "Resumen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resumen": {
+      "main": [
+        [
+          {
+            "node": "Fin: listo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "saveDataErrorExecution": "none",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": false,
+    "timezone": "America/Bogota"
+  },
+  "id": "m1ucCHfJHm2vHjGd"
+}

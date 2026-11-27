@@ -1,0 +1,749 @@
+{
+  "name": "W2 · Recordatorio de voto",
+  "nodes": [
+    {
+      "id": "e8479e3b-d4bc-4454-9a4a-0949505814ec",
+      "name": "Cada 15 minutos",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        288
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "948738cb-a61d-4405-b07f-a1f3200e2cbb",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        416
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "backend_url",
+              "value": "https://script.google.com/macros/s/AKfycbwbh_qzXHXpeY5Z3LiTsoH855lDFE3Ezd45PFQqyKRjEFQaRkydhHFto_-OSae_U9Mf/exec",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "7735a405-5ea1-47e6-bbd6-567d1bed40c7",
+      "name": "Planes por recordar",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        416
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "estado",
+              "condition": "eq",
+              "keyValue": "votando"
+            },
+            {
+              "keyName": "recordatorio_enviado",
+              "condition": "isEmpty"
+            },
+            {
+              "keyName": "t_publicado",
+              "condition": "lte",
+              "keyValue": "={{ $now.minus({ hours: 2 }).toISO() }}"
+            }
+          ]
+        },
+        "returnAll": true
+      }
+    },
+    {
+      "id": "acb50192-960c-40ec-8d45-90a4d9be8fc6",
+      "name": "Ver plan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        448
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Config').first().json.backend_url }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "view",
+              "value": "plan"
+            },
+            {
+              "name": "plan_id",
+              "value": "={{ $json.plan_id }}"
+            },
+            {
+              "name": "pid",
+              "value": "={{ $json.pid_organizador }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "97dc77e9-9ea9-4429-8819-ae33981a0199",
+      "name": "Decidir acción",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        448
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const fila = $('Planes por recordar').item.json;\nlet r = $json || {};\nif (typeof r.data === 'string') {\n  try { r = JSON.parse(r.data); } catch (e) { r = { ok: false, error: 'respuesta_no_json' }; }\n}\nconst p = r.plan || r.data || r;\nconst estado = String(p.estado || '').toLowerCase();\nconst votos = Number(p.n_votos);\nconst invitados = Number(p.n_invitados);\nlet accion = 'error';\nlet codigo = '';\nif (r.ok !== true) { codigo = String(r.error || r.code || 'view_plan_fallido'); }\nelse if (estado === 'caido') { accion = 'caido'; }\nelse if (estado && estado !== 'votando') { accion = 'omitir'; }\nelse if (estado !== 'votando' || !Number.isFinite(votos) || !Number.isFinite(invitados)) { codigo = 'estado_desconocido'; }\nelse if (votos < invitados) { accion = 'recordar'; }\nelse { accion = 'todos_votaron'; }\nreturn { json: { accion, codigo, plan_id: fila.plan_id, grupo_wa: fila.grupo_wa || '', estado, n_votos: votos, n_invitados: invitados } };"
+      }
+    },
+    {
+      "id": "31e0ea8f-6927-412d-8598-65b230208b26",
+      "name": "Según acción",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1248,
+        416
+      ],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "recordar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "recordar"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "todos_votaron",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "todos_votaron"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "caido",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "caido"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "error",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "error"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "7c243785-5f5d-4136-a1e2-6ce82714af66",
+      "name": "Textos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1328,
+        128
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": true,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "plantilla_recordatorio",
+              "value": "⏳ Para cerrar los detalles con tiempo nos faltan {faltan} votos. ¿Cuál les suena más: 1, 2 o 3? Si les sirve cualquiera, escriban TODAS; si ninguna sirve, también vale decirlo.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "370d141c-a34e-485b-98b1-957263afffda",
+      "name": "Enviar /recordatorio",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        128
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tI8cHPMw88jpu5XY",
+          "cachedResultName": "SW · Enviar mensaje"
+        },
+        "mode": "each",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "paso": "/recordatorio",
+            "texto": "={{ String($json.plantilla_recordatorio || '').split('{n_votos}').join(String($json.n_votos)).split('{n_invitados}').join(String($json.n_invitados)).split('{faltan}').join(String($json.n_invitados - $json.n_votos)) }}",
+            "plan_id": "={{ $json.plan_id }}",
+            "evento_msg": "recordatorio",
+            "grupo_wa": "={{ $json.grupo_wa }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "texto",
+              "displayName": "texto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evento_msg",
+              "displayName": "evento_msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "grupo_wa",
+              "displayName": "grupo_wa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "00751bf5-e971-49aa-b027-31863fcbaaf3",
+      "name": "¿Recordatorio enviado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        128
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "0b7170e9-171c-4a8c-8895-ff4f564bfab6",
+      "name": "Marcar sin recordatorio (todos votaron)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        192
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "recordatorio_enviado": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "recordatorio_enviado",
+              "displayName": "recordatorio_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "b8432272-3fd5-45eb-a9cb-b360483e22f2",
+      "name": "Marcar plan caído",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        384
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "estado": "caido"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "b843a4af-69fe-4976-9cc5-bf69a2051984",
+      "name": "Avisar revisor: estado desconocido",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1440,
+        576
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "each",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $json.plan_id }}",
+            "motivo": "={{ 'Recordatorio de voto: no se pudo leer el plan o su estado es desconocido. No se envió nada al grupo. Usa «Pasar al mago» en la consola' }}",
+            "codigo": "={{ $json.codigo }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "50afd93d-6231-4807-b36a-2feb4fd774a1",
+      "name": "Marcar recordatorio enviado",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2000,
+        128
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Textos').item.json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "recordatorio_enviado": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "recordatorio_enviado",
+              "displayName": "recordatorio_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "1934cd76-263e-42e2-ad7d-d88d27eb93ac",
+      "name": "Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        928,
+        576
+      ],
+      "parameters": {
+        "content": "## W2 · Recordatorio de voto\nCorre cada 15 min (hora de Cali).\n\n1. Busca en e15_planes planes en «votando», publicados hace 2 h o más y sin recordatorio_enviado.\n2. Consulta view=plan en el backend.\n3. Si faltan votos (n_votos < n_invitados): envía /recordatorio con el texto exacto de «Textos» (evento recordatorio) y marca recordatorio_enviado. Solo una vez por plan.\n4. Si ya votaron todos: marca recordatorio_enviado sin escribir al grupo.\n5. Si el plan está caído: lo marca caído y no envía nada.\n6. Error o estado desconocido: avisa al revisor («Usa «Pasar al mago» en la consola») y no escribe al grupo.\n\nSin datos de ejecución ni claves."
+      }
+    }
+  ],
+  "connections": {
+    "Cada 15 minutos": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Planes por recordar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planes por recordar": {
+      "main": [
+        [
+          {
+            "node": "Ver plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ver plan": {
+      "main": [
+        [
+          {
+            "node": "Decidir acción",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decidir acción": {
+      "main": [
+        [
+          {
+            "node": "Según acción",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Según acción": {
+      "main": [
+        [
+          {
+            "node": "Textos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Marcar sin recordatorio (todos votaron)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Marcar plan caído",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar revisor: estado desconocido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Textos": {
+      "main": [
+        [
+          {
+            "node": "Enviar /recordatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar /recordatorio": {
+      "main": [
+        [
+          {
+            "node": "¿Recordatorio enviado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Recordatorio enviado?": {
+      "main": [
+        [
+          {
+            "node": "Marcar recordatorio enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false
+  },
+  "id": "7jbtq83MWI5hpjEH"
+}

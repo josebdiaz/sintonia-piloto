@@ -1,0 +1,1763 @@
+{
+  "name": "W3 · Cierre y salida",
+  "nodes": [
+    {
+      "id": "7bde56b4-3f73-4d80-a752-239982d68f51",
+      "name": "Cerrar plan",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        192
+      ],
+      "parameters": {
+        "formTitle": "Cerrar plan",
+        "formDescription": "Sintonía E1.5 · Cierra la votación: confirma la opción ganadora o marca el plan como caído.",
+        "path": "e15-cerrar-plan",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "plan_id",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "resultado",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Confirmado"
+                  },
+                  {
+                    "option": "Se cayó"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "opcion_ganadora",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "1"
+                  },
+                  {
+                    "option": "2"
+                  },
+                  {
+                    "option": "3"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "fecha_hora_encuentro",
+              "fieldType": "text",
+              "placeholder": "2026-10-31 19:00 (hora de Cali)"
+            },
+            {
+              "fieldLabel": "hora_salida",
+              "fieldType": "text",
+              "placeholder": "18:30"
+            },
+            {
+              "fieldLabel": "direccion",
+              "fieldType": "text"
+            },
+            {
+              "fieldLabel": "causa_caida",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "trafico"
+                  },
+                  {
+                    "option": "lluvia"
+                  },
+                  {
+                    "option": "agenda"
+                  },
+                  {
+                    "option": "costo"
+                  },
+                  {
+                    "option": "desinteres"
+                  },
+                  {
+                    "option": "imprevisto"
+                  },
+                  {
+                    "option": "otro"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "webhookId": "0cb55fa5-2b20-46b5-abd5-9c90239ea819"
+    },
+    {
+      "id": "159869db-e7cd-46a0-a46c-0afeac63c97c",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        432
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "backend_url",
+              "value": "https://script.google.com/macros/s/AKfycbwbh_qzXHXpeY5Z3LiTsoH855lDFE3Ezd45PFQqyKRjEFQaRkydhHFto_-OSae_U9Mf/exec",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "47e5ea12-842b-44e6-b639-f45baacd4871",
+      "name": "Ver plan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        432
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Config').first().json.backend_url }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "view",
+              "value": "plan"
+            },
+            {
+              "name": "plan_id",
+              "value": "={{ $('Cerrar plan').first().json.plan_id }}"
+            },
+            {
+              "name": "pid",
+              "value": "={{ $('Buscar pid en tabla').first().json.pid_organizador || '' }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "f78c6068-853f-4979-ad29-222a9466bccb",
+      "name": "Analizar cierre",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        432
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const f = $('Cerrar plan').first().json;\nlet r = $input.first().json || {};\nif (typeof r.data === 'string') {\n  try { r = JSON.parse(r.data); } catch (e) { r = { ok: false, error: 'respuesta_no_json' }; }\n}\nconst p = r.plan || r.data || r;\nconst opciones = Array.isArray(p.opciones) ? p.opciones : Array.isArray(p.options) ? p.options : [];\nconst estado = String(p.estado || '').toLowerCase();\nconst caido = String(f.resultado || '').toLowerCase().indexOf('cay') >= 0;\nconst idx = parseInt(f.opcion_ganadora, 10) - 1;\nconst op = opciones[idx];\nlet plan = '';\nlet lugar = '';\nif (op) {\n  plan = op.titulo || op.title || '';\n  const paradas = Array.isArray(op.paradas) ? op.paradas : Array.isArray(op.stops) ? op.stops : Array.isArray(op.lugares) ? op.lugares : [];\n  lugar = paradas.map((s) => (s.nombre || s.name || '[lugar]') + ' (' + (s.zona || s.zone || '[zona]') + ')').join(' → ');\n}\nconst zona = 'America/Bogota';\nconst crudo = String(f.fecha_hora_encuentro || '').trim();\nlet dt = DateTime.fromFormat(crudo, 'yyyy-MM-dd HH:mm', { zone: zona });\nif (!dt.isValid) dt = DateTime.fromISO(crudo, { zone: zona });\nif (!dt.isValid) dt = DateTime.fromFormat(crudo, 'd/M/yyyy HH:mm', { zone: zona });\nconst ahora = DateTime.now().setZone(zona);\nlet accion = 'error';\nlet codigo = '';\nlet motivo = '';\nif (r.ok !== true) { codigo = String(r.error || r.code || 'view_plan_fallido'); motivo = 'Cierre: no se pudo leer el plan (view=plan).'; }\nelse if (estado === 'caido') { codigo = 'plan_ya_caido'; motivo = 'Cierre: el plan ya estaba caído en el backend.'; }\nelse if (caido) { accion = 'caido'; }\nelse if (!(idx >= 0 && idx <= 2)) { codigo = 'opcion_invalida'; motivo = 'Cierre: falta la opción ganadora (1–3).'; }\nelse if (!op) { codigo = 'opcion_inexistente'; motivo = 'Cierre: la opción ganadora no existe en las opciones del motor.'; }\nelse if (!dt.isValid) { codigo = 'fecha_invalida'; motivo = 'Cierre: fecha_hora_encuentro no se pudo leer (usa 2026-10-31 19:00).'; }\nelse { accion = 'confirmar'; }\nlet tAviso = '';\nif (dt.isValid) {\n  let t = dt.minus({ hours: 2 });\n  if (t < ahora) t = ahora.plus({ seconds: 5 });\n  tAviso = t.toISO();\n}\nreturn [{ json: {\n  accion, codigo, motivo: motivo ? motivo + ' No se envió nada al grupo. Usa «Pasar al mago» en la consola' : '',\n  plan_id: f.plan_id,\n  elegida: idx,\n  causa_caida: f.causa_caida || 'otro',\n  n_votos: p.n_votos !== undefined ? p.n_votos : '?',\n  n_invitados: p.n_invitados !== undefined ? p.n_invitados : '?',\n  plan, lugar,\n  hora: dt.isValid ? dt.setLocale('es').toFormat(\"cccc d 'de' LLLL, h:mm a\") : '',\n  hora_encuentro: dt.isValid ? dt.toISO() : '',\n  t_aviso_salida: tAviso,\n  hora_salida: String(f.hora_salida || (op && op.hora_salida) || '').trim(),\n  presupuesto: op ? String(op.presupuesto_aprox || '') : '',\n  direccion: String(f.direccion || '').trim(),\n} }];"
+      }
+    },
+    {
+      "id": "b0983f51-4892-4377-8f6d-ae75738869bd",
+      "name": "Página de confirmación",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        944,
+        320
+      ],
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "text",
+        "completionTitle": "Cierre recibido",
+        "completionMessage": "={{ 'Votos registrados: ' + $json.n_votos + ' de ' + $json.n_invitados + '. ' + ($json.accion === 'confirmar' ? 'Se enviará la confirmación al grupo.' : $json.accion === 'caido' ? 'El plan se marcará como caído; no se escribe al grupo.' : 'Hubo un problema; se avisó al revisor.') }}"
+      },
+      "webhookId": "b0ec2b7f-6151-4230-a33b-fa30d1fba5f0"
+    },
+    {
+      "id": "31c920d3-a7c1-432a-8c47-babdff7ac578",
+      "name": "Según resultado",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        944,
+        512
+      ],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "confirmar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "confirmar"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "caido",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "caido"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "error",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "error"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "1ec5362f-3705-45f6-9526-fa4a97317603",
+      "name": "Buscar plan en tabla",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        224
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Cerrar plan').first().json.plan_id }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "e959916d-ddf2-448d-b241-497ffff454e1",
+      "name": "¿Aún sin confirmar?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        224
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "s1",
+              "leftValue": "={{ !$json.t_confirmado && $json.estado !== 'caido' }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "6a199766-df51-47af-ba21-9047f182ed41",
+      "name": "cerrar_plan (caído)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        416
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.backend_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'cerrar_plan', plan_id: $('Analizar cierre').first().json.plan_id, caido: true, causa_caida: $('Analizar cierre').first().json.causa_caida }) }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "Ejk44b6kRLGGSchK",
+          "name": "Sintonia MOTOR_KEY (body)"
+        }
+      }
+    },
+    {
+      "id": "92b8bbca-a517-4748-af18-c5a31e6776e0",
+      "name": "¿Caída registrada?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        416
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "k1",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "2c2ccbed-b17b-44f8-a049-acefbb37bfed",
+      "name": "Avisar revisor: cierre inválido",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        912,
+        384
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $json.plan_id }}",
+            "motivo": "={{ $json.motivo }}",
+            "codigo": "={{ $json.codigo }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "6bfc7e75-2ffd-4488-8672-9017a85b203c",
+      "name": "Guardar estado caído",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1248,
+        320
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Cerrar plan').first().json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Cerrar plan').first().json.plan_id }}",
+            "estado": "caido"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "151ad057-923b-4202-b7b1-2d0d77f92626",
+      "name": "Avisar revisor: caída no registrada",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1248,
+        512
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Cerrar plan').first().json.plan_id }}",
+            "motivo": "={{ 'cerrar_plan (caído) falló en el backend. No se envió nada al grupo. Usa «Pasar al mago» en la consola' }}",
+            "codigo": "={{ String($json.error || $json.code || 'cerrar_caido_fallido') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "63e05ab7-7a40-463a-bd04-422d3e159ed0",
+      "name": "cerrar_plan (elegida)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1248,
+        224
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.backend_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'cerrar_plan', plan_id: $('Analizar cierre').first().json.plan_id, elegida: $('Analizar cierre').first().json.elegida }) }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "Ejk44b6kRLGGSchK",
+          "name": "Sintonia MOTOR_KEY (body)"
+        }
+      }
+    },
+    {
+      "id": "72a81177-cf69-41ad-92d4-bbbe05d6dc81",
+      "name": "¿Cierre ok?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        224
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "k2",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "52c867fe-36db-4c7f-a896-db166c095669",
+      "name": "Textos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1696,
+        128
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "plantilla_confirmado",
+              "value": "¡Quedó! Ruta clara, ganas intactas:\n📍 {plan} — {lugar}\n📌 Dirección: {direccion}\n🕒 Encuentro: {hora}\n🚗 Salida sugerida: {hora_salida}. En Cali la hora pico y la lluvia cambian los tiempos; mejor salir con margen.\n💰 Presupuesto aprox.: {presupuesto} por persona\nRespondan ME APUNTO si van o NO PUEDO si no alcanzan.",
+              "type": "string"
+            },
+            {
+              "id": "t2",
+              "name": "plantilla_salida",
+              "value": "🚗 Para llegar a {lugar} a la hora ({hora}), salgan a las {hora_salida} (si llueve o hay trancón, mejor un poco antes).",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "32e6787c-167a-40a5-a173-770d5ed56792",
+      "name": "Armar textos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        128
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const a = $('Analizar cierre').first().json;\nconst t = $('Textos').first().json;\nconst valores = { plan: a.plan, lugar: a.lugar, hora: a.hora, direccion: a.direccion, salida_sugerida: a.hora_salida, hora_salida: a.hora_salida, presupuesto: a.presupuesto };\nconst faltan = { plan: '[plan]', lugar: '[lugar]', hora: '[hora]', direccion: '[dirección]', salida_sugerida: '[hora de salida]', hora_salida: '[hora de salida]', presupuesto: '[presupuesto]' };\nconst llenar = (plantilla) => {\n  let s = String(plantilla || '');\n  for (const k of Object.keys(valores)) s = s.split('{' + k + '}').join(valores[k] ? String(valores[k]) : faltan[k]);\n  s = s.split('{dirección}').join(a.direccion ? a.direccion : '[dirección]');\n  return s;\n};\nreturn [{ json: { texto_confirmado: llenar(t.plantilla_confirmado), texto_salida: llenar(t.plantilla_salida) } }];"
+      }
+    },
+    {
+      "id": "30a7c3f0-fbe0-48cc-a797-4aa11455c474",
+      "name": "Enviar /confirmado",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2144,
+        128
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tI8cHPMw88jpu5XY",
+          "cachedResultName": "SW · Enviar mensaje"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "paso": "/confirmado",
+            "texto": "={{ $json.texto_confirmado }}",
+            "plan_id": "={{ $('Cerrar plan').first().json.plan_id }}",
+            "evento_msg": "msg_confirmado",
+            "grupo_wa": ""
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "texto",
+              "displayName": "texto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evento_msg",
+              "displayName": "evento_msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "grupo_wa",
+              "displayName": "grupo_wa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "4601c917-4eb2-4fe9-a397-25a8ce967693",
+      "name": "¿Confirmación enviada?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2368,
+        128
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "k3",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "2c8ebd2e-9eb7-4c40-8273-83aa6de0d463",
+      "name": "Avisar revisor: cierre falló",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1696,
+        320
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Cerrar plan').first().json.plan_id }}",
+            "motivo": "={{ 'cerrar_plan falló en el backend. No se envió nada al grupo. Usa «Pasar al mago» en la consola' }}",
+            "codigo": "={{ String($json.error || $json.code || 'cerrar_fallido') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "a353ad62-df71-404f-bb61-7143c8bbf556",
+      "name": "Guardar hora de encuentro",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2592,
+        128
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Cerrar plan').first().json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Cerrar plan').first().json.plan_id }}",
+            "estado": "confirmado",
+            "hora_encuentro": "={{ $('Analizar cierre').first().json.hora_encuentro }}",
+            "t_encuentro": "={{ $('Analizar cierre').first().json.hora_encuentro }}",
+            "t_confirmado": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hora_encuentro",
+              "displayName": "hora_encuentro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "t_encuentro",
+              "displayName": "t_encuentro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "t_confirmado",
+              "displayName": "t_confirmado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "49b2bf0f-f145-4995-8e6f-9613f3c33079",
+      "name": "Esperar hasta 2 h antes",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1328,
+        224
+      ],
+      "parameters": {
+        "resume": "specificTime",
+        "dateTime": "={{ $('Analizar cierre').first().json.t_aviso_salida }}"
+      },
+      "webhookId": "1786f108-b969-4881-a37c-4e63c519ac4c"
+    },
+    {
+      "id": "7c7ef522-8e1d-43fd-a6f8-dbd59ab2ea40",
+      "name": "Releer plan en tabla",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1552,
+        224
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Cerrar plan').first().json.plan_id }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "46194317-b998-4c93-93a4-d996f6f9feff",
+      "name": "Ver plan antes de salida",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1776,
+        224
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Config').first().json.backend_url }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "view",
+              "value": "plan"
+            },
+            {
+              "name": "plan_id",
+              "value": "={{ $('Cerrar plan').first().json.plan_id }}"
+            },
+            {
+              "name": "pid",
+              "value": "={{ $('Releer plan en tabla').first().json.pid_organizador }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "efaa1895-0a3f-4196-a02f-c24db9ef0411",
+      "name": "Decidir salida",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        224
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const fila = $('Releer plan en tabla').first().json || {};\nlet r = $input.first().json || {};\nif (typeof r.data === 'string') {\n  try { r = JSON.parse(r.data); } catch (e) { r = { ok: false, error: 'respuesta_no_json' }; }\n}\nconst p = r.plan || r.data || r;\nconst estadoBackend = String(p.estado || '').toLowerCase();\nlet accion = 'enviar';\nlet codigo = '';\nif (String(fila.estado || '') === 'caido' || fila.salida_enviada) accion = 'parar';\nelse if (r.ok !== true) { accion = 'error'; codigo = String(r.error || r.code || 'view_plan_fallido'); }\nelse if (estadoBackend === 'caido') accion = 'parar';\nreturn [{ json: { accion, codigo } }];"
+      }
+    },
+    {
+      "id": "2dbfec44-80b1-482b-8349-3199ae887373",
+      "name": "¿Enviar salida?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2224,
+        224
+      ],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "enviar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "enviar"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "error",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "error"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4786bd5d-c5e4-4197-a409-6a0540b40c2e",
+      "name": "Enviar /salida",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2448,
+        128
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tI8cHPMw88jpu5XY",
+          "cachedResultName": "SW · Enviar mensaje"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "paso": "/salida",
+            "texto": "={{ $('Armar textos').first().json.texto_salida }}",
+            "plan_id": "={{ $('Cerrar plan').first().json.plan_id }}",
+            "evento_msg": "salida_sugerida",
+            "grupo_wa": ""
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "texto",
+              "displayName": "texto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evento_msg",
+              "displayName": "evento_msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "grupo_wa",
+              "displayName": "grupo_wa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "0292546e-ad12-4840-87ce-bc78abccee0f",
+      "name": "¿Salida enviada?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2672,
+        128
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "k4",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a0e844cd-9050-4de5-8f89-12fc3d81f750",
+      "name": "Avisar revisor: salida bloqueada",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2448,
+        320
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Cerrar plan').first().json.plan_id }}",
+            "motivo": "={{ 'Salida: no se pudo leer el plan antes de enviar /salida. No se envió nada al grupo. Usa «Pasar al mago» en la consola' }}",
+            "codigo": "={{ $json.codigo }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "8ac1664d-5507-495c-93dc-021eb91d87a0",
+      "name": "Marcar salida enviada",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2896,
+        128
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Cerrar plan').first().json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "salida_enviada": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "salida_enviada",
+              "displayName": "salida_enviada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "41a26f48-a160-46e6-8148-17b7fb45786c",
+      "name": "Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        544
+      ],
+      "parameters": {
+        "content": "## W3 · Cierre y salida\nSe dispara con el formulario «Cerrar plan». La página final muestra cuántos votaron.\n\n**Se cayó:** llama cerrar_plan con caido:true y la causa (trafico, lluvia, agenda, costo, desinteres, imprevisto, otro), marca el plan como caído y NO escribe al grupo.\n\n**Confirmado:**\n1. Revisa que no se haya confirmado antes (dedup en e15_planes).\n2. cerrar_plan con elegida = opción − 1.\n3. Envía /confirmado con el texto exacto de «Textos»: {plan} = título ganador, {lugar} = paradas «nombre (zona)» unidas con →, {hora} = fecha amable en español. Lo que falte queda visible, p. ej. [dirección].\n4. Guarda hora_encuentro y espera hasta 2 h antes (hora de Cali).\n5. Si el plan sigue en pie y no se envió antes, manda /salida con la hora de salida sugerida.\n\nCualquier error o estado desconocido: avisa al revisor («Usa «Pasar al mago» en la consola») y no escribe al grupo. Solo usa lugares del motor. Sin datos de ejecución ni claves."
+      }
+    },
+    {
+      "id": "5faaab82-c0e8-410c-b8a5-a27c9f490b62",
+      "name": "Buscar pid en tabla",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        456,
+        252
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Cerrar plan').first().json.plan_id }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    }
+  ],
+  "connections": {
+    "Cerrar plan": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Buscar pid en tabla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ver plan": {
+      "main": [
+        [
+          {
+            "node": "Analizar cierre",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analizar cierre": {
+      "main": [
+        [
+          {
+            "node": "Página de confirmación",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Según resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Según resultado": {
+      "main": [
+        [
+          {
+            "node": "Buscar plan en tabla",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "cerrar_plan (caído)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar revisor: cierre inválido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar plan en tabla": {
+      "main": [
+        [
+          {
+            "node": "¿Aún sin confirmar?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Aún sin confirmar?": {
+      "main": [
+        [
+          {
+            "node": "cerrar_plan (elegida)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cerrar_plan (caído)": {
+      "main": [
+        [
+          {
+            "node": "¿Caída registrada?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Caída registrada?": {
+      "main": [
+        [
+          {
+            "node": "Guardar estado caído",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar revisor: caída no registrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cerrar_plan (elegida)": {
+      "main": [
+        [
+          {
+            "node": "¿Cierre ok?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Cierre ok?": {
+      "main": [
+        [
+          {
+            "node": "Textos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar revisor: cierre falló",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Textos": {
+      "main": [
+        [
+          {
+            "node": "Armar textos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar textos": {
+      "main": [
+        [
+          {
+            "node": "Enviar /confirmado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar /confirmado": {
+      "main": [
+        [
+          {
+            "node": "¿Confirmación enviada?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Confirmación enviada?": {
+      "main": [
+        [
+          {
+            "node": "Guardar hora de encuentro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar hora de encuentro": {
+      "main": [
+        [
+          {
+            "node": "Esperar hasta 2 h antes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar hasta 2 h antes": {
+      "main": [
+        [
+          {
+            "node": "Releer plan en tabla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Releer plan en tabla": {
+      "main": [
+        [
+          {
+            "node": "Ver plan antes de salida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ver plan antes de salida": {
+      "main": [
+        [
+          {
+            "node": "Decidir salida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decidir salida": {
+      "main": [
+        [
+          {
+            "node": "¿Enviar salida?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Enviar salida?": {
+      "main": [
+        [
+          {
+            "node": "Enviar /salida",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar revisor: salida bloqueada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar /salida": {
+      "main": [
+        [
+          {
+            "node": "¿Salida enviada?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Salida enviada?": {
+      "main": [
+        [
+          {
+            "node": "Marcar salida enviada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar pid en tabla": {
+      "main": [
+        [
+          {
+            "node": "Ver plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false
+  },
+  "id": "FJWe5nW8N3D29QUi"
+}

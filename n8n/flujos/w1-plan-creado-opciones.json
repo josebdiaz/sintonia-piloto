@@ -1,0 +1,850 @@
+{
+  "name": "W1 · Plan creado → opciones",
+  "nodes": [
+    {
+      "id": "4e69e1ab-cf30-42c2-b5c3-b79ed076e6b0",
+      "name": "Plan creado",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        96
+      ],
+      "parameters": {
+        "formTitle": "Plan creado",
+        "formDescription": "Sintonía E1.5 · Pide opciones al motor y las publica en el grupo.",
+        "path": "e15-plan-creado",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "plan_id",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "pid_organizador",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "grupo_wa",
+              "fieldType": "text",
+              "requiredField": true,
+              "placeholder": "120363000000000000@g.us"
+            }
+          ]
+        },
+        "responseMode": "onReceived",
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "Listo. Estamos preparando las opciones para el grupo."
+            }
+          }
+        }
+      },
+      "webhookId": "fcf0ec16-d962-4e34-bbcb-2f9741a457d6"
+    },
+    {
+      "id": "22cc57a5-326c-4202-baca-9526678cf6f9",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        224
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "backend_url",
+              "value": "https://script.google.com/macros/s/AKfycbwbh_qzXHXpeY5Z3LiTsoH855lDFE3Ezd45PFQqyKRjEFQaRkydhHFto_-OSae_U9Mf/exec",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "1b3120e1-9a3a-4b73-9cef-898dc5002aec",
+      "name": "Buscar plan",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        224
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Plan creado').first().json.plan_id }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "3ab3daeb-1718-4b37-a6bd-f8d03203bee2",
+      "name": "¿Plan sin publicar?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        224
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "n1",
+              "leftValue": "={{ $json.t_publicado || '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "3ae39381-f8b1-44d2-93b2-74385406a064",
+      "name": "proponer_ia",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        224
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.backend_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'proponer_ia', plan_id: $('Plan creado').first().json.plan_id }) }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "Ejk44b6kRLGGSchK",
+          "name": "Sintonia MOTOR_KEY (body)"
+        }
+      }
+    },
+    {
+      "id": "ec0080dc-83a5-4214-85ca-6968e6c6a7ba",
+      "name": "Normalizar opciones",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        224
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const r = $input.first().json || {};\nlet data = r;\nif (typeof r.data === 'string') {\n  try { data = JSON.parse(r.data); } catch (e) { data = { ok: false, error: 'respuesta_no_json' }; }\n}\nconst pick = (o) => {\n  if (!o) return [];\n  if (Array.isArray(o.opciones)) return o.opciones;\n  if (Array.isArray(o.options)) return o.options;\n  if (o.plan && Array.isArray(o.plan.opciones)) return o.plan.opciones;\n  if (o.data && Array.isArray(o.data.opciones)) return o.data.opciones;\n  return [];\n};\nconst lista = pick(data).slice(0, 3);\nconst out = { ok: data.ok === true, error: data.ok === true ? '' : String(data.error || data.code || 'error_desconocido'), n_opciones: lista.length };\nconst lineas = [];\nfor (let i = 0; i < 3; i++) {\n  const o = lista[i];\n  if (!o) { out['opcion_' + (i + 1) + '_titulo'] = ''; out['opcion_' + (i + 1) + '_lugar'] = ''; continue; }\n  const titulo = o.titulo || o.title || '[plan]';\n  const paradas = Array.isArray(o.paradas) ? o.paradas : Array.isArray(o.stops) ? o.stops : Array.isArray(o.lugares) ? o.lugares : [];\n  const lugar = paradas.map((p) => (p.nombre || p.name || '[lugar]') + ' (' + (p.zona || p.zone || '[zona]') + ')').join(' → ') || '[lugar]';\n  out['opcion_' + (i + 1) + '_titulo'] = titulo;\n  out['opcion_' + (i + 1) + '_lugar'] = lugar;\n  const nombres = paradas.map((p) => p.nombre || p.name || '[lugar]').join(' → ') || '[lugar]';\n  lineas.push((i + 1) + '\\uFE0F\\u20E3 ' + titulo + ' — ' + nombres + ' · salida ' + (o.hora_salida || '[hora de salida]') + ' · ' + (o.presupuesto_aprox || '[presupuesto]'));\n}\nout.opciones_texto = lineas.join('\\n');\nreturn [{ json: out }];"
+      }
+    },
+    {
+      "id": "b1e19400-699c-4e0f-ae36-975bee711feb",
+      "name": "¿Hay opciones?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1248,
+        224
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "o1",
+              "leftValue": "={{ $json.ok === true && $json.n_opciones > 0 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "0c5df601-22bc-46b7-9a9d-e311d8470d8d",
+      "name": "Textos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1328,
+        128
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "plantilla_opciones",
+              "value": "Les traigo {n} opciones:\n{opciones}\n\nVoten con el número. Si les sirve cualquiera, escriban TODAS. Si ninguna les sirve, escriban NINGUNA y busco otra cosa. Cerca, corto y posible.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "98718c6d-cdf6-49d8-97b0-17934bb5c576",
+      "name": "Armar texto /opciones",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        128
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const n = $('Normalizar opciones').first().json;\nlet t = String($('Textos').first().json.plantilla_opciones || '');\nconst rep = (token, valor, falta) => { t = t.split(token).join(valor ? valor : falta); };\nrep('{n}', n.n_opciones ? String(n.n_opciones) : '', '[n]');\nrep('{opciones}', n.opciones_texto, '[opciones]');\nfor (let i = 1; i <= 3; i++) {\n  rep('{plan_' + i + '}', n['opcion_' + i + '_titulo'], '[plan ' + i + ']');\n  rep('{lugar_' + i + '}', n['opcion_' + i + '_lugar'], '[lugar ' + i + ']');\n  rep('{opcion_' + i + '}', n['opcion_' + i + '_titulo'] ? n['opcion_' + i + '_titulo'] + ': ' + n['opcion_' + i + '_lugar'] : '', '[opción ' + i + ']');\n}\nreturn [{ json: { texto: t } }];"
+      }
+    },
+    {
+      "id": "89fc7dcf-e7b5-4d7b-a59e-f14ad558e969",
+      "name": "Enviar /opciones",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1776,
+        128
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tI8cHPMw88jpu5XY",
+          "cachedResultName": "SW · Enviar mensaje"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "paso": "/opciones",
+            "texto": "={{ $('Armar texto /opciones').first().json.texto }}",
+            "plan_id": "={{ $('Plan creado').first().json.plan_id }}",
+            "evento_msg": "msg_opciones",
+            "grupo_wa": "={{ String($('Plan creado').first().json.grupo_wa || '').trim() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "texto",
+              "displayName": "texto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evento_msg",
+              "displayName": "evento_msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "grupo_wa",
+              "displayName": "grupo_wa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "4327db15-7e69-4a06-b036-173465449ba2",
+      "name": "¿Mensaje enviado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2000,
+        128
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "b1227a8c-cb3b-40dc-b4d1-3082a39d3bda",
+      "name": "Avisar revisor: sin opciones",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1440,
+        192
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Plan creado').first().json.plan_id }}",
+            "motivo": "={{ ($json.ok ? 'proponer_ia no devolvió opciones' : 'proponer_ia falló') + '. No se envió nada al grupo. Usa «Pasar al mago» en la consola' }}",
+            "codigo": "={{ $json.ok ? 'sin_opciones' : $json.error }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "5adcdf4e-ae58-4638-9ba4-6edeab599027",
+      "name": "Guardar plan",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1856,
+        128
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Plan creado').first().json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Plan creado').first().json.plan_id }}",
+            "pid_organizador": "={{ $('Plan creado').first().json.pid_organizador }}",
+            "grupo_wa": "={{ String($('Plan creado').first().json.grupo_wa || '').trim() }}",
+            "estado": "votando",
+            "t_publicado": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pid_organizador",
+              "displayName": "pid_organizador",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "grupo_wa",
+              "displayName": "grupo_wa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "t_publicado",
+              "displayName": "t_publicado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "69053433-ef12-4ae5-874c-34d9eeb242a4",
+      "name": "publicar_plan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2080,
+        128
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.backend_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'publicar_plan', plan_id: $('Plan creado').first().json.plan_id }) }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "Ejk44b6kRLGGSchK",
+          "name": "Sintonia MOTOR_KEY (body)"
+        }
+      }
+    },
+    {
+      "id": "8a0e6b43-d91b-4cea-b94c-e8dedfa7f4d4",
+      "name": "¿Plan publicado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2304,
+        128
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "p1",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "1ed4707d-f079-4ff7-9a1b-21a947123fce",
+      "name": "Avisar revisor: publicar falló",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2528,
+        128
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Plan creado').first().json.plan_id }}",
+            "motivo": "={{ 'Las opciones se enviaron al grupo, pero publicar_plan falló. Usa «Pasar al mago» en la consola' }}",
+            "codigo": "={{ String($json.error || $json.code || 'publicar_fallido') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "79e9f38c-c92e-4e0e-81de-9d3db0600e40",
+      "name": "Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        224
+      ],
+      "parameters": {
+        "content": "## W1 · Plan creado → opciones\nSe dispara con el formulario «Plan creado» (plan_id, pid_organizador, grupo_wa).\n\n1. Revisa en e15_planes que el plan no se haya publicado antes (dedup).\n2. Pide opciones al motor (proponer_ia). Solo usa lugares que devuelve el motor: nunca inventa lugares, precios ni horas.\n3. Arma /opciones con el texto exacto del nodo «Textos» ({plan} = título, {lugar} = paradas «nombre (zona)» unidas con →).\n4. Lo envía al grupo (SW · Enviar mensaje, evento msg_opciones).\n5. Guarda el plan como «votando» con t_publicado y llama publicar_plan.\n\nSin opciones o con cualquier error: avisa al revisor («Usa «Pasar al mago» en la consola») y no escribe al grupo. Nunca llama crear_plan. Sin datos de ejecución ni claves."
+      }
+    }
+  ],
+  "connections": {
+    "Plan creado": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Buscar plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar plan": {
+      "main": [
+        [
+          {
+            "node": "¿Plan sin publicar?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Plan sin publicar?": {
+      "main": [
+        [
+          {
+            "node": "proponer_ia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "proponer_ia": {
+      "main": [
+        [
+          {
+            "node": "Normalizar opciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar opciones": {
+      "main": [
+        [
+          {
+            "node": "¿Hay opciones?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Hay opciones?": {
+      "main": [
+        [
+          {
+            "node": "Textos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar revisor: sin opciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Textos": {
+      "main": [
+        [
+          {
+            "node": "Armar texto /opciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "publicar_plan": {
+      "main": [
+        [
+          {
+            "node": "¿Plan publicado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Plan publicado?": {
+      "main": [
+        [
+          {
+            "node": "Guardar plan",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar revisor: publicar falló",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar texto /opciones": {
+      "main": [
+        [
+          {
+            "node": "publicar_plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar plan": {
+      "main": [
+        [
+          {
+            "node": "Enviar /opciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar /opciones": {
+      "main": [
+        [
+          {
+            "node": "¿Mensaje enviado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false
+  },
+  "id": "I79tvrKvhyZr8rbo"
+}

@@ -10,6 +10,8 @@ Las fechas son de 2026 (hora de Colombia).
 - Data Table `e15_entrada` creada con las 11 columnas de texto de `n8n/PLAN-construccion.md` §2.1.
 - `E15-00 · Entrada (modo prueba)` importado desde `n8n/E15-00-entrada.json`: validado, código idéntico a `n8n/motor/entrada.js`, tabla enlazada, credencial del ping enlazada (se llama «Evolution API · Hostinger»). **Inactivo**, con el JID todavía como marcador. No se ejecutó nada (n = 0).
 - `ESTADO.md` §0 y pendiente 44; `n8n/PLAN-construccion.md` §1 y §2.1.
+- Los 9 flujos, expuestos al MCP y exportados por MCP a `n8n/flujos/`, idénticos a lo que hay en la instancia: mismos nodos, credenciales solo con id y nombre, 0 claves. Revisor: 5 bloqueos (corchetes que irían al grupo en W0, W1 y W3), 28 de validez, 9 de ajuste. «Enviar al grupo» y «Enviar al revisor» (Evolution) sin credencial; los textos de W0 son anteriores a la consola 2.16.0 (`n8n.N17`).
+- `tools/revisar-datos.py`: acepta solo el JID de ejemplo todo en ceros; un JID real sigue fallando.
 
 ### 2026-11-27 · ESTADO compacto: de 43 a 16 KB, mismos hechos
 - §0 en una pantalla: solo el presente, cada hecho en un solo lugar y con su fecha y su fuente. Salen la historia por versión (antes §2), la tabla `n8n.N1–N11` (vive en `n8n/GUIA-CONTINUACION.md` §7), los QA viejos y lo resuelto de §4.1 y §4.2; todo sigue en este archivo o en su documento dueño.

@@ -1,0 +1,250 @@
+{
+  "name": "SW · Avisar revisor",
+  "nodes": [
+    {
+      "id": "cf0455e9-2104-47a1-8fea-10b75a2d5f6f",
+      "name": "Entrada",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        96
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "plan_id",
+              "type": "string"
+            },
+            {
+              "name": "motivo",
+              "type": "string"
+            },
+            {
+              "name": "codigo",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "6e811d2b-ada2-41de-8aca-2e304060f336",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        96
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": true,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "evolution_url",
+              "value": "https://EVOLUTION_HOST",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "instancia",
+              "value": "INSTANCIA",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "revisor_wa",
+              "value": "57XXXXXXXXXX",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "15cc18c7-f93e-46e9-950b-e770be3940b7",
+      "name": "Componer aviso",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        96
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "texto",
+              "value": "={{ '⚠️ Sintonía E1.5 · plan ' + ($('Entrada').item.json.plan_id || '[plan_id]') + ': ' + ($('Entrada').item.json.motivo || 'Error desconocido') + ($('Entrada').item.json.codigo ? ' (código: ' + $('Entrada').item.json.codigo + ')' : '') + '. Usa «Pasar al mago» en la consola. No se envió nada al grupo.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "d48bad16-19b2-4c3d-a8b8-210c7ec250bd",
+      "name": "Enviar al revisor (Evolution)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        96
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').item.json.evolution_url }}/message/sendText/{{ $('Config').item.json.instancia }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $('Config').item.json.revisor_wa, text: $json.texto }) }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "c7b1f8ec-e244-4f5d-8c34-e4f30950e812",
+      "name": "Resultado fallo",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        192
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r2",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "21b86b1b-0f03-4dab-9802-c168584d5bba",
+      "name": "Resultado OK",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "ok",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ca27a159-9219-490f-a512-796892a6e50f",
+      "name": "Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        -96
+      ],
+      "parameters": {
+        "content": "## SW · Avisar revisor\nSub-flujo que usan todos los flujos del motor para avisar a la persona revisora por WhatsApp individual (Evolution API), nunca al grupo.\n\n**Entrada:** plan_id, motivo (texto en español), codigo (opcional, error del backend).\n**Salida:** { ok: true | false }. Si el envío falla, devuelve ok:false sin romper el flujo que lo llamó.\n\nConfigura en **Config**: URL de Evolution, instancia y número del revisor. La clave va en la credencial «Evolution API key», nunca en el flujo. No se guardan datos de ejecución.",
+        "width": 1056,
+        "height": 416
+      }
+    }
+  ],
+  "connections": {
+    "Entrada": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Componer aviso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Componer aviso": {
+      "main": [
+        [
+          {
+            "node": "Enviar al revisor (Evolution)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar al revisor (Evolution)": {
+      "main": [
+        [
+          {
+            "node": "Resultado OK",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resultado fallo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false
+  },
+  "id": "vH5Q2DxwhLl7rP4p"
+}

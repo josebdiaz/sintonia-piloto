@@ -16,6 +16,8 @@ import os, re, subprocess, sys
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CORREOS_OK = {'jbolanos.dmi@gmail.com',          # canal de consultas y reclamos (Ley 1581), publicado en el aviso de privacidad
               '41898282+github-actions[bot]@users.noreply.github.com', 'noreply@anthropic.com'}
+# JID de ejemplo (todo ceros) en los formularios de n8n; un JID real sigue fallando
+JID_EJEMPLO = '120363000000000000@g.us'
 # Teléfonos de prueba (QA) y teléfonos públicos de los lugares del inventario (datos/), que no son personas
 TEL_PRUEBA = re.compile(r'(\+?57)?\s?30[01]\s?(000|100|999|123)\s?\d{4}')
 RUTAS_TEL_OK = ('datos/', 'archivo/piloto-m2-gemini/master-prompt-ejecucion.md')
@@ -53,7 +55,7 @@ def main():
                     malos.append('%s:%d · %s' % (f, n, nombre))
             for m in CORREO.finditer(linea):
                 c = m.group(0)
-                if c not in CORREOS_OK and not re.search(r'@(\d+x|2x|3x)\.', c) and not c.endswith(('.png', '.svg', '.jpg')) and 'example' not in c:
+                if c not in CORREOS_OK and c != JID_EJEMPLO and not re.search(r'@(\d+x|2x|3x)\.', c) and not c.endswith(('.png', '.svg', '.jpg')) and 'example' not in c:
                     malos.append('%s:%d · correo no permitido (%s…)' % (f, n, c[:3]))
             if not f.startswith(RUTAS_TEL_OK) and 'placeholder=' not in linea:   # ejemplos en campos de formulario
                 for m in TEL.finditer(linea):

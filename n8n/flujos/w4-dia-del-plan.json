@@ -1,0 +1,1083 @@
+{
+  "name": "W4 · Día del plan",
+  "nodes": [
+    {
+      "id": "316fac65-b031-4b94-b6f0-24bc6d5e1ba8",
+      "name": "Cada 15 minutos",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "f34445b4-6841-4d14-8676-5e979962acea",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        128
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "backend_url",
+              "value": "https://script.google.com/macros/s/AKfycbwbh_qzXHXpeY5Z3LiTsoH855lDFE3Ezd45PFQqyKRjEFQaRkydhHFto_-OSae_U9Mf/exec",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "fdb286fa-3833-47a4-9673-9ee23822ffe3",
+      "name": "Planes confirmados",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        128
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "estado",
+              "condition": "eq",
+              "keyValue": "confirmado"
+            },
+            {
+              "keyName": "llegaron_enviado",
+              "condition": "isEmpty"
+            }
+          ]
+        },
+        "returnAll": true
+      }
+    },
+    {
+      "id": "d73aad1c-76f9-45e5-829a-4192809b2067",
+      "name": "En ventana de 3 h",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        128
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "v1",
+              "leftValue": "={{ (() => { const t = new Date($json.t_encuentro).getTime(); const n = Date.now(); return !isNaN(t) && t <= n && n <= t + 3 * 3600 * 1000; })() }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "d85ea98f-b496-4a2c-9303-38145b4f006a",
+      "name": "Ver plan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        128
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Config').first().json.backend_url }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "view",
+              "value": "plan"
+            },
+            {
+              "name": "plan_id",
+              "value": "={{ $json.plan_id }}"
+            },
+            {
+              "name": "pid",
+              "value": "={{ $json.pid_organizador }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "49ae4315-ecf3-4233-a619-220a41be359e",
+      "name": "Decidir paso",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        128
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const fila = $('En ventana de 3 h').item.json;\nlet r = $json || {};\nif (typeof r.data === 'string') {\n  try { r = JSON.parse(r.data); } catch (e) { r = { ok: false, error: 'respuesta_no_json' }; }\n}\nconst p = r.plan || r.data || r;\nconst estado = String(p.estado || '').toLowerCase();\nconst invitados = Number(p.n_invitados);\nconst llegaron = Number(p.n_llegaron !== undefined ? p.n_llegaron : p.llegaron);\nconst t = new Date(fila.t_encuentro).getTime();\nconst ahora = Date.now();\nlet accion = 'nada';\nlet codigo = '';\nif (r.ok !== true) { accion = 'error'; codigo = String(r.error || r.code || 'view_plan_fallido'); }\nelse if (estado === 'caido') { accion = 'caido'; }\nelse if (!fila.checkpoint_enviado) { accion = 'checkpoint'; }\nelse if (!Number.isFinite(invitados) || !Number.isFinite(llegaron) || invitados <= 0) { accion = fila.aviso_llegada_enviado ? 'nada' : 'error'; codigo = 'llegadas_desconocidas'; }\nelse if (llegaron >= invitados) { accion = 'llegaron'; }\nelse if (ahora >= t + 30 * 60 * 1000 && !fila.aviso_llegada_enviado) { accion = 'faltan'; }\nreturn { json: { accion, codigo, plan_id: fila.plan_id, grupo_wa: fila.grupo_wa || '', n_invitados: invitados, n_llegaron: llegaron } };"
+      }
+    },
+    {
+      "id": "09678e7d-8859-43e1-a7eb-1055853c9385",
+      "name": "Textos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        128
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": true,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "plantilla_checkpoint",
+              "value": "¿Ya llegaron? Cuando estén en el sitio respondan LLEGUÉ. No usamos su ubicación. Y al volver, un \"ya en casa\" nos deja tranquilos.",
+              "type": "string"
+            },
+            {
+              "id": "t2",
+              "name": "plantilla_llegaron",
+              "value": "¡Ya está todo el parche! 🙌 Disfruten. Al volver, un \"ya en casa\" nos deja tranquilos.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ff6d1a0a-71ad-4640-b7c8-7933e6573b21",
+      "name": "Según paso",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1328,
+        464
+      ],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "checkpoint",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "checkpoint"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "llegaron",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "llegaron"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "faltan",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "faltan"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "caido",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "caido"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "error",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "error"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "da676fe4-f3b8-4dd3-9349-50046d119f53",
+      "name": "Enviar /checkpoint",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        128
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tI8cHPMw88jpu5XY",
+          "cachedResultName": "SW · Enviar mensaje"
+        },
+        "mode": "each",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "paso": "/checkpoint",
+            "texto": "={{ $json.plantilla_checkpoint }}",
+            "plan_id": "={{ $json.plan_id }}",
+            "evento_msg": "",
+            "grupo_wa": "={{ $json.grupo_wa }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "texto",
+              "displayName": "texto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evento_msg",
+              "displayName": "evento_msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "grupo_wa",
+              "displayName": "grupo_wa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "25d05f6c-0f31-4101-a288-6a20bff554fa",
+      "name": "¿Checkpoint enviado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        128
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ok",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "d4480e3d-3468-41a6-a232-df5fd485c035",
+      "name": "Enviar /llegaron",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        320
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tI8cHPMw88jpu5XY",
+          "cachedResultName": "SW · Enviar mensaje"
+        },
+        "mode": "each",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "paso": "/llegaron",
+            "texto": "={{ $json.plantilla_llegaron }}",
+            "plan_id": "={{ $json.plan_id }}",
+            "evento_msg": "",
+            "grupo_wa": "={{ $json.grupo_wa }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "texto",
+              "displayName": "texto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evento_msg",
+              "displayName": "evento_msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "grupo_wa",
+              "displayName": "grupo_wa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "08e2d5f2-58fc-42ed-8bad-a4fc871f69ec",
+      "name": "¿Llegaron enviado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        320
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ok",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f2059557-b06b-4f37-926b-9b3cb471755c",
+      "name": "Avisar revisor: faltan por llegar",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        512
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "each",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $json.plan_id }}",
+            "motivo": "={{ 'Faltan personas por llegar (' + $json.n_llegaron + ' de ' + $json.n_invitados + ') 30 min después de la hora de encuentro. No se escribió al grupo. Usa «Pasar al mago» en la consola' }}",
+            "codigo": "faltan_llegadas"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "fd977aba-609a-44dc-a27a-6ef5e2ca60bd",
+      "name": "Marcar aviso de llegada",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1776,
+        512
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Decidir paso').item.json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "aviso_llegada_enviado": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "aviso_llegada_enviado",
+              "displayName": "aviso_llegada_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f9f81d95-0692-46b8-8c66-1dd6c92c598c",
+      "name": "Marcar plan caído",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1552,
+        704
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "estado": "caido"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "448d2ac6-b41a-40ea-8aa0-d4216ff8dae8",
+      "name": "Avisar revisor: error",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        896
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "each",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $json.plan_id }}",
+            "motivo": "={{ 'Día del plan: no se pudo leer el plan o su estado es desconocido. No se envió nada al grupo. Usa «Pasar al mago» en la consola' }}",
+            "codigo": "={{ $json.codigo }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "284878e7-c362-4b96-8e6e-b6c7c89a3702",
+      "name": "Marcar checkpoint enviado",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2000,
+        128
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Decidir paso').item.json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "checkpoint_enviado": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "checkpoint_enviado",
+              "displayName": "checkpoint_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "84436ea6-3437-41ab-8424-6b1fc8034bee",
+      "name": "Marcar llegaron enviado",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2000,
+        320
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Decidir paso').item.json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "llegaron_enviado": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "llegaron_enviado",
+              "displayName": "llegaron_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "08fc0385-4d53-4055-b2de-93885489e6b9",
+      "name": "Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        928,
+        896
+      ],
+      "parameters": {
+        "content": "## W4 · Día del plan\nCorre cada 15 min (hora de Cali), durante las 3 h siguientes a la hora de encuentro.\n\n1. Busca en e15_planes planes «confirmado» sin /llegaron.\n2. Consulta view=plan.\n3. Si aún no se mandó: envía /checkpoint (sin evento) y marca checkpoint_enviado.\n4. Si ya llegaron todos (n_llegaron ≥ n_invitados): envía /llegaron con evento y marca llegaron_enviado.\n5. Si a los 30 min faltan personas: avisa al revisor una sola vez (aviso_llegada_enviado). Nunca mensajes por persona.\n6. Plan caído: lo marca caído y no envía nada. Error: solo revisor («Usa «Pasar al mago» en la consola»).\n\nSin datos de ejecución ni claves."
+      }
+    }
+  ],
+  "connections": {
+    "Cada 15 minutos": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Planes confirmados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planes confirmados": {
+      "main": [
+        [
+          {
+            "node": "En ventana de 3 h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "En ventana de 3 h": {
+      "main": [
+        [
+          {
+            "node": "Ver plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ver plan": {
+      "main": [
+        [
+          {
+            "node": "Decidir paso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decidir paso": {
+      "main": [
+        [
+          {
+            "node": "Textos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Textos": {
+      "main": [
+        [
+          {
+            "node": "Según paso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Según paso": {
+      "main": [
+        [
+          {
+            "node": "Enviar /checkpoint",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar /llegaron",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar revisor: faltan por llegar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Marcar plan caído",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar revisor: error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar /checkpoint": {
+      "main": [
+        [
+          {
+            "node": "¿Checkpoint enviado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Checkpoint enviado?": {
+      "main": [
+        [
+          {
+            "node": "Marcar checkpoint enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar /llegaron": {
+      "main": [
+        [
+          {
+            "node": "¿Llegaron enviado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Llegaron enviado?": {
+      "main": [
+        [
+          {
+            "node": "Marcar llegaron enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avisar revisor: faltan por llegar": {
+      "main": [
+        [
+          {
+            "node": "Marcar aviso de llegada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false
+  },
+  "id": "9t0tnr9joYVHyuk7"
+}

@@ -1,0 +1,1075 @@
+{
+  "name": "SW · Enviar mensaje",
+  "nodes": [
+    {
+      "id": "0745e52b-90fb-47ef-8fb9-d6a2bf8dc092",
+      "name": "Entrada",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        96
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "paso",
+              "type": "string"
+            },
+            {
+              "name": "texto",
+              "type": "string"
+            },
+            {
+              "name": "plan_id",
+              "type": "string"
+            },
+            {
+              "name": "evento_msg",
+              "type": "string"
+            },
+            {
+              "name": "grupo_wa",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "7d6e4e30-49f0-4974-9f56-17587540751f",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        224
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "backend_url",
+              "value": "https://script.google.com/macros/s/AKfycbwbh_qzXHXpeY5Z3LiTsoH855lDFE3Ezd45PFQqyKRjEFQaRkydhHFto_-OSae_U9Mf/exec",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "evolution_url",
+              "value": "https://EVOLUTION_HOST",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "instancia",
+              "value": "INSTANCIA",
+              "type": "string"
+            },
+            {
+              "id": "c4",
+              "name": "envios_pausados",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "5ef00f29-7302-45ea-9518-5cbfeaeb7c9f",
+      "name": "Buscar grupo del plan",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        224
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Entrada').item.json.plan_id || '__sin_plan__' }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "271531ab-7b28-4125-b7d6-4b380c456423",
+      "name": "Preparar envío",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        224
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "p1",
+              "name": "grupo",
+              "value": "={{ $('Entrada').first().json.grupo_wa || $json.grupo_wa || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "p2",
+              "name": "tiene_texto",
+              "value": "={{ String($('Entrada').first().json.texto || '').trim().length > 0 }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "a7574271-8b9f-4c9a-9964-1efe44f5ff6c",
+      "name": "¿Hay grupo y texto?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        416
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d1",
+              "leftValue": "={{ $json.grupo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "d2",
+              "leftValue": "={{ $json.tiene_texto }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "5a78b2c7-80f4-4442-9bf4-18ed6e352928",
+      "name": "Enviar al grupo (Evolution)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1024,
+        320
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.evolution_url }}/message/sendText/{{ $('Config').first().json.instancia }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $('Preparar envío').first().json.grupo, text: $('Entrada').first().json.texto }) }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "executeOnce": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "2a4d3b87-67cd-4db2-b246-d26e3df50ba8",
+      "name": "¿Registrar evento?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1248,
+        224
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1",
+              "leftValue": "={{ $('Entrada').first().json.evento_msg || '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4ae0c535-89e9-44b3-b2e2-567167f16ee4",
+      "name": "Avisar: envío fallido",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1248,
+        416
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Entrada').first().json.plan_id || '' }}",
+            "motivo": "={{ 'No se pudo enviar ' + ($('Entrada').first().json.paso || '[paso]') + ' al grupo' }}",
+            "codigo": "={{ 'envio_fallido' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "d1ff8b71-9b96-443f-ae25-55926bf3bd8b",
+      "name": "Resultado: envío fallido",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1472,
+        416
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "Resultado: envío fallido-0",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "Resultado: envío fallido-1",
+              "name": "error",
+              "value": "envio_fallido",
+              "type": "string"
+            },
+            {
+              "id": "Resultado: envío fallido-2",
+              "name": "paso",
+              "value": "={{ $('Entrada').first().json.paso }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "e9252fd4-524e-4bef-8909-94c62e7d28fa",
+      "name": "Avisar: sin grupo o texto",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1024,
+        608
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Entrada').first().json.plan_id || '' }}",
+            "motivo": "={{ 'No hay grupo de WhatsApp o texto para el paso ' + ($('Entrada').first().json.paso || '[paso]') }}",
+            "codigo": "={{ 'sin_grupo' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "3653796e-5a72-4bc6-bf62-b30c5a08ec15",
+      "name": "Resultado: sin grupo",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        608
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "Resultado: sin grupo-0",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "Resultado: sin grupo-1",
+              "name": "error",
+              "value": "sin_grupo",
+              "type": "string"
+            },
+            {
+              "id": "Resultado: sin grupo-2",
+              "name": "paso",
+              "value": "={{ $('Entrada').first().json.paso }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "a66be1e7-2325-4a2d-9f49-f35857daf0e1",
+      "name": "Registrar evento",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1328,
+        256
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.backend_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'evento', plan_id: $('Entrada').first().json.plan_id || '', pid: '', tipo: $('Entrada').first().json.evento_msg }) }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "executeOnce": true,
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "Ejk44b6kRLGGSchK",
+          "name": "Sintonia MOTOR_KEY (body)"
+        }
+      }
+    },
+    {
+      "id": "6bf68dbb-c1c8-4126-8860-6450b15cac18",
+      "name": "¿Evento ok?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1552,
+        176
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "k1",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "9a0d2945-65fd-46e8-9292-84f96f90634e",
+      "name": "Avisar: evento no registrado",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1776,
+        352
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Entrada').first().json.plan_id || '' }}",
+            "motivo": "={{ 'El mensaje ' + ($('Entrada').first().json.paso || '[paso]') + ' sí se envió al grupo, pero el backend no registró el evento ' + ($('Entrada').first().json.evento_msg || '') }}",
+            "codigo": "={{ ($('Registrar evento').isExecuted && $('Registrar evento').first().json.error) ? String($('Registrar evento').first().json.error) : 'evento_fallido' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "bd57d87d-dc85-4409-a6a9-b4f418f078df",
+      "name": "Resultado: enviado (sin evento)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1440,
+        192
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "Resultado: enviado (sin evento)-0",
+              "name": "ok",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "Resultado: enviado (sin evento)-1",
+              "name": "enviado",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "Resultado: enviado (sin evento)-2",
+              "name": "evento_ok",
+              "value": "={{ null }}",
+              "type": "string"
+            },
+            {
+              "id": "Resultado: enviado (sin evento)-3",
+              "name": "paso",
+              "value": "={{ $('Entrada').first().json.paso }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "d45c6547-36b6-409e-8add-e10d82282631",
+      "name": "Resultado: enviado y registrado",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1776,
+        128
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "Resultado: enviado y registrado-0",
+              "name": "ok",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "Resultado: enviado y registrado-1",
+              "name": "enviado",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "Resultado: enviado y registrado-2",
+              "name": "evento_ok",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "Resultado: enviado y registrado-3",
+              "name": "paso",
+              "value": "={{ $('Entrada').first().json.paso }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "c9572ed0-d414-4998-850d-c29d24fe0138",
+      "name": "Resultado: enviado, evento falló",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2000,
+        352
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "Resultado: enviado, evento falló-0",
+              "name": "ok",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "Resultado: enviado, evento falló-1",
+              "name": "enviado",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "Resultado: enviado, evento falló-2",
+              "name": "evento_ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "Resultado: enviado, evento falló-3",
+              "name": "paso",
+              "value": "={{ $('Entrada').first().json.paso }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "c02970eb-506c-41cc-8c3a-9b34d00a38a6",
+      "name": "Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        928,
+        608
+      ],
+      "parameters": {
+        "content": "## SW · Enviar mensaje\nSub-flujo compartido: todos los flujos del motor (W0–W5) lo llaman para publicar un mensaje en el grupo de WhatsApp.\n\n**Entrada:** paso, texto, plan_id, evento_msg (opcional), grupo_wa (opcional; si falta se busca en e15_planes).\n\n1. Envía el texto final al grupo vía Evolution API.\n2. Si hay evento_msg, lo registra en el backend (action evento, pid vacío) para que la consola lo marque como enviado automáticamente.\n3. Devuelve { ok, enviado, evento_ok, paso } al flujo que lo llamó.\n\nCualquier error avisa al revisor («Pasar al mago») y nunca improvisa en el grupo. No guarda el texto ni datos de ejecución. Claves solo en credenciales."
+      }
+    },
+    {
+      "id": "c9721394-b457-4e17-92ca-26e8350e3e67",
+      "name": "¿Envíos activos?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        40
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "k1",
+              "leftValue": "={{ $('Config').first().json.envios_pausados !== true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f4a2ccfd-902d-42ae-af9e-de0fc80fd25b",
+      "name": "Avisar: envíos pausados",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1024,
+        -80
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "mode": "once",
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Entrada').first().json.plan_id || '' }}",
+            "motivo": "={{ 'Envíos pausados (interruptor en Config). No se envió el paso ' + ($('Entrada').first().json.paso || '[paso]') }}",
+            "codigo": "={{ 'envios_pausados' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "1de437eb-100b-405d-852b-c63786badd94",
+      "name": "Resultado: pausado",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        -80
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "rp0",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "rp1",
+              "name": "error",
+              "value": "envios_pausados",
+              "type": "string"
+            },
+            {
+              "id": "rp2",
+              "name": "paso",
+              "value": "={{ $('Entrada').first().json.paso }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true
+    }
+  ],
+  "connections": {
+    "Entrada": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Buscar grupo del plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar grupo del plan": {
+      "main": [
+        [
+          {
+            "node": "Preparar envío",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar envío": {
+      "main": [
+        [
+          {
+            "node": "¿Envíos activos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Hay grupo y texto?": {
+      "main": [
+        [
+          {
+            "node": "Enviar al grupo (Evolution)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar: sin grupo o texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar al grupo (Evolution)": {
+      "main": [
+        [
+          {
+            "node": "¿Registrar evento?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar: envío fallido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Registrar evento?": {
+      "main": [
+        [
+          {
+            "node": "Registrar evento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resultado: enviado (sin evento)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avisar: envío fallido": {
+      "main": [
+        [
+          {
+            "node": "Resultado: envío fallido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avisar: sin grupo o texto": {
+      "main": [
+        [
+          {
+            "node": "Resultado: sin grupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar evento": {
+      "main": [
+        [
+          {
+            "node": "¿Evento ok?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar: evento no registrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Evento ok?": {
+      "main": [
+        [
+          {
+            "node": "Resultado: enviado y registrado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar: evento no registrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avisar: evento no registrado": {
+      "main": [
+        [
+          {
+            "node": "Resultado: enviado, evento falló",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Envíos activos?": {
+      "main": [
+        [
+          {
+            "node": "¿Hay grupo y texto?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar: envíos pausados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avisar: envíos pausados": {
+      "main": [
+        [
+          {
+            "node": "Resultado: pausado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false
+  },
+  "id": "tI8cHPMw88jpu5XY"
+}

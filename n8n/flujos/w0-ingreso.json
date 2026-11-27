@@ -1,0 +1,310 @@
+{
+  "name": "W0 · Ingreso",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Grupo creado",
+        "formDescription": "Sintonía E1.5 · Envía el mensaje de ingreso al grupo de WhatsApp.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "grupo_id",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "grupo_wa",
+              "placeholder": "120363000000000000@g.us",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "Listo. El mensaje de ingreso se está enviando al grupo."
+            }
+          }
+        }
+      },
+      "id": "3a2513e1-0d08-4a7a-9a79-7cc6da0c78dd",
+      "name": "Grupo creado",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        96
+      ],
+      "webhookId": "2f0e345e-5fc2-4502-a914-8e691b75e56c"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "j1",
+              "leftValue": "={{ String($json.grupo_wa || '').trim() }}",
+              "rightValue": "@g.us",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "666e7af2-1515-4ea7-905e-2143d318f04f",
+      "name": "¿grupo_wa válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "plantilla_ingreso",
+              "value": "¡Hola, parche! 👋 Soy Sintonía, el quinto amigo que ayuda a que el plan sí se dé: menos vueltas y opciones reales en Cali.\nLes propongo opciones, ustedes votan y yo me encargo de cuadrar la logística.\nTodas las personas de este grupo dieron su autorización. En este piloto una persona del equipo revisa todo lo que propongo.\n👤 Si necesitan hablar con alguien del equipo, escriban HUMANO.\n🚪 Si alguien quiere salir, escribe SALIR o sale del grupo, sin problema.\n🔒 Aviso de privacidad: https://josebdiaz.github.io/sintonia-piloto/piloto/aviso.html",
+              "type": "string"
+            },
+            {
+              "id": "t2",
+              "name": "grupo_wa",
+              "value": "={{ String($('Grupo creado').item.json.grupo_wa).trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "t3",
+              "name": "grupo_id",
+              "value": "={{ $('Grupo creado').item.json.grupo_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "940655e7-7faa-4f1a-9974-32ae26f6ba5e",
+      "name": "Textos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tI8cHPMw88jpu5XY",
+          "cachedResultName": "SW · Enviar mensaje"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "paso": "/ingreso",
+            "texto": "={{ String($json.plantilla_ingreso || '').replace(/\\{grupo_id\\}/g, $json.grupo_id || '[grupo_id]') }}",
+            "plan_id": "",
+            "evento_msg": "msg_ingreso",
+            "grupo_wa": "={{ $json.grupo_wa }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "texto",
+              "displayName": "texto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evento_msg",
+              "displayName": "evento_msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "grupo_wa",
+              "displayName": "grupo_wa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "3e1b262a-815f-465c-8532-9786121bcc19",
+      "name": "Enviar /ingreso",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "",
+            "motivo": "={{ 'grupo_wa inválido en Ingreso (grupo ' + ($('Grupo creado').item.json.grupo_id || '[grupo_id]') + '). Usa «Pasar al mago» en la consola' }}",
+            "codigo": "grupo_wa_invalido"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "efaaec2b-ca59-4d2c-bacb-dd94834e1050",
+      "name": "Avisar revisor: grupo inválido",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## W0 · Ingreso (opcional)\nSe dispara con el formulario «Grupo creado» (grupo_id + grupo_wa, el JID del grupo que termina en @g.us).\n\n1. Revisa que grupo_wa sea un grupo válido; si no, avisa al revisor y no escribe nada al grupo.\n2. Toma el texto exacto de /ingreso del nodo «Textos».\n3. Lo envía al grupo con el sub-flujo «SW · Enviar mensaje» y registra el evento msg_ingreso.\n\nSi el envío falla, el sub-flujo ya avisa al revisor («Usa «Pasar al mago» en la consola»). No guarda datos de ejecución ni claves."
+      },
+      "id": "7a54487f-c7b2-4a97-9c31-d77f675b981f",
+      "name": "Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        112,
+        352
+      ]
+    }
+  ],
+  "connections": {
+    "Grupo creado": {
+      "main": [
+        [
+          {
+            "node": "¿grupo_wa válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿grupo_wa válido?": {
+      "main": [
+        [
+          {
+            "node": "Textos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar revisor: grupo inválido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Textos": {
+      "main": [
+        [
+          {
+            "node": "Enviar /ingreso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false,
+    "binaryMode": "separate"
+  },
+  "id": "Mzl5uLOb1wDqcijQ"
+}

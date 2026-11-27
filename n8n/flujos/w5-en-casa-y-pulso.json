@@ -1,0 +1,895 @@
+{
+  "name": "W5 · En casa y pulso",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "78fc700b-30e6-49af-be92-1a245233e41a",
+      "name": "Cada 15 minutos",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "backend_url",
+              "value": "https://script.google.com/macros/s/AKfycbwbh_qzXHXpeY5Z3LiTsoH855lDFE3Ezd45PFQqyKRjEFQaRkydhHFto_-OSae_U9Mf/exec",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "46214a61-318f-4084-a6a2-965a3ba81372",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "estado",
+              "keyValue": "confirmado"
+            },
+            {
+              "keyName": "retro_enviado",
+              "condition": "isEmpty"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "cee0a0a9-8306-4b2a-9504-6679f880afa9",
+      "name": "Planes confirmados",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ahora = DateTime.now().setZone('America/Bogota');\nconst salida = [];\nfor (const it of $input.all()) {\n  const f = it.json;\n  if (!f || !f.plan_id || !f.t_encuentro) continue;\n  const t = DateTime.fromISO(String(f.t_encuentro)).setZone('America/Bogota');\n  if (!t.isValid) continue;\n  let paso = '';\n  if (!f.en_casa_enviado) {\n    if (ahora >= t.plus({ hours: 3 })) paso = 'en_casa';\n  } else if (!f.retro_enviado) {\n    const retro = t.plus({ days: 1 }).set({ hour: 10, minute: 0, second: 0, millisecond: 0 });\n    if (ahora >= retro) paso = 'retro';\n  }\n  if (paso) salida.push({ json: { plan_id: f.plan_id, pid_organizador: f.pid_organizador || '', grupo_wa: f.grupo_wa || '', paso } });\n}\nreturn salida;"
+      },
+      "id": "ea6f62f4-abd7-4bd7-b62d-7d00f7c80b8a",
+      "name": "Toca paso",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config').first().json.backend_url }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "view",
+              "value": "plan"
+            },
+            {
+              "name": "plan_id",
+              "value": "={{ $json.plan_id }}"
+            },
+            {
+              "name": "pid",
+              "value": "={{ $json.pid_organizador }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "d05ba329-5f8a-4c9f-b13d-ed932c49b691",
+      "name": "Ver plan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const fila = $('Toca paso').item.json;\nlet r = $json || {};\nif (typeof r.data === 'string') {\n  try { r = JSON.parse(r.data); } catch (e) { r = { ok: false, error: 'respuesta_no_json' }; }\n}\nconst p = r.plan || r.data || r;\nconst estado = String(p.estado || '').toLowerCase();\nlet accion = fila.paso;\nlet codigo = '';\nif (r.ok !== true) { accion = 'error'; codigo = String(r.error || r.code || 'view_plan_fallido'); }\nelse if (estado === 'caido') { accion = 'caido'; }\nelse if (!estado) { accion = 'error'; codigo = 'estado_desconocido'; }\nreturn { json: { accion, codigo, plan_id: fila.plan_id, grupo_wa: fila.grupo_wa, estado } };"
+      },
+      "id": "9272c60a-7094-441c-a696-b9a8c516a34c",
+      "name": "Decidir paso",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "plantilla_en_casa",
+              "value": "¿Ya todos en casa? Cuando lleguen, un \"ya en casa\" basta. Gracias por sintonizar hoy.",
+              "type": "string"
+            },
+            {
+              "id": "t2",
+              "name": "plantilla_retro",
+              "value": "¿Cómo les fue? Si hubo sintonía, sigan 🙌\nCuéntennos en 4 minutos (ábranlo en el mismo celular con el que se registraron): https://josebdiaz.github.io/sintonia-piloto/piloto/retro.html\nSus respuestas son privadas.",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "b38a2dcc-b72a-4faa-8148-f91553bb2a9e",
+      "name": "Textos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "en_casa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "en_casa"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "retro",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "retro"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "caido",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "caido"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion }}",
+                    "rightValue": "error",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "error"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4313c364-f513-42ec-9b0a-aa21d6485fec",
+      "name": "Según paso",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1328,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tI8cHPMw88jpu5XY",
+          "cachedResultName": "SW · Enviar mensaje"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "paso": "/en_casa",
+            "texto": "={{ $json.plantilla_en_casa }}",
+            "plan_id": "={{ $json.plan_id }}",
+            "evento_msg": "",
+            "grupo_wa": "={{ $json.grupo_wa }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "texto",
+              "displayName": "texto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evento_msg",
+              "displayName": "evento_msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "grupo_wa",
+              "displayName": "grupo_wa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "94a91d7a-afee-4caf-b1dc-c53f754d04e7",
+      "name": "Enviar /en_casa",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ok",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "bf84dfb3-ef21-4e83-9609-0fde09726500",
+      "name": "¿En casa enviado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tI8cHPMw88jpu5XY",
+          "cachedResultName": "SW · Enviar mensaje"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "paso": "/retro",
+            "texto": "={{ $json.plantilla_retro }}",
+            "plan_id": "={{ $json.plan_id }}",
+            "evento_msg": "msg_retro",
+            "grupo_wa": "={{ $json.grupo_wa }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "paso",
+              "displayName": "paso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "texto",
+              "displayName": "texto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evento_msg",
+              "displayName": "evento_msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "grupo_wa",
+              "displayName": "grupo_wa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "05067fe2-c8dc-4c40-b29f-0d8dea3dfbcd",
+      "name": "Enviar /retro",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ok",
+              "leftValue": "={{ $json.ok === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "aab53fbc-895f-4f72-98d2-230133a4400c",
+      "name": "¿Retro enviado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "keyValue": "={{ $json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "estado": "caido"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "22be24a7-339d-4018-9bb7-193cf93578a4",
+      "name": "Marcar plan caído",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1552,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $json.plan_id }}",
+            "motivo": "={{ 'En casa y pulso: no se pudo leer el plan o su estado es desconocido. No se envió nada al grupo. Usa «Pasar al mago» en la consola' }}",
+            "codigo": "={{ $json.codigo }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "c3b50c0d-931a-47b3-b56c-d2d675485907",
+      "name": "Avisar revisor: error",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "keyValue": "={{ $('Decidir paso').item.json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "en_casa_enviado": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "en_casa_enviado",
+              "displayName": "en_casa_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f1fdac82-480b-4c53-b864-c19fdb085bd2",
+      "name": "Marcar en_casa enviado",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2000,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Y4jUSn8qX988jY2A",
+          "cachedResultName": "e15_planes"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "plan_id",
+              "keyValue": "={{ $('Decidir paso').item.json.plan_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "retro_enviado": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "retro_enviado",
+              "displayName": "retro_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c441e3f1-004f-425d-b12f-577ccce8ea32",
+      "name": "Marcar retro enviado",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2000,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## W5 · En casa y pulso\nCorre cada 15 min (hora de Cali).\n\n1. Busca en e15_planes planes «confirmado» sin /retro.\n2. 3 h después de la hora de encuentro: envía /en_casa (evento en_casa) y marca en_casa_enviado.\n3. Al día siguiente a las 10:00 (hora de Cali): envía /retro (evento msg_retro) y marca retro_enviado.\n4. Antes de cada envío consulta view=plan: si el plan está caído no envía nada y lo marca caído.\n5. Error o estado desconocido: solo avisa al revisor («Usa «Pasar al mago» en la consola»).\n\nSin datos de ejecución ni claves."
+      },
+      "id": "110a9ef3-d105-4ce6-a64c-976a525395af",
+      "name": "Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        992,
+        304
+      ]
+    }
+  ],
+  "connections": {
+    "Cada 15 minutos": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Planes confirmados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planes confirmados": {
+      "main": [
+        [
+          {
+            "node": "Toca paso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Toca paso": {
+      "main": [
+        [
+          {
+            "node": "Ver plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ver plan": {
+      "main": [
+        [
+          {
+            "node": "Decidir paso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decidir paso": {
+      "main": [
+        [
+          {
+            "node": "Textos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Textos": {
+      "main": [
+        [
+          {
+            "node": "Según paso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Según paso": {
+      "main": [
+        [
+          {
+            "node": "Enviar /en_casa",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar /retro",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Marcar plan caído",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Avisar revisor: error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar /en_casa": {
+      "main": [
+        [
+          {
+            "node": "¿En casa enviado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿En casa enviado?": {
+      "main": [
+        [
+          {
+            "node": "Marcar en_casa enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar /retro": {
+      "main": [
+        [
+          {
+            "node": "¿Retro enviado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Retro enviado?": {
+      "main": [
+        [
+          {
+            "node": "Marcar retro enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false,
+    "binaryMode": "separate"
+  },
+  "id": "Zbw7kUrEgrIZjAMJ"
+}
