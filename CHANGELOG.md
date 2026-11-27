@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Motor E1.5: plan para pasar a agentes (sin cambios de consola, backend ni flujos)
+- `n8n/PLAN-agentico.md` v0.1: Redactor con la voz de Sintonía alrededor de un bloque de datos fijo, guardas en código, Revisor (QA) independiente y plantilla de E1 si algo falla; seguridad con plantilla y escalamiento; relojes de E1 sin cambios. Carriles por tipo de mensaje para d4, fases A0–A6, decisiones y riesgos.
+- Decisión del 27/11: luz verde de Néstor al qué y al cómo, según José; falta por escrito (d5). Reemplaza la recomendación de flujos fijos (`ESTADO.md` §0; `n8n/PLAN-construccion.md` §7.1).
+- `ESTADO.md` §0 y pendiente 45 nuevo.
+
 ### 2026-11-27 · Motor E1.5, fase 1: MCP de n8n conectado, `e15_entrada` y E15-00 en la instancia (inactivo)
 - Claude conectado al MCP de la instancia de n8n con OAuth. Solo ve los flujos marcados «Available in MCP»; por ahora ninguno de los 9 anteriores.
 - Data Table `e15_entrada` creada con las 11 columnas de texto de `n8n/PLAN-construccion.md` §2.1.

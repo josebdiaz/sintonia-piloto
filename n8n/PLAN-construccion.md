@@ -107,6 +107,8 @@ Dos preguntas distintas: agentes **dentro del producto** (n8n le habla al grupo 
 
 ### 7.1 En el producto: no
 
+> **Superado el 27/11:** con la luz verde de Néstor, el motor pasa a agentes con Redactor y Revisor. Plan: `n8n/PLAN-agentico.md`. Lo de abajo queda como registro de la recomendación anterior.
+
 Se mantiene la recomendación del 27/11 (`ESTADO.md` §0, «Orquestación de E1.5 y Nod»): flujos fijos con los snippets de E1, y la IA solo clasifica, con salida cerrada, lo que las reglas no entienden. Un agente que decide y redacta rompería la copia de E1, el «nada inventado» y el conteo de errores del criterio de parada (40 %). Además, un error visible del motor cuesta más confianza que uno del mago.
 
 ### 7.2 Para construir: solo donde paga

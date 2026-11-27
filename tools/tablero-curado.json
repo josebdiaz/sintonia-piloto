@@ -177,6 +177,10 @@
     "44": {
       "frente": "motor",
       "nota": "Conectar el MCP de n8n e importar E15-00 (fase 1 del plan)"
+    },
+    "45": {
+      "frente": "motor",
+      "nota": "Fase A0 del plan agéntico: contrato, voz, guardas y bitácora"
     }
   },
   "hitos": [
