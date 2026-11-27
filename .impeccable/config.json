@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-11-27T23:27:00.297Z",
+        "reason": "Claude: Inter es la tipografía del sistema del home de Sintonía (index.html, --f-txt) que esta página reutiliza a propósito"
+      }
+    ]
+  }
+}
