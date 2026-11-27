@@ -119,6 +119,18 @@ const ENTRADA = (() => {
     return p + (ESCALAR[r.motivo] || 'esto pasaría a una persona del equipo') + '.';
   }
 
-  return { clasificar, interpretarTexto, forma, eco };
+  // Aviso a la persona del equipo (SW · Avisar revisor): solo lo que necesita a alguien. Sin texto, nombre ni número:
+  // quien lo recibe lo lee en el grupo. Los stickers, medios y votos cifrados no avisan (se revisan en la tabla).
+  const AVISOS = { pidio_humano: 'alguien escribió HUMANO en el grupo de prueba. Entra al grupo y responde como persona del equipo',
+    sensible: 'hay un mensaje sensible (salud, ubicación o emergencia) en el grupo de prueba. Revísalo ya',
+    no_entendido: 'llegó un mensaje que no entendí en el grupo de prueba. Revísalo en el grupo' };
+  function aviso(r) {
+    if (!r) return '';
+    if (r.accion === 'escalar' && AVISOS[r.motivo]) return AVISOS[r.motivo];
+    if (r.aviso_equipo) return 'alguien escribió SALIR en el grupo de prueba';
+    return '';
+  }
+
+  return { clasificar, interpretarTexto, forma, eco, aviso };
 })();
 if (typeof module !== 'undefined') module.exports = ENTRADA;

@@ -20,8 +20,8 @@ const eco = String(c.eco) === 'true';   // respuesta de prueba en el grupo del e
 return $('Evolution (entrada)').all().map(i => {
   const r = ENTRADA.clasificar(i.json, cfg);
   const b = i.json && i.json.body && !i.json.event ? i.json.body : (i.json || {});   // Evolution trae su URL e instancia en el cuerpo
-  return { json: Object.assign(r, { veto: r.veto === true, eco_texto: eco ? ENTRADA.eco(r) : '',
-    evo_url: eco ? String(b.server_url || '').replace(/\/$/, '') : '', evo_instancia: eco ? String(b.instance || '') : '' }) };
+  return { json: Object.assign(r, { veto: r.veto === true, eco_texto: eco ? ENTRADA.eco(r) : '', aviso: ENTRADA.aviso(r),
+    evo_url: String(b.server_url || '').replace(/\/$/, ''), evo_instancia: String(b.instance || '') }) };
 });
 """
 def nid(n): return str(uuid.uuid5(uuid.NAMESPACE_URL, 'sintonia/e15-00/' + n))
@@ -66,6 +66,17 @@ nodos = [
      "specifyBody": "json", "jsonBody": "={{ JSON.stringify({ number: $json.grupo, text: $json.eco_texto }) }}", "options": {}},
    "credentials": {"httpHeaderAuth": {"name": "Evolution API · Hostinger"}},
    "onError": "continueRegularOutput"},
+  {"id": nid('av_if'), "name": "¿Avisar a una persona?", "type": "n8n-nodes-base.if", "typeVersion": 2.2, "position": [880, 580],
+   "parameters": {"conditions": {"options": {"caseSensitive": True, "leftValue": "", "typeValidation": "loose", "version": 2},
+     "conditions": [{"id": "a1", "leftValue": "={{ $json.aviso }}", "rightValue": "", "operator": {"type": "string", "operation": "notEmpty", "singleValue": True}}],
+     "combinator": "and"}, "options": {}}},
+  {"id": nid('av_sw'), "name": "Avisar a una persona", "type": "n8n-nodes-base.executeWorkflow", "typeVersion": 1.2, "position": [1100, 580],
+   "parameters": {"source": "database", "workflowId": {"__rl": True, "mode": "id", "value": "vH5Q2DxwhLl7rP4p", "cachedResultName": "SW · Avisar revisor"},
+     "workflowInputs": {"mappingMode": "defineBelow", "value": {"plan_id": "", "motivo": "={{ $json.aviso }}", "codigo": "={{ $json.motivo || $json.evento || '' }}",
+       "evo_url": "={{ $json.evo_url }}", "evo_instancia": "={{ $json.evo_instancia }}"}, "matchingColumns": [], "schema": [
+       {"id": k, "displayName": k, "required": False, "defaultMatch": False, "display": True, "canBeUsedToMatch": True, "type": "string"} for k in ("plan_id", "motivo", "codigo", "evo_url", "evo_instancia")]},
+     "options": {"waitForSubWorkflow": False}},
+   "onError": "continueRegularOutput"},
   {"id": nid('nota'), "name": "Nota", "type": "n8n-nodes-base.stickyNote", "typeVersion": 1, "position": [0, -160],
    "parameters": {"width": 900, "height": 300, "content":
      "## E15-00 · Entrada (modo prueba)\n"
@@ -80,7 +91,8 @@ con = {
   "Evolution (entrada)": {"main": [[{"node": "Config", "type": "main", "index": 0}]]},
   "Config": {"main": [[{"node": "Clasificar (entrada.js)", "type": "main", "index": 0}]]},
   "Clasificar (entrada.js)": {"main": [[{"node": "¿Se atiende?", "type": "main", "index": 0}]]},
-  "¿Se atiende?": {"main": [[{"node": "Registrar en e15_entrada", "type": "main", "index": 0}, {"node": "¿Responder (prueba)?", "type": "main", "index": 0}], []]},
+  "¿Se atiende?": {"main": [[{"node": "Registrar en e15_entrada", "type": "main", "index": 0}, {"node": "¿Responder (prueba)?", "type": "main", "index": 0}, {"node": "¿Avisar a una persona?", "type": "main", "index": 0}], []]},
+  "¿Avisar a una persona?": {"main": [[{"node": "Avisar a una persona", "type": "main", "index": 0}], []]},
   "¿Responder (prueba)?": {"main": [[{"node": "Responder en el grupo (prueba)", "type": "main", "index": 0}], []]},
 }
 wf = {"name": "E15-00 · Entrada (modo prueba)", "nodes": nodos, "connections": con, "pinData": {},

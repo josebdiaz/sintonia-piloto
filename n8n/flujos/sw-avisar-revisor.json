@@ -25,6 +25,14 @@
             {
               "name": "codigo",
               "type": "string"
+            },
+            {
+              "name": "evo_url",
+              "type": "string"
+            },
+            {
+              "name": "evo_instancia",
+              "type": "string"
             }
           ]
         }
@@ -47,13 +55,13 @@
             {
               "id": "c1",
               "name": "evolution_url",
-              "value": "https://EVOLUTION_HOST",
+              "value": "={{ $('Entrada').item.json.evo_url || 'https://EVOLUTION_HOST' }}",
               "type": "string"
             },
             {
               "id": "c2",
               "name": "instancia",
-              "value": "INSTANCIA",
+              "value": "={{ $('Entrada').item.json.evo_instancia || 'INSTANCIA' }}",
               "type": "string"
             },
             {
@@ -84,7 +92,7 @@
             {
               "id": "t1",
               "name": "texto",
-              "value": "={{ '⚠️ Sintonía E1.5 · plan ' + ($('Entrada').item.json.plan_id || '[plan_id]') + ': ' + ($('Entrada').item.json.motivo || 'Error desconocido') + ($('Entrada').item.json.codigo ? ' (código: ' + $('Entrada').item.json.codigo + ')' : '') + '. Usa «Pasar al mago» en la consola. No se envió nada al grupo.' }}",
+              "value": "={{ '⚠️ Sintonía E1.5' + ($('Entrada').item.json.plan_id ? ' · plan ' + $('Entrada').item.json.plan_id : '') + ': ' + ($('Entrada').item.json.motivo || 'error desconocido') + ($('Entrada').item.json.codigo ? ' (código: ' + $('Entrada').item.json.codigo + ')' : '') + '.' + ($('Entrada').item.json.plan_id ? ' Usa «Pasar al mago» en la consola. No se envió nada al grupo.' : '') }}",
               "type": "string"
             }
           ]

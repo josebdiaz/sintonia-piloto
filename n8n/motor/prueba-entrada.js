@@ -56,6 +56,13 @@ for (const [m, frag] of ecos) {
   if (!e.includes(frag) || emojis > 1 || /Nombre Ficticio|jajaja|accidente/.test(e)) { fallas++; console.log('✗ eco', frag, e); }
 }
 if (E.eco(E.clasificar(msg({ conversation: '2' }, { key: { remoteJid: OTRO, fromMe: false, id: 'X' } }), cfg)) !== '') { fallas++; console.log('✗ eco de lo ignorado'); }
-const extra = ecos.length + 1;
+// Aviso a la persona del equipo: HUMANO, sensible, no entendido y SALIR sí; votos y stickers no; nunca con texto ni nombre
+const avisos = [[txt('HUMANO'), true], [txt('accidente'), true], [txt('jajaja'), true], [txt('SALIR'), true],
+  [txt('2'), false], [msg({ stickerMessage: { fileSha256: 'c2hh' } }), false]];
+for (const [m, debe] of avisos) {
+  const a = E.aviso(E.clasificar(m, cfg));
+  if (!!a !== debe || /Nombre Ficticio|jajaja|accidente/.test(a)) { fallas++; console.log('✗ aviso', debe, a); }
+}
+const extra = ecos.length + 1 + avisos.length;
 console.log(fallas ? `✗ ${fallas} de ${casos.length + 1 + extra} casos fallan` : `✓ ${casos.length + 1 + extra} casos de entrada (ficticios, n = 0)`);
 process.exit(fallas ? 1 : 0);

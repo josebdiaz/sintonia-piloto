@@ -77,7 +77,7 @@
         200
       ],
       "parameters": {
-        "jsCode": "// Sintonía · E1.5 · entrada del motor (v0.2, 27/11/2026: + respuesta de prueba `eco` y veto en la tabla)\n// Clasifica lo que Evolution API manda al webhook de n8n y devuelve SOLO lo mínimo.\n// Se pega completo en el nodo Code «Clasificar» de E15-00 y se prueba con `node n8n/motor/prueba-entrada.js`.\n// No devuelve el texto, el nombre (pushName) ni la apikey que Evolution incluye en el cuerpo.\n// Las reglas de texto copian E15-01 (voto mínimo); la lista sensible suma salud, ubicación y emergencia.\n// Lo que no está decidido por el equipo va en `cfg` y se marca «por decidir».\nconst ENTRADA = (() => {\n  const SENSIBLE = /\\b(emergencia|urgente|accidente|hospital|ambulancia|policia|peligro|socorro|ayuda|enfermo|enferma|dolor|me siento mal|salud|ubicacion|donde estoy|123)\\b/;\n  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')\n    .replace(/[^a-z0-9\\s]/g, ' ').replace(/\\s+/g, ' ').trim();\n\n  function interpretarTexto(t) {\n    const n = norm(t);\n    let m;\n    if (!n) return { accion: 'escalar', motivo: 'vacio' };\n    if (SENSIBLE.test(n)) return { accion: 'escalar', motivo: 'sensible' };\n    if (/^humano$/.test(n)) return { accion: 'escalar', motivo: 'pidio_humano' };\n    if ((m = n.match(/^(?:opcion |la |el |voto |voto por la |voy con la )?([123])$/))) return { accion: 'voto', opcion: Number(m[1]) - 1, veto: false };\n    if (/^todas$/.test(n)) return { accion: 'voto', opcion: -1, veto: false };\n    if (/^ninguna$/.test(n)) return { accion: 'voto', opcion: -1, veto: true };\n    if (/^me apunto$/.test(n)) return { accion: 'evento', evento: 'me_apunto' };\n    if (/^no puedo$/.test(n)) return { accion: 'evento', evento: 'no_puedo' };\n    if (/^llegue$/.test(n)) return { accion: 'evento', evento: 'checkpoint_llegada' };\n    if (/^(ya en casa|llegue a casa)$/.test(n)) return { accion: 'evento', evento: 'llego_casa' };\n    if (/^salir$/.test(n)) return { accion: 'evento', evento: 'salir', aviso_equipo: true };\n    return { accion: 'escalar', motivo: 'no_entendido' };   // aquí entraría la IA con salida cerrada (por decidir, d4)\n  }\n\n  // Forma del mensaje sin contenido: llaves y tipos. Sirve para la sonda V1 (qué trae un voto de encuesta).\n  function forma(o, prof = 0) {\n    if (prof > 6) return '…';\n    if (Array.isArray(o)) return o.length ? [forma(o[0], prof + 1)] : [];\n    if (o && typeof o === 'object') {\n      const r = {};\n      for (const k of Object.keys(o).sort()) {\n        if (/^(apikey|pushName|jpegThumbnail|profilePicUrl)$/i.test(k)) { r[k] = '(omitido)'; continue; }\n        r[k] = forma(o[k], prof + 1);\n      }\n      return r;\n    }\n    return typeof o;\n  }\n\n  function shaTexto(v) {   // fileSha256 llega como base64 o como objeto de bytes\n    if (!v) return '';\n    if (typeof v === 'string') return v;\n    try { return Buffer.from(Object.values(v)).toString('base64'); } catch (e) { return ''; }\n  }\n\n  function votoEncuesta(d) {\n    // La forma exacta del voto descifrado en Evolution 2.3.8 está por verificar (V1). Se prueban candidatos conocidos.\n    const msg = d.message || {};\n    const cands = [d.pollUpdates, msg.pollUpdateMessage && msg.pollUpdateMessage.vote, d.votes, d.pollVote];\n    for (const c of cands) {\n      const sel = c && (c.selectedOptions || (Array.isArray(c) && c[0] && c[0].selectedOptions) || c.selectedOptionNames);\n      if (Array.isArray(sel)) return { descifrado: true, n_opciones: sel.length, opciones: sel.map(String) };\n    }\n    return { descifrado: false };\n  }\n\n  function clasificar(body, cfg = {}) {\n    const grupos = (cfg.grupos || []).map(String);\n    const b = body && body.body && !body.event ? body.body : (body || {});   // acepta el item del Webhook o el cuerpo\n    const d = b.data || {};\n    const key = d.key || {};\n    const base = {\n      v: 1,\n      evento_evolution: String(b.event || ''),\n      id_mensaje: String(key.id || ''),\n      grupo: String(key.remoteJid || ''),\n      autor: String(key.participant || d.participant || ''),   // solo en memoria, para resolver el pid; nunca se guarda\n      hora: d.messageTimestamp ? new Date(Number(d.messageTimestamp) * 1000).toISOString() : '',\n      tipo_whatsapp: String(d.messageType || ''),\n    };\n    const fin = (r) => Object.assign(base, r, cfg.sonda ? { forma: forma(b) } : {});\n\n    const ev = base.evento_evolution.toLowerCase().replace('_', '.');\n    if (!/^messages\\.(upsert|update)$/.test(ev)) return fin({ accion: 'ignorar', motivo: 'evento_no_mensaje' });\n    if (key.fromMe) return fin({ accion: 'ignorar', motivo: 'propio' });\n    if (!base.grupo.endsWith('@g.us')) return fin({ accion: 'ignorar', motivo: 'no_es_grupo' });\n    if (!grupos.includes(base.grupo)) return fin({ accion: 'ignorar', motivo: 'grupo_no_permitido' });\n\n    const msg = d.message || {};\n    const tipo = base.tipo_whatsapp || Object.keys(msg)[0] || '';\n\n    if (/poll(Update|Vote)/i.test(tipo) || d.pollUpdates || msg.pollUpdateMessage) {\n      const v = votoEncuesta(d);\n      return fin(v.descifrado ? { accion: 'voto_encuesta', tipo: 'voto', ...v } : { accion: 'escalar', tipo: 'voto', motivo: 'voto_sin_descifrar' });\n    }\n    if (ev === 'messages.update') return fin({ accion: 'ignorar', motivo: 'actualizacion' });\n    if (/sticker/i.test(tipo)) {\n      const sha = shaTexto(msg.stickerMessage && msg.stickerMessage.fileSha256);\n      const conocido = (cfg.stickers || {})[sha];   // mapa sha → sticker de Sintonía (por llenar con la sonda)\n      const regla = cfg.sticker_entrante || 'escalar';  // por decidir (equipo): 'escalar' | 'registrar'\n      return fin({ accion: regla === 'registrar' ? 'registrar' : 'escalar', tipo: 'sticker', motivo: 'sticker', sticker: conocido || '', sticker_sha: sha });\n    }\n    if (/location/i.test(tipo)) return fin({ accion: 'escalar', tipo: 'ubicacion', motivo: 'sensible' });\n    const texto = msg.conversation || (msg.extendedTextMessage && msg.extendedTextMessage.text) || '';\n    if (/conversation|extendedText/i.test(tipo) || texto) return fin({ tipo: 'texto', ...interpretarTexto(texto) });\n    return fin({ accion: 'escalar', tipo: 'otro', motivo: 'medio_no_soportado' });\n  }\n\n  // Respuesta de prueba (solo grupo del equipo, `eco` en Config): dice qué entendió el motor. En el piloto real no existe:\n  // el mago de E1 no contesta cada voto. Una idea, máximo un emoji, sin nombres ni datos (voz de Sintonía).\n  const EVENTOS = { me_apunto: 'te apuntas', no_puedo: 'no puedes ir', checkpoint_llegada: 'ya llegaste',\n    llego_casa: 'ya estás en casa', salir: 'quieres salir del grupo; en el piloto, una persona del equipo te saca' };\n  const ESCALAR = { pidio_humano: 'esto pasaría a una persona del equipo',\n    sensible: 'esto es sensible y pasaría a una persona del equipo. Si es una emergencia, llamen al 123',\n    no_entendido: 'no lo entendí, así que pasaría a una persona del equipo', vacio: 'llegó un mensaje vacío',\n    sticker: 'recibí un sticker y lo anoté', voto_sin_descifrar: 'llegó un voto de la encuesta, pero cifrado',\n    medio_no_soportado: 'este tipo de mensaje no lo leo, así que pasaría a una persona del equipo' };\n  function eco(r) {\n    const p = '🧪 Prueba · ';\n    if (!r || r.accion === 'ignorar') return '';\n    if (r.accion === 'voto') return p + (r.veto ? 'entendí: ninguna opción te sirve.' : r.opcion === -1 ? 'entendí: te sirve cualquiera.' : 'entendí: voto por la opción ' + (r.opcion + 1) + '.');\n    if (r.accion === 'voto_encuesta') return p + 'llegó tu voto de la encuesta.';\n    if (r.accion === 'evento') return p + 'entendí: ' + (EVENTOS[r.evento] || 'un evento') + '.';\n    if (r.accion === 'registrar') return p + (ESCALAR[r.motivo] || 'lo anoté') + '.';\n    return p + (ESCALAR[r.motivo] || 'esto pasaría a una persona del equipo') + '.';\n  }\n\n  return { clasificar, interpretarTexto, forma, eco };\n})();\n\n// ── Uso en n8n ──\nconst c = $('Config').first().json;\nconst cfg = {\n  grupos: String(c.grupos_permitidos || '').split(',').map(s => s.trim()).filter(Boolean),\n  sonda: String(c.sonda) === 'true',\n  sticker_entrante: c.sticker_entrante,\n};\nconst eco = String(c.eco) === 'true';   // respuesta de prueba en el grupo del equipo; en el piloto real va en false\nreturn $('Evolution (entrada)').all().map(i => {\n  const r = ENTRADA.clasificar(i.json, cfg);\n  const b = i.json && i.json.body && !i.json.event ? i.json.body : (i.json || {});   // Evolution trae su URL e instancia en el cuerpo\n  return { json: Object.assign(r, { veto: r.veto === true, eco_texto: eco ? ENTRADA.eco(r) : '',\n    evo_url: eco ? String(b.server_url || '').replace(/\\/$/, '') : '', evo_instancia: eco ? String(b.instance || '') : '' }) };\n});\n"
+        "jsCode": "// Sintonía · E1.5 · entrada del motor (v0.2, 27/11/2026: + respuesta de prueba `eco` y veto en la tabla)\n// Clasifica lo que Evolution API manda al webhook de n8n y devuelve SOLO lo mínimo.\n// Se pega completo en el nodo Code «Clasificar» de E15-00 y se prueba con `node n8n/motor/prueba-entrada.js`.\n// No devuelve el texto, el nombre (pushName) ni la apikey que Evolution incluye en el cuerpo.\n// Las reglas de texto copian E15-01 (voto mínimo); la lista sensible suma salud, ubicación y emergencia.\n// Lo que no está decidido por el equipo va en `cfg` y se marca «por decidir».\nconst ENTRADA = (() => {\n  const SENSIBLE = /\\b(emergencia|urgente|accidente|hospital|ambulancia|policia|peligro|socorro|ayuda|enfermo|enferma|dolor|me siento mal|salud|ubicacion|donde estoy|123)\\b/;\n  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')\n    .replace(/[^a-z0-9\\s]/g, ' ').replace(/\\s+/g, ' ').trim();\n\n  function interpretarTexto(t) {\n    const n = norm(t);\n    let m;\n    if (!n) return { accion: 'escalar', motivo: 'vacio' };\n    if (SENSIBLE.test(n)) return { accion: 'escalar', motivo: 'sensible' };\n    if (/^humano$/.test(n)) return { accion: 'escalar', motivo: 'pidio_humano' };\n    if ((m = n.match(/^(?:opcion |la |el |voto |voto por la |voy con la )?([123])$/))) return { accion: 'voto', opcion: Number(m[1]) - 1, veto: false };\n    if (/^todas$/.test(n)) return { accion: 'voto', opcion: -1, veto: false };\n    if (/^ninguna$/.test(n)) return { accion: 'voto', opcion: -1, veto: true };\n    if (/^me apunto$/.test(n)) return { accion: 'evento', evento: 'me_apunto' };\n    if (/^no puedo$/.test(n)) return { accion: 'evento', evento: 'no_puedo' };\n    if (/^llegue$/.test(n)) return { accion: 'evento', evento: 'checkpoint_llegada' };\n    if (/^(ya en casa|llegue a casa)$/.test(n)) return { accion: 'evento', evento: 'llego_casa' };\n    if (/^salir$/.test(n)) return { accion: 'evento', evento: 'salir', aviso_equipo: true };\n    return { accion: 'escalar', motivo: 'no_entendido' };   // aquí entraría la IA con salida cerrada (por decidir, d4)\n  }\n\n  // Forma del mensaje sin contenido: llaves y tipos. Sirve para la sonda V1 (qué trae un voto de encuesta).\n  function forma(o, prof = 0) {\n    if (prof > 6) return '…';\n    if (Array.isArray(o)) return o.length ? [forma(o[0], prof + 1)] : [];\n    if (o && typeof o === 'object') {\n      const r = {};\n      for (const k of Object.keys(o).sort()) {\n        if (/^(apikey|pushName|jpegThumbnail|profilePicUrl)$/i.test(k)) { r[k] = '(omitido)'; continue; }\n        r[k] = forma(o[k], prof + 1);\n      }\n      return r;\n    }\n    return typeof o;\n  }\n\n  function shaTexto(v) {   // fileSha256 llega como base64 o como objeto de bytes\n    if (!v) return '';\n    if (typeof v === 'string') return v;\n    try { return Buffer.from(Object.values(v)).toString('base64'); } catch (e) { return ''; }\n  }\n\n  function votoEncuesta(d) {\n    // La forma exacta del voto descifrado en Evolution 2.3.8 está por verificar (V1). Se prueban candidatos conocidos.\n    const msg = d.message || {};\n    const cands = [d.pollUpdates, msg.pollUpdateMessage && msg.pollUpdateMessage.vote, d.votes, d.pollVote];\n    for (const c of cands) {\n      const sel = c && (c.selectedOptions || (Array.isArray(c) && c[0] && c[0].selectedOptions) || c.selectedOptionNames);\n      if (Array.isArray(sel)) return { descifrado: true, n_opciones: sel.length, opciones: sel.map(String) };\n    }\n    return { descifrado: false };\n  }\n\n  function clasificar(body, cfg = {}) {\n    const grupos = (cfg.grupos || []).map(String);\n    const b = body && body.body && !body.event ? body.body : (body || {});   // acepta el item del Webhook o el cuerpo\n    const d = b.data || {};\n    const key = d.key || {};\n    const base = {\n      v: 1,\n      evento_evolution: String(b.event || ''),\n      id_mensaje: String(key.id || ''),\n      grupo: String(key.remoteJid || ''),\n      autor: String(key.participant || d.participant || ''),   // solo en memoria, para resolver el pid; nunca se guarda\n      hora: d.messageTimestamp ? new Date(Number(d.messageTimestamp) * 1000).toISOString() : '',\n      tipo_whatsapp: String(d.messageType || ''),\n    };\n    const fin = (r) => Object.assign(base, r, cfg.sonda ? { forma: forma(b) } : {});\n\n    const ev = base.evento_evolution.toLowerCase().replace('_', '.');\n    if (!/^messages\\.(upsert|update)$/.test(ev)) return fin({ accion: 'ignorar', motivo: 'evento_no_mensaje' });\n    if (key.fromMe) return fin({ accion: 'ignorar', motivo: 'propio' });\n    if (!base.grupo.endsWith('@g.us')) return fin({ accion: 'ignorar', motivo: 'no_es_grupo' });\n    if (!grupos.includes(base.grupo)) return fin({ accion: 'ignorar', motivo: 'grupo_no_permitido' });\n\n    const msg = d.message || {};\n    const tipo = base.tipo_whatsapp || Object.keys(msg)[0] || '';\n\n    if (/poll(Update|Vote)/i.test(tipo) || d.pollUpdates || msg.pollUpdateMessage) {\n      const v = votoEncuesta(d);\n      return fin(v.descifrado ? { accion: 'voto_encuesta', tipo: 'voto', ...v } : { accion: 'escalar', tipo: 'voto', motivo: 'voto_sin_descifrar' });\n    }\n    if (ev === 'messages.update') return fin({ accion: 'ignorar', motivo: 'actualizacion' });\n    if (/sticker/i.test(tipo)) {\n      const sha = shaTexto(msg.stickerMessage && msg.stickerMessage.fileSha256);\n      const conocido = (cfg.stickers || {})[sha];   // mapa sha → sticker de Sintonía (por llenar con la sonda)\n      const regla = cfg.sticker_entrante || 'escalar';  // por decidir (equipo): 'escalar' | 'registrar'\n      return fin({ accion: regla === 'registrar' ? 'registrar' : 'escalar', tipo: 'sticker', motivo: 'sticker', sticker: conocido || '', sticker_sha: sha });\n    }\n    if (/location/i.test(tipo)) return fin({ accion: 'escalar', tipo: 'ubicacion', motivo: 'sensible' });\n    const texto = msg.conversation || (msg.extendedTextMessage && msg.extendedTextMessage.text) || '';\n    if (/conversation|extendedText/i.test(tipo) || texto) return fin({ tipo: 'texto', ...interpretarTexto(texto) });\n    return fin({ accion: 'escalar', tipo: 'otro', motivo: 'medio_no_soportado' });\n  }\n\n  // Respuesta de prueba (solo grupo del equipo, `eco` en Config): dice qué entendió el motor. En el piloto real no existe:\n  // el mago de E1 no contesta cada voto. Una idea, máximo un emoji, sin nombres ni datos (voz de Sintonía).\n  const EVENTOS = { me_apunto: 'te apuntas', no_puedo: 'no puedes ir', checkpoint_llegada: 'ya llegaste',\n    llego_casa: 'ya estás en casa', salir: 'quieres salir del grupo; en el piloto, una persona del equipo te saca' };\n  const ESCALAR = { pidio_humano: 'esto pasaría a una persona del equipo',\n    sensible: 'esto es sensible y pasaría a una persona del equipo. Si es una emergencia, llamen al 123',\n    no_entendido: 'no lo entendí, así que pasaría a una persona del equipo', vacio: 'llegó un mensaje vacío',\n    sticker: 'recibí un sticker y lo anoté', voto_sin_descifrar: 'llegó un voto de la encuesta, pero cifrado',\n    medio_no_soportado: 'este tipo de mensaje no lo leo, así que pasaría a una persona del equipo' };\n  function eco(r) {\n    const p = '🧪 Prueba · ';\n    if (!r || r.accion === 'ignorar') return '';\n    if (r.accion === 'voto') return p + (r.veto ? 'entendí: ninguna opción te sirve.' : r.opcion === -1 ? 'entendí: te sirve cualquiera.' : 'entendí: voto por la opción ' + (r.opcion + 1) + '.');\n    if (r.accion === 'voto_encuesta') return p + 'llegó tu voto de la encuesta.';\n    if (r.accion === 'evento') return p + 'entendí: ' + (EVENTOS[r.evento] || 'un evento') + '.';\n    if (r.accion === 'registrar') return p + (ESCALAR[r.motivo] || 'lo anoté') + '.';\n    return p + (ESCALAR[r.motivo] || 'esto pasaría a una persona del equipo') + '.';\n  }\n\n  // Aviso a la persona del equipo (SW · Avisar revisor): solo lo que necesita a alguien. Sin texto, nombre ni número:\n  // quien lo recibe lo lee en el grupo. Los stickers, medios y votos cifrados no avisan (se revisan en la tabla).\n  const AVISOS = { pidio_humano: 'alguien escribió HUMANO en el grupo de prueba. Entra al grupo y responde como persona del equipo',\n    sensible: 'hay un mensaje sensible (salud, ubicación o emergencia) en el grupo de prueba. Revísalo ya',\n    no_entendido: 'llegó un mensaje que no entendí en el grupo de prueba. Revísalo en el grupo' };\n  function aviso(r) {\n    if (!r) return '';\n    if (r.accion === 'escalar' && AVISOS[r.motivo]) return AVISOS[r.motivo];\n    if (r.aviso_equipo) return 'alguien escribió SALIR en el grupo de prueba';\n    return '';\n  }\n\n  return { clasificar, interpretarTexto, forma, eco, aviso };\n})();\n\n// ── Uso en n8n ──\nconst c = $('Config').first().json;\nconst cfg = {\n  grupos: String(c.grupos_permitidos || '').split(',').map(s => s.trim()).filter(Boolean),\n  sonda: String(c.sonda) === 'true',\n  sticker_entrante: c.sticker_entrante,\n};\nconst eco = String(c.eco) === 'true';   // respuesta de prueba en el grupo del equipo; en el piloto real va en false\nreturn $('Evolution (entrada)').all().map(i => {\n  const r = ENTRADA.clasificar(i.json, cfg);\n  const b = i.json && i.json.body && !i.json.event ? i.json.body : (i.json || {});   // Evolution trae su URL e instancia en el cuerpo\n  return { json: Object.assign(r, { veto: r.veto === true, eco_texto: eco ? ENTRADA.eco(r) : '', aviso: ENTRADA.aviso(r),\n    evo_url: String(b.server_url || '').replace(/\\/$/, ''), evo_instancia: String(b.instance || '') }) };\n});\n"
       }
     },
     {
@@ -226,6 +226,121 @@
       "onError": "continueRegularOutput"
     },
     {
+      "id": "4bd778c4-f176-5156-b27b-c297236f0517",
+      "name": "¿Avisar a una persona?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        580
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a1",
+              "leftValue": "={{ $json.aviso }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "5772c7f7-6c15-5038-bc7a-39bed8814446",
+      "name": "Avisar a una persona",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1100,
+        580
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "vH5Q2DxwhLl7rP4p",
+          "cachedResultName": "SW · Avisar revisor"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "",
+            "motivo": "={{ $json.aviso }}",
+            "codigo": "={{ $json.motivo || $json.evento || '' }}",
+            "evo_url": "={{ $json.evo_url }}",
+            "evo_instancia": "={{ $json.evo_instancia }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evo_url",
+              "displayName": "evo_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evo_instancia",
+              "displayName": "evo_instancia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
       "id": "99a48f5e-3074-51e7-a919-8bc9795b1bc1",
       "name": "Nota",
       "type": "n8n-nodes-base.stickyNote",
@@ -285,6 +400,23 @@
           },
           {
             "node": "¿Responder (prueba)?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "¿Avisar a una persona?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "¿Avisar a una persona?": {
+      "main": [
+        [
+          {
+            "node": "Avisar a una persona",
             "type": "main",
             "index": 0
           }
