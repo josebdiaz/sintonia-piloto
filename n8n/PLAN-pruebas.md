@@ -32,7 +32,7 @@ Listo cuando todo da ✓, salvo los bloqueos conocidos de `n8n/flujos/`, que se 
 ## 2. P1 · Entrada en el grupo del equipo (`tramo.T1`)
 
 **Antes:** `E15-00` activo (✓ 27/11) · el JID del grupo del equipo en **Config** (solo en n8n) · confirmar «Only trusted URLs» en el MCP · revisar que `E15-00` no guarde los datos de las ejecuciones exitosas (el cuerpo trae el texto y el nombre).
-**Quién:** una persona del equipo escribe en el grupo; Claude lee `e15_entrada` por MCP.
+**Quién:** una persona del equipo escribe en el grupo; Claude lee `e15_entrada` por MCP. **Paso a paso:** [`PRUEBA-P1.md`](PRUEBA-P1.md).
 
 | # | Se manda en el grupo | Se espera en `e15_entrada` |
 |---|---|---|

@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Motor E1.5: guía de `prueba.P1` y opciones de bienvenida (sin cambios de consola, backend ni flujos)
+- `n8n/PRUEBA-P1.md`: paso a paso de la prueba de entrada en el grupo del equipo (pendiente 44), con el mensaje exacto y la fila esperada de cada caso. Revisado por MCP: E15-00 activo, sin guardar datos de las ejecuciones, zona `America/Bogota`.
+- `n8n/agentes/bienvenida.md`: 4 opciones de bienvenida para E1.5, todas pasan las guardas; recomendada la de E1 con una frase cambiada y como plantilla fija.
+- `ESTADO.md` §4: pendiente 45 se retoma con E1 en ejecución; nuevos 46 (elegir la bienvenida) y 47 (ajustar los avisos cuando `prueba.P1` pase). `n8n/PLAN-pruebas.md` enlaza la guía.
+
 ### 2026-11-27 · Motor E1.5: revisión tras el pivote a agentes y plan de pruebas (sin cambios de consola, backend ni flujos)
 - `n8n/GUIA-CONTINUACION.md` §9: qué cancela el pivote (`n8n.B1`, `n8n.I4`, `n8n.N6`, `n8n.N25` y `n8n.M3`; E1.5-01 superado por E15-00), qué cambia de uso (`n8n.N2`, `n8n.N3`, `n8n.N17`), qué queda por redefinir con d6 (`n8n.N10`, `n8n.N11`, `n8n.N19`) y el orden vigente. Nuevo: E1.5 necesita su propia bienvenida, porque la de la consola dice que una persona revisa todo.
 - `n8n/PLAN-pruebas.md` v0.1: capas `prueba.P0` (sin red) a `prueba.P5` (continuidad; ámbito nuevo `prueba`), con casos, «listo cuando» y lo que ya no se prueba (`n8n.T1–T4`, `n8n.T7`, `n8n.T14`).

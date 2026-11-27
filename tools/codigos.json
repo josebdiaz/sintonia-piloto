@@ -131,7 +131,8 @@
       "nombre": "Capas del plan de pruebas del motor E1.5 (P0 sin red … P5 continuidad)",
       "dueno": "n8n/PLAN-pruebas.md",
       "archivos": [
-        "n8n/PLAN-pruebas.md"
+        "n8n/PLAN-pruebas.md",
+        "n8n/PRUEBA-P1.md"
       ],
       "letras": [
         "P"

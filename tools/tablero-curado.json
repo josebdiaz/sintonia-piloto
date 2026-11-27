@@ -162,11 +162,21 @@
     },
     "44": {
       "frente": "motor",
-      "nota": "tramo.T1 en el grupo del equipo (prueba.P1 de n8n/PLAN-pruebas.md)"
+      "nota": "prueba.P1 paso a paso en n8n/PRUEBA-P1.md"
     },
     "45": {
       "frente": "motor",
-      "nota": "ag.F0 hecha; sigue ag.F1 (SW · Redactar), con credenciales de los modelos"
+      "estado": "espera",
+      "nota": "Se retoma con E1 en ejecución"
+    },
+    "46": {
+      "frente": "motor",
+      "nota": "Bienvenida de E1.5: 4 opciones para aprobar"
+    },
+    "47": {
+      "frente": "motor",
+      "estado": "espera",
+      "nota": "Tras prueba.P1 confirmada"
     }
   },
   "hitos": [
