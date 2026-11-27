@@ -177,6 +177,11 @@
       "frente": "motor",
       "estado": "espera",
       "nota": "Tras prueba.P1 confirmada"
+    },
+    "48": {
+      "frente": "motor",
+      "estado": "espera",
+      "nota": "Ruta A del E2E, después de prueba.P1"
     }
   },
   "hitos": [

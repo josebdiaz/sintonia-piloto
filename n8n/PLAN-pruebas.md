@@ -95,7 +95,7 @@ Al menos 30 mensajes ficticios de lo que hoy cae en `no_entendido`:
 
 **Antes:** P1 y P2 listas · `n8n.N20` (`req_id`) y `n8n.N23` (relojes cortos) en W0 y W1 · un verificador independiente revisa W0, W1, `SW · Redactar` y `SW · Enviar` v2 sin ver la construcción (§7.3 de `PLAN-construccion.md`) · `revisar-flujos.py` sin bloqueos en esos flujos.
 
-Recorrido en el grupo del equipo: ingreso → opciones → encuesta → voto → `/confirmado`.
+Recorrido en el grupo del equipo: ingreso → opciones → encuesta → voto → `/confirmado`. **Paso a paso y lo que falta:** [`PRUEBA-E2E.md`](PRUEBA-E2E.md).
 
 **Listo cuando:** cada mensaje sale en el momento que daría la consola 2.16.0 · los datos son idénticos al backend · nada con corchetes · ningún duplicado al reintentar · cada mensaje tiene su fila en `e15_mensajes` · HUMANO a mitad del recorrido escala y el motor no responde ahí.
 

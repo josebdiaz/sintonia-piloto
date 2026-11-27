@@ -132,7 +132,8 @@
       "dueno": "n8n/PLAN-pruebas.md",
       "archivos": [
         "n8n/PLAN-pruebas.md",
-        "n8n/PRUEBA-P1.md"
+        "n8n/PRUEBA-P1.md",
+        "n8n/PRUEBA-E2E.md"
       ],
       "letras": [
         "P"

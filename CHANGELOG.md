@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Motor E1.5: guía de la prueba de punta a punta (sin cambios de consola, backend ni flujos)
+- `n8n/PRUEBA-E2E.md`: recorrido completo con disparadores (formularios de W0, W1 y W3; relojes de W2–W5; entrada por E15-00), lo que debe pasar en el grupo y lo que se revisa en cada paso. Ruta A con plantillas, Ruta B con agentes; pasos 7–8 bloqueados por `n8n.N27`. Hallazgo: E15-00 todavía no le escribe al backend (`votar`, `evento`).
+- `ESTADO.md` §4: pendiente 48 nuevo. `n8n/PLAN-pruebas.md` enlaza la guía.
+
 ### 2026-11-27 · Motor E1.5: guía de `prueba.P1` y opciones de bienvenida (sin cambios de consola, backend ni flujos)
 - `n8n/PRUEBA-P1.md`: paso a paso de la prueba de entrada en el grupo del equipo (pendiente 44), con el mensaje exacto y la fila esperada de cada caso. Revisado por MCP: E15-00 activo, sin guardar datos de las ejecuciones, zona `America/Bogota`.
 - `n8n/agentes/bienvenida.md`: 4 opciones de bienvenida para E1.5, todas pasan las guardas; recomendada la de E1 con una frase cambiada y como plantilla fija.
