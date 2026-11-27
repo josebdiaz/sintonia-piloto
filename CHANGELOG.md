@@ -5,6 +5,13 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Lecturas frente a las instrucciones v3.5 y orden E1 → E1.5 (sin cambios de código)
+- Contraste 2 en el doc de las lecturas (Proyecto): ningún veredicto aprobado cambia. B2 se refuerza, la tensión con E2 baja y se suma literatura sobre automatización en grupos (Mago de Oz, niveles de automatización, aversión a los algoritmos, bots en comunidades).
+- Decisiones del equipo: el motor se construye ya, pero E1.5 no se ejecuta hasta cerrar E1; qué cuenta como «cerrar E1» se define el 3/12; automatización por tipo de mensaje (ajusta el envío sin aprobación del 26/11); E1.5 se para si el margen de error supera el 40 % frente a lo ejecutado.
+- Néstor está al tanto y dio luz verde para hacerlo lo más real posible. El aviso v3 sigue antes del grupo real.
+- Calendario: el 4/12 ya no es una entrega; el sistema se sigue trabajando. Canvas de 9 bloques el 28 y 29/11; disposición a pagar desde las encuestas de cierre de E1 y E1.5.
+- `ESTADO.md`: encabezado, §0, §1 (Motor E1.5) y pendientes 6, 11 y 21.
+
 ### 2026-11-26 · E1.5: definición corregida, envío sin aprobación y grupo real antes del 4/12 (sin cambios de código)
 - Definición: E1.5 es el producto automatizado (n8n interpreta, decide, redacta y envía) y lo novedoso de la solución. El «una persona aprueba y pega» del 24/10 era un Mago de Oz en la entrega del mensaje mientras no había conector; E1 sigue siendo el Mago de Oz completo.
 - Decisión del equipo (reemplaza la de la tarde del 26/11): los mensajes de E1.5 salen sin aprobación previa; una persona entra solo con HUMANO o un error. Por confirmar con Néstor (C12); el aviso v3 se publica antes del grupo real.
