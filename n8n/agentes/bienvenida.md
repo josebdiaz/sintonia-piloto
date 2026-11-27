@@ -3,7 +3,18 @@
 > Por qué: la bienvenida de la consola 2.16.0 (`/ingreso`) dice «En este piloto una persona del equipo revisa todo». En E1.5 con agentes eso no es cierto, y decirlo choca con el aviso v3. E1.5 necesita su propia bienvenida (§9 de `n8n/GUIA-CONTINUACION.md`). La consola no cambia.
 > Las cuatro opciones pasan las guardas (`n8n/motor/guardas.js`) con el enlace del aviso en el bloque. Deciden el equipo y Néstor, junto con el aviso v3, antes del grupo real (`ag.F6`).
 
-## 0. Lo que tiene que cumplir cualquier opción
+## Decisión de José (27/11): la transparencia va en el aviso, no en la bienvenida
+
+Que los mensajes los escribe una IA y los revisa otra se dice en el **aviso de privacidad v3**, no en la interacción del grupo. Para las pruebas con el grupo del equipo se usa la bienvenida de E1 **sin** la frase «En este piloto una persona del equipo revisa todo»:
+
+> ¡Hola, parche! Soy Sintonía, su +1 de confianza para que el plan sí se dé 👋
+> Yo les propongo opciones, ustedes votan y yo cuadro la logística.
+> Escriban HUMANO para hablar con alguien del equipo o SALIR para salir del grupo.
+> Privacidad: (enlace del aviso)
+
+Las opciones de abajo quedan como registro. La versión para personas reales la confirman el equipo y Néstor junto con el aviso v3 (pendiente 46).
+
+## 0. Lo que tiene que cumplir cualquier opción (registro)
 
 - Decir que los mensajes los escribe una IA y los revisa otra, con las mismas palabras que el aviso v3.
 - Que HUMANO lleva a una persona del equipo y SALIR saca del grupo.

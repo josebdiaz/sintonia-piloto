@@ -118,7 +118,13 @@
           }
         }
       },
-      "onError": "continueErrorOutput"
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "M9rTWcIvJaTWnrt2",
+          "name": "Evolution API · Hostinger"
+        }
+      }
     },
     {
       "id": "c7b1f8ec-e244-4f5d-8c34-e4f30950e812",

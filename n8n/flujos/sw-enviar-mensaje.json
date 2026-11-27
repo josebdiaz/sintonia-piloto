@@ -184,6 +184,16 @@
                 "operation": "true",
                 "singleValue": true
               }
+            },
+            {
+              "id": "d3",
+              "leftValue": "={{ !/[\\[\\]]|\\{\\{|\\}\\}/.test(String($('Entrada').first().json.texto || '')) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
             }
           ],
           "combinator": "and"
@@ -218,7 +228,13 @@
         }
       },
       "executeOnce": true,
-      "onError": "continueErrorOutput"
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "M9rTWcIvJaTWnrt2",
+          "name": "Evolution API · Hostinger"
+        }
+      }
     },
     {
       "id": "2a4d3b87-67cd-4db2-b246-d26e3df50ba8",
@@ -375,7 +391,7 @@
           "mappingMode": "defineBelow",
           "value": {
             "plan_id": "={{ $('Entrada').first().json.plan_id || '' }}",
-            "motivo": "={{ 'No hay grupo de WhatsApp o texto para el paso ' + ($('Entrada').first().json.paso || '[paso]') }}",
+            "motivo": "={{ 'No hay grupo de WhatsApp, no hay texto o el texto tiene corchetes, en el paso ' + ($('Entrada').first().json.paso || 'sin nombre') }}",
             "codigo": "={{ 'sin_grupo' }}"
           },
           "matchingColumns": [],
@@ -469,7 +485,7 @@
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ action: 'evento', plan_id: $('Entrada').first().json.plan_id || '', pid: '', tipo: $('Entrada').first().json.evento_msg }) }}",
+        "jsonBody": "={{ JSON.stringify({ action: 'evento', plan_id: $('Entrada').first().json.plan_id || '', pid: '', tipo: $('Entrada').first().json.evento_msg, req_id: ($('Entrada').first().json.plan_id || $('Preparar envío').first().json.grupo || 'sin_plan') + '-' + $('Entrada').first().json.evento_msg }) }}",
         "options": {
           "redirect": {
             "redirect": {

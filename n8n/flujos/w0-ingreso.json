@@ -76,7 +76,7 @@
             {
               "id": "t1",
               "name": "plantilla_ingreso",
-              "value": "¡Hola, parche! 👋 Soy Sintonía, el quinto amigo que ayuda a que el plan sí se dé: menos vueltas y opciones reales en Cali.\nLes propongo opciones, ustedes votan y yo me encargo de cuadrar la logística.\nTodas las personas de este grupo dieron su autorización. En este piloto una persona del equipo revisa todo lo que propongo.\n👤 Si necesitan hablar con alguien del equipo, escriban HUMANO.\n🚪 Si alguien quiere salir, escribe SALIR o sale del grupo, sin problema.\n🔒 Aviso de privacidad: https://josebdiaz.github.io/sintonia-piloto/piloto/aviso.html",
+              "value": "¡Hola, parche! Soy Sintonía, su +1 de confianza para que el plan sí se dé 👋\nYo les propongo opciones, ustedes votan y yo cuadro la logística.\nEscriban HUMANO para hablar con alguien del equipo o SALIR para salir del grupo.\nPrivacidad: https://sintonia.my/piloto/aviso.html",
               "type": "string"
             },
             {
@@ -116,7 +116,7 @@
           "mappingMode": "defineBelow",
           "value": {
             "paso": "/ingreso",
-            "texto": "={{ String($json.plantilla_ingreso || '').replace(/\\{grupo_id\\}/g, $json.grupo_id || '[grupo_id]') }}",
+            "texto": "={{ String($json.plantilla_ingreso || '') }}",
             "plan_id": "",
             "evento_msg": "msg_ingreso",
             "grupo_wa": "={{ $json.grupo_wa }}"
@@ -195,7 +195,7 @@
           "mappingMode": "defineBelow",
           "value": {
             "plan_id": "",
-            "motivo": "={{ 'grupo_wa inválido en Ingreso (grupo ' + ($('Grupo creado').item.json.grupo_id || '[grupo_id]') + '). Usa «Pasar al mago» en la consola' }}",
+            "motivo": "={{ 'grupo_wa inválido en Ingreso (grupo ' + ($('Grupo creado').item.json.grupo_id || 'sin id') + ')' }}",
             "codigo": "grupo_wa_invalido"
           },
           "matchingColumns": [],

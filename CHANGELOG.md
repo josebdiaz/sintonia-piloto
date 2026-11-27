@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Motor E1.5, Ruta A (1/4): bienvenida y envío (flujos inactivos, nada enviado al grupo)
+- Decisión de José: la transparencia sobre la IA va en el aviso v3, no en la bienvenida. Para las pruebas, la bienvenida de E1 sin «una persona del equipo revisa todo» (`n8n/agentes/bienvenida.md`, pendiente 46).
+- En n8n, por MCP, y espejado en `n8n/flujos/`: W0 con esa bienvenida y sin corchetes de respaldo (el bloqueo `n8n.N3` de W0 queda en 0); `SW · Enviar mensaje` con la credencial «Evolution API · Hostinger», freno de corchetes y llaves antes de enviar y `req_id` al registrar el evento (`n8n.N20`); `SW · Avisar revisor` con la misma credencial. Siguen inactivos.
+- Falta que José llene en n8n la URL de Evolution, la instancia y el número de quien recibe los avisos (hoy son marcadores), sin pasarlos al repo.
+
 ### 2026-11-27 · Motor E1.5: guía de la prueba de punta a punta (sin cambios de consola, backend ni flujos)
 - `n8n/PRUEBA-E2E.md`: recorrido completo con disparadores (formularios de W0, W1 y W3; relojes de W2–W5; entrada por E15-00), lo que debe pasar en el grupo y lo que se revisa en cada paso. Ruta A con plantillas, Ruta B con agentes; pasos 7–8 bloqueados por `n8n.N27`. Hallazgo: E15-00 todavía no le escribe al backend (`votar`, `evento`).
 - `ESTADO.md` §4: pendiente 48 nuevo. `n8n/PLAN-pruebas.md` enlaza la guía.
