@@ -8,7 +8,7 @@
 | # | Qué | Quién | Estado |
 |---|---|---|---|
 | 0.1 | Escribe desde un teléfono que esté en el grupo del equipo y que **no** sea el número conectado a Evolution. Lo que manda ese número se ignora (`propio`) y no deja fila | José | — |
-| 0.2 | En n8n: **Settings → MCP** (acceso al MCP de la instancia) → **Allowed callback URLs** = **Only trusted URLs**. Si ya está, solo confírmalo | José | Falta confirmar |
+| 0.2 | En n8n: **Settings → MCP** (acceso al MCP de la instancia) → **Allowed callback URLs** = **Only trusted URLs**. Si ya está, solo confírmalo | José | ✓ confirmado el 27/11 |
 | 0.3 | `E15-00` activo, sin guardar datos de las ejecuciones (ni éxito ni error), zona `America/Bogota`, sonda encendida y el grupo del equipo en la lista de permitidos | Claude | ✓ revisado por MCP el 27/11 |
 | 0.4 | Dile a Claude: «empiezo P1 a las HH:MM». Así solo se leen las filas nuevas | José | — |
 
