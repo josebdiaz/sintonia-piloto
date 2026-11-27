@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Instrucciones del Proyecto v3.6 tras la revisión académica (sin cambios de código)
+- Proyecto: prompt maestro v3.6 (`claude/prompt-maestro-v3.6.md`), que corrige la v3.5 con el Contraste 2 del doc de las lecturas y las decisiones del 27/11: orden E1 → E1.5 (§4.1), el 4/12 ya no es entrega (§4), automatización por tipo de mensaje (§4.1), criterio de parada de E1.5 como regla del equipo (§3.4), límites de la comparación y de la disposición a pagar (§3.8), literatura de automatización citada por su argumento (§3.5), riesgos del conector y del error visible del motor (§5), nunca «disruptivo» (§6) y «lectura E1» frente a «condición E1» (§7).
+- Proyecto: `claude/archivo.md` v4 (la v3.5 pasa al archivo) y base de conocimiento al 27/11 (§2, §4, §6, §7, §9, §10 y §12).
+- `ESTADO.md`: §0 y pendiente 20. Falta pegar la v3.6 en las instrucciones del Proyecto.
+
 ### 2026-11-27 · Lecturas frente a las instrucciones v3.5 y orden E1 → E1.5 (sin cambios de código)
 - Contraste 2 en el doc de las lecturas (Proyecto): ningún veredicto aprobado cambia. B2 se refuerza, la tensión con E2 baja y se suma literatura sobre automatización en grupos (Mago de Oz, niveles de automatización, aversión a los algoritmos, bots en comunidades).
 - Decisiones del equipo: el motor se construye ya, pero E1.5 no se ejecuta hasta cerrar E1; qué cuenta como «cerrar E1» se define el 3/12; automatización por tipo de mensaje (ajusta el envío sin aprobación del 26/11); E1.5 se para si el margen de error supera el 40 % frente a lo ejecutado.
