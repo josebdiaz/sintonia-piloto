@@ -5,6 +5,19 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-26 · E1.5 frente a E1 2.16.0: revisión, snippets y relay (sin cambios de consola ni backend)
+- `n8n/GUIA-CONTINUACION.md` §8: revisión de los 9 flujos (respaldo del 3/11) contra lo que cambió en E1 de la 2.8.0 a la 2.16.0. 16 ajustes nuevos, N12–N27. Bloquean: N16 (antes del grupo), N17 (textos 2.16.0), N25 (`SW · Aprobar`; reabrir C12 por escrito con Néstor) y N27 (con `MOTOR_KEY` el motor no puede leer disponibilidad, `pid` ni llegadas).
+- `n8n/snippets/`: `sintonia-e1.js`, generado con `construir.py` desde `piloto/v2.16.0`, trae la lógica y los textos de la consola (fechas, plazo, precio único, opciones, encuestas, enlaces personales, `req_id`, regla de corchetes) para los nodos Code. Fija la hora de Cali porque n8n corre en UTC. `prueba.js`: 753 casos ficticios iguales a la consola en UTC, Asia/Tokyo y Bogotá (n = 0, verificación técnica).
+- `n8n/relay/SPEC.md` v0.1: relay en el servidor entre Evolution y n8n (autenticación, lista de grupos, minimización, cola con reintentos, freno de corchetes y sin aprobación, ritmo, interruptor). No es un backend: Apps Script sigue siendo la fuente de verdad. D1 y D2 se deciden al asegurar los flujos, después de probarlos tal como están; D3 con los logs del mago.
+- V1: según el CHANGELOG de Evolution, la 2.3.7 agregó el descifrado de votos de encuestas; requiere guardar el mensaje original de la encuesta. Por verificar con el número de prueba.
+- `ESTADO.md`: §0, §1 (Motor E1.5), §3.1 y pendiente 11.
+
+### 2026-11-26 · E1.5 retomado: conector de WhatsApp y prueba con n8n (sin cambios de código)
+- Infraestructura fuera del repo: Evolution API 2.3.8 en un servidor de Hostinger (Brasil) y conexión con n8n Cloud por webhook (solo el evento de mensajes nuevos). Flujo de prueba «E1.5 · Prueba Evolution (ping)» y credencial de tipo *Header Auth*; la llave no está en el repo.
+- Decisión del equipo: en E1.5 los mensajes salen solos después de que una persona los aprueba.
+- Revisión de los 9 flujos con las skills oficiales de n8n: N3 sigue abierto en W3, y faltan autenticación del webhook, reintentos y flujo de errores. Ningún flujo cambió.
+- `ESTADO.md` (26/11): §0, §1 (Motor E1.5 y Conector de WhatsApp) y pendiente 11. Aviso v3 en borrador (Proyecto), sin publicar: la prueba con Cali sigue con v2.
+
 ### 2026-11-25 · Home: decks fáciles de encontrar y código secreto en celular
 - `index.html`: en celular, además de los deslizamientos, 5 toques seguidos sobre el glifo abren «Detrás de escena» (en teléfonos reales el gesto fallaba con facilidad). `sintonia.my/#equipo` abre el menú y `sintonia.my/#decks` lo abre en «Presentaciones»; al cerrar se quita el ancla.
 - `decks/` y `equipo/`: atajos `sintonia.my/decks` y `sintonia.my/equipo` (redirigen al home, `noindex`).

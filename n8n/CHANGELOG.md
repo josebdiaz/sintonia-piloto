@@ -2,6 +2,13 @@
 
 Formato: lo más reciente arriba. Fechas en hora de Bogotá.
 
+## 26 nov 2026 · Revisión frente a E1 2.16.0, snippets y relay
+
+- Sin cambios en los flujos. Revisión contra la consola 2.16.0: N12–N27 en la §8 de [`GUIA-CONTINUACION.md`](GUIA-CONTINUACION.md).
+- [`snippets/`](snippets/README.md): lógica y textos de la consola para los nodos Code, generados desde `piloto/v2.16.0` y probados contra la consola (753 casos).
+- [`relay/SPEC.md`](relay/SPEC.md): especificación del relay entre Evolution y n8n.
+- Canal: Evolution con envío automático después de aprobar (decisión del equipo, 26/11). Falta `SW · Aprobar` (N25).
+
 ## 15 nov 2026 · La consola de E1 cambió: ajustes pendientes para E1.5
 
 - **Backend 2.7.2 desplegado.** Para el motor: `reabrir_opciones` ya está en `MOTOR_ACCIONES` (2.7.1, solo planes de E1.5), hay eventos nuevos (`msg_hoy`, `msg_checkpoint`, `msg_todos`, `msg_en_casa`, `msg_evento`, 2.4.0) y `cerrar_plan` acepta `decision` con los conteos de la ronda (2.4.0).

@@ -189,3 +189,45 @@ Agregar a §5.1:
 | T15 | W1 | «Pedir más opciones» y volver a disparar | Ronda 2 publicada; el plan no queda caído |
 | T16 | W5 | Plan a las 8:00 p. m. | `/en_casa` y pulso al día siguiente a las 10:00 |
 
+
+## 8. Actualización del 26/11 · lo que cambió en E1 (2.8.0 → 2.16.0) frente a los flujos
+
+> Revisión hecha sobre el respaldo del 3/11 (`_archivo-2026-11-24/sintonia-n8n-flujos-2026-11-03.json`) más los arreglos del 3/11 en la noche que registra `CHANGELOG.md`. **Primero exportar los 9 flujos actuales a `n8n/`** (pendiente desde el 3/11) y confirmar contra esa copia.
+> Severidad como en `ESTADO.md` §3.1: **Bloquea** · **Validez** · **Ajuste**. N1–N11 (§7) siguen abiertos; esto se suma.
+
+### 8.1 Lo que no hay que tocar
+
+Lo que E1 cambió **en el backend** ya aplica a E1.5, porque los dos pasan por Apps Script: frases sensibles omitidas (2.8.1), aviso por cada aceptación (2.8.0), disponibilidad por persona (2.9.1), cupo y lista de espera (2.9.0), `AVISO_VERSION` v2 (2.9.2), títulos de Gemini cortados a 30 caracteres (2.8.1) y `wtp` por persona y plan (2.10.0).
+
+### 8.2 Lo que falta o cambia
+
+| # | Cambio en E1 | Qué hace hoy el flujo | Acción | Sev. |
+|---|---|---|---|---|
+| N12 | **Fechas concretas** (2.8.0, 2.10.0, 2.14.0): cada persona marca días; la consola elige las 4 fechas con más coincidencias, las manda a `proponer_ia` y, si hay más de una, agrega la encuesta «¿Qué día?» | W1 llama `proponer_ia` solo con `plan_id` (el backend acepta `fechas` y `restricciones`); `/opciones` no dice la fecha; no hay «¿Qué día?» | Portar la elección de las 4 fechas desde `piloto/mago.html`; W1 envía `fechas`; agrega «¿Qué día?» cuando hay más de una; el formulario de W3 pide la fecha votada | **Validez** |
+| N13 | **Plazo para confirmar** (2.8.0 y G1 de 2.8.1): más de 24 h → víspera 6:00 p. m.; 4–24 h → 2 h antes; menos de 4 h → «marquen si van ahora». Sin plazo cumplido no salen `/hoy` ni `/salida` | W3 manda `/confirmado` sin plazo y programa `/salida` sin mirarlo | Portar `plazoDe`, `plazoFrase` y `plazoTxt` (`mago.html`) a W3; W3 y W4 respetan el plazo | **Validez** |
+| N14 | **Opciones en 4 líneas con un solo precio** (2.8.0, G2 de 2.8.1): título, qué harán, dónde (zona una vez) con «aprox. $X por persona» (punto medio redondeado a miles) y Maps corto. `/confirmado` y `/evento` repiten el mismo título y precio | «Normalizar opciones» y «Armar texto /opciones» usan el formato del 3/11 (`título — paradas · salida · presupuesto`) | Portar `precioUno` (`sintonia.js`) y `dondeTxt` (`mago.html`); mismo título y precio en `/confirmado`. Se suma a N8 (paradas completas) | **Validez** (voz: un solo precio) |
+| N15 | **Mensajes bloqueados mientras votan** (2.8.0): no se puede copiar `/confirmado`, `/evento`, `/hoy`, `/salida`, `/todos` ni la encuesta de cierre; `/recordatorio` desaparece cuando ya votaron todos | W2 decide con `n_votos` de `view=plan`, que cuenta la hoja `votos`. Con la encuesta nativa (N1) esa hoja queda vacía: el recordatorio sale siempre y «todos votaron» nunca llega. W3 se puede cerrar en cualquier momento | W2 usa los conteos de la encuesta (depende de V1 del relay) o el estado de la ronda; W3 no cierra mientras la encuesta esté abierta | **Validez** |
+| N16 | **Antes del grupo** (2.8.0): «Falta un paso: invita a tu parche», recordar a quien organiza que comparta la invitación y crear el grupo en 3 pasos (guardar contacto, crear con quien organiza, enlace para el resto) | W0 arranca en «Grupo creado»: no hay recordatorio a quien organiza ni paso de crear el grupo | **Decidir:** quien revisa crea el grupo a mano, igual que en E1 (recomendado: misma mecánica, y WhatsApp no deja agregar a quien no es contacto), o lo hace Evolution. El recordatorio a quien organiza entra como mensaje aprobado | **Bloquea** (grupos reales) |
+| N17 | **Textos de la 2.16.0** y voz: «su +1 de confianza» (`MARCA_SU`), `wa.me` sin emojis, máximo un emoji | N2 pedía copiar los textos de la 2.7.0 | Copiar de la lista `TPL` de **2.16.0** (tag `piloto/v2.16.0`), no de la 2.7.0 | **Bloquea** (amplía N2) |
+| N18 | **Encuesta de cierre 2.16** con precio para todo el parche: enlace personal `retro.html` con `pid` y `plan_id`; plan 2 con su ronda | W5 manda un solo `/retro` al grupo | W5 arma un enlace por persona igual al de la consola (N6) y la ronda del plan 2 | **Validez** |
+| N19 | **Encuesta del mago por plan** (G4 de 2.8.1): paso del recorrido después de cada cierre, aunque el plan se caiga | No existe en E1.5 | W5 avisa a quien revisa con el enlace de `pulso_mago` después de cada plan. Junto con N10–N11: decidir cómo se miden los minutos de quien revisa (por ejemplo, abrir «Mago in» en la consola mientras aprueba) | **Validez** |
+| N20 | **Reintentos sin duplicados** (`req_id`, backend 2.9.3) | Ningún llamado manda `req_id` | Cada escritura del motor (`publicar_plan`, `cerrar_plan`, `evento`, `reabrir_opciones`, `operacion`) manda un `req_id` fijo, por ejemplo `plan_id-accion-ronda`. Obligatorio antes de agregar reintentos (pendiente 11) | **Validez** (datos duplicados) |
+| N21 | **`cerrar_plan` con la hora** | W3 manda solo `plan_id` y `elegida` | Enviar también `hora_encuentro`, `hora_salida` y `decision` (N1). Sin la hora, el plan queda sin fecha en la hoja | **Validez** |
+| N22 | **Llegadas y «en casa» como encuesta** (2.4.0, 2.7.1): el mago toca «Llegó» y «En casa» por persona | W4 lee `n_llegaron` de los eventos `checkpoint_llegada`; nadie los registra en E1.5 si la respuesta es un voto de encuesta | Traducir cada voto de `/checkpoint` y `/en_casa` a `evento` por persona (`checkpoint_llegada`, `llego_casa`). Depende de V1 y de D1 (quién resuelve el `pid`) | **Validez** |
+| N23 | **Modo prueba sin reloj** (2.4.0) | W2–W5 corren cada 15 min con la hora real | Para probar «tal como están»: disparos manuales o un `Config` de prueba con tiempos cortos, solo para grupos en modo prueba | Ajuste (necesario ya para las pruebas) |
+| N24 | **Asignación de condición**: la landing y el QR inscriben con `exp=E1`; E1.5 solo entra por el enlace `exp=E2` de la página del equipo | — | Escribir antes de reclutar qué grupos van a E1.5 y por qué (no por autoselección) | **Validez** (sesgo metodológico) |
+| N25 | **Canal decidido el 26/11:** Evolution con envío automático después de aprobar | B1 de §2 recomendaba volver a la opción C; `SW · Enviar` y `SW · Avisar revisor` ya usan Evolution, pero `SW · Aprobar` no existe | B1 pasa de «volver a la opción C» a **construir `SW · Aprobar`** (aprobar, editar o rechazar) antes de `SW · Enviar`. La §2 pedía reabrir C12 **por escrito y con Néstor** (términos de WhatsApp y aviso): hoy solo hay decisión del equipo | **Bloquea** (personas reales; no las pruebas con el número de prueba) |
+| N26 | **Términos sensibles** iguales en formulario y backend (2.8.1, 2.9.2) | E1.5-01 escala con su propia lista de salud, ubicación y emergencia | Mantener la escalada, revisar que no contradiga `TERMINOS_SENSIBLES_` | Ajuste |
+| N27 | **Lo que el motor puede leer.** Con `MOTOR_KEY` solo hay `view=plan` (con un `pid`) y `view=resolver`; `view=mago` exige `ADMIN_KEY` | `view=plan` no trae la disponibilidad ni los `pid` de los miembros, `n_llegaron` ni `t_cerrado`. W4 espera `n_llegaron`: hoy siempre caería en `llegadas_desconocidas` | **Después del congelamiento:** `view=motor` con `MOTOR_KEY`, sin nombres ni números (detalle en `snippets/README.md`). No dar `ADMIN_KEY` al motor | **Bloquea** N12, N18 y N22 |
+
+### 8.3 Snippets y V1
+
+- **Snippets (26/11):** `n8n/snippets/sintonia-e1.js` trae la lógica y los textos de la consola 2.16.0 para los nodos Code (N2, N3, N12–N15, N17, N18, N20). Probado contra la consola en 753 casos ficticios (verificación técnica, n = 0). Uso en `snippets/README.md`.
+- **V1 · votos de la encuesta nativa:** el CHANGELOG de Evolution dice que la 2.3.7 (5 dic 2025) agregó el descifrado de votos de encuestas, así que la 2.3.8 debería traerlo. Para descifrar un voto hace falta **el mensaje original de la encuesta** guardado en el conector (así funciona Baileys, la librería de Evolution). Eso choca con «apagar el guardado de historial» del pendiente 11: hay que guardar al menos los mensajes que manda Sintonía, con retención corta. **Por verificar con el número de prueba:** mandar una encuesta, votar y mirar qué llega al webhook.
+
+### 8.4 Orden sugerido
+
+1. Exportar los flujos actuales y confirmar esta tabla. Probar V1 con el número de prueba.
+2. Para las pruebas tal como están: N23 (relojes) y N20 (`req_id`).
+3. Antes de una persona real: N25 (`SW · Aprobar` y Néstor), N16, N17 y N3.
+4. Para que E1 y E1.5 sean comparables: N1, N12–N15, N18, N19, N21, N22 y N24, más N5–N11.

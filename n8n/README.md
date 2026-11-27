@@ -1,6 +1,6 @@
 # n8n · E1.5 (automatización asistida)
 
-Flujos del motor de E1.5. Canal: **opción C** (una persona copia y pega en el grupo). Todo en **modo prueba** hasta que Néstor apruebe el aviso de privacidad v2.
+Flujos del motor de E1.5. Canal desde el 26/11: **Evolution API**, con envío automático **después de que una persona aprueba** (antes, opción C: una persona copiaba y pegaba). Todo en **modo prueba** hasta tener `SW · Aprobar`, el aviso v3 y el visto bueno de Néstor (N25 en la §8 de [`GUIA-CONTINUACION.md`](GUIA-CONTINUACION.md)). Lógica y textos de E1 para los nodos Code: [`snippets/`](snippets/README.md). Relay en el servidor: [`relay/SPEC.md`](relay/SPEC.md).
 
 **Nunca se exportan credenciales a esta carpeta.** El JSON solo referencia credenciales por nombre.
 
