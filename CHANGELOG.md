@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Deck de las lecturas al día y respuestas propias a A y C (sin cambios de código)
+- Deck «Seis lecturas, un rumbo» (artefacto privado): diapositiva 9 con el orden E1 → E1.5, A1–A6 como diagnóstico del flujo manual y el modelo de negocio en construcción; fila del 2/12 resuelta (E1.5 después de cerrar E1, que se define el 3/12).
+- JTBD del deck: «quiero que conectar con los míos sea tan fácil como mandar un mensaje» (reemplaza «que alguien proponga…»). Falta llevarlo al doc de las lecturas.
+- Diapositiva 14 nueva: respuestas del equipo a A1 (Drucker), A2 (Kanter), C1 (Prahalad y Hamel) y C2 (Pisano), con su estatus.
+- `ESTADO.md`: §0 (lecturas) y pendiente 21.
+
 ### 2026-11-27 · Instrucciones del Proyecto v3.6 tras la revisión académica (sin cambios de código)
 - Proyecto: prompt maestro v3.6 (`claude/prompt-maestro-v3.6.md`), que corrige la v3.5 con el Contraste 2 del doc de las lecturas y las decisiones del 27/11: orden E1 → E1.5 (§4.1), el 4/12 ya no es entrega (§4), automatización por tipo de mensaje (§4.1), criterio de parada de E1.5 como regla del equipo (§3.4), límites de la comparación y de la disposición a pagar (§3.8), literatura de automatización citada por su argumento (§3.5), riesgos del conector y del error visible del motor (§5), nunca «disruptivo» (§6) y «lectura E1» frente a «condición E1» (§7).
 - Proyecto: `claude/archivo.md` v4 (la v3.5 pasa al archivo) y base de conocimiento al 27/11 (§2, §4, §6, §7, §9, §10 y §12).
