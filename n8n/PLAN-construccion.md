@@ -8,7 +8,7 @@
 - **Hoy no se puede probar de punta a punta.** Sí por tramos: entrada (lo que escribe el grupo) → salida hasta `/confirmado`. La continuidad (llegadas, «en casa», encuesta de cierre) espera `view=motor` (`n8n.N27`), que es un cambio de backend.
 - **Hecho el 27/11 (fase 0):** revisor automático de flujos, entrada del motor con sus puertas y 24 casos de prueba, y el flujo importable `E15-00 · Entrada`.
 - **Primer paso (fase 1, José, ~15 min):** conectar Claude al servidor MCP de la instancia de n8n (§2.0). Con eso Claude importa, valida y prueba los flujos directo en n8n; sin eso, Claude entrega JSON y José importa a mano.
-- **Multiagente (§7):** solo en dos puntos. Un verificador independiente antes del primer mensaje al grupo de prueba (fase 3 → 4) y constructores en paralelo para W3–W5 cuando exista `view=motor` (fase 5). En el producto, ningún agente le habla al grupo.
+- **Multiagente (§7):** solo en dos puntos. Un verificador independiente antes del primer mensaje al grupo de prueba (fase 3 → 4) y constructores en paralelo para W3–W5 cuando exista `view=motor` (fase 5). En el producto, superado el 27/11: el motor va con agentes (`n8n/PLAN-agentico.md`, §7.1).
 - **Después (fase 1, José, ~15 min):** crear la tabla `e15_entrada`, apuntar Evolution y exportar los 9 flujos actuales.
 
 ## 1. Fases
@@ -18,7 +18,7 @@
 | 0 · Base sin red | `n8n/qa/revisar-flujos.py` · `n8n/motor/entrada.js` + `prueba-entrada.js` · `n8n/E15-00-entrada.json` (generado con `motor/construir.py`) | Claude | Revisor ✓ sobre E15-00 · 24 casos ✓ · snippets ✓ (753) | **Hecho 27/11** |
 | 1 · Conectar | Ver §2 (empieza por §2.0, el MCP de n8n) | José | Claude ve la instancia por MCP · E15-00 activo y registrando en `e15_entrada`; 9 flujos exportados sin URL ni claves | **Hecho 27/11.** 9 flujos en `n8n/flujos/` (revisor: 5 bloqueos, 28 de validez). E15-00 activo; `HUMANO` registrado como `escalar · pidio_humano` |
 | 2 · Tramo T1, entrada | Casos de §3 con el número de prueba | José manda, Claude lee la tabla | Todos los casos dan la `accion` esperada; V1 resuelto (¿llega el voto descifrado? ¿con qué forma?) | Pendiente |
-| 3 · Salida | (+ verificador independiente, §7) `SW · Enviar` v2: textos de los snippets, freno de corchetes (`n8n.N3`), `req_id` (`n8n.N20`), reintentos, flujo de errores `E15-ERR`. W0 y W1 con textos 2.16.0 (`n8n.N17`, `n8n.N14`) y relojes cortos de prueba (`n8n.N23`) | Claude construye, José importa | Revisor sin bloqueos en W0, W1, SW · Enviar | Pendiente |
+| 3 · Salida | (+ verificador independiente, §7) Con `SW · Redactar` delante (`ag.F2`). `SW · Enviar` v2: textos de los snippets, freno de corchetes (`n8n.N3`), `req_id` (`n8n.N20`), reintentos, flujo de errores `E15-ERR`. W0 y W1 con textos de la consola 2.16.0 (`n8n.N17`, `n8n.N14`) y relojes cortos de prueba (`n8n.N23`) | Claude construye, José importa | Revisor sin bloqueos en W0, W1, SW · Enviar | Pendiente |
 | 4 · Tramo T2, activación | Plan de prueba en el grupo de prueba: ingreso → opciones → encuesta → voto → `/confirmado` | Equipo | El grupo de prueba recibe los mismos textos que daría la consola 2.16.0, sin corchetes y sin duplicados | Pendiente |
 | 5 · Continuidad | W3 salida, W4, W5, `/retro` personal | Claude, después de `view=motor` | Tramo T3 completo con relojes cortos | **Bloqueado:** `n8n.N27` (backend) |
 | 6 · Antes de una persona real | Relay (`relay/SPEC.md`), aviso v3, tabla por tipo de mensaje firmada con Néstor (d4), `n8n.N16`, `n8n.N24` | Equipo | Todo lo de la §5 decidido por escrito | **Bloqueado:** cerrar E1 (3/12) |

@@ -1,14 +1,17 @@
 # n8n · E1.5 (automatización asistida)
 
-Flujos del motor de E1.5. Canal desde el 26/11: **Evolution API**, con envío automático **después de que una persona aprueba** (antes, opción C: una persona copiaba y pegaba). Todo en **modo prueba** hasta tener `SW · Aprobar`, el aviso v3 y el visto bueno de Néstor (N25 en la §8 de [`GUIA-CONTINUACION.md`](GUIA-CONTINUACION.md)). Lógica y textos de E1 para los nodos Code: [`snippets/`](snippets/README.md). Relay en el servidor: [`relay/SPEC.md`](relay/SPEC.md).
+Flujos del motor de E1.5. Canal desde el 26/11: **Evolution API**, con envío automático. Desde el 27/11 el motor va **con agentes** ([`PLAN-agentico.md`](PLAN-agentico.md)): un Redactor escribe alrededor de un bloque de datos fijo, guardas en código y un Revisor (QA) aprueban, y si algo falla sale la plantilla de E1. No hay aprobación humana antes de cada mensaje; una persona entra con HUMANO, lo sensible o un error. Todo en **modo prueba** con el grupo del equipo hasta cerrar E1 y publicar el aviso v3 (qué se canceló con el cambio: §9 de [`GUIA-CONTINUACION.md`](GUIA-CONTINUACION.md); pruebas: [`PLAN-pruebas.md`](PLAN-pruebas.md)). Entrada: `E15-00 · Entrada` ([`motor/`](motor/)). Contrato y voz de los agentes: [`agentes/`](agentes/). Lógica y textos de E1 para los nodos Code: [`snippets/`](snippets/README.md). Relay en el servidor: [`relay/SPEC.md`](relay/SPEC.md).
 
 **Nunca se exportan credenciales a esta carpeta.** El JSON solo referencia credenciales por nombre.
 
 Historial: [`CHANGELOG.md`](CHANGELOG.md). Arreglos y pruebas pendientes de los flujos W0–W5: [`GUIA-CONTINUACION.md`](GUIA-CONTINUACION.md). Estado y riesgos: `.cowork/estado-e15-n8n.md` (local).
 
-Para ponerlo a andar paso a paso, empieza por [`GUIA-IMPLEMENTACION.md`](GUIA-IMPLEMENTACION.md). Para generar el recorrido completo del storyboard con el constructor de IA de n8n, usa [`PROMPT-n8n-builder.md`](PROMPT-n8n-builder.md).
+Para construir y probar, empieza por [`PLAN-construccion.md`](PLAN-construccion.md) y [`PLAN-agentico.md`](PLAN-agentico.md). `GUIA-IMPLEMENTACION.md` y `PROMPT-n8n-builder.md` describen la opción C (copiar y pegar) y quedan solo como historia.
 
-## E15-01 · Voto mínimo
+## E15-01 · Voto mínimo (superado por E15-00 el 27/11)
+
+> Se queda inactivo en la instancia como referencia. Lo que llega del grupo ahora lo lee `E15-00 · Entrada` directo de Evolution.
+
 
 Formulario donde se pega el mensaje del grupo → `resolver` (número → `pid`) → interpreta el texto → `votar` o `evento`.
 

@@ -7,8 +7,8 @@
 
 - **Qué cambia:** los textos al grupo los redacta un **agente Redactor** con la voz de Sintonía, y un **agente Revisor (QA)** independiente los aprueba antes de salir. Si el Revisor o las guardas fallan, sale la plantilla de E1 o escala a una persona.
 - **Qué no cambia:** cuándo se habla (relojes y eventos de W0–W5), los datos (solo del backend), HUMANO y lo sensible (siempre a una persona) y el criterio de parada del 40 %.
-- **Por qué es comparable:** en E1 el mago también adapta los textos. La comparación justa es «persona con criterio» contra «agente con criterio», con los mismos datos y los mismos momentos. Para comprobarlo, en Cali se anota cuánto se aparta el mago de la plantilla (§4, A0).
-- **Primer paso (A0), hecho el 27/11 sin red:** contrato de los agentes y diseño de la tabla `e15_mensajes` (`n8n/agentes/contrato.md`), reglas de voz (`n8n/agentes/voz.md`) y guardas en código con casos (`n8n/motor/guardas.js`). Falta la nota de Cali. **Siguiente:** A1, que espera la credencial del modelo (§5).
+- **Por qué es comparable:** en E1 el mago también adapta los textos. La comparación justa es «persona con criterio» contra «agente con criterio», con los mismos datos y los mismos momentos. Para comprobarlo, en Cali se anota cuánto se aparta el mago de la plantilla (§4, F0).
+- **Primer paso (F0), hecho el 27/11 sin red:** contrato de los agentes y diseño de la tabla `e15_mensajes` (`n8n/agentes/contrato.md`), reglas de voz (`n8n/agentes/voz.md`) y guardas en código con casos (`n8n/motor/guardas.js`). Falta la nota de Cali. **Siguiente:** F1, que espera la credencial del modelo (§5).
 
 ## 1. Lo que no se negocia
 
@@ -33,7 +33,7 @@
 | Persona | HUMANO, lo sensible y lo que el sistema no resuelve | Equipo | Aviso del revisor | — |
 | Bitácora `e15_mensajes` | Registro para el 40 % | Data Table | — | — |
 
-**n8n Agent o nodo de IA:** en v1, Redactor, Intérprete y Revisor van como **nodos de IA dentro de los flujos**, porque el control (cuándo y qué tipo de mensaje) es fijo. El *Agent* de n8n como pieza propia queda para el **asistente de operación** (§4, A5), que sí investiga y conversa con el equipo.
+**n8n Agent o nodo de IA:** en v1, Redactor, Intérprete y Revisor van como **nodos de IA dentro de los flujos**, porque el control (cuándo y qué tipo de mensaje) es fijo. El *Agent* de n8n como pieza propia queda para el **asistente de operación** (§4, F5), que sí investiga y conversa con el equipo.
 
 ## 3. Carriles por tipo de mensaje (propuesta para d4)
 
@@ -48,17 +48,17 @@
 
 | Fase | Qué | Quién | Listo cuando | Depende de |
 |---|---|---|---|---|
-| **A0 · Contrato, sin red** ✓ 27/11 | Esquemas de entrada y salida del Redactor y del Revisor (JSON). `n8n/agentes/voz.md` con las reglas de voz y ejemplos buenos y malos. `n8n/motor/guardas.js` con casos ficticios. Data Table `e15_mensajes`. En Cali (E1): anotar qué texto mandó el mago frente a la plantilla, **solo los mensajes del mago**, sin tocar la consola | Claude; la nota de Cali, el mago | Guardas con casos ✓. Revisor y Redactor con contrato escrito. **Hecho el 27/11:** `n8n/agentes/contrato.md` (Redactor, guardas, Revisor, Intérprete y diseño de `e15_mensajes`, sin crearla en n8n), `n8n/agentes/voz.md` y `n8n/motor/guardas.js` (`node n8n/motor/prueba-guardas.js`: 36 casos ✓, 23 malos sembrados). Falta la nota de Cali (el mago) | Nada |
-| **A1 · Redactor y Revisor, fuera del grupo** | Subflujo `SW · Redactar` (Redactor → guardas → Revisor → texto o plantilla). Banco de pruebas: al menos 20 casos por tipo de mensaje, más casos malos sembrados (dato cambiado, dos emojis, un nombre, corchete) | Claude por MCP; José crea la credencial del modelo | 0 errores de datos. El Revisor rechaza todos los casos malos. Tasa de respaldo a plantilla medida | Credencial del modelo (§5) |
-| **A2 · Salida con agentes** | Fase 3 de `PLAN-construccion.md` con `SW · Redactar` delante de `SW · Enviar` v2, en W0 y W1. Verificador independiente antes del primer mensaje (§7 de ese plan) | Claude construye; verificador aparte; José importa o aprueba | `tramo.T2` en el grupo de prueba: textos con voz, datos idénticos al backend, sin corchetes ni duplicados | A1 · `tramo.T1` |
-| **A3 · Intérprete** | `no_entendido` de E15-00 → Intérprete. Casos con mensajes que intentan darle órdenes («ignora tus reglas…») | Claude | Salida siempre dentro de la lista cerrada; lo dudoso escala | A1 |
-| **A4 · Continuidad** | W3 salida, W4, W5 con el Redactor | Claude | `tramo.T3` con relojes cortos | `view=motor` (`n8n.N27`) |
-| **A5 · Asistente de operación** | *n8n Agent* interno: lee `e15_entrada`, `e15_mensajes` y ejecuciones; resume para el equipo. Nunca le habla al grupo ni ve datos de personas | Claude | Resumen diario útil con datos de prueba | A2 |
-| **A6 · Antes de una persona real** | Aviso v3 nombra al proveedor del modelo como encargado y dice que los mensajes los redacta una IA y los revisa otra. d3 con textos generados. d4 firmada. Aviso v3 aprobado (d5) | Equipo y Néstor | Todo por escrito | Cerrar E1 (3/12) |
+| **F0 · Contrato, sin red** ✓ 27/11 | Esquemas de entrada y salida del Redactor y del Revisor (JSON). `n8n/agentes/voz.md` con las reglas de voz y ejemplos buenos y malos. `n8n/motor/guardas.js` con casos ficticios. Data Table `e15_mensajes`. En Cali (E1): anotar qué texto mandó el mago frente a la plantilla, **solo los mensajes del mago**, sin tocar la consola | Claude; la nota de Cali, el mago | Guardas con casos ✓. Revisor y Redactor con contrato escrito. **Hecho el 27/11:** `n8n/agentes/contrato.md` (Redactor, guardas, Revisor, Intérprete y diseño de `e15_mensajes`, sin crearla en n8n), `n8n/agentes/voz.md` y `n8n/motor/guardas.js` (`node n8n/motor/prueba-guardas.js`: 36 casos ✓, 23 malos sembrados). Falta la nota de Cali (el mago) | Nada |
+| **F1 · Redactor y Revisor, fuera del grupo** | Subflujo `SW · Redactar` (Redactor → guardas → Revisor → texto o plantilla). Banco de pruebas: al menos 20 casos por tipo de mensaje, más casos malos sembrados (dato cambiado, dos emojis, un nombre, corchete) | Claude por MCP; José crea la credencial del modelo | 0 errores de datos. El Revisor rechaza todos los casos malos. Tasa de respaldo a plantilla medida | Credencial del modelo (§5) |
+| **F2 · Salida con agentes** | Fase 3 de `PLAN-construccion.md` con `SW · Redactar` delante de `SW · Enviar` v2, en W0 y W1. Verificador independiente antes del primer mensaje (§7 de ese plan) | Claude construye; verificador aparte; José importa o aprueba | `tramo.T2` en el grupo de prueba: textos con voz, datos idénticos al backend, sin corchetes ni duplicados | F1 · `tramo.T1` |
+| **F3 · Intérprete** | `no_entendido` de E15-00 → Intérprete. Casos con mensajes que intentan darle órdenes («ignora tus reglas…») | Claude | Salida siempre dentro de la lista cerrada; lo dudoso escala | F1 |
+| **F4 · Continuidad** | W3 salida, W4, W5 con el Redactor | Claude | `tramo.T3` con relojes cortos | `view=motor` (`n8n.N27`) |
+| **F5 · Asistente de operación** | *n8n Agent* interno: lee `e15_entrada`, `e15_mensajes` y ejecuciones; resume para el equipo. Nunca le habla al grupo ni ve datos de personas | Claude | Resumen diario útil con datos de prueba | F2 |
+| **F6 · Antes de una persona real** | Aviso v3 nombra al proveedor del modelo como encargado y dice que los mensajes los redacta una IA y los revisa otra. d3 con textos generados. d4 firmada. Aviso v3 aprobado (d5) | Equipo y Néstor | Todo por escrito | Cerrar E1 (3/12) |
 
 ## 5. Por decidir (equipo)
 
-1. **Modelo y proveedor.** n8n Cloud trae créditos para Anthropic, entre otros. Propuesta: un modelo para el Redactor y **otro distinto** para el Revisor, para que no compartan los mismos puntos ciegos. Se elige con el banco de A1 (calidad, latencia, costo).
+1. **Modelo y proveedor.** n8n Cloud trae créditos para Anthropic, entre otros. Propuesta: un modelo para el Redactor y **otro distinto** para el Revisor, para que no compartan los mismos puntos ciegos. Se elige con el banco de F1 (calidad, latencia, costo).
 2. **Qué es error con textos generados (d3).** Propuesta: error = dato distinto al backend, mensaje que salió con falla del Revisor, o mensaje que la persona tuvo que corregir. Un respaldo a plantilla no es error, pero se cuenta aparte.
 3. **Latencia aceptable.** Propuesta: hasta 10 s en social y datos; si se pasa, sale la plantilla.
 4. **Stickers** (`PLAN-construccion.md` §5): siguen la regla que fije el equipo, no los elige el Redactor en v1.
@@ -68,8 +68,8 @@
 | Riesgo | Qué lo frena |
 |---|---|
 | El Redactor cambia un dato | Bloque de datos fijo + guardas en código, antes del Revisor |
-| El Revisor aprueba algo malo | Casos malos sembrados en A1; otro modelo; bitácora para revisar después |
+| El Revisor aprueba algo malo | Casos malos sembrados en F1; otro modelo; bitácora para revisar después |
 | Un mensaje del grupo manipula al Intérprete | Salida cerrada, sin herramientas, nunca redacta; lo dudoso escala |
 | Lentitud o caída del proveedor | Tiempo máximo y plantilla de respaldo |
-| E1 y E1.5 dejan de ser comparables | Mismos momentos y datos; la nota de Cali (A0) mide cuánto adapta el mago |
+| E1 y E1.5 dejan de ser comparables | Mismos momentos y datos; la nota de Cali (F0) mide cuánto adapta el mago |
 | Datos de personas al proveedor | Minimización (§1.6) y aviso v3 antes del grupo real |

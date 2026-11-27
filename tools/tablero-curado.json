@@ -131,16 +131,6 @@
       "fecha": "2026-12-04",
       "nota": "Borrador listo: falta aprobación del equipo"
     },
-    "34": {
-      "frente": "motor",
-      "estado": "espera",
-      "nota": "Después de cerrar E1"
-    },
-    "35": {
-      "frente": "motor",
-      "estado": "espera",
-      "nota": "Después de cerrar E1"
-    },
     "36": {
       "frente": "motor",
       "estado": "espera",
@@ -170,17 +160,13 @@
       "frente": "casa",
       "nota": "Instrucciones v3.7 y base §4 con lo decidido el 27/11"
     },
-    "43": {
-      "frente": "motor",
-      "nota": "README de n8n desalineado con la decisión del 26/11"
-    },
     "44": {
       "frente": "motor",
-      "nota": "Conectar el MCP de n8n e importar E15-00 (fase 1 del plan)"
+      "nota": "tramo.T1 en el grupo del equipo (prueba.P1 de n8n/PLAN-pruebas.md)"
     },
     "45": {
       "frente": "motor",
-      "nota": "Fase A0 del plan agéntico: contrato, voz, guardas y bitácora"
+      "nota": "ag.F0 hecha; sigue ag.F1 (SW · Redactar), con credenciales de los modelos"
     }
   },
   "hitos": [

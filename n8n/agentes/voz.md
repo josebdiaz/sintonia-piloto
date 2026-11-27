@@ -1,6 +1,6 @@
 # Voz de Sintonía · reglas para el Redactor y el Revisor (v0.1, 27/11/2026)
 
-> Fase A0 de [`n8n/PLAN-agentico.md`](../PLAN-agentico.md). Las §1–§3 se pegan tal cual como instrucciones del Redactor y del Revisor ([`contrato.md`](contrato.md), campo `reglas`). Lo que se puede revisar con reglas lo revisa el código ([`../motor/guardas.js`](../motor/guardas.js)); lo demás, el Revisor.
+> Fase `ag.F0` de [`n8n/PLAN-agentico.md`](../PLAN-agentico.md). Las §1–§3 se pegan tal cual como instrucciones del Redactor y del Revisor ([`contrato.md`](contrato.md), campo `reglas`). Lo que se puede revisar con reglas lo revisa el código ([`../motor/guardas.js`](../motor/guardas.js)); lo demás, el Revisor.
 > Los textos de referencia son las plantillas de la consola 2.16.0, copiadas en [`../snippets/sintonia-e1.js`](../snippets/sintonia-e1.js) (`TPL`). Si cambian allá, se actualizan aquí. Todos los ejemplos son ficticios.
 
 ## 1. Quién habla
@@ -82,4 +82,4 @@ Mensajes: `/ingreso`, recordatorios, ánimo, `/todos`, `/en_casa`, `/retro` (avi
 
 - **Redactor:** recibe §1–§3 como instrucciones, más el `momento` y la `referencia` del tipo de mensaje. La referencia es un piso, no un molde: puede sonar distinto si cumple las reglas.
 - **Revisor:** recibe §1–§3 y los motivos de `contrato.md` §4.3. Ante la duda, `falla`: la plantilla no es error.
-- **Banco de A1:** los ✗ de §4.2 y §5.2 son la semilla de los casos malos; los ✓, de los buenos. `node n8n/motor/prueba-guardas.js` ya cubre los que se detectan con reglas.
+- **Banco de `ag.F1`:** los ✗ de §4.2 y §5.2 son la semilla de los casos malos; los ✓, de los buenos. `node n8n/motor/prueba-guardas.js` ya cubre los que se detectan con reglas.

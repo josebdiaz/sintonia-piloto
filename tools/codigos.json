@@ -116,6 +116,28 @@
       ],
       "vivo": true
     },
+    "ag": {
+      "nombre": "Fases del motor E1.5 con agentes (F0 contrato … F6 antes de una persona real)",
+      "dueno": "n8n/PLAN-agentico.md",
+      "archivos": [
+        "n8n/PLAN-agentico.md"
+      ],
+      "letras": [
+        "F"
+      ],
+      "vivo": true
+    },
+    "prueba": {
+      "nombre": "Capas del plan de pruebas del motor E1.5 (P0 sin red … P5 continuidad)",
+      "dueno": "n8n/PLAN-pruebas.md",
+      "archivos": [
+        "n8n/PLAN-pruebas.md"
+      ],
+      "letras": [
+        "P"
+      ],
+      "vivo": true
+    },
     "fix281": {
       "nombre": "Plan de correcciones 2.8.1 (G graves, M menores, B backend)",
       "dueno": "docs/plan-correcciones-2.8.1.md",

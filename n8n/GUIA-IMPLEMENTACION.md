@@ -1,5 +1,7 @@
 # Guía rápida · Poner a andar E1.5 en n8n
 
+> **Superada el 27/11.** Describe la opción C (una persona copia y pega). El motor vigente va por Evolution y con agentes: `n8n/PLAN-construccion.md`, `n8n/PLAN-agentico.md` y `n8n/PLAN-pruebas.md`. Se deja como historia.
+
 **Canal:** opción C. n8n interpreta y una persona copia y pega en el grupo (ver `.cowork/decisiones-p7.md` §9).
 **Alcance:** solo modo prueba con el equipo. Tiempo: unos 20 minutos.
 

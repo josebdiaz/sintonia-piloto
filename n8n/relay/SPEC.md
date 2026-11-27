@@ -16,7 +16,7 @@ Un servicio pequeño en el servidor que ya tiene el conector de WhatsApp (Evolut
 WhatsApp ──► Evolution ──► RELAY ──► n8n Cloud ──► Apps Script (fuente de verdad)
                  ▲            │           │
                  │            │           ▼
-                 └── RELAY ◄──┘◄── n8n (mensaje ya aprobado por una persona)
+                 └── RELAY ◄──┘◄── n8n (mensaje aprobado por guardas y Revisor)
                  salida (lo que dice Sintonía)
 ```
 

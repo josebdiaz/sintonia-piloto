@@ -1,5 +1,7 @@
 # Prompt para el constructor de IA de n8n · E1.5 completo
 
+> **Superado el 27/11.** Arma la opción C y sus textos están desactualizados (`n8n.N2`). El motor vigente se construye por MCP según `n8n/PLAN-agentico.md`. No usar.
+
 **Qué es:** un prompt para pegar en el asistente o constructor de IA de n8n (si tu plan lo incluye), o en cualquier modelo que genere flujos de n8n. Arma el recorrido completo del storyboard M2 con la opción C (automatización asistida).
 
 **Antes de pegarlo:**

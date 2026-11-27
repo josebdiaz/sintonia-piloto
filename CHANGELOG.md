@@ -5,19 +5,28 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
-### 2026-11-27 · Motor E1.5 con agentes: fase A0 (contrato, voz y guardas; sin red, sin cambios de consola, backend ni flujos)
+### 2026-11-27 · Motor E1.5: revisión tras el pivote a agentes y plan de pruebas (sin cambios de consola, backend ni flujos)
+- `n8n/GUIA-CONTINUACION.md` §9: qué cancela el pivote (`n8n.B1`, `n8n.I4`, `n8n.N6`, `n8n.N25` y `n8n.M3`; E1.5-01 superado por E15-00), qué cambia de uso (`n8n.N2`, `n8n.N3`, `n8n.N17`), qué queda por redefinir con d6 (`n8n.N10`, `n8n.N11`, `n8n.N19`) y el orden vigente. Nuevo: E1.5 necesita su propia bienvenida, porque la de la consola dice que una persona revisa todo.
+- `n8n/PLAN-pruebas.md` v0.1: capas `prueba.P0` (sin red) a `prueba.P5` (continuidad; ámbito nuevo `prueba`), con casos, «listo cuando» y lo que ya no se prueba (`n8n.T1–T4`, `n8n.T7`, `n8n.T14`).
+- Fases del plan con agentes renombradas de A0–A6 a `ag.F0–F6` (ámbito nuevo `ag`, dueño `n8n/PLAN-agentico.md`), porque chocaban con los criterios globales A1–A6. `tools/codigos.json` y `docs/convenciones.md` §4.
+- `n8n/README.md` alineado con el motor con agentes (cierra el pendiente 43); `GUIA-IMPLEMENTACION.md` y `PROMPT-n8n-builder.md` marcados como superados (opción C); `relay/SPEC.md` y `PLAN-construccion.md` sin la aprobación humana previa.
+- `n8n/agentes/contrato.md`: el Redactor recibe y devuelve el marcador `@@BLOQUE@@` (las llaves chocan con los prompts de n8n); las guardas lo cambian por `{{bloque}}`.
+- `n8n/snippets/prueba.js`: con Node 26 la salida del proceso hijo se cortaba en 64 KB y la prueba fallaba; ahora sale después de vaciar la tubería. 753 casos ✓.
+- `ESTADO.md` §0, §1 (fila del motor), §3.1 y §4: pendientes 34 (cubierto por los carriles del plan y d4), 35 (dentro del 44) y 43 cerrados; 36, 44 y 45 actualizados. `tools/tablero-curado.json`.
+
+### 2026-11-27 · Motor E1.5 con agentes: fase `ag.F0` (contrato, voz y guardas; sin red, sin cambios de consola, backend ni flujos)
 - `n8n/agentes/contrato.md` v0.1: entrada y salida en JSON del Redactor (tipo, momento, descripción del bloque y plantilla de E1 → texto con `{{bloque}}`; no recibe los valores del bloque), de las guardas, del Revisor QA (texto final + bloque + reglas → `ok`/`falla` + motivo; no reescribe) y del Intérprete (salida cerrada: voto 1/2/3, evento o escalar). Diseño de la Data Table `e15_mensajes`, sin texto del grupo ni datos de personas; no se creó en n8n.
 - `n8n/agentes/voz.md` v0.1: reglas de voz (una idea, conteos y nunca nombres, máximo un emoji, nada inventado, `MARCA_TU`/`MARCA_SU`) con referencias de la consola 2.16.0 y ejemplos buenos y malos por carril (datos, social).
 - `n8n/motor/guardas.js` y `n8n/motor/prueba-guardas.js`: corchetes y marcadores, bloque ausente o repetido, horas, cifras, enlaces y lugares que no están en el bloque, nombres propios, más de un emoji, marca mal escrita y largo. 36 casos ficticios ✓, 23 malos sembrados (n = 0).
-- Ámbito nuevo `tramo` (dueño `n8n/PLAN-construccion.md`) en `tools/codigos.json` y `docs/convenciones.md` §4, para no confundir `tramo.T1–T3` con `n8n.T1–T16`. `n8n/PLAN-agentico.md`: citas como `tramo.T1–T3` y A0 marcada como hecha (falta la nota de Cali).
+- Ámbito nuevo `tramo` (dueño `n8n/PLAN-construccion.md`) en `tools/codigos.json` y `docs/convenciones.md` §4, para no confundir `tramo.T1–T3` con `n8n.T1–T16`. `n8n/PLAN-agentico.md`: citas como `tramo.T1–T3` y `ag.F0` marcada como hecha (falta la nota de Cali).
 - `ESTADO.md` §0 y pendiente 45.
 
 ### 2026-11-27 · Cierre: luz verde de Néstor confirmada para el motor con agentes
 - La luz verde de Néstor al motor E1.5 con agentes queda confirmada (José, 27/11); d5 queda solo para el aviso v3.
-- `ESTADO.md` §0 y pendiente 45; `n8n/PLAN-agentico.md` (encabezado y fase A6); `tools/tablero-curado.json` (d5).
+- `ESTADO.md` §0 y pendiente 45; `n8n/PLAN-agentico.md` (encabezado y `ag.F6`); `tools/tablero-curado.json` (d5).
 
 ### 2026-11-27 · Motor E1.5: plan para pasar a agentes (sin cambios de consola, backend ni flujos)
-- `n8n/PLAN-agentico.md` v0.1: Redactor con la voz de Sintonía alrededor de un bloque de datos fijo, guardas en código, Revisor (QA) independiente y plantilla de E1 si algo falla; seguridad con plantilla y escalamiento; relojes de E1 sin cambios. Carriles por tipo de mensaje para d4, fases A0–A6, decisiones y riesgos.
+- `n8n/PLAN-agentico.md` v0.1: Redactor con la voz de Sintonía alrededor de un bloque de datos fijo, guardas en código, Revisor (QA) independiente y plantilla de E1 si algo falla; seguridad con plantilla y escalamiento; relojes de E1 sin cambios. Carriles por tipo de mensaje para d4, fases `ag.F0–F6`, decisiones y riesgos.
 - Decisión del 27/11: luz verde de Néstor al qué y al cómo, según José; falta por escrito (d5). Reemplaza la recomendación de flujos fijos (`ESTADO.md` §0; `n8n/PLAN-construccion.md` §7.1).
 - `ESTADO.md` §0 y pendiente 45 nuevo.
 

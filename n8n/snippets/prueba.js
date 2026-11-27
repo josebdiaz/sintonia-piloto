@@ -18,8 +18,8 @@ if (process.argv[2] === '--hijo') {   // corre los casos con un módulo y devuel
   F.grupos.forEach((g, n) => pon('fechas ' + n, () => S.fechasPlan(g)));
   F.plazos.forEach((p, n) => pon('plazo ' + n, () => S.plazo(p)));
   ['$80.000 – $148.000', '50 mil', '$45.000 por persona', 'gratis', '', '120k – 200k'].forEach(x => pon('precio ' + x, () => S.precioUno(x)));
-  process.stdout.write(JSON.stringify(out));
-  process.exit(0);
+  process.stdout.write(JSON.stringify(out), () => process.exit(0));   // salir solo después de vaciar la tubería (Node 26 cortaba en 64 KB)
+  return;
 }
 
 // --- Datos ficticios relativos a hoy, en la hora de Cali ---

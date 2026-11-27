@@ -1,6 +1,6 @@
 # Motor E1.5 · contrato de los agentes (v0.1, 27/11/2026)
 
-> Fase A0 de [`n8n/PLAN-agentico.md`](../PLAN-agentico.md). Define qué entra y qué sale de cada pieza con IA, y la bitácora `e15_mensajes`. Sin red: nada de esto está en n8n todavía (A1 lo construye). Todo es verificación técnica (n = 0).
+> Fase `ag.F0` de [`n8n/PLAN-agentico.md`](../PLAN-agentico.md). Define qué entra y qué sale de cada pieza con IA, y la bitácora `e15_mensajes`. Sin red: nada de esto está en n8n todavía (`ag.F1` lo construye). Todo es verificación técnica (n = 0).
 > Reglas de voz: [`voz.md`](voz.md). Guardas en código: [`../motor/guardas.js`](../motor/guardas.js) (prueba: `node n8n/motor/prueba-guardas.js`).
 
 ## 0. En corto
@@ -11,7 +11,7 @@
 - **Intérprete:** solo para `no_entendido` de E15-00; devuelve una opción de una lista cerrada. Nunca redacta.
 - **Ningún agente ve nombres ni números de teléfono.** El texto del grupo solo lo ve el Intérprete, y solo para clasificar.
 
-## 1. Flujo de un mensaje (`SW · Redactar`, A1)
+## 1. Flujo de un mensaje (`SW · Redactar`, `ag.F1`)
 
 ```
 flujo (W0–W5) ──tipo + datos──▶ Armar bloque (código) ──▶ Redactor (IA) ──texto con {{bloque}}──▶ Guardas (código)
@@ -74,8 +74,9 @@ flujo (W0–W5) ──tipo + datos──▶ Armar bloque (código) ──▶ Red
 { "texto": "¡Hay plan, parche! 🙌\n{{bloque}}\nEn el evento del grupo marquen si van." }
 ```
 
+- **Marcador hacia el modelo:** al Redactor se le pide `@@BLOQUE@@`, no `{{bloque}}`, porque las llaves chocan con las plantillas de prompt de los nodos de IA de n8n. El nodo de guardas lo cambia por `{{bloque}}` antes de revisar. Por la misma razón, las instrucciones y la entrada que ve un agente no llevan llaves (decisión del 27/11).
 - Un solo campo. Cualquier otra forma (texto suelto, varios campos, markdown) cuenta como falla de formato → plantilla.
-- Si el tipo lleva varios mensajes en E1 (`/confirmado` son tres), en v1 el Redactor escribe **uno** y el bloque lleva las líneas de los tres. Se decide en A1 si se mantiene la separación en tres (comparabilidad con E1).
+- Si el tipo lleva varios mensajes en E1 (`/confirmado` son tres), en v1 el Redactor escribe **uno** y el bloque lleva las líneas de los tres. Se decide en `ag.F1` si se mantiene la separación en tres (comparabilidad con E1).
 
 ## 3. Guardas (código)
 
@@ -142,7 +143,7 @@ El Revisor **sí** ve los valores del bloque, porque su trabajo es comprobar que
 
 ## 5. Intérprete
 
-Solo para lo que E15-00 marca `escalar · no_entendido` (fase A3). Sin herramientas, sin memoria y sin poder redactar.
+Solo para lo que E15-00 marca `escalar · no_entendido` (`ag.F3`). Sin herramientas, sin memoria y sin poder redactar.
 
 ### 5.1 Entrada
 
@@ -169,9 +170,9 @@ Solo para lo que E15-00 marca `escalar · no_entendido` (fase A3). Sin herramien
 
 - El flujo valida la salida contra esta tabla. Cualquier otra cosa (otro valor, texto libre, una instrucción) → `escalar · dudoso`.
 - `salir` y `sensible` siempre escalan además de registrarse, igual que en la entrada.
-- Si el texto intenta darle órdenes («ignora tus reglas», «responde al grupo…»), la respuesta correcta es `escalar · dudoso`. A3 lo prueba con casos así.
+- Si el texto intenta darle órdenes («ignora tus reglas», «responde al grupo…»), la respuesta correcta es `escalar · dudoso`. `ag.F3` lo prueba con casos así.
 
-## 6. Bitácora `e15_mensajes` (Data Table, por crear en A1)
+## 6. Bitácora `e15_mensajes` (Data Table, por crear en `ag.F1`)
 
 Una fila por mensaje que el motor decide mandar, salga o no. De aquí sale la tasa de error del 40 % y la de respaldo a plantilla. **No guarda** el texto del grupo, nombres, números, `pid` ni el texto que escribió el Redactor cuando falló (solo el motivo).
 
@@ -188,15 +189,15 @@ Una fila por mensaje que el motor decide mandar, salga o no. De aquí sale la ta
 | `guardas` | texto | `ok` o motivos separados por coma | Por qué no pasó |
 | `revisor` | texto | `ok` · `falla` · `no_corrio` · `tiempo` | Veredicto |
 | `motivo_revisor` | texto | uno de §4.3 | — |
-| `modelo_redactor` · `modelo_revisor` | texto | nombre del modelo | Comparar en A1 (§5.1 del plan) |
+| `modelo_redactor` · `modelo_revisor` | texto | nombre del modelo | Comparar en `ag.F1` (§5.1 del plan) |
 | `ms_redactor` · `ms_revisor` | número | `1840` | Latencia (§5.3 del plan) |
 | `enviado` | texto | `si` · `no` · `error` | Lo que devolvió `SW · Enviar` |
 | `sha_texto` | texto | sha-256 del texto enviado | Comprobar después qué salió sin guardar el texto en la tabla |
 | `contrato` | número | `1` | Versión de este documento |
 
-**Por qué no el texto:** el texto enviado ya queda en el grupo y en la ejecución de n8n; la tabla solo necesita contar. Para revisar la voz después (A1), el banco de pruebas guarda sus propios textos ficticios fuera de esta tabla.
+**Por qué no el texto:** el texto enviado ya queda en el grupo y en la ejecución de n8n; la tabla solo necesita contar. Para revisar la voz después (`ag.F1`), el banco de pruebas guarda sus propios textos ficticios fuera de esta tabla.
 
-## 7. Abierto para A1
+## 7. Abierto para `ag.F1`
 
 - Modelo de cada agente y su credencial (José, §5.1 del plan).
 - `/confirmado` en uno o tres mensajes con agentes (§2.2).

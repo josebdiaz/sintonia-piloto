@@ -225,9 +225,34 @@ Lo que E1 cambió **en el backend** ya aplica a E1.5, porque los dos pasan por A
 - **Snippets (26/11):** `n8n/snippets/sintonia-e1.js` trae la lógica y los textos de la consola 2.16.0 para los nodos Code (N2, N3, N12–N15, N17, N18, N20). Probado contra la consola en 753 casos ficticios (verificación técnica, n = 0). Uso en `snippets/README.md`.
 - **V1 · votos de la encuesta nativa:** el CHANGELOG de Evolution dice que la 2.3.7 (5 dic 2025) agregó el descifrado de votos de encuestas, así que la 2.3.8 debería traerlo. Para descifrar un voto hace falta **el mensaje original de la encuesta** guardado en el conector (así funciona Baileys, la librería de Evolution). Eso choca con «apagar el guardado de historial» del pendiente 11: hay que guardar al menos los mensajes que manda Sintonía, con retención corta. **Por verificar con el número de prueba:** mandar una encuesta, votar y mirar qué llega al webhook.
 
-### 8.4 Orden sugerido
+### 8.4 Orden sugerido (superado: ver §9)
 
 1. Exportar los flujos actuales y confirmar esta tabla. Probar V1 con el número de prueba.
 2. Para las pruebas tal como están: N23 (relojes) y N20 (`req_id`).
 3. Antes de una persona real: N25 (`SW · Aprobar` y Néstor), N16, N17 y N3.
 4. Para que E1 y E1.5 sean comparables: N1, N12–N15, N18, N19, N21, N22 y N24, más N5–N11.
+
+## 9. Revisión del 27/11 · qué queda tras el pivote a agentes
+
+> Desde el 27/11 el motor va con agentes (`n8n/PLAN-agentico.md`): un Redactor escribe alrededor de un bloque de datos fijo, guardas en código y un Revisor (QA) independiente aprueban, y si algo falla sale la plantilla de E1. **No hay aprobación humana antes de cada mensaje**; una persona entra con HUMANO, lo sensible o un error. Esta tabla dice qué de §3, §7 y §8 cambia. Lo que no aparece aquí sigue igual. Plan de pruebas de lo vigente: `n8n/PLAN-pruebas.md`.
+
+| # | Antes | Ahora | Estado |
+|---|---|---|---|
+| B1 | Rediseño con «enviar y esperar respuesta» en Telegram | Canal Evolution con envío automático (26/11); lo que sale lo aprueba el Revisor | **Cancelado** |
+| I4 | La aprobación del texto de `/confirmado` va en `SW · Aprobar` | El texto lo aprueban las guardas y el Revisor; el formulario de cierre de W3 sigue siendo la decisión humana mientras no haya encuesta nativa (V1) | **Cancelado** |
+| N25 | Construir `SW · Aprobar` (aprobar, editar o rechazar) y llevarlo a Néstor | No se construye. Lo reemplazan `SW · Redactar` (guardas + Revisor) y el escalamiento a una persona. Néstor dio luz verde el 27/11 | **Cancelado** |
+| N6 | Enlaces `wa.me` por persona a quien revisa, en Telegram | El enlace personal de `/retro` sale por Evolution (N18). Va con N18 | **Cancelado** (cubierto por N18) |
+| M3 | `grupo_wa` sobraba con la opción C | Hace falta: Evolution manda al JID del grupo | **Cancelado** (el campo se queda) |
+| N2 · N17 | Copiar los textos `TPL` de la consola 2.16.0 en los nodos `Textos` | Los textos de los snippets son la **plantilla de respaldo** y la **referencia** del Redactor (`n8n/agentes/voz.md`). Siguen siendo obligatorios: sin ellos no hay a qué volver | Cambia el uso, sigue **Bloquea** |
+| N17 · `/ingreso` | La bienvenida de la consola 2.16.0 dice «En este piloto una persona del equipo revisa todo» | En E1.5 con agentes eso ya no es cierto. E1.5 necesita su propia bienvenida (y su plantilla de respaldo), con lo que diga el aviso v3. La consola no cambia | **Nuevo · Bloquea** (antes del grupo real) |
+| N3 | Freno de corchetes en `SW · Enviar` | También en las guardas (`n8n/motor/guardas.js`), sobre el texto final con el bloque | Sigue **Bloquea** |
+| N10 · N11 · N19 | Minutos, NASA-TLX y SUS de quien revisa cada mensaje | En E1.5 nadie revisa cada mensaje: se mide a quien atiende los escalamientos (tiempo por escalamiento y cuántos). Lo decide el equipo con d6 | **Por redefinir** (d6) |
+| E1.5-01 | Voto pegado a mano en un formulario | Lo reemplaza `E15-00 · Entrada`, que lee lo que llega de Evolution. Se queda en la instancia, inactivo, como referencia | **Superado** |
+
+**Orden vigente** (reemplaza §8.4):
+1. Pruebas sin red y `tramo.T1` en el grupo del equipo (incluye V1).
+2. `SW · Redactar` y su banco de casos (`ag.F1`), con N20 (`req_id`) y N23 (relojes cortos).
+3. Salida W0 y W1 con agentes (`ag.F2`): N2, N3, N14, N15, N17 y `tramo.T2`.
+4. Comparabilidad con E1: N1, N5, N7, N12, N13, N18, N21, N22 y N24.
+5. Continuidad después de `view=motor` (N27): W3–W5 (`ag.F4`, `tramo.T3`).
+6. Antes de una persona real (`ag.F6`): N16, aviso v3, d3, d4 y d6.
