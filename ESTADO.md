@@ -9,7 +9,7 @@ Resumen para arrancar cualquier conversación. El detalle está en las secciones
 
 - **Versiones:** frontend **2.16.0** (sintonia.my) y backend **2.10.0**, desplegados el 24/11 (encuesta de cierre con precio para todo el parche, aprobada por Néstor). Aviso de privacidad **v2-2026-11** publicado.
 - **Dónde estamos:** la plataforma está lista para la prueba con un grupo de Cali. **No hay resultados con personas reales.** E1.5 (n8n) **se retomó el 26/11** (estaba aplazado desde el 19/11); la prueba con Cali sigue en E1. **Decisión del equipo (26/11 y 27/11):** el motor se construye ya, pero E1.5 **no entra en ejecución hasta cerrar E1**; después corre con un grupo real. El 4/12 no es una entrega: el sistema se sigue trabajando.
-- **Calendario:** ensayo el 25/11 · congelamiento el 26/11 · prueba con Cali el 27/11 (encuentro a más tardar el 30/11) · qué cuenta como «cerrar E1» se define el 3/12 · pitch el 12/12. El 4/12 ya no es una entrega (aclaración del equipo, 27/11).
+- **Calendario:** ensayo el 25/11, corrido al sprint del 28 y 29/11 · congelamiento el 26/11 · prueba con Cali el 27/11 (encuentro a más tardar el 30/11) · qué cuenta como «cerrar E1» se define el 3/12 · pitch el 12/12. El 4/12 ya no es una entrega (aclaración del equipo, 27/11).
 - **Regla vigente:** desde el 26/11 la consola no cambia hasta cerrar el análisis.
 - **Limpieza de archivos (24/11):** hecha, salvo conectar el repo como carpeta del Proyecto (pendiente 15). La copia del estado en el Proyecto tiene nombre fijo, `claude/estado-piloto.md`, y las instrucciones van en la v3.6 (27/11). La carpeta vieja `Gemini dump/sintonia-piloto` quedó en `_archivo-2026-11-24/`, con su inventario; nada se borró.
 - **Auditoría de estándares (24/11):** hecha, en [`docs/auditoria-estandares.md`](docs/auditoria-estandares.md). GitHub quedó configurado (`main` protegida, reporte privado, 68 tags anotados) y la licencia es la opción C (`LICENSE`): método con CC BY-NC 4.0 y el resto con todos los derechos reservados. Lo de CI y el CHANGELOG va después del análisis (pendiente 18).
@@ -137,7 +137,7 @@ El home muestra los tres primeros que siguen abiertos: mantén la tabla en orden
 
 | # | Pendiente | Bloquea | Quién | Frente |
 |---|---|---|---|---|
-| 1 | Ensayo con WhatsApp real el miércoles 25 (guion en «Insumos para los agregados», Proyecto). Antes: probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso» | Prueba con Cali (viernes 27) | Equipo · Juan José | operacion |
+| 1 | Ensayo con WhatsApp real en el sprint del fin de semana, 28 y 29/11 (estaba el 25/11 y no tiene resultado registrado; se corrió el 27/11) (guion en «Insumos para los agregados», Proyecto). Antes: probar en un teléfono real el enlace de Maps y la pantalla «Falta un paso» | Prueba con Cali (viernes 27) | Equipo · Juan José | operacion |
 | 2 | Congelado en `piloto/v2.16.0` y `backend/v2.10.0` (tags del 24/11). Falta solo «Empezar piloto real» después del ensayo | Prueba con Cali | José | operacion |
 | 3 | Confirmar el grupo de Cali (o el plan B de Katherine) y la fecha del encuentro, a más tardar el 30/11. Modo piloto y encuesta actual (recomendado) | Prueba con Cali | Katherine | operacion |
 | 24 | **27/11 · Lecturas:** reglas de descarte del pago de quien organiza y del acompañamiento, más la tabla de métricas por fase, escritas antes de conocer los resultados del piloto (compromisos de las lecturas, cruce aprobado el 26/11). Ninguno toca la consola ni mueve las metas | Pitch (12/12) | Katherine, con José | investigacion |

@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Ensayo corrido al sprint del fin de semana (sin cambios de consola ni backend)
+- `ESTADO.md` §0 y pendiente 1: el ensayo con WhatsApp real del 25/11, sin resultado registrado, pasa al sprint del 28 y 29/11 (decisión del equipo, 27/11). El encuentro con Cali sigue a más tardar el 30/11.
+- `tools/tablero-curado.json`: fecha del pendiente 1 y del hito del ensayo al 29/11.
+
 ### 2026-11-27 · Orden de la casa: ESTADO limpio, columna «Frente» y épicas partidas (sin cambios de consola ni backend)
 - `ESTADO.md` §4: salen los pendientes hechos 7 (configuración de GitHub, 24/11; su resto opcional, `https://` y «su +1» en la descripción, pasa al 18), 13 (68 tags anotados, 24/11), 14 (lo archivado no es fuente, prompt v3.4), 20 (prompt v3.6 pegada en las instrucciones del Proyecto, 27/11) y 22 (este taskforce). El 17 (auditoría de estándares, hecha el 24/11) sale y deja el pendiente 23 con lo que queda: Icesi, `aud.D2` y `aud.D3`.
 - `ESTADO.md` §4: las épicas 21 (compromisos de las lecturas) y 11 (motor E1.5) se parten en filas de una fecha y un dueño: 24 a 33 y 34 a 40, aprobado por el equipo el 27/11. Texto, fechas, dueños y metas sin cambios; la fecha del 2/12 (resuelta el 27/11) queda dentro de la fila del 3/12 (31) y los códigos que se tocaron llevan su ámbito (`n8n.N1–N27`, `relay.D1–D3`).

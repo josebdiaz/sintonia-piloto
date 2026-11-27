@@ -55,8 +55,8 @@
   "pendientes": {
     "1": {
       "frente": "operacion",
-      "fecha": "2026-11-25",
-      "nota": "Fecha pasada y sin resultado registrado en ESTADO"
+      "fecha": "2026-11-29",
+      "nota": "Corrido al sprint del 28 y 29/11 (27/11); va antes del encuentro con Cali"
     },
     "2": {
       "frente": "operacion",
@@ -195,10 +195,10 @@
   },
   "hitos": [
     {
-      "fecha": "2026-11-25",
+      "fecha": "2026-11-29",
       "hito": "Ensayo con WhatsApp real",
       "frente": "operacion",
-      "estado": "sin registro"
+      "estado": "pendiente"
     },
     {
       "fecha": "2026-11-26",
