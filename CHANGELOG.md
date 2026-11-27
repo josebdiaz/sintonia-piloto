@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · ESTADO compacto: de 43 a 16 KB, mismos hechos
+- §0 en una pantalla: solo el presente, cada hecho en un solo lugar y con su fecha y su fuente. Salen la historia por versión (antes §2), la tabla `n8n.N1–N11` (vive en `n8n/GUIA-CONTINUACION.md` §7), los QA viejos y lo resuelto de §4.1 y §4.2; todo sigue en este archivo o en su documento dueño.
+- No cambian hechos, fechas, dueños, metas ni números de pendiente. Versión extensa: `git show 1c1426e:ESTADO.md`.
+
 ### 2026-11-27 · Motor E1.5: plan por tramos, revisor de flujos y entrada E15-00 (sin cambios de consola, backend ni flujos activos)
 - `n8n/PLAN-construccion.md` v0.1: 6 fases con dueño y «listo cuando», casos del tramo T1, tabla de puertas del motor (stickers como propuesta), decisiones del equipo, conexión de Claude al MCP de la instancia de n8n como primer paso (§2.0, según la documentación de n8n consultada el 27/11) y costo y beneficio de trabajar con varios agentes (§7).
 - `n8n/qa/revisar-flujos.py`: revisa flujos exportados sin llamar a n8n (corchetes al grupo, claves, números o JID escritos, credenciales sin enlazar, falta de manejo de error y de flujo de errores, escrituras sin `req_id`, webhook sin autenticación, ejecuciones guardadas, zona horaria). Sobre el respaldo del 3/11: 5 bloqueos de corchetes (W0, W1 y W3).
