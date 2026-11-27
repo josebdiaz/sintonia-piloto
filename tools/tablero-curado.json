@@ -178,6 +178,10 @@
       "frente": "motor",
       "estado": "espera",
       "nota": "Después de cerrar E1"
+    },
+    "42": {
+      "frente": "casa",
+      "nota": "Instrucciones v3.7 y base §4 con lo decidido el 27/11"
     }
   },
   "hitos": [

@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Pasada final del verificador del taskforce (sin cambios de consola ni backend)
+- `ESTADO.md`: definiciones precisadas antes de ver datos (decisión del equipo): la base del 60 % son quienes se apuntaron («se apuntó» en la consola); la intención de repetir cuenta cuando la mayoría de quienes respondieron la encuesta de cierre dice «Sí» a pedirle a Sintonía el próximo plan («Tal vez» no cuenta). d3 y d4 escritos con su significado. Nota de herencia de accesos en el pendiente 16. Pendiente 42 nuevo: llevar «al menos 2 parches por condición» a las instrucciones (v3.7) y a la base de conocimiento.
+- `tools/tablero-curado.json`: la acción 4 del plan vuelve a pendiente (las reglas tienen borrador, falta elegir) y el pendiente 42 en el frente casa.
+- Proyecto: `claude/reglas-antes-de-los-datos.md` y `claude/canvas-9-bloques.md` con las mismas precisiones.
+
 ### 2026-11-27 · Taskforce «Tareas de José» corrido (sin cambios de consola ni backend)
 - Proyecto: borradores con opciones y una recomendada, revisados por un verificador independiente: `claude/reglas-antes-de-los-datos.md` (pendientes 24, 25, 26 y 31), `claude/canvas-9-bloques.md` (27, con 4 variantes de pagadores), `claude/pitch-lecturas-29-30-32.md` (29, 30 y 32) y `claude/casa-8-9-16.md` (8, 9 y 16).
 - Decidido por el equipo antes de ver datos: el 60 % de llegadas se calcula sobre quienes confirmaron «Voy»; un parche tiene intención de repetir cuando la mayoría dice que volvería a usar Sintonía para el próximo plan; más de 2 preguntas de vuelta después del cierre (A3) indican que el cierre no funcionó; las metas se leen con al menos 2 parches por condición. Las metas no se mueven. Lo de Néstor (qué es error en E1.5 y la tabla por tipo de mensaje) queda listo para llevárselo.
