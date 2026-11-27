@@ -1,0 +1,174 @@
+{
+  "_nota": "Registro de códigos de Sintonía. Lo explica docs/convenciones.md y lo usa tools/revisar-codigos.py. Un ámbito = un documento dueño. Fuera de su documento, el código se escribe con su ámbito: n8n.N17, aud.D1.",
+  "globales": {
+    "E1": "Condición WhatsApp + mago",
+    "E1.5": "Condición WhatsApp automatizado con n8n y aprobación humana (valor interno E2)",
+    "E3": "Frontera standalone (fuera del piloto)",
+    "A1-A6": "Criterios para retomar la automatización (docs/guias/prueba-cali.md)"
+  },
+  "ambitos": {
+    "pend": {
+      "nombre": "Pendientes",
+      "dueno": "ESTADO.md §4",
+      "archivos": [
+        "ESTADO.md"
+      ],
+      "letras": [
+        "#"
+      ],
+      "vivo": true
+    },
+    "est": {
+      "nombre": "Implicaciones del estado (O: operación, M: métricas)",
+      "dueno": "ESTADO.md §3.2–3.3",
+      "archivos": [
+        "ESTADO.md"
+      ],
+      "letras": [
+        "O",
+        "M"
+      ],
+      "vivo": true
+    },
+    "n8n": {
+      "nombre": "Guía de continuación de n8n (B bloqueos, I inconsistencias, M menores, N novedades de E1, T pruebas)",
+      "dueno": "n8n/GUIA-CONTINUACION.md",
+      "archivos": [
+        "n8n/GUIA-CONTINUACION.md",
+        "n8n/snippets/README.md",
+        "n8n/README.md",
+        "n8n/CHANGELOG.md"
+      ],
+      "letras": [
+        "B",
+        "I",
+        "M",
+        "N",
+        "T"
+      ],
+      "vivo": true
+    },
+    "relay": {
+      "nombre": "Especificación del relay (R requisitos, T pruebas, D decisiones abiertas)",
+      "dueno": "n8n/relay/SPEC.md",
+      "archivos": [
+        "n8n/relay/SPEC.md"
+      ],
+      "letras": [
+        "R",
+        "T",
+        "D"
+      ],
+      "vivo": true
+    },
+    "aud": {
+      "nombre": "Auditoría de estándares del repo (D decisiones)",
+      "dueno": "docs/auditoria-estandares.md",
+      "archivos": [
+        "docs/auditoria-estandares.md"
+      ],
+      "letras": [
+        "D"
+      ],
+      "vivo": true
+    },
+    "ui": {
+      "nombre": "Auditoría UI/UX del 23/11 (P prioridades, C consola)",
+      "dueno": "Proyecto · auditoría UI/UX (23/11)",
+      "archivos": [],
+      "letras": [
+        "P",
+        "C"
+      ],
+      "vivo": true
+    },
+    "e3": {
+      "nombre": "Necesidades de backend para E3 (B)",
+      "dueno": "docs/guias/e3-necesidades-backend.md",
+      "archivos": [
+        "docs/guias/e3-necesidades-backend.md",
+        "e3-app/README.md"
+      ],
+      "letras": [
+        "B"
+      ],
+      "vivo": true
+    },
+    "ds": {
+      "nombre": "Pendientes del paquete DS 3.0 (P)",
+      "dueno": "ds-3.0/ASSETS.md",
+      "archivos": [
+        "ds-3.0/ASSETS.md"
+      ],
+      "letras": [
+        "P"
+      ],
+      "vivo": true
+    },
+    "fix281": {
+      "nombre": "Plan de correcciones 2.8.1 (G graves, M menores, B backend)",
+      "dueno": "docs/plan-correcciones-2.8.1.md",
+      "archivos": [
+        "docs/plan-correcciones-2.8.1.md"
+      ],
+      "letras": [
+        "G",
+        "M",
+        "B"
+      ],
+      "vivo": false
+    },
+    "p7": {
+      "nombre": "Decisiones del Periodo 7 (C, D)",
+      "dueno": ".cowork/decisiones-p7.md (archivado)",
+      "archivos": [],
+      "letras": [
+        "C",
+        "D"
+      ],
+      "vivo": false
+    },
+    "f05": {
+      "nombre": "Plan F0–F5 de la consola 2.7.0",
+      "dueno": "CHANGELOG.md (2.7.0)",
+      "archivos": [],
+      "letras": [
+        "F"
+      ],
+      "vivo": false
+    },
+    "be225": {
+      "nombre": "Requisitos del backend 2.2.5 (R)",
+      "dueno": "CHANGELOG.md (backend 2.2.5)",
+      "archivos": [],
+      "letras": [
+        "R"
+      ],
+      "vivo": false
+    },
+    "p4": {
+      "nombre": "Hipótesis previas al pivote (H1–H4)",
+      "dueno": "archivo/p4-pre-pivote/",
+      "archivos": [],
+      "letras": [
+        "H"
+      ],
+      "vivo": false
+    }
+  },
+  "nombres_no_codigos": [
+    "W0",
+    "W1",
+    "W2",
+    "W3",
+    "W4",
+    "W5",
+    "E1.5-01"
+  ],
+  "versiones": {
+    "consola": "FRONTEND_VERSION en piloto/assets/sintonia.js · tag piloto/vX.Y.Z",
+    "backend": "encabezado de backend/Codigo_Piloto.gs · tag backend/vX.Y.Z",
+    "aviso": "AVISO_VERSION, formato vN-AAAA-MM",
+    "prompt": "prompt maestro del Proyecto, vN.M"
+  }
+}

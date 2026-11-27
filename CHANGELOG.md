@@ -10,6 +10,12 @@ Las fechas son de 2026 (hora de Colombia).
 - El análisis, el cuestionario y el instrumento de compromisos viven en un doc del Proyecto; el deck de la sesión (estilo de `docs/deck-wow.html`) es un artefacto privado. Ninguno entra al repo porque son notas internas.
 - `ESTADO.md`: §0, pendientes 12 y 15, y pendiente 21 nuevo (compromisos hasta el 4/12).
 
+### 2026-11-26 · Convenciones de códigos y versiones (sin cambios de consola ni backend)
+- `docs/convenciones.md`: cada código tiene un documento dueño y fuera de él se cita con su ámbito (`n8n.N17`, `aud.D1`, `relay.D1`, `ui.C3`, «pendiente 15»). Globales: E1, E1.5, E3 y A1–A6. Versiones siempre con su componente («consola 2.16.0», «backend 2.10.0»), con dónde vive cada número y cuándo sube. Fechas: `26/11` en prosa, `2026-11-26` en archivos y tags. No se renumeró nada.
+- `tools/codigos.json`: registro de 8 ámbitos vivos y 5 cerrados. `tools/revisar-codigos.py`: resumen del repo o, con `--cambios`, solo las líneas nuevas. Se corre después de cambios grandes o a pedido; no corre en las acciones ni bloquea commits.
+- Motivo: las mismas letras se repetían con otro significado en 6 documentos (`D1` era la licencia, una decisión del Periodo 7 y el `pid` del relay) y `2.10.0` era tanto una consola como el backend vigente.
+- `CLAUDE.md` apunta a la regla. `ESTADO.md`: §0, §1 (Repositorio) y pendiente 20.
+
 ### 2026-11-26 · E1.5 frente a E1 2.16.0: revisión, snippets y relay (sin cambios de consola ni backend)
 - `n8n/GUIA-CONTINUACION.md` §8: revisión de los 9 flujos (respaldo del 3/11) contra lo que cambió en E1 de la 2.8.0 a la 2.16.0. 16 ajustes nuevos, N12–N27. Bloquean: N16 (antes del grupo), N17 (textos 2.16.0), N25 (`SW · Aprobar`; reabrir C12 por escrito con Néstor) y N27 (con `MOTOR_KEY` el motor no puede leer disponibilidad, `pid` ni llegadas).
 - `n8n/snippets/`: `sintonia-e1.js`, generado con `construir.py` desde `piloto/v2.16.0`, trae la lógica y los textos de la consola (fechas, plazo, precio único, opciones, encuestas, enlaces personales, `req_id`, regla de corchetes) para los nodos Code. Fija la hora de Cali porque n8n corre en UTC. `prueba.js`: 753 casos ficticios iguales a la consola en UTC, Asia/Tokyo y Bogotá (n = 0, verificación técnica).
