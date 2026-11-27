@@ -1,6 +1,6 @@
 # Motor E1.5 · plan para pasar a agentes (v0.1, 27/11/2026)
 
-> **Decisión (27/11):** Néstor dio luz verde al *qué* y al *cómo* de un motor con agentes, confirmada por José el 27/11. Reemplaza la recomendación del 27/11 de «flujos fijos, ningún agente le habla al grupo» (`ESTADO.md` §0) y la §7.1 de `n8n/PLAN-construccion.md`. El resto de ese plan (fases 1–6, tramos T1–T3) sigue vigente: este documento cambia **quién redacta**, no cómo se prueba.
+> **Decisión (27/11):** Néstor dio luz verde al *qué* y al *cómo* de un motor con agentes, confirmada por José el 27/11. Reemplaza la recomendación del 27/11 de «flujos fijos, ningún agente le habla al grupo» (`ESTADO.md` §0) y la §7.1 de `n8n/PLAN-construccion.md`. El resto de ese plan (fases 1–6, `tramo.T1–T3`) sigue vigente: este documento cambia **quién redacta**, no cómo se prueba.
 > Construye el equipo con Claude. No toca la consola ni el backend (congelados). E1.5 no corre con personas hasta cerrar E1. Todo aquí es verificación técnica (n = 0).
 
 ## 0. En corto
@@ -8,7 +8,7 @@
 - **Qué cambia:** los textos al grupo los redacta un **agente Redactor** con la voz de Sintonía, y un **agente Revisor (QA)** independiente los aprueba antes de salir. Si el Revisor o las guardas fallan, sale la plantilla de E1 o escala a una persona.
 - **Qué no cambia:** cuándo se habla (relojes y eventos de W0–W5), los datos (solo del backend), HUMANO y lo sensible (siempre a una persona) y el criterio de parada del 40 %.
 - **Por qué es comparable:** en E1 el mago también adapta los textos. La comparación justa es «persona con criterio» contra «agente con criterio», con los mismos datos y los mismos momentos. Para comprobarlo, en Cali se anota cuánto se aparta el mago de la plantilla (§4, A0).
-- **Primer paso (Claude, sin red, ya):** contrato de los agentes, reglas de voz en un archivo, guardas en código con casos y la tabla `e15_mensajes`.
+- **Primer paso (A0), hecho el 27/11 sin red:** contrato de los agentes y diseño de la tabla `e15_mensajes` (`n8n/agentes/contrato.md`), reglas de voz (`n8n/agentes/voz.md`) y guardas en código con casos (`n8n/motor/guardas.js`). Falta la nota de Cali. **Siguiente:** A1, que espera la credencial del modelo (§5).
 
 ## 1. Lo que no se negocia
 
@@ -26,7 +26,7 @@
 | Entrada (`E15-00`) | Clasifica lo que llega | Código (`motor/entrada.js`) | El mensaje, en memoria | `accion`, sin texto |
 | Intérprete | Solo lo que la Entrada no entiende (`no_entendido`) | IA con salida cerrada, sin herramientas | El texto, sin nombre ni número | Una de: voto 1/2/3, evento, escalar |
 | Redactor | Escribe el mensaje del momento | IA (nodo en el flujo) | Tipo de mensaje, bloque de datos, reglas de voz, plantilla de E1 como referencia | Texto con `{{bloque}}` |
-| Guardas | Revisan lo que se puede revisar con reglas | Código (`motor/guardas.js`, por hacer) | Texto y bloque | `ok` o motivo: corchetes, dato ajeno al bloque, más de un emoji, nombres, largo |
+| Guardas | Revisan lo que se puede revisar con reglas | Código (`motor/guardas.js`) | Texto y bloque | `ok` o motivo: corchetes, dato ajeno al bloque, más de un emoji, nombres, largo |
 | Revisor (QA) | Revisa voz, una idea y que el texto diga lo mismo que los datos | IA independiente: otras instrucciones y, de preferencia, otro modelo | Texto, bloque y reglas; **no** ve el razonamiento del Redactor | `ok` o `falla` + motivo. No reescribe |
 | Envío (`SW · Enviar` v2) | Manda, con `req_id`, reintentos y freno de corchetes | Flujo | Texto aprobado | Enviado o error |
 | Plantilla de respaldo | Lo que sale si algo falla | Snippets de E1 | — | Texto de la consola 2.16.0 |
@@ -48,11 +48,11 @@
 
 | Fase | Qué | Quién | Listo cuando | Depende de |
 |---|---|---|---|---|
-| **A0 · Contrato, sin red** | Esquemas de entrada y salida del Redactor y del Revisor (JSON). `n8n/agentes/voz.md` con las reglas de voz y ejemplos buenos y malos. `n8n/motor/guardas.js` con casos ficticios. Data Table `e15_mensajes`. En Cali (E1): anotar qué texto mandó el mago frente a la plantilla, **solo los mensajes del mago**, sin tocar la consola | Claude; la nota de Cali, el mago | Guardas con casos ✓. Revisor y Redactor con contrato escrito | Nada |
+| **A0 · Contrato, sin red** ✓ 27/11 | Esquemas de entrada y salida del Redactor y del Revisor (JSON). `n8n/agentes/voz.md` con las reglas de voz y ejemplos buenos y malos. `n8n/motor/guardas.js` con casos ficticios. Data Table `e15_mensajes`. En Cali (E1): anotar qué texto mandó el mago frente a la plantilla, **solo los mensajes del mago**, sin tocar la consola | Claude; la nota de Cali, el mago | Guardas con casos ✓. Revisor y Redactor con contrato escrito. **Hecho el 27/11:** `n8n/agentes/contrato.md` (Redactor, guardas, Revisor, Intérprete y diseño de `e15_mensajes`, sin crearla en n8n), `n8n/agentes/voz.md` y `n8n/motor/guardas.js` (`node n8n/motor/prueba-guardas.js`: 36 casos ✓, 23 malos sembrados). Falta la nota de Cali (el mago) | Nada |
 | **A1 · Redactor y Revisor, fuera del grupo** | Subflujo `SW · Redactar` (Redactor → guardas → Revisor → texto o plantilla). Banco de pruebas: al menos 20 casos por tipo de mensaje, más casos malos sembrados (dato cambiado, dos emojis, un nombre, corchete) | Claude por MCP; José crea la credencial del modelo | 0 errores de datos. El Revisor rechaza todos los casos malos. Tasa de respaldo a plantilla medida | Credencial del modelo (§5) |
-| **A2 · Salida con agentes** | Fase 3 de `PLAN-construccion.md` con `SW · Redactar` delante de `SW · Enviar` v2, en W0 y W1. Verificador independiente antes del primer mensaje (§7 de ese plan) | Claude construye; verificador aparte; José importa o aprueba | Tramo T2 en el grupo de prueba: textos con voz, datos idénticos al backend, sin corchetes ni duplicados | A1 · tramo T1 |
+| **A2 · Salida con agentes** | Fase 3 de `PLAN-construccion.md` con `SW · Redactar` delante de `SW · Enviar` v2, en W0 y W1. Verificador independiente antes del primer mensaje (§7 de ese plan) | Claude construye; verificador aparte; José importa o aprueba | `tramo.T2` en el grupo de prueba: textos con voz, datos idénticos al backend, sin corchetes ni duplicados | A1 · `tramo.T1` |
 | **A3 · Intérprete** | `no_entendido` de E15-00 → Intérprete. Casos con mensajes que intentan darle órdenes («ignora tus reglas…») | Claude | Salida siempre dentro de la lista cerrada; lo dudoso escala | A1 |
-| **A4 · Continuidad** | W3 salida, W4, W5 con el Redactor | Claude | Tramo T3 con relojes cortos | `view=motor` (`n8n.N27`) |
+| **A4 · Continuidad** | W3 salida, W4, W5 con el Redactor | Claude | `tramo.T3` con relojes cortos | `view=motor` (`n8n.N27`) |
 | **A5 · Asistente de operación** | *n8n Agent* interno: lee `e15_entrada`, `e15_mensajes` y ejecuciones; resume para el equipo. Nunca le habla al grupo ni ve datos de personas | Claude | Resumen diario útil con datos de prueba | A2 |
 | **A6 · Antes de una persona real** | Aviso v3 nombra al proveedor del modelo como encargado y dice que los mensajes los redacta una IA y los revisa otra. d3 con textos generados. d4 firmada. Aviso v3 aprobado (d5) | Equipo y Néstor | Todo por escrito | Cerrar E1 (3/12) |
 

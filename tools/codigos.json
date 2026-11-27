@@ -105,6 +105,17 @@
       ],
       "vivo": true
     },
+    "tramo": {
+      "nombre": "Tramos de prueba del motor E1.5 (T: T1 entrada, T2 salida, T3 continuidad)",
+      "dueno": "n8n/PLAN-construccion.md",
+      "archivos": [
+        "n8n/PLAN-construccion.md"
+      ],
+      "letras": [
+        "T"
+      ],
+      "vivo": true
+    },
     "fix281": {
       "nombre": "Plan de correcciones 2.8.1 (G graves, M menores, B backend)",
       "dueno": "docs/plan-correcciones-2.8.1.md",

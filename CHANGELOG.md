@@ -5,6 +5,13 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Motor E1.5 con agentes: fase A0 (contrato, voz y guardas; sin red, sin cambios de consola, backend ni flujos)
+- `n8n/agentes/contrato.md` v0.1: entrada y salida en JSON del Redactor (tipo, momento, descripción del bloque y plantilla de E1 → texto con `{{bloque}}`; no recibe los valores del bloque), de las guardas, del Revisor QA (texto final + bloque + reglas → `ok`/`falla` + motivo; no reescribe) y del Intérprete (salida cerrada: voto 1/2/3, evento o escalar). Diseño de la Data Table `e15_mensajes`, sin texto del grupo ni datos de personas; no se creó en n8n.
+- `n8n/agentes/voz.md` v0.1: reglas de voz (una idea, conteos y nunca nombres, máximo un emoji, nada inventado, `MARCA_TU`/`MARCA_SU`) con referencias de la consola 2.16.0 y ejemplos buenos y malos por carril (datos, social).
+- `n8n/motor/guardas.js` y `n8n/motor/prueba-guardas.js`: corchetes y marcadores, bloque ausente o repetido, horas, cifras, enlaces y lugares que no están en el bloque, nombres propios, más de un emoji, marca mal escrita y largo. 36 casos ficticios ✓, 23 malos sembrados (n = 0).
+- Ámbito nuevo `tramo` (dueño `n8n/PLAN-construccion.md`) en `tools/codigos.json` y `docs/convenciones.md` §4, para no confundir `tramo.T1–T3` con `n8n.T1–T16`. `n8n/PLAN-agentico.md`: citas como `tramo.T1–T3` y A0 marcada como hecha (falta la nota de Cali).
+- `ESTADO.md` §0 y pendiente 45.
+
 ### 2026-11-27 · Cierre: luz verde de Néstor confirmada para el motor con agentes
 - La luz verde de Néstor al motor E1.5 con agentes queda confirmada (José, 27/11); d5 queda solo para el aviso v3.
 - `ESTADO.md` §0 y pendiente 45; `n8n/PLAN-agentico.md` (encabezado y fase A6); `tools/tablero-curado.json` (d5).

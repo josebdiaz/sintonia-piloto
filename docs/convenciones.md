@@ -41,6 +41,7 @@ Hasta el 26/11 cada documento numeraba desde 1 con letras sueltas, y luego se ci
 | `ui` | Auditoría UI/UX del 23/11 (Proyecto) · prioridades (P) y consola (C) | P, C | `ui.P4`, `ui.C3` |
 | `e3` | `docs/guias/e3-necesidades-backend.md` | B | `e3.B1` |
 | `ds` | `ds-3.0/ASSETS.md` | P | `ds.P1` |
+| `tramo` | `n8n/PLAN-construccion.md` · tramos de prueba del motor (T1 entrada, T2 salida, T3 continuidad) | T | `tramo.T1`. No confundir con `n8n.T1–T16`, las pruebas de la guía del 30/10 |
 
 **Cerrados (solo historia, no se crean códigos nuevos):** `fix281` (plan 2.8.1: G, M, B), `p7` (Decisiones del Periodo 7: C, D), `f05` (plan F0–F5 de la 2.7.0), `be225` (backend 2.2.5: R), `p4` (hipótesis H1–H4).
 
