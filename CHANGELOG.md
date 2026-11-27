@@ -5,6 +5,13 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Motor E1.5: plan por tramos, revisor de flujos y entrada E15-00 (sin cambios de consola, backend ni flujos activos)
+- `n8n/PLAN-construccion.md` v0.1: 6 fases con dueño y «listo cuando», casos del tramo T1, tabla de puertas del motor (stickers como propuesta), decisiones del equipo, conexión de Claude al MCP de la instancia de n8n como primer paso (§2.0, según la documentación de n8n consultada el 27/11) y costo y beneficio de trabajar con varios agentes (§7).
+- `n8n/qa/revisar-flujos.py`: revisa flujos exportados sin llamar a n8n (corchetes al grupo, claves, números o JID escritos, credenciales sin enlazar, falta de manejo de error y de flujo de errores, escrituras sin `req_id`, webhook sin autenticación, ejecuciones guardadas, zona horaria). Sobre el respaldo del 3/11: 5 bloqueos de corchetes (W0, W1 y W3).
+- `n8n/motor/entrada.js` y `prueba-entrada.js`: clasificación de lo que llega de Evolution (voto, evento, escalar, ignorar; stickers, ubicación, medios y votos de encuesta), sin devolver texto, nombre ni la llave del conector. 24 casos ficticios ✓ (n = 0).
+- `n8n/E15-00-entrada.json`, generado con `n8n/motor/construir.py`: webhook con autenticación por encabezado, filtro al grupo de prueba y registro mínimo en la Data Table `e15_entrada`; modo sonda para V1. Sin importar todavía.
+- `ESTADO.md` §0, §1 (Motor E1.5), §4 (pendiente 36 ampliado, pendiente 44 nuevo).
+
 ### 2026-11-27 · Orquestación de E1.5 y Nod (sin cambios de consola, backend ni flujos)
 - `ESTADO.md` §0: recomendación (no decisión) de flujos fijos en n8n con IA solo para clasificar con salida cerrada; Nod fuera del grupo y como asistente personal del equipo, sin datos de participantes; vigilancia de sintonia.my cada 6 horas en Claude; propuesta de la columna «quién interpreta» para d4.
 - `ESTADO.md` §4: pendiente 43 nuevo (alinear `n8n/README.md` con la decisión del 26/11).

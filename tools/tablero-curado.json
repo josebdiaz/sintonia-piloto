@@ -173,6 +173,10 @@
     "43": {
       "frente": "motor",
       "nota": "README de n8n desalineado con la decisión del 26/11"
+    },
+    "44": {
+      "frente": "motor",
+      "nota": "Conectar el MCP de n8n e importar E15-00 (fase 1 del plan)"
     }
   },
   "hitos": [

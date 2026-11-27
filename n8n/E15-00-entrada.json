@@ -1,0 +1,225 @@
+{
+  "name": "E15-00 · Entrada (modo prueba)",
+  "nodes": [
+    {
+      "id": "231c3741-bd55-509f-9cbe-d2e65e678c60",
+      "name": "Evolution (entrada)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        200
+      ],
+      "webhookId": "4a5b2537-5add-539c-843b-bec3136a1486",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sintonia-e15-entrada",
+        "authentication": "headerAuth",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Sintonia Evolution webhook (header)"
+        }
+      }
+    },
+    {
+      "id": "e88c740a-3a63-5907-83d3-1c70dad5139e",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        200
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "grupos_permitidos",
+              "value": "PEGAR_JID_DEL_GRUPO_DE_PRUEBA",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "sonda",
+              "value": "true",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "sticker_entrante",
+              "value": "escalar",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "b494d7f6-4929-5ac4-acc7-6623a144dda0",
+      "name": "Clasificar (entrada.js)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        200
+      ],
+      "parameters": {
+        "jsCode": "// Sintonía · E1.5 · entrada del motor (v0.1, 27/11/2026)\n// Clasifica lo que Evolution API manda al webhook de n8n y devuelve SOLO lo mínimo.\n// Se pega completo en el nodo Code «Clasificar» de E15-00 y se prueba con `node n8n/motor/prueba-entrada.js`.\n// No devuelve el texto, el nombre (pushName) ni la apikey que Evolution incluye en el cuerpo.\n// Las reglas de texto copian E15-01 (voto mínimo); la lista sensible suma salud, ubicación y emergencia.\n// Lo que no está decidido por el equipo va en `cfg` y se marca «por decidir».\nconst ENTRADA = (() => {\n  const SENSIBLE = /\\b(emergencia|urgente|accidente|hospital|ambulancia|policia|peligro|socorro|ayuda|enfermo|enferma|dolor|me siento mal|salud|ubicacion|donde estoy|123)\\b/;\n  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')\n    .replace(/[^a-z0-9\\s]/g, ' ').replace(/\\s+/g, ' ').trim();\n\n  function interpretarTexto(t) {\n    const n = norm(t);\n    let m;\n    if (!n) return { accion: 'escalar', motivo: 'vacio' };\n    if (SENSIBLE.test(n)) return { accion: 'escalar', motivo: 'sensible' };\n    if (/^humano$/.test(n)) return { accion: 'escalar', motivo: 'pidio_humano' };\n    if ((m = n.match(/^(?:opcion |la |el |voto |voto por la |voy con la )?([123])$/))) return { accion: 'voto', opcion: Number(m[1]) - 1, veto: false };\n    if (/^todas$/.test(n)) return { accion: 'voto', opcion: -1, veto: false };\n    if (/^ninguna$/.test(n)) return { accion: 'voto', opcion: -1, veto: true };\n    if (/^me apunto$/.test(n)) return { accion: 'evento', evento: 'me_apunto' };\n    if (/^no puedo$/.test(n)) return { accion: 'evento', evento: 'no_puedo' };\n    if (/^llegue$/.test(n)) return { accion: 'evento', evento: 'checkpoint_llegada' };\n    if (/^(ya en casa|llegue a casa)$/.test(n)) return { accion: 'evento', evento: 'llego_casa' };\n    if (/^salir$/.test(n)) return { accion: 'evento', evento: 'salir', aviso_equipo: true };\n    return { accion: 'escalar', motivo: 'no_entendido' };   // aquí entraría la IA con salida cerrada (por decidir, d4)\n  }\n\n  // Forma del mensaje sin contenido: llaves y tipos. Sirve para la sonda V1 (qué trae un voto de encuesta).\n  function forma(o, prof = 0) {\n    if (prof > 6) return '…';\n    if (Array.isArray(o)) return o.length ? [forma(o[0], prof + 1)] : [];\n    if (o && typeof o === 'object') {\n      const r = {};\n      for (const k of Object.keys(o).sort()) {\n        if (/^(apikey|pushName|jpegThumbnail|profilePicUrl)$/i.test(k)) { r[k] = '(omitido)'; continue; }\n        r[k] = forma(o[k], prof + 1);\n      }\n      return r;\n    }\n    return typeof o;\n  }\n\n  function shaTexto(v) {   // fileSha256 llega como base64 o como objeto de bytes\n    if (!v) return '';\n    if (typeof v === 'string') return v;\n    try { return Buffer.from(Object.values(v)).toString('base64'); } catch (e) { return ''; }\n  }\n\n  function votoEncuesta(d) {\n    // La forma exacta del voto descifrado en Evolution 2.3.8 está por verificar (V1). Se prueban candidatos conocidos.\n    const msg = d.message || {};\n    const cands = [d.pollUpdates, msg.pollUpdateMessage && msg.pollUpdateMessage.vote, d.votes, d.pollVote];\n    for (const c of cands) {\n      const sel = c && (c.selectedOptions || (Array.isArray(c) && c[0] && c[0].selectedOptions) || c.selectedOptionNames);\n      if (Array.isArray(sel)) return { descifrado: true, n_opciones: sel.length, opciones: sel.map(String) };\n    }\n    return { descifrado: false };\n  }\n\n  function clasificar(body, cfg = {}) {\n    const grupos = (cfg.grupos || []).map(String);\n    const b = body && body.body && !body.event ? body.body : (body || {});   // acepta el item del Webhook o el cuerpo\n    const d = b.data || {};\n    const key = d.key || {};\n    const base = {\n      v: 1,\n      evento_evolution: String(b.event || ''),\n      id_mensaje: String(key.id || ''),\n      grupo: String(key.remoteJid || ''),\n      autor: String(key.participant || d.participant || ''),   // solo en memoria, para resolver el pid; nunca se guarda\n      hora: d.messageTimestamp ? new Date(Number(d.messageTimestamp) * 1000).toISOString() : '',\n      tipo_whatsapp: String(d.messageType || ''),\n    };\n    const fin = (r) => Object.assign(base, r, cfg.sonda ? { forma: forma(b) } : {});\n\n    const ev = base.evento_evolution.toLowerCase().replace('_', '.');\n    if (!/^messages\\.(upsert|update)$/.test(ev)) return fin({ accion: 'ignorar', motivo: 'evento_no_mensaje' });\n    if (key.fromMe) return fin({ accion: 'ignorar', motivo: 'propio' });\n    if (!base.grupo.endsWith('@g.us')) return fin({ accion: 'ignorar', motivo: 'no_es_grupo' });\n    if (!grupos.includes(base.grupo)) return fin({ accion: 'ignorar', motivo: 'grupo_no_permitido' });\n\n    const msg = d.message || {};\n    const tipo = base.tipo_whatsapp || Object.keys(msg)[0] || '';\n\n    if (/poll(Update|Vote)/i.test(tipo) || d.pollUpdates || msg.pollUpdateMessage) {\n      const v = votoEncuesta(d);\n      return fin(v.descifrado ? { accion: 'voto_encuesta', tipo: 'voto', ...v } : { accion: 'escalar', tipo: 'voto', motivo: 'voto_sin_descifrar' });\n    }\n    if (ev === 'messages.update') return fin({ accion: 'ignorar', motivo: 'actualizacion' });\n    if (/sticker/i.test(tipo)) {\n      const sha = shaTexto(msg.stickerMessage && msg.stickerMessage.fileSha256);\n      const conocido = (cfg.stickers || {})[sha];   // mapa sha → sticker de Sintonía (por llenar con la sonda)\n      const regla = cfg.sticker_entrante || 'escalar';  // por decidir (equipo): 'escalar' | 'registrar'\n      return fin({ accion: regla === 'registrar' ? 'registrar' : 'escalar', tipo: 'sticker', motivo: 'sticker', sticker: conocido || '', sticker_sha: sha });\n    }\n    if (/location/i.test(tipo)) return fin({ accion: 'escalar', tipo: 'ubicacion', motivo: 'sensible' });\n    const texto = msg.conversation || (msg.extendedTextMessage && msg.extendedTextMessage.text) || '';\n    if (/conversation|extendedText/i.test(tipo) || texto) return fin({ tipo: 'texto', ...interpretarTexto(texto) });\n    return fin({ accion: 'escalar', tipo: 'otro', motivo: 'medio_no_soportado' });\n  }\n\n  return { clasificar, interpretarTexto, forma };\n})();\n\n// ── Uso en n8n ──\nconst c = $('Config').first().json;\nconst cfg = {\n  grupos: String(c.grupos_permitidos || '').split(',').map(s => s.trim()).filter(Boolean),\n  sonda: String(c.sonda) === 'true',\n  sticker_entrante: c.sticker_entrante,\n};\nreturn $('Evolution (entrada)').all().map(i => ({ json: ENTRADA.clasificar(i.json, cfg) }));\n"
+      }
+    },
+    {
+      "id": "50791111-67d3-50d2-875d-40868fafe2ea",
+      "name": "¿Se atiende?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        660,
+        200
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a1",
+              "leftValue": "={{ $json.accion }}",
+              "rightValue": "ignorar",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "34df4f37-f9b3-5089-aca4-666f7255541a",
+      "name": "Registrar en e15_entrada",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        180
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "e15_entrada"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "hora": "={{ $json.hora }}",
+            "id_mensaje": "={{ $json.id_mensaje }}",
+            "accion": "={{ $json.accion }}",
+            "tipo": "={{ $json.tipo || '' }}",
+            "motivo": "={{ $json.motivo || '' }}",
+            "evento": "={{ $json.evento || '' }}",
+            "opcion": "={{ $json.opcion ?? '' }}",
+            "sticker": "={{ $json.sticker || '' }}",
+            "sticker_sha": "={{ $json.sticker_sha || '' }}",
+            "tipo_whatsapp": "={{ $json.tipo_whatsapp }}",
+            "forma": "={{ $json.forma ? JSON.stringify($json.forma) : '' }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "99a48f5e-3074-51e7-a919-8bc9795b1bc1",
+      "name": "Nota",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -160
+      ],
+      "parameters": {
+        "width": 900,
+        "height": 300,
+        "content": "## E15-00 · Entrada (modo prueba)\nEvolution → clasifica → registra **sin texto, nombre ni número** en la Data Table `e15_entrada`.\n\n1. Credencial *Header Auth* «Sintonia Evolution webhook (header)» (la misma del ping).\n2. En **Config** pega el JID del grupo de prueba (aquí, nunca en el repo).\n3. `sonda = true` guarda la *forma* del mensaje (llaves y tipos, sin valores): sirve para V1 y para el sha de los stickers.\n4. Todavía **no responde al grupo**: solo observa. Responder es la fase 2.\n\nSe genera con `python3 n8n/motor/construir.py`; la lógica vive en `n8n/motor/entrada.js`."
+      }
+    }
+  ],
+  "connections": {
+    "Evolution (entrada)": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Clasificar (entrada.js)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clasificar (entrada.js)": {
+      "main": [
+        [
+          {
+            "node": "¿Se atiende?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Se atiende?": {
+      "main": [
+        [
+          {
+            "node": "Registrar en e15_entrada",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false,
+    "errorWorkflow": ""
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
