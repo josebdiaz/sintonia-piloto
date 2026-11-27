@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Pendientes 8 y 9 hechos (sin cambios de consola ni backend)
+- Pendiente 8: el monitor confirmó su respuesta de Desempeño (escala anterior a la consola 2.7.1). Pendiente 9: `probarMontaje()` corrido. Aviso del equipo, 27/11. Quedan como `[Dato pendiente]` el texto de la línea «Ubicaciones» (ESTADO §1) y si cambió algo en `pulso_mago` (§4.1).
+- `tools/tablero-curado.json`: 8 y 9 fuera; acción 12 del plan (repartir 8 y 9) hecha.
+
 ### 2026-11-27 · Stickers cargados en el número Sintonía (sin cambios de consola ni backend)
 - Pendiente 5 hecho: el paquete v1 de `docs/stickers/` quedó cargado en el WhatsApp del número Sintonía antes del encuentro con Cali (aviso del equipo, 27/11).
 - `ESTADO.md` §0, §4 y §4.1; `tools/tablero-curado.json` (pendiente 5 fuera, acción 6 del plan hecha).

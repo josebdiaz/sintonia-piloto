@@ -69,14 +69,6 @@
       "estado": "bloqueado",
       "nota": "Espera plantilla del tótem y logo vectorial de Icesi"
     },
-    "8": {
-      "frente": "operacion",
-      "nota": "Mensaje listo: falta enviarlo"
-    },
-    "9": {
-      "frente": "operacion",
-      "nota": "Instrucciones listas: José corre probarMontaje()"
-    },
     "10": {
       "frente": "plataforma",
       "estado": "espera",
@@ -398,7 +390,7 @@
       "dueno": "José y Katherine",
       "cuando": "Próxima sync",
       "esfuerzo": "10 min",
-      "estado": "pendiente"
+      "estado": "hecho"
     }
   ],
   "casa_manual": []
