@@ -12,6 +12,7 @@ Las fechas son de 2026 (hora de Colombia).
 - `ESTADO.md` §0 y pendiente 44; `n8n/PLAN-construccion.md` §1 y §2.1.
 - Los 9 flujos, expuestos al MCP y exportados por MCP a `n8n/flujos/`, idénticos a lo que hay en la instancia: mismos nodos, credenciales solo con id y nombre, 0 claves. Revisor: 5 bloqueos (corchetes que irían al grupo en W0, W1 y W3), 28 de validez, 9 de ajuste. «Enviar al grupo» y «Enviar al revisor» (Evolution) sin credencial; los textos de W0 son anteriores a la consola 2.16.0 (`n8n.N17`).
 - `tools/revisar-datos.py`: acepta solo el JID de ejemplo todo en ceros; un JID real sigue fallando.
+- Fase 1 cerrada: E15-00 activo y Evolution apuntando a él (cambiado por Claude en Evolution Manager, con `MESSAGES_UPSERT` y `MESSAGES_UPDATE`). El formulario no permite encabezados, así que el webhook usa una ruta difícil de adivinar, como el ping (decisión de José); la ruta no va al repo. Prueba: `HUMANO` → `escalar · pidio_humano`, sin texto, nombre ni número (n = 0). El diagnóstico que registraba también lo ignorado se quitó.
 
 ### 2026-11-27 · ESTADO compacto: de 43 a 16 KB, mismos hechos
 - §0 en una pantalla: solo el presente, cada hecho en un solo lugar y con su fecha y su fuente. Salen la historia por versión (antes §2), la tabla `n8n.N1–N11` (vive en `n8n/GUIA-CONTINUACION.md` §7), los QA viejos y lo resuelto de §4.1 y §4.2; todo sigue en este archivo o en su documento dueño.
