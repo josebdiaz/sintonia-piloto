@@ -10,6 +10,7 @@ Las fechas son de 2026 (hora de Colombia).
 - Decisión del equipo (reemplaza la de la tarde del 26/11): los mensajes de E1.5 salen sin aprobación previa; una persona entra solo con HUMANO o un error. Por confirmar con Néstor (C12); el aviso v3 se publica antes del grupo real.
 - Decisión del equipo: E1.5 corre con un grupo real antes del 4/12. La regla de A1–A6 como requisito para automatizar queda superada; las metas no se mueven.
 - `ESTADO.md`: encabezado, §0, §1 (Motor E1.5), §3.4 y pendientes 11 y 20.
+- Proyecto: prompt maestro v3.5 (lista para pegar en las instrucciones), base de conocimiento (§1, §2, §4, §5, §6, §10–§13) y `claude/archivo.md` v3 (la v3.4 pasa al archivo).
 
 ### 2026-11-26 · Lecturas del curso: cruce aprobado por el equipo (sin cambios de código)
 - Tarea «Diez lecturas, seis escogidas» (Reto de Innovación): B1, B2, D1, D2, E1 y E2 leídas contra el proyecto. El equipo reconstruyó su lectura con un cuestionario y aprobó el cruce: 3 «Ya lo hacemos» (B1, B2 y E1) y 3 «Qué pasaría si» (D1, D2 y E2).
