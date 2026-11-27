@@ -58,10 +58,6 @@
       "fecha": "2026-11-29",
       "nota": "Corrido al sprint del 28 y 29/11 (27/11); va antes del encuentro con Cali"
     },
-    "2": {
-      "frente": "operacion",
-      "fecha": "2026-11-27"
-    },
     "3": {
       "frente": "operacion",
       "fecha": "2026-11-30",
@@ -78,11 +74,6 @@
       "fecha": "2026-11-30",
       "nota": "Bloquea la prueba con Cali"
     },
-    "6": {
-      "frente": "investigacion",
-      "fecha": "2026-11-29",
-      "nota": "Mitad hecha (2.16.0); queda el canvas"
-    },
     "8": {
       "frente": "operacion"
     },
@@ -96,27 +87,18 @@
       "nota": "Después de Cali"
     },
     "12": {
-      "frente": "investigacion"
-    },
-    "15": {
-      "frente": "casa",
-      "nota": "El clon de trabajo real es Gemini dump/sintonia-piloto"
+      "frente": "investigacion",
+      "estado": "espera",
+      "nota": "Se consolida al cierre"
     },
     "16": {
       "frente": "casa",
-      "nota": "Datos de personas solo en el Mac y dentro del clon"
+      "nota": "Incluye conectar el clon de trabajo como carpeta del Proyecto (antes 15)"
     },
     "18": {
       "frente": "plataforma",
       "estado": "espera",
-      "nota": "Después del análisis"
-    },
-    "19": {
-      "frente": "plataforma"
-    },
-    "23": {
-      "frente": "casa",
-      "nota": "Resto de la auditoría de estándares: Icesi, aud.D2 y aud.D3"
+      "nota": "Después del análisis; incluye el resto de la auditoría de estándares (antes 23)"
     },
     "24": {
       "frente": "investigacion",
@@ -303,14 +285,6 @@
       "fecha": "",
       "frente": "motor",
       "por_que": "Comparabilidad de la carga del mago entre condiciones"
-    },
-    {
-      "id": "d7",
-      "decision": "Cuál clon queda como carpeta del Proyecto (pendiente 15)",
-      "decide": "José",
-      "fecha": "",
-      "frente": "casa",
-      "por_que": "Hoy se trabaja en la carpeta que el estado llama vieja"
     }
   ],
   "plan": [
@@ -415,7 +389,7 @@
     },
     {
       "orden": 12,
-      "accion": "Repartir carga: José tiene la mayoría de los pendientes abiertos; pasar 8, 9 y 19 a otra persona",
+      "accion": "Repartir carga: José tiene la mayoría de los pendientes abiertos; pasar 8 y 9 a otra persona (el 19 quedó dentro del ensayo)",
       "frente": "casa",
       "dueno": "José y Katherine",
       "cuando": "Próxima sync",

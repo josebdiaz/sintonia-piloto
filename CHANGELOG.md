@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Pendientes fusionados para el sprint del fin de semana (sin cambios de consola ni backend)
+- `ESTADO.md` §4: el 2 («Empezar piloto real») y el 19 (pruebas en teléfono real) entran al 1, el ensayo; el 6 (disposición a pagar, hecha en la 2.16.0) entra al 27, el canvas; el 23 (resto de la auditoría) entra al 18; el 15 entra al 16, con la decisión del 27/11 de que el clon de trabajo es `Gemini dump/sintonia-piloto`. El 12 queda en espera hasta el cierre. Aprobado por el equipo el 27/11; no cambian el alcance ni las fechas.
+- `ESTADO.md` §0 y §1: referencias a los pendientes fusionados al día. Pendiente 1: «Bloquea» dice el encuentro con Cali a más tardar el 30/11.
+- `tools/tablero-curado.json`: pendientes fusionados fuera, el 12 en espera, la decisión d7 tomada y la acción 12 del plan sin el 19.
+
 ### 2026-11-27 · Ensayo corrido al sprint del fin de semana (sin cambios de consola ni backend)
 - `ESTADO.md` §0 y pendiente 1: el ensayo con WhatsApp real del 25/11, sin resultado registrado, pasa al sprint del 28 y 29/11 (decisión del equipo, 27/11). El encuentro con Cali sigue a más tardar el 30/11.
 - `tools/tablero-curado.json`: fecha del pendiente 1 y del hito del ensayo al 29/11.
