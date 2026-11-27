@@ -162,7 +162,7 @@
     },
     "44": {
       "frente": "motor",
-      "nota": "prueba.P1 paso a paso en n8n/PRUEBA-P1.md"
+      "nota": "prueba.P1: 12 de 18 ✓; faltan stickers, V1, medios y fuera del grupo"
     },
     "45": {
       "frente": "motor",
@@ -181,7 +181,7 @@
     "48": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Ruta A del E2E, después de prueba.P1"
+      "nota": "Ruta A: bienvenida, envío, respuesta y aviso hechos; faltan backend, W1, W3 y relojes"
     }
   },
   "hitos": [

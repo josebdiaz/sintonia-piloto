@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Cierre del día: `prueba.P1` 12 de 18 (n = 0)
+- Kathe escribió en el grupo del equipo de 6:36 a 6:44 p. m. (hora de Bogotá). Casos 1–12 bien clasificados: votos («2», «la 3», «TODAS», «NINGUNA»), eventos («ME APUNTO», «LLEGUÉ», «YA EN CASA», «SALIR»), HUMANO, dos sensibles y charla. Cada fila llegó en 1–2 s y ninguna trae texto, nombre ni número. Desde las 6:42 p. m. Sintonía responde en el grupo lo que entendió.
+- Faltan los casos 13–18 (stickers, encuesta V1, ubicación, audio, chat privado y otro grupo) y probar el aviso a una persona cuando José ponga `revisor_wa`.
+- `ESTADO.md` §0, §1 y pendientes 44 y 48; `n8n/PLAN-pruebas.md`; tablero.
+
 ### 2026-11-27 · E15-00 avisa a una persona del equipo (n = 0)
 - `entrada.js`: `aviso()` para HUMANO, lo sensible, lo no entendido y SALIR, sin texto, nombre ni número (stickers, medios y votos cifrados no avisan). 38 casos ✓.
 - E15-00 llama a `SW · Avisar revisor` con la URL y la instancia de Evolution que trae el mensaje; `SW · Avisar revisor` las acepta como entrada y ya no imprime «[plan_id]» sin plan. Los dos publicados en n8n. Falta que José ponga `revisor_wa` en su Config.

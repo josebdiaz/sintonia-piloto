@@ -8,7 +8,7 @@
 | Capa | Qué prueba | Cuándo | Estado (27/11) |
 |---|---|---|---|
 | P0 · Sin red | Código y textos con casos ficticios | En cada cambio y antes de cada push | **✓** (guardas 36, entrada 24, snippets 753) |
-| P1 · Entrada en el grupo del equipo | `E15-00` con mensajes reales del equipo (`tramo.T1`) | Ya: no depende de nada más | Lista para correr |
+| P1 · Entrada en el grupo del equipo | `E15-00` con mensajes reales del equipo (`tramo.T1`) | Ya: no depende de nada más | **En curso:** 12 de 18 ✓ (27/11) |
 | P2 · `SW · Redactar` fuera del grupo | Redactor → guardas → Revisor → texto o plantilla (`ag.F1`) | Cuando existan las credenciales de los modelos | Por construir |
 | P3 · Intérprete | Lo que la entrada no entiende, con salida cerrada (`ag.F3`) | Después de P2 | Por construir |
 | P4 · Salida con agentes en el grupo del equipo | W0 y W1 de punta a punta hasta `/confirmado` (`ag.F2`, `tramo.T2`) | Después de P1 y P2, con el verificador independiente | Por construir |
