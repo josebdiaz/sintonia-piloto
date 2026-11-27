@@ -5,6 +5,14 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Orden de la casa: ESTADO limpio, columna «Frente» y épicas partidas (sin cambios de consola ni backend)
+- `ESTADO.md` §4: salen los pendientes hechos 7 (configuración de GitHub, 24/11; su resto opcional, `https://` y «su +1» en la descripción, pasa al 18), 13 (68 tags anotados, 24/11), 14 (lo archivado no es fuente, prompt v3.4), 20 (prompt v3.6 pegada en las instrucciones del Proyecto, 27/11) y 22 (este taskforce). El 17 (auditoría de estándares, hecha el 24/11) sale y deja el pendiente 23 con lo que queda: Icesi, `aud.D2` y `aud.D3`.
+- `ESTADO.md` §4: las épicas 21 (compromisos de las lecturas) y 11 (motor E1.5) se parten en filas de una fecha y un dueño: 24 a 33 y 34 a 40, aprobado por el equipo el 27/11. Texto, fechas, dueños y metas sin cambios; la fecha del 2/12 (resuelta el 27/11) queda dentro de la fila del 3/12 (31) y los códigos que se tocaron llevan su ámbito (`n8n.N1–N27`, `relay.D1–D3`).
+- `ESTADO.md` §4: columna «Frente» al final de la tabla; `tools/tablero.py` ya la lee y le da prioridad sobre la capa curada, y `tools/home.py` sigue leyendo las columnas 0 a 3.
+- `ESTADO.md` §0 (v3.6 pegada; skill «sintonia-tablero» guardada; avance del taskforce), §1 (licencia opción C hecha; el 57 % del perfil de comunidad es anterior a la licencia), §3.1 (plan de n8n Cloud pagado el 26/11) y §4.2 («la entrega final es el 4/12» superada el 27/11).
+- `tools/tablero-curado.json`: pendientes renumerados, acciones 1, 7, 8, 9 y 10 del plan hechas y hallazgos corregidos fuera de `casa_manual`.
+- Proyecto: `claude/wow-sintonia.md` v2.3 (prompt v3.6, el tablero como vista derivada, briefs «Motor E1.5 (n8n)» y «Orden de la casa», y el brief de investigación sin el 4/12 como entrega).
+
 ### 2026-11-27 · Tablero de frentes y auditoría de la casa (sin cambios de consola ni backend)
 - `tools/tablero.py`: genera el JSON del Tablero de frentes desde `ESTADO.md` (§0, §1 y §4), `tools/tablero-curado.json` y git (commits sin subir, carpetas sueltas, `tools/home.py --check`). Reglas de estado: vencido, bloqueado, en espera, hecho por retirar y abierto; salud por frente.
 - `tools/tablero-curado.json`: frente de cada pendiente, hitos hasta el pitch, 7 decisiones abiertas, plan de 12 acciones y hallazgos manuales de la auditoría.

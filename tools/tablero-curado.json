@@ -68,12 +68,6 @@
       "estado": "bloqueado",
       "nota": "Grupo sin confirmar: es el camino crítico"
     },
-    "21": {
-      "frente": "investigacion",
-      "fecha": "2026-11-27",
-      "tipo": "epica",
-      "nota": "9 entregas con fechas del 27/11 al 4/12 en una sola fila"
-    },
     "4": {
       "frente": "pop",
       "estado": "bloqueado",
@@ -89,10 +83,6 @@
       "fecha": "2026-11-29",
       "nota": "Mitad hecha (2.16.0); queda el canvas"
     },
-    "7": {
-      "frente": "plataforma",
-      "estado": "hecho"
-    },
     "8": {
       "frente": "operacion"
     },
@@ -105,22 +95,8 @@
       "estado": "espera",
       "nota": "Después de Cali"
     },
-    "11": {
-      "frente": "motor",
-      "estado": "espera",
-      "tipo": "epica",
-      "nota": "Unas 15 tareas en una fila; se ejecuta después de cerrar E1"
-    },
     "12": {
       "frente": "investigacion"
-    },
-    "13": {
-      "frente": "casa",
-      "estado": "hecho"
-    },
-    "14": {
-      "frente": "casa",
-      "estado": "hecho"
     },
     "15": {
       "frente": "casa",
@@ -130,10 +106,6 @@
       "frente": "casa",
       "nota": "Datos de personas solo en el Mac y dentro del clon"
     },
-    "17": {
-      "frente": "casa",
-      "nota": "Hecha; quedan Icesi, D2 y D3"
-    },
     "18": {
       "frente": "plataforma",
       "estado": "espera",
@@ -142,14 +114,83 @@
     "19": {
       "frente": "plataforma"
     },
-    "20": {
+    "23": {
       "frente": "casa",
-      "estado": "hecho",
-      "nota": "Las instrucciones del Proyecto ya dicen v3.6"
+      "nota": "Resto de la auditoría de estándares: Icesi, aud.D2 y aud.D3"
     },
-    "22": {
-      "frente": "casa",
-      "nota": "Taskforce con subagentes; prompt en el Proyecto"
+    "24": {
+      "frente": "investigacion",
+      "fecha": "2026-11-27"
+    },
+    "25": {
+      "frente": "investigacion",
+      "fecha": "2026-11-27"
+    },
+    "26": {
+      "frente": "investigacion",
+      "nota": "Se define antes del grupo de E1.5"
+    },
+    "27": {
+      "frente": "investigacion",
+      "fecha": "2026-11-29"
+    },
+    "28": {
+      "frente": "investigacion",
+      "fecha": "2026-11-30"
+    },
+    "29": {
+      "frente": "pitch",
+      "fecha": "2026-12-01"
+    },
+    "30": {
+      "frente": "pitch",
+      "fecha": "2026-12-01"
+    },
+    "31": {
+      "frente": "investigacion",
+      "fecha": "2026-12-03"
+    },
+    "32": {
+      "frente": "investigacion",
+      "fecha": "2026-12-04"
+    },
+    "33": {
+      "frente": "investigacion"
+    },
+    "34": {
+      "frente": "motor",
+      "estado": "espera",
+      "nota": "Después de cerrar E1"
+    },
+    "35": {
+      "frente": "motor",
+      "estado": "espera",
+      "nota": "Después de cerrar E1"
+    },
+    "36": {
+      "frente": "motor",
+      "estado": "espera",
+      "nota": "Después de cerrar E1"
+    },
+    "37": {
+      "frente": "motor",
+      "estado": "espera",
+      "nota": "Después de cerrar E1"
+    },
+    "38": {
+      "frente": "motor",
+      "estado": "espera",
+      "nota": "Después de cerrar E1"
+    },
+    "39": {
+      "frente": "motor",
+      "estado": "espera",
+      "nota": "Después de cerrar E1"
+    },
+    "40": {
+      "frente": "motor",
+      "estado": "espera",
+      "nota": "Después de cerrar E1"
     }
   },
   "hitos": [
@@ -334,7 +375,7 @@
       "dueno": "Claude, en el próximo cierre",
       "cuando": "Próximo cierre",
       "esfuerzo": "15 min",
-      "estado": "pendiente"
+      "estado": "hecho"
     },
     {
       "orden": 8,
@@ -343,7 +384,7 @@
       "dueno": "Claude propone, el equipo aprueba",
       "cuando": "Próximo cierre",
       "esfuerzo": "30 min",
-      "estado": "pendiente"
+      "estado": "hecho"
     },
     {
       "orden": 9,
@@ -352,7 +393,7 @@
       "dueno": "Claude",
       "cuando": "Próximo cierre",
       "esfuerzo": "10 min",
-      "estado": "pendiente"
+      "estado": "hecho"
     },
     {
       "orden": 10,
@@ -361,7 +402,7 @@
       "dueno": "Claude",
       "cuando": "Próximo cierre",
       "esfuerzo": "20 min",
-      "estado": "pendiente"
+      "estado": "hecho"
     },
     {
       "orden": 11,
@@ -382,36 +423,5 @@
       "estado": "pendiente"
     }
   ],
-  "casa_manual": [
-    {
-      "chequeo": "ESTADO §0 y pendiente 20 dicen que falta pegar la v3.6",
-      "estado": "warn",
-      "detalle": "Las instrucciones del Proyecto ya son la v3.6",
-      "accion": "Plan 7"
-    },
-    {
-      "chequeo": "§1 dice «falta la licencia (aud.D1)»",
-      "estado": "warn",
-      "detalle": "§0 dice que la licencia opción C está hecha",
-      "accion": "Plan 7"
-    },
-    {
-      "chequeo": "§4.2 conserva «la entrega final es el 4/12»",
-      "estado": "warn",
-      "detalle": "El 27/11 el equipo aclaró que el 4/12 no es entrega",
-      "accion": "Plan 7"
-    },
-    {
-      "chequeo": "wow-sintonia.md desactualizado",
-      "estado": "warn",
-      "detalle": "Cita el prompt v3.4, dice que no hace falta tablero y no tiene brief de Motor E1.5",
-      "accion": "Plan 10"
-    },
-    {
-      "chequeo": "Pendientes como épicas",
-      "estado": "warn",
-      "detalle": "11 y 21 mezclan muchas tareas; no se ve el avance",
-      "accion": "Plan 8"
-    }
-  ]
+  "casa_manual": []
 }
