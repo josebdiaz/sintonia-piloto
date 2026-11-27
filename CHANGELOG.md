@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-26 · E1.5: definición corregida, envío sin aprobación y grupo real antes del 4/12 (sin cambios de código)
+- Definición: E1.5 es el producto automatizado (n8n interpreta, decide, redacta y envía) y lo novedoso de la solución. El «una persona aprueba y pega» del 24/10 era un Mago de Oz en la entrega del mensaje mientras no había conector; E1 sigue siendo el Mago de Oz completo.
+- Decisión del equipo (reemplaza la de la tarde del 26/11): los mensajes de E1.5 salen sin aprobación previa; una persona entra solo con HUMANO o un error. Por confirmar con Néstor (C12); el aviso v3 se publica antes del grupo real.
+- Decisión del equipo: E1.5 corre con un grupo real antes del 4/12. La regla de A1–A6 como requisito para automatizar queda superada; las metas no se mueven.
+- `ESTADO.md`: encabezado, §0, §1 (Motor E1.5), §3.4 y pendientes 11 y 20.
+
 ### 2026-11-26 · Lecturas del curso: cruce aprobado por el equipo (sin cambios de código)
 - Tarea «Diez lecturas, seis escogidas» (Reto de Innovación): B1, B2, D1, D2, E1 y E2 leídas contra el proyecto. El equipo reconstruyó su lectura con un cuestionario y aprobó el cruce: 3 «Ya lo hacemos» (B1, B2 y E1) y 3 «Qué pasaría si» (D1, D2 y E2).
 - El análisis, el cuestionario y el instrumento de compromisos viven en un doc del Proyecto; el deck de la sesión (estilo de `docs/deck-wow.html`) es un artefacto privado. Ninguno entra al repo porque son notas internas.
