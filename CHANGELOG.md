@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Taskforce «Tareas de José» preparado (sin cambios de consola ni backend)
+- Proyecto: `claude/prompt-taskforce-tareas-jose.md`, con 5 subagentes (reglas antes de los datos, pitch y lecturas, canvas, casa y un verificador independiente) para los pendientes 24 a 27, 29 a 33, 8, 9 y 16. Claude prepara borradores y opciones; las reglas y decisiones siguen siendo del equipo.
+- `ESTADO.md`: pendiente 41 (correr el taskforce en una sesión nueva) y resumen del sprint del fin de semana en el §0.
+- `tools/tablero-curado.json`: pendiente 41 en el frente casa, para el 28/11.
+
 ### 2026-11-27 · Pendientes fusionados para el sprint del fin de semana (sin cambios de consola ni backend)
 - `ESTADO.md` §4: el 2 («Empezar piloto real») y el 19 (pruebas en teléfono real) entran al 1, el ensayo; el 6 (disposición a pagar, hecha en la 2.16.0) entra al 27, el canvas; el 23 (resto de la auditoría) entra al 18; el 15 entra al 16, con la decisión del 27/11 de que el clon de trabajo es `Gemini dump/sintonia-piloto`. El 12 queda en espera hasta el cierre. Aprobado por el equipo el 27/11; no cambian el alcance ni las fechas.
 - `ESTADO.md` §0 y §1: referencias a los pendientes fusionados al día. Pendiente 1: «Bloquea» dice el encuentro con Cali a más tardar el 30/11.

@@ -173,6 +173,11 @@
       "frente": "motor",
       "estado": "espera",
       "nota": "Después de cerrar E1"
+    },
+    "41": {
+      "frente": "casa",
+      "fecha": "2026-11-28",
+      "nota": "Sesión nueva; las reglas de 24 y 25 van antes del encuentro con Cali"
     }
   },
   "hitos": [
