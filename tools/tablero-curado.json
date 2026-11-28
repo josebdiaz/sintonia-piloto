@@ -1,6 +1,6 @@
 {
   "_nota": "Capa curada del tablero de frentes. NO es fuente de pendientes: esos salen de ESTADO.md §4. Aquí va solo lo que ESTADO no dice (frente y nivel de innovación de cada pendiente, fecha límite, estado de gestión), los hitos, las decisiones abiertas y el plan de acción. Lo actualiza la skill sintonia-tablero al cerrar cada frente. Cuando §4 tenga columna «Frente», esa columna manda sobre este mapa.",
-  "actualizado": "2026-11-27",
+  "actualizado": "2026-11-28",
   "frentes": [
     {
       "id": "operacion",
@@ -88,14 +88,12 @@
     "3": {
       "frente": "operacion",
       "fecha": "2026-11-30",
-      "estado": "bloqueado",
-      "nota": "Grupo sin confirmar: es el camino crítico",
+      "nota": "Cali confirmó (28/11); falta la fecha del encuentro (29/11)",
       "nivel": "nucleo"
     },
     "4": {
       "frente": "pop",
-      "estado": "bloqueado",
-      "nota": "Espera plantilla del tótem y logo vectorial de Icesi",
+      "nota": "Assets listos en el equipo (28/11); se cargan al abrir el frente",
       "nivel": "base"
     },
     "10": {
@@ -123,8 +121,8 @@
     },
     "24": {
       "frente": "investigacion",
-      "fecha": "2026-11-27",
-      "nota": "Borrador listo (27/11): falta que el equipo elija",
+      "fecha": "2026-11-28",
+      "nota": "Reglas elegidas (28/11); falta la lista de métricas por fase",
       "nivel": "nucleo"
     },
     "25": {
@@ -215,8 +213,7 @@
     },
     "45": {
       "frente": "motor",
-      "estado": "espera",
-      "nota": "Se retoma con E1 en ejecución",
+      "nota": "Se retoma (28/11) con la credencial de Gemini que crea José",
       "nivel": "transformacional"
     },
     "46": {
@@ -256,16 +253,16 @@
       "estado": "hecho"
     },
     {
-      "fecha": "2026-11-27",
+      "fecha": "2026-11-30",
       "hito": "Prueba con Cali (E1)",
       "frente": "operacion",
-      "estado": "en riesgo"
+      "estado": "próximo"
     },
     {
-      "fecha": "2026-11-27",
-      "hito": "Reglas de descarte y tabla de métricas, antes de los datos (borrador listo; falta elegir)",
+      "fecha": "2026-11-28",
+      "hito": "Reglas de descarte, antes de los datos (elegidas el 28/11)",
       "frente": "investigacion",
-      "estado": "hoy"
+      "estado": "hecho"
     },
     {
       "fecha": "2026-11-29",
@@ -277,7 +274,7 @@
       "fecha": "2026-11-30",
       "hito": "Encuentro de Cali (límite) y aplicar las reglas",
       "frente": "operacion",
-      "estado": "en riesgo"
+      "estado": "próximo"
     },
     {
       "fecha": "2026-12-01",
@@ -305,15 +302,6 @@
     }
   ],
   "decisiones": [
-    {
-      "id": "d1",
-      "decision": "Plan B escrito si Cali no confirma: qué grupo, qué fecha y quién lo activa",
-      "decide": "Katherine y José",
-      "fecha": "2026-11-28",
-      "frente": "operacion",
-      "por_que": "Sin grupo al 30/11, E1 llega al pitch con n = 0 y E1.5 no puede correr",
-      "nivel": "nucleo"
-    },
     {
       "id": "d2",
       "decision": "Qué cuenta como «cerrar E1» (adelantarla del 3/12)",
@@ -381,12 +369,12 @@
     },
     {
       "orden": 3,
-      "accion": "Confirmar el grupo de Cali y dejar escrito el plan B (decisión d1)",
+      "accion": "Confirmar el grupo de Cali (confirmado el 28/11; el plan B ya no hace falta)",
       "frente": "operacion",
       "dueno": "Katherine",
       "cuando": "28/11",
       "esfuerzo": "1 h",
-      "estado": "pendiente"
+      "estado": "hecho"
     },
     {
       "orden": 4,
@@ -474,16 +462,16 @@
       "accion": "Llevar a Néstor d3 y d4 con las propuestas de PLAN-agentico §3 y §5.2 (pendiente 26)",
       "frente": "motor",
       "dueno": "Katherine y José",
-      "cuando": "Antes del grupo de E1.5",
+      "cuando": "Semana del 30/11",
       "esfuerzo": "30 min",
       "estado": "pendiente"
     },
     {
       "orden": 14,
-      "accion": "Crear las credenciales de los dos modelos (Redactor y Revisor) para abrir ag.F1 (pendiente 45)",
+      "accion": "Crear en n8n la credencial de Gemini (la misma API del equipo) para Redactor y Revisor, y abrir ag.F1 (pendiente 45)",
       "frente": "motor",
       "dueno": "José",
-      "cuando": "Con E1 en ejecución",
+      "cuando": "28/11",
       "esfuerzo": "15 min",
       "estado": "pendiente"
     }

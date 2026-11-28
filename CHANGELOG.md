@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-28 · Sesión creativa: reglas antes de los datos y bloqueos
+- Reglas de descarte elegidas antes de Cali (dec. equipo 28/11, iguales en E1 y E1.5): el parche donde paga quien organiza se incluye y se marca; el equipo no interviene fuera de la consola y un contacto por fuera se marca; las métricas por fase son diagnóstico, no criterio de parada; un parche excluido se reporta aparte. Falta la lista de métricas de cada fase y llevarlo a v3.7 (pendientes 24 y 42).
+- d1 cerrada: Cali confirmó el grupo para E1. La fecha del encuentro se confirma el 29/11.
+- Motor: `ag.F1` se retoma con la credencial de Gemini que crea José en n8n. El aviso v3 nombra a Google como proveedor del modelo.
+- POP: el equipo ya tiene la plantilla del tótem y el logo vectorial de Icesi; el pendiente 4 sale de bloqueos. d3 y d4 van a Néstor la semana del 30/11.
+
 ### 2026-11-27 · Tablero: revisión de diseño
 - «Tablero de frentes» pasa a la línea de la marca: ya no hay etiqueta encima del título.
 - Excepciones del detector de diseño solo para `tablero/index.html` y su plantilla (`.impeccable/config.json`): el contraste pasa AA en los dos temas (el detector cruza colores de uno y otro) y las celdas de la tabla ya tienen relleno.
