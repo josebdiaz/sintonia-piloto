@@ -45,6 +45,8 @@ section > p.ayuda{margin:0 0 14px;color:var(--papel-900);font-size:15px}
 .paso.hecho{background:var(--papel-100);border-color:var(--papel-700)}
 .num{width:40px;height:40px;border-radius:50%;background:var(--noche);color:var(--papel-50);display:grid;place-items:center;font:800 16px/1 var(--f)}
 .paso.hecho .num{background:var(--ok)}
+.ya{display:inline-block;margin:6px 0 0;font:700 14px/1.2 var(--f);color:var(--ok)}
+.paso[data-hecho] .btns{display:none}
 .cuerpo{min-width:0}
 .msj{font:700 20px/1.4 var(--mono);color:var(--noche);margin:6px 0 4px;word-break:break-word}
 .accion{font-size:17px;font-weight:600;margin:6px 0 4px}
@@ -74,7 +76,7 @@ footer a{color:var(--noche)}
   </div>
 
   <h1>Prueba de entrada del motor</h1>
-  <p class="lede">Copia y pega cada mensaje en el grupo del equipo, en orden. Después de cada uno, Sintonía responde «🧪 Prueba · entendí: …» con lo que entendió.</p>
+  <p class="lede">Los pasos 1 a 12 ya pasaron (27/11). Sigue desde el 13, en orden. Después de cada uno, Sintonía responde «🧪 Prueba · entendí: …» con lo que entendió.</p>
 
   <div class="antes">
     <h2>Antes de empezar</h2>
@@ -94,28 +96,28 @@ footer a{color:var(--noche)}
   <section aria-labelledby="s1">
     <h2 id="s1">Votos</h2>
     <p class="ayuda">Como si votaras por una opción del plan.</p>
-    <div class="paso" data-n="1"><span class="num">1</span><div class="cuerpo"><p class="msj">2</p><div class="btns"><button class="copiar" data-copiar="2">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
-    <div class="paso" data-n="2"><span class="num">2</span><div class="cuerpo"><p class="msj">la 3</p><div class="btns"><button class="copiar" data-copiar="la 3">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
-    <div class="paso" data-n="3"><span class="num">3</span><div class="cuerpo"><p class="msj">TODAS</p><div class="btns"><button class="copiar" data-copiar="TODAS">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
-    <div class="paso" data-n="4"><span class="num">4</span><div class="cuerpo"><p class="msj">NINGUNA</p><div class="btns"><button class="copiar" data-copiar="NINGUNA">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="1" data-hecho="27/11"><span class="num">1</span><div class="cuerpo"><p class="msj">2</p><div class="btns"><button class="copiar" data-copiar="2">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="2" data-hecho="27/11"><span class="num">2</span><div class="cuerpo"><p class="msj">la 3</p><div class="btns"><button class="copiar" data-copiar="la 3">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="3" data-hecho="27/11"><span class="num">3</span><div class="cuerpo"><p class="msj">TODAS</p><div class="btns"><button class="copiar" data-copiar="TODAS">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="4" data-hecho="27/11"><span class="num">4</span><div class="cuerpo"><p class="msj">NINGUNA</p><div class="btns"><button class="copiar" data-copiar="NINGUNA">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
   </section>
 
   <section aria-labelledby="s2">
     <h2 id="s2">Eventos</h2>
     <p class="ayuda">Nadie sale del grupo con «SALIR»: Sintonía solo dice qué entendió.</p>
-    <div class="paso" data-n="5"><span class="num">5</span><div class="cuerpo"><p class="msj">ME APUNTO</p><div class="btns"><button class="copiar" data-copiar="ME APUNTO">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
-    <div class="paso" data-n="6"><span class="num">6</span><div class="cuerpo"><p class="msj">LLEGUÉ</p><div class="btns"><button class="copiar" data-copiar="LLEGUÉ">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
-    <div class="paso" data-n="7"><span class="num">7</span><div class="cuerpo"><p class="msj">YA EN CASA</p><div class="btns"><button class="copiar" data-copiar="YA EN CASA">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
-    <div class="paso" data-n="8"><span class="num">8</span><div class="cuerpo"><p class="msj">SALIR</p><div class="btns"><button class="copiar" data-copiar="SALIR">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="5" data-hecho="27/11"><span class="num">5</span><div class="cuerpo"><p class="msj">ME APUNTO</p><div class="btns"><button class="copiar" data-copiar="ME APUNTO">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="6" data-hecho="27/11"><span class="num">6</span><div class="cuerpo"><p class="msj">LLEGUÉ</p><div class="btns"><button class="copiar" data-copiar="LLEGUÉ">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="7" data-hecho="27/11"><span class="num">7</span><div class="cuerpo"><p class="msj">YA EN CASA</p><div class="btns"><button class="copiar" data-copiar="YA EN CASA">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="8" data-hecho="27/11"><span class="num">8</span><div class="cuerpo"><p class="msj">SALIR</p><div class="btns"><button class="copiar" data-copiar="SALIR">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
   </section>
 
   <section aria-labelledby="s3">
     <h2 id="s3">Pedir ayuda</h2>
     <p class="ayuda">Son de prueba: no hay ninguna emergencia.</p>
-    <div class="paso" data-n="9"><span class="num">9</span><div class="cuerpo"><p class="msj">HUMANO</p><div class="btns"><button class="copiar" data-copiar="HUMANO">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
-    <div class="paso" data-n="10"><span class="num">10</span><div class="cuerpo"><p class="msj">tuve un accidente (prueba)</p><div class="btns"><button class="copiar" data-copiar="tuve un accidente (prueba)">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
-    <div class="paso" data-n="11"><span class="num">11</span><div class="cuerpo"><p class="msj">llamen al 123 (prueba)</p><div class="btns"><button class="copiar" data-copiar="llamen al 123 (prueba)">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
-    <div class="paso" data-n="12"><span class="num">12</span><div class="cuerpo"><p class="msj">jajaja</p><div class="btns"><button class="copiar" data-copiar="jajaja">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="9" data-hecho="27/11"><span class="num">9</span><div class="cuerpo"><p class="msj">HUMANO</p><div class="btns"><button class="copiar" data-copiar="HUMANO">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="10" data-hecho="27/11"><span class="num">10</span><div class="cuerpo"><p class="msj">tuve un accidente (prueba)</p><div class="btns"><button class="copiar" data-copiar="tuve un accidente (prueba)">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="11" data-hecho="27/11"><span class="num">11</span><div class="cuerpo"><p class="msj">llamen al 123 (prueba)</p><div class="btns"><button class="copiar" data-copiar="llamen al 123 (prueba)">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
+    <div class="paso" data-n="12" data-hecho="27/11"><span class="num">12</span><div class="cuerpo"><p class="msj">jajaja</p><div class="btns"><button class="copiar" data-copiar="jajaja">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
   </section>
 
   <section aria-labelledby="s4">
@@ -132,6 +134,13 @@ footer a{color:var(--noche)}
     <p class="ayuda">Estos <strong>no</strong> deben anotarse. Pídele a José el número de Sintonía.</p>
     <div class="paso" data-n="17"><span class="num">17</span><div class="cuerpo"><p class="accion">Por chat privado al número de Sintonía:</p><p class="msj">2</p><div class="btns"><button class="copiar" data-copiar="2">Copiar</button><button class="listo">Lo mandé</button></div></div></div>
     <div class="paso" data-n="18"><span class="num">18</span><div class="cuerpo"><p class="accion">En otro grupo donde esté el número (si no hay, márcalo y sigue):</p><p class="msj">2</p><div class="btns"><button class="copiar" data-copiar="2">Copiar</button><button class="listo">Listo</button></div></div></div>
+  </section>
+
+  <section aria-labelledby="s6">
+    <h2 id="s6">Lo nuevo</h2>
+    <p class="ayuda">Dos cosas que se activaron el 27/11 en la noche.</p>
+    <div class="paso" data-n="19"><span class="num">19</span><div class="cuerpo"><p class="accion">Aviso a una persona del equipo</p><p class="msj">HUMANO</p><p class="espera">Deben llegar dos mensajes en el grupo: «🧪 Prueba · …» y el aviso «⚠️ Sintonía E1.5: alguien escribió HUMANO…».</p><div class="btns"><button class="copiar" data-copiar="HUMANO">Copiar</button><button class="listo">Llegaron</button></div></div></div>
+    <div class="paso" data-n="20"><span class="num">20</span><div class="cuerpo"><p class="accion">Bienvenida automática: en la info del grupo, edita la descripción y agrega</p><p class="msj">g_0000000000</p><p class="espera">Debe llegar la bienvenida de Sintonía al grupo. Es un código de prueba; con un grupo real va el código de la consola.</p><div class="btns"><button class="copiar" data-copiar="g_0000000000">Copiar</button><button class="listo">Llegó</button></div></div></div>
   </section>
 
   <div class="fin">
@@ -152,7 +161,7 @@ footer a{color:var(--noche)}
   function pintar() {
     var n = 0;
     pasos.forEach(function (p) {
-      var h = !!hechos[p.dataset.n];
+      var h = !!hechos[p.dataset.n] || p.hasAttribute('data-hecho');
       p.classList.toggle('hecho', h);
       var b = p.querySelector('.listo');
       if (b) b.setAttribute('aria-pressed', h ? 'true' : 'false');
@@ -162,6 +171,7 @@ footer a{color:var(--noche)}
     document.getElementById('barra').style.width = (100 * n / pasos.length) + '%';
   }
   pasos.forEach(function (p) {
+    if (p.hasAttribute('data-hecho')) { var y = document.createElement('p'); y.className = 'ya'; y.textContent = '✓ Hecho el ' + p.getAttribute('data-hecho') + ': el motor lo entendió bien'; p.querySelector('.cuerpo').appendChild(y); }
     var b = p.querySelector('.listo');
     b.addEventListener('click', function () {
       hechos[p.dataset.n] = !hechos[p.dataset.n]; guardar(); pintar();
