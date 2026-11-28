@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Bienvenida automática (W0 sin formulario, n = 0)
+- Evolution: eventos `GROUP_PARTICIPANTS_UPDATE`, `GROUP_UPDATE` y `GROUPS_UPSERT` activados en el webhook de E15-00 (Claude, en Evolution Manager); los de mensajes, sin cambios.
+- `entrada.js` v0.3: los eventos de grupo dan `accion: grupo` con el código `g_` de la descripción (solo el código, nunca la descripción); `prueba-entrada.js` 42 casos ✓.
+- E15-00: lee el grupo en Evolution si el evento no trae la descripción, guarda el grupo en la tabla nueva `e15_grupos` (una bienvenida por grupo) y llama a W0. W0 tiene una segunda entrada automática hacia «Normalizar entrada», como el formulario; ya no registra `msg_ingreso` porque todavía no hay plan. `SW · Enviar` toma la URL y la instancia de Evolution de quien llama. Los tres publicados.
+
 ### 2026-11-27 · Bienvenida automática: el código del grupo va en la descripción (decisión de José)
 - Quien crea el grupo de WhatsApp pone el código del grupo de la consola en la descripción; W0 lo lee al entrar el número. `n8n/PRUEBA-E2E.md` §5.
 

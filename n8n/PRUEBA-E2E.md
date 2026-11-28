@@ -72,7 +72,7 @@ Lo automatizado reemplaza las tareas que hoy hace una persona del equipo en E1.5
 
 | Flujo | Formulario temporal | Lo reemplaza | Cuándo |
 |---|---|---|---|
-| W0 | «Grupo creado» | Evento de participantes de Evolution + `e15_grupos` | Ya (no toca el backend) |
+| W0 | «Grupo creado» | Eventos de grupo de Evolution + código en la descripción + `e15_grupos` | **Hecho el 27/11** (E15-00 v0.3, publicado). Prueba: poner un código `g_` en la descripción del grupo del equipo |
 | W1 | «Plan creado» (`plan_id`, `fechas`) | `crear_plan` por el motor + `view=motor` | Después del congelamiento (pendiente 37) |
 | W3 | «Cerrar plan» | Cierre por votos o plazo | Ya (no toca el backend) |
 

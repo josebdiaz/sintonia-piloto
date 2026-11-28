@@ -1,4 +1,4 @@
-// Sintonía · E1.5 · entrada del motor (v0.2, 27/11/2026: + respuesta de prueba `eco` y veto en la tabla)
+// Sintonía · E1.5 · entrada del motor (v0.3, 27/11/2026: + respuesta de prueba, aviso a una persona y eventos de grupo para la bienvenida automática)
 // Clasifica lo que Evolution API manda al webhook de n8n y devuelve SOLO lo mínimo.
 // Se pega completo en el nodo Code «Clasificar» de E15-00 y se prueba con `node n8n/motor/prueba-entrada.js`.
 // No devuelve el texto, el nombre (pushName) ni la apikey que Evolution incluye en el cuerpo.
@@ -58,6 +58,9 @@ const ENTRADA = (() => {
     return { descifrado: false };
   }
 
+  // Código del grupo de la consola (g_ + 10 hex) en la descripción del grupo de WhatsApp. Solo se toma el código, nunca la descripción.
+  function codigoGrupo(desc) { const m = String(desc || '').match(/\bg_[0-9a-f]{10}\b/i); return m ? m[0].toLowerCase() : ''; }
+
   function clasificar(body, cfg = {}) {
     const grupos = (cfg.grupos || []).map(String);
     const b = body && body.body && !body.event ? body.body : (body || {});   // acepta el item del Webhook o el cuerpo
@@ -75,6 +78,15 @@ const ENTRADA = (() => {
     const fin = (r) => Object.assign(base, r, cfg.sonda ? { forma: forma(b) } : {});
 
     const ev = base.evento_evolution.toLowerCase().replace('_', '.');
+    const evg = base.evento_evolution.toLowerCase().replace(/[-_]/g, '.');
+    if (/^group\.participants\.update$|^groups\.(update|upsert)$/.test(evg)) {   // el número entró a un grupo o cambió su descripción
+      const g = (Array.isArray(b.data) ? b.data[0] : b.data) || {};
+      base.grupo = String(g.id || g.groupJid || '');
+      if (!base.grupo.endsWith('@g.us')) return fin({ accion: 'ignorar', motivo: 'grupo_sin_id' });
+      if (!grupos.includes(base.grupo)) return fin({ accion: 'ignorar', motivo: 'grupo_no_permitido' });
+      return fin({ accion: 'grupo', tipo: /participants/.test(evg) ? 'participantes' : /upsert/.test(evg) ? 'grupo_nuevo' : 'grupo_cambio',
+        motivo: String(g.action || ''), codigo_grupo: codigoGrupo(g.desc || g.description || '') });
+    }
     if (!/^messages\.(upsert|update)$/.test(ev)) return fin({ accion: 'ignorar', motivo: 'evento_no_mensaje' });
     if (key.fromMe) return fin({ accion: 'ignorar', motivo: 'propio' });
     if (!base.grupo.endsWith('@g.us')) return fin({ accion: 'ignorar', motivo: 'no_es_grupo' });
@@ -111,7 +123,7 @@ const ENTRADA = (() => {
     medio_no_soportado: 'este tipo de mensaje no lo leo, así que pasaría a una persona del equipo' };
   function eco(r) {
     const p = '🧪 Prueba · ';
-    if (!r || r.accion === 'ignorar') return '';
+    if (!r || r.accion === 'ignorar' || r.accion === 'grupo') return '';
     if (r.accion === 'voto') return p + (r.veto ? 'entendí: ninguna opción te sirve.' : r.opcion === -1 ? 'entendí: te sirve cualquiera.' : 'entendí: voto por la opción ' + (r.opcion + 1) + '.');
     if (r.accion === 'voto_encuesta') return p + 'llegó tu voto de la encuesta.';
     if (r.accion === 'evento') return p + 'entendí: ' + (EVENTOS[r.evento] || 'un evento') + '.';
@@ -131,6 +143,6 @@ const ENTRADA = (() => {
     return '';
   }
 
-  return { clasificar, interpretarTexto, forma, eco, aviso };
+  return { clasificar, interpretarTexto, forma, eco, aviso, codigoGrupo };
 })();
 if (typeof module !== 'undefined') module.exports = ENTRADA;

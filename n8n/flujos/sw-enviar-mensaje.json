@@ -33,6 +33,14 @@
             {
               "name": "grupo_wa",
               "type": "string"
+            },
+            {
+              "name": "evo_url",
+              "type": "string"
+            },
+            {
+              "name": "evo_instancia",
+              "type": "string"
             }
           ]
         }
@@ -61,13 +69,13 @@
             {
               "id": "c2",
               "name": "evolution_url",
-              "value": "https://EVOLUTION_HOST",
+              "value": "={{ $('Entrada').first().json.evo_url || 'https://EVOLUTION_HOST' }}",
               "type": "string"
             },
             {
               "id": "c3",
               "name": "instancia",
-              "value": "INSTANCIA",
+              "value": "={{ $('Entrada').first().json.evo_instancia || 'INSTANCIA' }}",
               "type": "string"
             },
             {

@@ -82,13 +82,13 @@
             {
               "id": "t2",
               "name": "grupo_wa",
-              "value": "={{ String($('Grupo creado').item.json.grupo_wa).trim() }}",
+              "value": "={{ $('Normalizar entrada').item.json.grupo_wa }}",
               "type": "string"
             },
             {
               "id": "t3",
               "name": "grupo_id",
-              "value": "={{ $('Grupo creado').item.json.grupo_id }}",
+              "value": "={{ $('Normalizar entrada').item.json.grupo_id }}",
               "type": "string"
             }
           ]
@@ -118,8 +118,10 @@
             "paso": "/ingreso",
             "texto": "={{ String($json.plantilla_ingreso || '') }}",
             "plan_id": "",
-            "evento_msg": "msg_ingreso",
-            "grupo_wa": "={{ $json.grupo_wa }}"
+            "evento_msg": "",
+            "grupo_wa": "={{ $json.grupo_wa }}",
+            "evo_url": "={{ $('Normalizar entrada').item.json.evo_url }}",
+            "evo_instancia": "={{ $('Normalizar entrada').item.json.evo_instancia }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -167,6 +169,24 @@
               "display": true,
               "canBeUsedToMatch": true,
               "type": "string"
+            },
+            {
+              "id": "evo_url",
+              "displayName": "evo_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "evo_instancia",
+              "displayName": "evo_instancia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
             }
           ]
         },
@@ -195,7 +215,7 @@
           "mappingMode": "defineBelow",
           "value": {
             "plan_id": "",
-            "motivo": "={{ 'grupo_wa inválido en Ingreso (grupo ' + ($('Grupo creado').item.json.grupo_id || 'sin id') + ')' }}",
+            "motivo": "={{ 'grupo_wa inválido en Ingreso (grupo ' + ($('Normalizar entrada').item.json.grupo_id || 'sin id') + ')' }}",
             "codigo": "grupo_wa_invalido"
           },
           "matchingColumns": [],
@@ -254,6 +274,82 @@
         112,
         352
       ]
+    },
+    {
+      "id": "w0-auto",
+      "name": "Desde E15-00 (automático)",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        300
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "grupo_id",
+              "type": "string"
+            },
+            {
+              "name": "grupo_wa",
+              "type": "string"
+            },
+            {
+              "name": "evo_url",
+              "type": "string"
+            },
+            {
+              "name": "evo_instancia",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "w0-norm",
+      "name": "Normalizar entrada",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        112,
+        192
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "n1",
+              "name": "grupo_id",
+              "value": "={{ String($json.grupo_id || '').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "n2",
+              "name": "grupo_wa",
+              "value": "={{ String($json.grupo_wa || '').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "n3",
+              "name": "evo_url",
+              "value": "={{ $json.evo_url || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "n4",
+              "name": "evo_instancia",
+              "value": "={{ $json.evo_instancia || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
     }
   ],
   "connections": {
@@ -261,7 +357,7 @@
       "main": [
         [
           {
-            "node": "¿grupo_wa válido?",
+            "node": "Normalizar entrada",
             "type": "main",
             "index": 0
           }
@@ -291,6 +387,28 @@
         [
           {
             "node": "Enviar /ingreso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Desde E15-00 (automático)": {
+      "main": [
+        [
+          {
+            "node": "Normalizar entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar entrada": {
+      "main": [
+        [
+          {
+            "node": "¿grupo_wa válido?",
             "type": "main",
             "index": 0
           }

@@ -77,6 +77,40 @@ nodos = [
        {"id": k, "displayName": k, "required": False, "defaultMatch": False, "display": True, "canBeUsedToMatch": True, "type": "string"} for k in ("plan_id", "motivo", "codigo", "evo_url", "evo_instancia")]},
      "options": {"waitForSubWorkflow": False}},
    "onError": "continueRegularOutput"},
+  {"id": nid('g_if'), "name": "¿Cambio de grupo?", "type": "n8n-nodes-base.if", "typeVersion": 2.2, "position": [880, 780],
+   "parameters": {"conditions": {"options": {"caseSensitive": True, "leftValue": "", "typeValidation": "loose", "version": 2},
+     "conditions": [{"id": "g1", "leftValue": "={{ $json.accion }}", "rightValue": "grupo", "operator": {"type": "string", "operation": "equals"}}],
+     "combinator": "and"}, "options": {}}},
+  {"id": nid('g_http'), "name": "Leer grupo (Evolution)", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [1100, 780],
+   "parameters": {"method": "GET", "url": "={{ $json.evo_url }}/group/findGroupInfos/{{ $json.evo_instancia }}",
+     "authentication": "genericCredentialType", "genericAuthType": "httpHeaderAuth", "sendQuery": True,
+     "queryParameters": {"parameters": [{"name": "groupJid", "value": "={{ $json.grupo }}"}]}, "options": {}},
+   "credentials": {"httpHeaderAuth": {"name": "Evolution API · Hostinger"}},
+   "onError": "continueRegularOutput"},
+  {"id": nid('g_cod'), "name": "Código del grupo", "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [1320, 780],
+   "parameters": {"jsCode": "// Toma solo el código g_ + 10 hex de la descripción del grupo; la descripción no sigue en el flujo.\n"
+     "const prev = $('Clasificar (entrada.js)').first().json;\n"
+     "const r = $input.first().json || {};\n"
+     "const desc = String(r.desc || r.description || (r.data && r.data.desc) || '');\n"
+     "const m = desc.match(/\\bg_[0-9a-f]{10}\\b/i);\n"
+     "const codigo = prev.codigo_grupo || (m ? m[0].toLowerCase() : '');\n"
+     "if (!codigo) return [];\n"
+     "return [{ json: { grupo_wa: prev.grupo, grupo_id: codigo, evo_url: prev.evo_url, evo_instancia: prev.evo_instancia } }];\n"}},
+  {"id": nid('g_nuevo'), "name": "¿Grupo sin bienvenida?", "type": "n8n-nodes-base.dataTable", "typeVersion": 1.1, "position": [1540, 780],
+   "parameters": {"resource": "row", "operation": "rowNotExists",
+     "dataTableId": {"__rl": True, "mode": "list", "value": "", "cachedResultName": "e15_grupos"},
+     "matchType": "allConditions", "filters": {"conditions": [{"keyName": "grupo_wa", "condition": "eq", "keyValue": "={{ $json.grupo_wa }}"}]}}},
+  {"id": nid('g_ins'), "name": "Guardar grupo", "type": "n8n-nodes-base.dataTable", "typeVersion": 1.1, "position": [1760, 780],
+   "parameters": {"resource": "row", "operation": "insert",
+     "dataTableId": {"__rl": True, "mode": "list", "value": "", "cachedResultName": "e15_grupos"},
+     "columns": {"mappingMode": "defineBelow", "value": {"grupo_wa": "={{ $json.grupo_wa }}", "grupo_id": "={{ $json.grupo_id }}", "t_bienvenida": "={{ $now.toISO() }}"},
+       "matchingColumns": [], "schema": []}, "options": {}}},
+  {"id": nid('g_w0'), "name": "Bienvenida (W0)", "type": "n8n-nodes-base.executeWorkflow", "typeVersion": 1.2, "position": [1980, 780],
+   "parameters": {"source": "database", "workflowId": {"__rl": True, "mode": "id", "value": "Mzl5uLOb1wDqcijQ", "cachedResultName": "W0 · Ingreso"},
+     "workflowInputs": {"mappingMode": "defineBelow", "value": {k: "={{ $('Código del grupo').first().json." + k + " }}" for k in ("grupo_id", "grupo_wa", "evo_url", "evo_instancia")},
+       "matchingColumns": [], "schema": [{"id": k, "displayName": k, "required": False, "defaultMatch": False, "display": True, "canBeUsedToMatch": True, "type": "string"} for k in ("grupo_id", "grupo_wa", "evo_url", "evo_instancia")]},
+     "options": {"waitForSubWorkflow": False}},
+   "onError": "continueRegularOutput"},
   {"id": nid('nota'), "name": "Nota", "type": "n8n-nodes-base.stickyNote", "typeVersion": 1, "position": [0, -160],
    "parameters": {"width": 900, "height": 300, "content":
      "## E15-00 · Entrada (modo prueba)\n"
@@ -91,7 +125,12 @@ con = {
   "Evolution (entrada)": {"main": [[{"node": "Config", "type": "main", "index": 0}]]},
   "Config": {"main": [[{"node": "Clasificar (entrada.js)", "type": "main", "index": 0}]]},
   "Clasificar (entrada.js)": {"main": [[{"node": "¿Se atiende?", "type": "main", "index": 0}]]},
-  "¿Se atiende?": {"main": [[{"node": "Registrar en e15_entrada", "type": "main", "index": 0}, {"node": "¿Responder (prueba)?", "type": "main", "index": 0}, {"node": "¿Avisar a una persona?", "type": "main", "index": 0}], []]},
+  "¿Se atiende?": {"main": [[{"node": "Registrar en e15_entrada", "type": "main", "index": 0}, {"node": "¿Responder (prueba)?", "type": "main", "index": 0}, {"node": "¿Avisar a una persona?", "type": "main", "index": 0}, {"node": "¿Cambio de grupo?", "type": "main", "index": 0}], []]},
+  "¿Cambio de grupo?": {"main": [[{"node": "Leer grupo (Evolution)", "type": "main", "index": 0}], []]},
+  "Leer grupo (Evolution)": {"main": [[{"node": "Código del grupo", "type": "main", "index": 0}]]},
+  "Código del grupo": {"main": [[{"node": "¿Grupo sin bienvenida?", "type": "main", "index": 0}]]},
+  "¿Grupo sin bienvenida?": {"main": [[{"node": "Guardar grupo", "type": "main", "index": 0}]]},
+  "Guardar grupo": {"main": [[{"node": "Bienvenida (W0)", "type": "main", "index": 0}]]},
   "¿Avisar a una persona?": {"main": [[{"node": "Avisar a una persona", "type": "main", "index": 0}], []]},
   "¿Responder (prueba)?": {"main": [[{"node": "Responder en el grupo (prueba)", "type": "main", "index": 0}], []]},
 }

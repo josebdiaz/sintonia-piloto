@@ -63,6 +63,20 @@ for (const [m, debe] of avisos) {
   const a = E.aviso(E.clasificar(m, cfg));
   if (!!a !== debe || /Nombre Ficticio|jajaja|accidente/.test(a)) { fallas++; console.log('✗ aviso', debe, a); }
 }
-const extra = ecos.length + 1 + avisos.length;
+// Eventos de grupo: el número entra o cambia la descripción → accion grupo con el código; otro grupo → ignorar; nunca la descripción
+const COD = 'g_' + 'a1'.repeat(5);
+const grp = (event, data) => ({ body: { event, apikey: 'NO-DEBE-SALIR', data } });
+const gcasos = [
+  [grp('group-participants.update', { id: G, participants: [P], action: 'add' }), { accion: 'grupo', tipo: 'participantes', motivo: 'add', codigo_grupo: '' }],
+  [grp('groups.update', [{ id: G, desc: 'Grupo de prueba · ' + COD + ' · texto libre' }]), { accion: 'grupo', tipo: 'grupo_cambio', codigo_grupo: COD }],
+  [grp('GROUPS_UPSERT', [{ id: G, subject: 'Parche', desc: COD }]), { accion: 'grupo', tipo: 'grupo_nuevo', codigo_grupo: COD }],
+  [grp('groups.update', [{ id: OTRO, desc: COD }]), { accion: 'ignorar', motivo: 'grupo_no_permitido' }],
+];
+for (const [m, esp] of gcasos) {
+  const r = E.clasificar(m, cfg), s = JSON.stringify(r);
+  const malos = Object.entries(esp).filter(([k, v]) => JSON.stringify(r[k]) !== JSON.stringify(v));
+  if (malos.length || /texto libre|NO-DEBE-SALIR/.test(s) || E.eco(r) || E.aviso(r)) { fallas++; console.log('✗ grupo', JSON.stringify(malos), s); }
+}
+const extra = ecos.length + 1 + avisos.length + gcasos.length;
 console.log(fallas ? `✗ ${fallas} de ${casos.length + 1 + extra} casos fallan` : `✓ ${casos.length + 1 + extra} casos de entrada (ficticios, n = 0)`);
 process.exit(fallas ? 1 : 0);
