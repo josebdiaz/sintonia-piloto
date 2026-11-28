@@ -5,6 +5,9 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Tablero en ASCII puro: las tildes se ven en Safari
+- `tools/tablero-html.py` escribe la página solo con ASCII (entidades en el HTML, `\u` en el JS y escapes en el CSS). Safari mostraba «QuÃ©» al abrir el archivo; ahora no depende del charset.
+
 ### 2026-11-27 · Tablero: nivel de innovación de cada pendiente
 - `tools/tablero-curado.json` gana `niveles` (cimientos, núcleo, adyacente, transformacional, con la mezcla 70/20/10 de *Managing Your Innovation Portfolio*) y un `nivel` en cada pendiente y decisión.
 - `tools/tablero.py` cuenta el trabajo abierto por nivel y suma el chequeo «Pendientes sin nivel de innovación»; el tablero muestra la sección «Niveles de innovación», la columna «Nivel» y su filtro.
