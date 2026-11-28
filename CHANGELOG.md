@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Aviso a una persona: probado en el grupo del equipo (n = 0)
+- 7:24 p. m.: «HUMANO» de Kathe → fila `escalar · pidio_humano` y, en el mismo minuto, la respuesta «🧪 Prueba» y el aviso «⚠️ Sintonía E1.5…» en el grupo. Paso 19 de la guía marcado como hecho.
+- Bienvenida automática: todavía no llega ningún evento de grupo desde Evolution al cambiar la descripción; E15-00 anota los eventos de grupo descartados para diagnosticarlo.
+
 ### 2026-11-27 · Avisos al grupo del equipo mientras se prueba (decisión de José)
 - `SW · Avisar revisor` acepta un `destino`; E15-00 le pasa el grupo del equipo, así que el aviso de HUMANO, sensible, no entendido y SALIR sale en el mismo grupo sin configurar números. Antes del piloto real se quita el destino y el aviso va a `revisor_wa`. Publicado.
 
