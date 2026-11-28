@@ -5,6 +5,9 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Avisos al grupo del equipo mientras se prueba (decisión de José)
+- `SW · Avisar revisor` acepta un `destino`; E15-00 le pasa el grupo del equipo, así que el aviso de HUMANO, sensible, no entendido y SALIR sale en el mismo grupo sin configurar números. Antes del piloto real se quita el destino y el aviso va a `revisor_wa`. Publicado.
+
 ### 2026-11-27 · Bienvenida automática (W0 sin formulario, n = 0)
 - Evolution: eventos `GROUP_PARTICIPANTS_UPDATE`, `GROUP_UPDATE` y `GROUPS_UPSERT` activados en el webhook de E15-00 (Claude, en Evolution Manager); los de mensajes, sin cambios.
 - `entrada.js` v0.3: los eventos de grupo dan `accion: grupo` con el código `g_` de la descripción (solo el código, nunca la descripción); `prueba-entrada.js` 42 casos ✓.

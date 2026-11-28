@@ -73,8 +73,9 @@ nodos = [
   {"id": nid('av_sw'), "name": "Avisar a una persona", "type": "n8n-nodes-base.executeWorkflow", "typeVersion": 1.2, "position": [1100, 580],
    "parameters": {"source": "database", "workflowId": {"__rl": True, "mode": "id", "value": "vH5Q2DxwhLl7rP4p", "cachedResultName": "SW · Avisar revisor"},
      "workflowInputs": {"mappingMode": "defineBelow", "value": {"plan_id": "", "motivo": "={{ $json.aviso }}", "codigo": "={{ $json.motivo || $json.evento || '' }}",
-       "evo_url": "={{ $json.evo_url }}", "evo_instancia": "={{ $json.evo_instancia }}"}, "matchingColumns": [], "schema": [
-       {"id": k, "displayName": k, "required": False, "defaultMatch": False, "display": True, "canBeUsedToMatch": True, "type": "string"} for k in ("plan_id", "motivo", "codigo", "evo_url", "evo_instancia")]},
+       "evo_url": "={{ $json.evo_url }}", "evo_instancia": "={{ $json.evo_instancia }}",
+       "destino": "={{ $json.grupo }}"}, "matchingColumns": [], "schema": [   # en pruebas el aviso va al grupo del equipo (decisión de José, 27/11); en el piloto real se quita y va a revisor_wa
+       {"id": k, "displayName": k, "required": False, "defaultMatch": False, "display": True, "canBeUsedToMatch": True, "type": "string"} for k in ("plan_id", "motivo", "codigo", "evo_url", "evo_instancia", "destino")]},
      "options": {"waitForSubWorkflow": False}},
    "onError": "continueRegularOutput"},
   {"id": nid('g_if'), "name": "¿Cambio de grupo?", "type": "n8n-nodes-base.if", "typeVersion": 2.2, "position": [880, 780],

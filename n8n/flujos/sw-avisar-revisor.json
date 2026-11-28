@@ -33,6 +33,10 @@
             {
               "name": "evo_instancia",
               "type": "string"
+            },
+            {
+              "name": "destino",
+              "type": "string"
             }
           ]
         }
@@ -117,7 +121,7 @@
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ number: $('Config').item.json.revisor_wa, text: $json.texto }) }}",
+        "jsonBody": "={{ JSON.stringify({ number: $('Entrada').item.json.destino || $('Config').item.json.revisor_wa, text: $json.texto }) }}",
         "options": {
           "redirect": {
             "redirect": {

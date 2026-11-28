@@ -283,7 +283,8 @@
             "motivo": "={{ $json.aviso }}",
             "codigo": "={{ $json.motivo || $json.evento || '' }}",
             "evo_url": "={{ $json.evo_url }}",
-            "evo_instancia": "={{ $json.evo_instancia }}"
+            "evo_instancia": "={{ $json.evo_instancia }}",
+            "destino": "={{ $json.grupo }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -326,6 +327,15 @@
             {
               "id": "evo_instancia",
               "displayName": "evo_instancia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "destino",
+              "displayName": "destino",
               "required": false,
               "defaultMatch": false,
               "display": true,
