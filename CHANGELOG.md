@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-28 · Home: portada sin etiqueta y «Qué es» con tono comercial
+- Portada: sale la etiqueta «Piloto en Cali» encima del titular, como en el tablero; el dato pasa a la letra chica de «Cómo funciona».
+- «Qué es / Qué no es» pasa a tres promesas en una banda oscura: «El parche que ya tienen», «Lugares de Cali, revisados uno por uno» y «Cero apps nuevas», con la letra chica aparte (piloto académico de la Universidad Icesi, solo mayores de 18). Sin afirmaciones nuevas.
+- Celular: el carrusel de pasos va de borde a borde; las viñetas ya no se cortan a 16 px del borde izquierdo.
+- Detector de diseño: excepción de `cramped-padding` solo para `index.html` (falso positivo medido: 74 px sobre el borde de `.sec`).
+
 ### 2026-11-28 · Sesión creativa: reglas antes de los datos y bloqueos
 - Reglas de descarte elegidas antes de Cali (dec. equipo 28/11, iguales en E1 y E1.5): el parche donde paga quien organiza se incluye y se marca; el equipo no interviene fuera de la consola y un contacto por fuera se marca; las métricas por fase son diagnóstico, no criterio de parada; un parche excluido se reporta aparte. Falta la lista de métricas de cada fase y llevarlo a v3.7 (pendientes 24 y 42).
 - d1 cerrada: Cali confirmó el grupo para E1. La fecha del encuentro se confirma el 29/11.

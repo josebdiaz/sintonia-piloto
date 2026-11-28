@@ -31,7 +31,6 @@ body{margin:0;background:var(--crema);color:var(--noche);font-family:var(--f-txt
   max-width:1280px;margin:0 auto;padding-block:clamp(32px,8vh,96px)}
 .glyph{width:clamp(180px,30vw,420px);aspect-ratio:1;position:relative;touch-action:none}   /* en celular los deslizamientos sobre el glifo son del código */
 .glyph svg{width:100%;height:100%;overflow:visible;display:block}
-.eyebrow{font-weight:600;font-size:clamp(12px,1.2vw,16px);letter-spacing:.12em;text-transform:uppercase;color:#a83200;margin:0 0 18px}
 h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line-height:.95;margin:0;text-wrap:balance}
 .u{position:relative;display:inline-block;white-space:nowrap}
 .u svg{position:absolute;left:0;bottom:-.14em;width:100%;height:.2em;overflow:visible}
@@ -62,9 +61,12 @@ h1{font-weight:800;font-size:clamp(44px,8.4vw,132px);letter-spacing:-.035em;line
 .pasos p{margin:12px 0 0;font-size:16px;line-height:1.4}
 .pasos p::before{content:counter(paso);display:inline-grid;place-items:center;width:26px;height:26px;margin-right:8px;border-radius:50%;
   background:var(--noche);color:var(--papel-50);font:700 13px/1 var(--f-txt);vertical-align:1px}
-.dos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,72px);margin-top:36px}
-.dos h3{font-size:19px;font-weight:800;margin:0 0 10px}
-.dos ul{margin:0;padding-left:20px;display:grid;gap:8px;font-size:17px;line-height:1.45}
+.promesas{list-style:none;margin:clamp(40px,6vw,72px) 0 0;padding:clamp(28px,4.5vw,56px);display:grid;grid-template-columns:repeat(3,1fr);
+  gap:clamp(28px,4vw,56px);background:var(--noche);color:var(--papel-50);border-radius:20px}
+.promesas li{margin:0;padding-top:18px;border-top:3px solid var(--naranja)}
+.promesas h3{font-size:clamp(22px,2.2vw,28px);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin:0 0 10px;text-wrap:balance}
+.promesas p{margin:0;font-size:17px;line-height:1.45;color:var(--papel-300)}
+.letra-chica{margin:18px 0 0;font-size:15px;line-height:1.45;color:#47494d}
 
 /* lista de espera */
 .espera{max-width:560px}
@@ -159,14 +161,15 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
     gap:clamp(24px,4vh,40px);padding:calc(clamp(28px,5vh,56px) + env(safe-area-inset-top,0px)) 12px clamp(40px,8vh,72px)}
   .glyph{width:min(40vw,170px)}
   .cover > div:last-child{justify-self:stretch;max-width:34ch}
-  .eyebrow{margin-bottom:14px}
   h1{font-size:clamp(40px,11.5vw,64px)}
   .lede{margin:24px 0 0;font-size:clamp(17px,4.6vw,20px);max-width:28ch}
   .acciones{margin-top:26px} .acciones .btn{width:100%}
   .pasos{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory;
-    margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-right:16px;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+    margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));
+    padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+    scroll-padding-left:max(16px,env(safe-area-inset-left,0px));padding-bottom:8px;-webkit-overflow-scrolling:touch}
   .pasos li{scroll-snap-align:start}
-  .dos{grid-template-columns:1fr}
+  .promesas{grid-template-columns:1fr}
   .pie{flex-direction:column;align-items:flex-start}
 }
 @media (prefers-reduced-motion:reduce){
@@ -197,10 +200,9 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
     </svg>
   </div>
   <div>
-    <p class="eyebrow in" style="--i:0">Piloto en Cali</p>
-    <h1 id="claim" class="in" style="--i:1">Menos vueltas, <span class="u">más plan.<svg viewBox="0 0 128 16" preserveAspectRatio="none" aria-hidden="true"><path class="trazo" d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
-    <p class="lede in" style="--i:2">Para cuando el parche dice «hay que vernos» y nadie concreta. Sintonía es su +1 de confianza en el WhatsApp del grupo: propone el plan, concilia la votación y lo cierra con día y hora.</p>
-    <div class="acciones in" style="--i:3">
+    <h1 id="claim" class="in" style="--i:0">Menos vueltas, <span class="u">más plan.<svg viewBox="0 0 128 16" preserveAspectRatio="none" aria-hidden="true"><path class="trazo" d="M0 8 Q16 0 32 8 T64 8 T96 8 T128 8" fill="none" stroke="#c23a00" stroke-width="7" stroke-linecap="round" pathLength="1"/></svg></span></h1>
+    <p class="lede in" style="--i:1">Para cuando el parche dice «hay que vernos» y nadie concreta. Sintonía es su +1 de confianza en el WhatsApp del grupo: propone el plan, concilia la votación y lo cierra con día y hora.</p>
+    <div class="acciones in" style="--i:2">
       <a class="btn" id="cta" href="#espera">Anotarme en la lista de espera</a>
       <button type="button" class="btn-link" id="miGrupo">Ver el estado de mi grupo</button>
     </div>
@@ -221,10 +223,12 @@ html.menu-abierto,html.menu-abierto body{overflow:hidden}
     <li><img src="piloto/assets/storyboard/vineta-07.webp" alt="Los amigos se abrazan al llegar mientras una persona marca que ya llegó" width="720" height="538" loading="lazy" decoding="async"><p>Se encuentran, y con un toque avisan que ya llegaron.</p></li>
     <li><img src="piloto/assets/storyboard/vineta-08.webp" alt="De noche, cada uno en su casa responde una encuesta corta en el celular" width="720" height="538" loading="lazy" decoding="async"><p>«Ya en casa», y una encuesta corta para el próximo plan.</p></li>
   </ol>
-  <div class="dos">
-    <div><h3>Qué es</h3><ul><li>Un piloto académico de la Universidad Icesi.</li><li>Lugares de Cali que el equipo revisó uno por uno.</li><li>Un solo chat: el WhatsApp que ya usan.</li></ul></div>
-    <div><h3>Qué no es</h3><ul><li>Una app para conocer gente nueva.</li><li>Una app de citas.</li><li>Un servicio para menores de 18.</li></ul></div>
-  </div>
+  <ul class="promesas">
+    <li><h3>El parche que ya tienen</h3><p>Sintonía no presenta gente nueva ni es una app de citas. Es para ustedes.</p></li>
+    <li><h3>Lugares de Cali, revisados uno por uno</h3><p>Cada lugar que propone Sintonía lo revisó antes el equipo.</p></li>
+    <li><h3>Cero apps nuevas</h3><p>Todo pasa en el WhatsApp del grupo, el que ya usan.</p></li>
+  </ul>
+  <p class="letra-chica">Piloto académico de la Universidad Icesi, en Cali. Solo para mayores de 18.</p>
 </section>
 
 <section class="sec" id="espera" aria-labelledby="esperaT">
