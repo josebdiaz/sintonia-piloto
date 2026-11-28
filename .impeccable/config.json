@@ -44,6 +44,15 @@
         ],
         "createdAt": "2026-11-28T01:45:17.289Z",
         "reason": "Usuario confirmó (27/11): falso positivo; .tbl-wrap sin relleno a propósito y cada celda th/td con 10px 12px"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-28T13:00:07.851Z",
+        "reason": "Claude (28/11): falso positivo del escaneo estático; medido en navegador, .sec tiene 74px de padding-top sobre el borde y el escaneo renderizado (1280x800) da 0 hallazgos"
       }
     ]
   }
