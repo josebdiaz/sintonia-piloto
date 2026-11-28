@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Tablero: revisión de diseño
+- «Tablero de frentes» pasa a la línea de la marca: ya no hay etiqueta encima del título.
+- Excepciones del detector de diseño solo para `tablero/index.html` y su plantilla (`.impeccable/config.json`): el contraste pasa AA en los dos temas (el detector cruza colores de uno y otro) y las celdas de la tabla ya tienen relleno.
+
 ### 2026-11-27 · Pendientes heredados al día con el motor con agentes
 - ESTADO §3.1 y §4: `n8n.N6` sale de «Ajuste» (cancelado); los pendientes 36 y 39 nombran todo lo que canceló el pivote (`n8n.B1`, `n8n.I4`, `n8n.N6`, `n8n.N25`, `n8n.M3`) y `n8n.B5` queda sin el paso de aprobar.
 - Pendiente 38: el relay es el freno de salida sin aprobación humana; la autenticación del webhook, el filtro de grupos y los reintentos pasan del 39 al 38. `n8n/relay/SPEC.md` citaba el pendiente 11 (numeración vieja) y Telegram.

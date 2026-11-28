@@ -8,6 +8,42 @@
         "value": "inter",
         "createdAt": "2026-11-27T23:27:00.297Z",
         "reason": "Claude: Inter es la tipografía del sistema del home de Sintonía (index.html, --f-txt) que esta página reutiliza a propósito"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "tablero/index.html"
+        ],
+        "createdAt": "2026-11-28T01:45:17.250Z",
+        "reason": "Usuario confirmó (27/11): falso positivo; el detector cruza tokens del tema oscuro con el fondo blanco del claro. Medido: claro 9.0/5.2/5.4, oscuro 9.6/6.0/6.0 (muted/soft/accent)"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "tablero/index.html"
+        ],
+        "createdAt": "2026-11-28T01:45:17.264Z",
+        "reason": "Usuario confirmó (27/11): falso positivo; .tbl-wrap sin relleno a propósito y cada celda th/td con 10px 12px"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "tools/tablero-plantilla.html"
+        ],
+        "createdAt": "2026-11-28T01:45:17.277Z",
+        "reason": "Usuario confirmó (27/11): falso positivo; el detector cruza tokens del tema oscuro con el fondo blanco del claro. Medido: claro 9.0/5.2/5.4, oscuro 9.6/6.0/6.0 (muted/soft/accent)"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "tools/tablero-plantilla.html"
+        ],
+        "createdAt": "2026-11-28T01:45:17.289Z",
+        "reason": "Usuario confirmó (27/11): falso positivo; .tbl-wrap sin relleno a propósito y cada celda th/td con 10px 12px"
       }
     ]
   }
