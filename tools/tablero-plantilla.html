@@ -46,6 +46,8 @@ header{display:flex;flex-direction:column;gap:14px}
 .wm{font-weight:800;letter-spacing:-.045em;font-size:22px;line-height:1}
 .wm .i{position:relative;display:inline-block}
 .wm .i::after{content:"";position:absolute;width:.30em;height:.10em;border-radius:.05em;left:.02em;top:.2em;transform:rotate(-40deg);transform-origin:left center;background:var(--accent)}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand span{font-size:15px;font-weight:600;color:var(--muted)}
 .meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted)}
 .meta b{color:var(--fg);font-weight:600}
 .note{font-size:13px;color:var(--soft);max-width:72ch;margin:0}
@@ -148,8 +150,7 @@ footer{font-size:12px;color:var(--soft);border-top:1px solid var(--line);padding
 
 <div class="wrap">
   <header>
-    <div class="wm" aria-label="Sintonía">sinton<span class="i">ı</span>a</div>
-    <p class="eyebrow">Tablero de frentes</p>
+    <div class="brand"><div class="wm" aria-label="Sintonía">sinton<span class="i">ı</span>a</div><span>Tablero de frentes</span></div>
     <h1 id="titular">Qué está abierto, qué bloquea y quién decide</h1>
     <div class="meta" id="meta"></div>
     <p class="note">Es una vista de <code>ESTADO.md</code> §0, §1 y §4 más la capa curada <code>tools/tablero-curado.json</code>. Si algo no coincide, manda ESTADO. No hay resultados del piloto en esta página: solo gestión del trabajo.</p>
