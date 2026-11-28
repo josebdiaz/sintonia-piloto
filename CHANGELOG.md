@@ -5,6 +5,10 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-28 · Métricas por fase fijadas antes de los datos (pendiente 24)
+- `docs/metricas-por-fase.md` (dec. equipo 28/11): diagnóstico sin umbral salvo metas y parada; convocatoria = se apuntaron / invitadas; acompañamiento con piso de seguridad; el pagador único cae solo si la señal aparece en E1 y en E1.5.
+- Pendiente 24 cerrado. Pendiente 42: v3.7 de las instrucciones y base §4 redactadas; falta revisarlas y pegarlas en el Proyecto.
+
 ### 2026-11-28 · Home: portada sin etiqueta y «Qué es» con tono comercial
 - Portada: sale la etiqueta «Piloto en Cali» encima del titular, como en el tablero; el dato pasa a la letra chica de «Cómo funciona».
 - «Qué es / Qué no es» pasa a tres promesas en una banda oscura: «El parche que ya tienen», «Lugares de Cali, revisados uno por uno» y «Cero apps nuevas», con la letra chica aparte (piloto académico de la Universidad Icesi, solo mayores de 18). Sin afirmaciones nuevas.
