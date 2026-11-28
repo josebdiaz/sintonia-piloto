@@ -1,6 +1,6 @@
 # Relay de E1.5 · especificación v0.1 (26 nov 2026)
 
-> Borrador para el equipo. **No toca la consola ni el backend** (congelados desde el 26/11). Se construye **después de la prueba con Cali** (pendiente 11 de `ESTADO.md`).
+> Borrador para el equipo. **No toca la consola ni el backend** (congelados desde el 26/11). Se construye **después de la prueba con Cali** (pendiente 38 de `ESTADO.md`; antes 11).
 > Sin hosts, IP, claves ni números en este archivo: el repo es público.
 
 ## 0. En corto
@@ -26,14 +26,14 @@ Hoy n8n habla con Evolution directo y tiene su llave. Con el relay, **la llave d
 
 | # | Responsabilidad | Cierra | Por qué |
 |---|---|---|---|
-| R1 | **Autenticar la entrada.** Solo acepta webhooks de Evolution con el secreto compartido | Pendiente 11 (autenticación del webhook) | Hoy cualquiera con la URL de n8n puede inyectar «mensajes del grupo» |
-| R2 | **Lista de grupos permitidos.** Descarta todo lo que no venga de un grupo inscrito en E1.5 (y, mientras dure la prueba, solo del grupo de prueba) | Pendiente 11 (fijar el filtro) | El número recibe chats privados y otros grupos: nada de eso debe llegar a n8n |
+| R1 | **Autenticar la entrada.** Solo acepta webhooks de Evolution con el secreto compartido | Pendiente 38 (antes 11 y 39: autenticación del webhook) | Hoy cualquiera con la URL de n8n puede inyectar «mensajes del grupo» |
+| R2 | **Lista de grupos permitidos.** Descarta todo lo que no venga de un grupo inscrito en E1.5 (y, mientras dure la prueba, solo del grupo de prueba) | Pendiente 38 (antes 11 y 39: fijar el filtro) | El número recibe chats privados y otros grupos: nada de eso debe llegar a n8n |
 | R3 | **Minimizar.** Reenvía a n8n solo `grupo`, `id_mensaje`, `hora`, `autor` como hash, `tipo` y `texto` o `voto`. Quita `pushName`, foto, medios y metadatos | Aviso v3, Ley 1581 | n8n Cloud es un encargado más: le llega lo mínimo |
-| R4 | **Reintentar con cola.** Si n8n o Evolution no responden, guarda el evento y reintenta con espera creciente; deduplica por `id_mensaje` | Pendiente 11 (reintentos) | Un corte no debe perder un voto ni duplicar un mensaje |
+| R4 | **Reintentar con cola.** Si n8n o Evolution no responden, guarda el evento y reintenta con espera creciente; deduplica por `id_mensaje` | Pendiente 38 (antes 11 y 39: reintentos) | Un corte no debe perder un voto ni duplicar un mensaje |
 | R5 | **Frenar la salida.** Rechaza el envío si el texto tiene `[corchetes]`, si el grupo no está permitido o si no trae el sello de aprobación | N3 (bloquea) | Segunda barrera, además de la de `SW · Enviar` |
 | R6 | **Ritmo de envío.** Máximo N mensajes por minuto por grupo y una pausa corta entre mensajes seguidos (por ejemplo `/confirmado` × 3) | Orden de los mensajes (prueba externa) | Evita mensajes en desorden y baja el riesgo de bloqueo del número |
 | R7 | **Interruptor.** `PAUSA=1` detiene toda salida al instante, sin tocar n8n; la entrada sigue en cola | Plan de contingencia | Si algo sale mal ante un grupo real, se apaga en un paso |
-| R8 | **Errores a una persona.** Lo que falla después de los reintentos va al flujo de errores de n8n (o a Telegram del revisor) con el `id` y el motivo, nunca con el texto | Pendiente 11 (flujo de errores) | Nada se pierde en silencio (M2) |
+| R8 | **Errores a una persona.** Lo que falla después de los reintentos va al flujo de errores de n8n (o a `SW · Avisar revisor`) con el `id` y el motivo, nunca con el texto | Pendiente 39 (flujo de errores) | Nada se pierde en silencio (M2) |
 
 ## 3. Contratos
 
@@ -84,7 +84,7 @@ Respuestas: `202 en_cola` · `409 repetido` (mismo `req_id`) · `422 corchetes |
 | Eventos en cola (entrada y salida) | SQLite en el servidor | Se borran al entregarse; máximo **24 h** si nunca se entregan |
 | Tabla hash → número | SQLite | Mientras el grupo esté activo; se borra con `revocar` o al cerrar el piloto |
 | Registros (logs) | Disco del servidor | 7 días; **solo** id, tipo, estado y latencia; nunca texto ni número |
-| Historial del conector | Evolution | **Apagado** (`STORE_MESSAGES`, `STORE_CONTACTS` en falso), ya está en el pendiente 11 |
+| Historial del conector | Evolution | **Apagado** (`STORE_MESSAGES`, `STORE_CONTACTS` en falso), ya está en el pendiente 39 |
 
 - El servidor está en Brasil: el **aviso v3** tiene que nombrar a Hostinger como encargado y la transferencia internacional, además de n8n (ya en el borrador).
 - La instancia de prueba usa un número que no es el de Sintonía: se desvincula y se borra antes del piloto, como dice §1 de `ESTADO.md`.

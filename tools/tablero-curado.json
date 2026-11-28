@@ -135,7 +135,7 @@
     },
     "26": {
       "frente": "investigacion",
-      "nota": "Opciones listas: van a Néstor (d3 y d4)",
+      "nota": "Propuestas con agentes en PLAN-agentico §3 (d4) y §5.2 (d3): van a Néstor",
       "nivel": "adyacente"
     },
     "27": {
@@ -176,7 +176,7 @@
     "36": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Después de cerrar E1",
+      "nota": "Después de Cali; sin B1, I4, N6, N25 ni M3 (cancelados con el pivote a agentes)",
       "nivel": "adyacente"
     },
     "37": {
@@ -188,13 +188,13 @@
     "38": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Después de cerrar E1",
+      "nota": "Después de Cali; es el freno de salida sin aprobación humana (autenticación, filtro, reintentos, apagado)",
       "nivel": "adyacente"
     },
     "39": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Después de cerrar E1",
+      "nota": "Después de Cali; B5 sin paso de aprobar. Autenticación, filtro y reintentos pasan al relay (38)",
       "nivel": "adyacente"
     },
     "40": {
@@ -221,7 +221,7 @@
     },
     "46": {
       "frente": "motor",
-      "nota": "Bienvenida de E1.5: 4 opciones para aprobar",
+      "nota": "Para pruebas, decidida (José, 27/11); falta confirmarla con el aviso v3",
       "nivel": "adyacente"
     },
     "47": {
@@ -232,8 +232,7 @@
     },
     "48": {
       "frente": "motor",
-      "estado": "espera",
-      "nota": "Ruta A: bienvenida, envío, respuesta y aviso hechos; faltan backend, W1, W3 y relojes",
+      "nota": "Ruta A: faltan, sin backend, votos al backend, W1, cierre de W3, relojes y verificador",
       "nivel": "adyacente"
     },
     "49": {
@@ -326,7 +325,7 @@
     },
     {
       "id": "d3",
-      "decision": "Qué cuenta como error en E1.5 y sobre qué base se calcula el 40 %",
+      "decision": "Qué cuenta como error en E1.5 con textos generados y sobre qué base se calcula el 40 % (propuesta: PLAN-agentico §5.2)",
       "decide": "Equipo; Néstor valida la métrica",
       "fecha": "",
       "frente": "motor",
@@ -335,7 +334,7 @@
     },
     {
       "id": "d4",
-      "decision": "Tabla de automatización por tipo de mensaje y dueño de cada carril",
+      "decision": "Tabla de automatización por tipo de mensaje y dueño de cada carril (propuesta: PLAN-agentico §3)",
       "decide": "Equipo; Néstor por seguridad",
       "fecha": "",
       "frente": "motor",
@@ -353,11 +352,11 @@
     },
     {
       "id": "d6",
-      "decision": "SUS de quien opera en E1.5: por «Telegram + consola» u omitirlo (n8n.N11)",
+      "decision": "Cómo se mide a quien opera en E1.5: tiempo y número de escalamientos, y si va el SUS (n8n.N10, N11 y N19)",
       "decide": "Néstor",
       "fecha": "",
       "frente": "motor",
-      "por_que": "Comparabilidad de la carga del mago entre condiciones",
+      "por_que": "Con agentes nadie revisa cada mensaje: la carga se mide en los escalamientos para comparar con el mago de E1",
       "nivel": "adyacente"
     }
   ],
@@ -400,10 +399,10 @@
     },
     {
       "orden": 5,
-      "accion": "Registrar el resultado del ensayo del 25/11 o reprogramarlo (pendiente 1)",
+      "accion": "Correr el ensayo con WhatsApp real del 28-29/11 y registrar el resultado (pendiente 1)",
       "frente": "operacion",
       "dueno": "Juan José",
-      "cuando": "Hoy",
+      "cuando": "29/11",
       "esfuerzo": "15 min",
       "estado": "pendiente"
     },
@@ -469,6 +468,24 @@
       "cuando": "Próxima sync",
       "esfuerzo": "10 min",
       "estado": "hecho"
+    },
+    {
+      "orden": 13,
+      "accion": "Llevar a Néstor d3 y d4 con las propuestas de PLAN-agentico §3 y §5.2 (pendiente 26)",
+      "frente": "motor",
+      "dueno": "Katherine y José",
+      "cuando": "Antes del grupo de E1.5",
+      "esfuerzo": "30 min",
+      "estado": "pendiente"
+    },
+    {
+      "orden": 14,
+      "accion": "Crear las credenciales de los dos modelos (Redactor y Revisor) para abrir ag.F1 (pendiente 45)",
+      "frente": "motor",
+      "dueno": "José",
+      "cuando": "Con E1 en ejecución",
+      "esfuerzo": "15 min",
+      "estado": "pendiente"
     }
   ],
   "casa_manual": []

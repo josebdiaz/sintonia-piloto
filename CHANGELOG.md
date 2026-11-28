@@ -5,6 +5,12 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Pendientes heredados al día con el motor con agentes
+- ESTADO §3.1 y §4: `n8n.N6` sale de «Ajuste» (cancelado); los pendientes 36 y 39 nombran todo lo que canceló el pivote (`n8n.B1`, `n8n.I4`, `n8n.N6`, `n8n.N25`, `n8n.M3`) y `n8n.B5` queda sin el paso de aprobar.
+- Pendiente 38: el relay es el freno de salida sin aprobación humana; la autenticación del webhook, el filtro de grupos y los reintentos pasan del 39 al 38. `n8n/relay/SPEC.md` citaba el pendiente 11 (numeración vieja) y Telegram.
+- Pendiente 26, d3 y d4: apuntan a las propuestas de `n8n/PLAN-agentico.md` §3 y §5.2. d6 mide a quien atiende escalamientos, no a quien revisa por Telegram.
+- Tablero: notas de 26, 36, 38, 39, 46 y 48 al día (48 pasa de «en espera» a abierto); la acción 5 apunta al ensayo del 28–29/11 y se suman las acciones 13 (d3 y d4 a Néstor) y 14 (credenciales de los modelos).
+
 ### 2026-11-27 · Tablero en ASCII puro: las tildes se ven en Safari
 - `tools/tablero-html.py` escribe la página solo con ASCII (entidades en el HTML, `\u` en el JS y escapes en el CSS). Safari mostraba «QuÃ©» al abrir el archivo; ahora no depende del charset.
 
