@@ -1,5 +1,5 @@
 {
-  "_nota": "Capa curada del tablero de frentes. NO es fuente de pendientes: esos salen de ESTADO.md §4. Aquí va solo lo que ESTADO no dice (frente de cada pendiente, fecha límite, estado de gestión), los hitos, las decisiones abiertas y el plan de acción. Lo actualiza la skill sintonia-tablero al cerrar cada frente. Cuando §4 tenga columna «Frente», esa columna manda sobre este mapa.",
+  "_nota": "Capa curada del tablero de frentes. NO es fuente de pendientes: esos salen de ESTADO.md §4. Aquí va solo lo que ESTADO no dice (frente y nivel de innovación de cada pendiente, fecha límite, estado de gestión), los hitos, las decisiones abiertas y el plan de acción. Lo actualiza la skill sintonia-tablero al cerrar cada frente. Cuando §4 tenga columna «Frente», esa columna manda sobre este mapa.",
   "actualizado": "2026-11-27",
   "frentes": [
     {
@@ -52,141 +52,195 @@
       "foco": "Repo, Proyecto, Mac y respaldo al día"
     }
   ],
+  "niveles": [
+    {
+      "id": "base",
+      "nombre": "Cimientos",
+      "que": "No cambia la solución, pero sin esto nada cuenta: casa, seguridad, POP, instrucciones",
+      "apuesta": null
+    },
+    {
+      "id": "nucleo",
+      "nombre": "Núcleo · E1 con el mago",
+      "que": "Probar que el +1 funciona con una persona operando: el job existe y el parche llega",
+      "apuesta": 70
+    },
+    {
+      "id": "adyacente",
+      "nombre": "Adyacente · E1.5 sin persona",
+      "que": "El mismo job, sin una persona en el medio: cambia el costo de operar, no la promesa",
+      "apuesta": 20
+    },
+    {
+      "id": "transformacional",
+      "nombre": "Transformacional · agentes y modelo",
+      "que": "El +1 que escribe y se revisa solo, quién paga y contra qué compite",
+      "apuesta": 10
+    }
+  ],
   "pendientes": {
     "1": {
       "frente": "operacion",
       "fecha": "2026-11-29",
-      "nota": "Corrido al sprint del 28 y 29/11 (27/11); va antes del encuentro con Cali"
+      "nota": "Corrido al sprint del 28 y 29/11 (27/11); va antes del encuentro con Cali",
+      "nivel": "nucleo"
     },
     "3": {
       "frente": "operacion",
       "fecha": "2026-11-30",
       "estado": "bloqueado",
-      "nota": "Grupo sin confirmar: es el camino crítico"
+      "nota": "Grupo sin confirmar: es el camino crítico",
+      "nivel": "nucleo"
     },
     "4": {
       "frente": "pop",
       "estado": "bloqueado",
-      "nota": "Espera plantilla del tótem y logo vectorial de Icesi"
+      "nota": "Espera plantilla del tótem y logo vectorial de Icesi",
+      "nivel": "base"
     },
     "10": {
       "frente": "plataforma",
       "estado": "espera",
-      "nota": "Después de Cali"
+      "nota": "Después de Cali",
+      "nivel": "nucleo"
     },
     "12": {
       "frente": "investigacion",
       "estado": "espera",
-      "nota": "Se consolida al cierre"
+      "nota": "Se consolida al cierre",
+      "nivel": "base"
     },
     "16": {
       "frente": "casa",
-      "nota": "Feedback en el Drive (27/11): falta INVENTARIO y conectar la carpeta"
+      "nota": "Feedback en el Drive (27/11): falta INVENTARIO y conectar la carpeta",
+      "nivel": "base"
     },
     "18": {
       "frente": "plataforma",
       "estado": "espera",
-      "nota": "Después del análisis; incluye el resto de la auditoría de estándares (antes 23)"
+      "nota": "Después del análisis; incluye el resto de la auditoría de estándares (antes 23)",
+      "nivel": "base"
     },
     "24": {
       "frente": "investigacion",
       "fecha": "2026-11-27",
-      "nota": "Borrador listo (27/11): falta que el equipo elija"
+      "nota": "Borrador listo (27/11): falta que el equipo elija",
+      "nivel": "nucleo"
     },
     "25": {
       "frente": "investigacion",
       "fecha": "2026-11-27",
-      "nota": "Definiciones decididas (27/11): falta la regla de salida"
+      "nota": "Definiciones decididas (27/11): falta la regla de salida",
+      "nivel": "nucleo"
     },
     "26": {
       "frente": "investigacion",
-      "nota": "Opciones listas: van a Néstor (d3 y d4)"
+      "nota": "Opciones listas: van a Néstor (d3 y d4)",
+      "nivel": "adyacente"
     },
     "27": {
       "frente": "investigacion",
       "fecha": "2026-11-29",
-      "nota": "Borrador listo (27/11): falta revisión del equipo"
+      "nota": "Borrador listo (27/11): falta revisión del equipo",
+      "nivel": "transformacional"
     },
     "28": {
       "frente": "investigacion",
-      "fecha": "2026-11-30"
+      "fecha": "2026-11-30",
+      "nivel": "nucleo"
     },
     "29": {
       "frente": "pitch",
       "fecha": "2026-12-01",
-      "nota": "Borrador listo: falta aprobación de José"
+      "nota": "Borrador listo: falta aprobación de José",
+      "nivel": "transformacional"
     },
     "30": {
       "frente": "pitch",
       "fecha": "2026-12-01",
-      "nota": "Borrador listo: falta aprobación del equipo"
+      "nota": "Borrador listo: falta aprobación del equipo",
+      "nivel": "transformacional"
     },
     "31": {
       "frente": "investigacion",
       "fecha": "2026-12-03",
-      "nota": "Opciones listas: decide el equipo a más tardar el 3/12"
+      "nota": "Opciones listas: decide el equipo a más tardar el 3/12",
+      "nivel": "nucleo"
     },
     "32": {
       "frente": "investigacion",
       "fecha": "2026-12-04",
-      "nota": "Borrador listo: falta aprobación del equipo"
+      "nota": "Borrador listo: falta aprobación del equipo",
+      "nivel": "transformacional"
     },
     "36": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Después de cerrar E1"
+      "nota": "Después de cerrar E1",
+      "nivel": "adyacente"
     },
     "37": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Después de cerrar E1"
+      "nota": "Después de cerrar E1",
+      "nivel": "adyacente"
     },
     "38": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Después de cerrar E1"
+      "nota": "Después de cerrar E1",
+      "nivel": "adyacente"
     },
     "39": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Después de cerrar E1"
+      "nota": "Después de cerrar E1",
+      "nivel": "adyacente"
     },
     "40": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Después de cerrar E1"
+      "nota": "Después de cerrar E1",
+      "nivel": "adyacente"
     },
     "42": {
       "frente": "casa",
-      "nota": "Instrucciones v3.7 y base §4 con lo decidido el 27/11"
+      "nota": "Instrucciones v3.7 y base §4 con lo decidido el 27/11",
+      "nivel": "base"
     },
     "44": {
       "frente": "motor",
-      "nota": "prueba.P1: 13 de 20 ✓; faltan stickers, V1, medios, fuera del grupo y bienvenida"
+      "nota": "prueba.P1: 13 de 20 ✓; faltan stickers, V1, medios, fuera del grupo y bienvenida",
+      "nivel": "adyacente"
     },
     "45": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Se retoma con E1 en ejecución"
+      "nota": "Se retoma con E1 en ejecución",
+      "nivel": "transformacional"
     },
     "46": {
       "frente": "motor",
-      "nota": "Bienvenida de E1.5: 4 opciones para aprobar"
+      "nota": "Bienvenida de E1.5: 4 opciones para aprobar",
+      "nivel": "adyacente"
     },
     "47": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Tras prueba.P1 confirmada"
+      "nota": "Tras prueba.P1 confirmada",
+      "nivel": "transformacional"
     },
     "48": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Ruta A: bienvenida, envío, respuesta y aviso hechos; faltan backend, W1, W3 y relojes"
+      "nota": "Ruta A: bienvenida, envío, respuesta y aviso hechos; faltan backend, W1, W3 y relojes",
+      "nivel": "adyacente"
     },
     "49": {
       "frente": "motor",
       "estado": "espera",
-      "nota": "Quitar el formulario temporal de W1 al abrir el backend"
+      "nota": "Quitar el formulario temporal de W1 al abrir el backend",
+      "nivel": "adyacente"
     }
   },
   "hitos": [
@@ -258,7 +312,8 @@
       "decide": "Katherine y José",
       "fecha": "2026-11-28",
       "frente": "operacion",
-      "por_que": "Sin grupo al 30/11, E1 llega al pitch con n = 0 y E1.5 no puede correr"
+      "por_que": "Sin grupo al 30/11, E1 llega al pitch con n = 0 y E1.5 no puede correr",
+      "nivel": "nucleo"
     },
     {
       "id": "d2",
@@ -266,7 +321,8 @@
       "decide": "José y Katherine",
       "fecha": "2026-12-03",
       "frente": "investigacion",
-      "por_que": "Abre la puerta de E1.5; cuanto antes, más margen antes del 12/12"
+      "por_que": "Abre la puerta de E1.5; cuanto antes, más margen antes del 12/12",
+      "nivel": "nucleo"
     },
     {
       "id": "d3",
@@ -274,7 +330,8 @@
       "decide": "Equipo; Néstor valida la métrica",
       "fecha": "",
       "frente": "motor",
-      "por_que": "Tiene que quedar escrito antes del grupo de E1.5"
+      "por_que": "Tiene que quedar escrito antes del grupo de E1.5",
+      "nivel": "adyacente"
     },
     {
       "id": "d4",
@@ -282,7 +339,8 @@
       "decide": "Equipo; Néstor por seguridad",
       "fecha": "",
       "frente": "motor",
-      "por_que": "Define qué sale solo y qué pasa por una persona"
+      "por_que": "Define qué sale solo y qué pasa por una persona",
+      "nivel": "adyacente"
     },
     {
       "id": "d5",
@@ -290,7 +348,8 @@
       "decide": "Néstor",
       "fecha": "",
       "frente": "motor",
-      "por_que": "Privacidad: el aviso v3 nombra a n8n y al proveedor del modelo y se publica antes del grupo real"
+      "por_que": "Privacidad: el aviso v3 nombra a n8n y al proveedor del modelo y se publica antes del grupo real",
+      "nivel": "adyacente"
     },
     {
       "id": "d6",
@@ -298,7 +357,8 @@
       "decide": "Néstor",
       "fecha": "",
       "frente": "motor",
-      "por_que": "Comparabilidad de la carga del mago entre condiciones"
+      "por_que": "Comparabilidad de la carga del mago entre condiciones",
+      "nivel": "adyacente"
     }
   ],
   "plan": [

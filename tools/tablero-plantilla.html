@@ -117,6 +117,18 @@ td .sub{display:block;font-size:12px;color:var(--soft);margin-top:4px}
 .plan li.done .a{color:var(--soft);text-decoration:line-through;text-decoration-thickness:1px}
 .plan .m{font-size:12px;color:var(--soft);margin-top:4px;display:flex;flex-wrap:wrap;gap:4px 12px}
 
+/* niveles de innovación */
+.niv{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.nv{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.nv p{margin:0;font-size:14px}
+.nv .big{font-size:30px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.nv .big small{font-size:13px;font-weight:500;letter-spacing:0;color:var(--muted);margin-left:6px}
+.mix{position:relative;height:12px;border-radius:6px;background:var(--sunk)}
+.mix .fl{position:absolute;inset:0 auto 0 0;border-radius:6px;background:var(--vitral)}
+.mix .fl.over{background:var(--accent)}
+.mix .ref{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--fg)}
+.nv .leg{font-size:12px;color:var(--soft)}
+
 /* carga */
 .bars{display:flex;flex-direction:column;gap:10px}
 .bar{display:grid;grid-template-columns:110px 1fr 34px;gap:10px;align-items:center;font-size:14px}
@@ -153,12 +165,19 @@ footer{font-size:12px;color:var(--soft);border-top:1px solid var(--line);padding
     <div class="fronts" id="frentes"></div>
   </section>
 
+  <section aria-labelledby="h-niv">
+    <div class="sec-head"><h2 id="h-niv">Niveles de innovación</h2><p>Trabajo abierto por nivel frente a la mezcla 70/20/10</p></div>
+    <div class="niv" id="niveles"></div>
+    <p class="note">Núcleo, adyacente y transformacional según <em>Managing Your Innovation Portfolio</em> (Nagji y Tuff). La raya negra es la mezcla de referencia; la barra, el peso del trabajo abierto (incluye lo que está en espera). Los cimientos no entran en la mezcla. Es gestión del trabajo, no un resultado.</p>
+  </section>
+
   <section aria-labelledby="h-pend">
     <div class="sec-head"><h2 id="h-pend">Pendientes</h2><p id="pend-count"></p></div>
     <div class="filters" id="f-frente" role="group" aria-label="Filtrar por frente"></div>
     <div class="filters" id="f-estado" role="group" aria-label="Filtrar por estado"></div>
+    <div class="filters" id="f-nivel" role="group" aria-label="Filtrar por nivel de innovación"></div>
     <div class="tbl-wrap"><table>
-      <thead><tr><th>#</th><th>Pendiente</th><th>Estado</th><th>Fecha</th><th>Quién</th><th>Frente</th></tr></thead>
+      <thead><tr><th>#</th><th>Pendiente</th><th>Estado</th><th>Fecha</th><th>Quién</th><th>Frente</th><th>Nivel</th></tr></thead>
       <tbody id="pend"></tbody>
     </table></div>
   </section>
@@ -237,8 +256,22 @@ footer{font-size:12px;color:var(--soft);border-top:1px solid var(--line);padding
       (f.proximo_hito?'<div class="hito"><b>Próximo hito:</b> '+esc(f.proximo_hito.replace(/^(\d{4})-(\d{2})-(\d{2})/,function(_,y,m,d){return (+d)+'/'+(+m);}))+'</div>':'')+
       '</article>'; }).join('');
 
-  var filtro = {frente:'todos', estado:'todos'};
-  try{ var g = JSON.parse(localStorage.getItem('tablero-filtro')||'null'); if(g) filtro=g; }catch(e){}
+  var NIV = D.niveles||[];
+  var nivNombre = {}; NIV.forEach(function(n){ nivNombre[n.id]=n.nivel; });
+  document.getElementById('niveles').innerHTML = NIV.map(function(n){
+    var bar = '';
+    if(n.apuesta!=null){
+      var over = n.peso>n.apuesta;
+      bar = '<div class="mix" role="img" aria-label="'+esc(n.peso)+' % del trabajo abierto; referencia '+esc(n.apuesta)+' %"><span class="fl'+(over?' over':'')+'" style="width:'+Math.min(100,n.peso)+'%"></span><span class="ref" style="left:calc('+n.apuesta+'% - 1px)"></span></div>'+
+        '<span class="leg">'+esc(n.peso)+' % del trabajo abierto · referencia '+esc(n.apuesta)+' %'+(over?' · por encima':'')+'</span>';
+    } else {
+      bar = '<span class="leg">Fuera de la mezcla</span>';
+    }
+    return '<article class="nv"><h3>'+esc(n.nivel)+'</h3><p class="muted">'+esc(n.que)+'</p>'+
+      '<div class="big num">'+esc(n.abiertos)+'<small>abiertos'+(n.decisiones?' · '+n.decisiones+' por decidir':'')+'</small></div>'+bar+'</article>'; }).join('');
+
+  var filtro = {frente:'todos', estado:'todos', nivel:'todos'};
+  try{ var g = JSON.parse(localStorage.getItem('tablero-filtro')||'null'); if(g){ filtro=g; if(!filtro.nivel) filtro.nivel='todos'; } }catch(e){}
   function chips(id, key, opts){
     var el = document.getElementById(id);
     el.innerHTML = opts.map(function(o){ return '<button type="button" class="chip" data-k="'+key+'" data-v="'+esc(o[0])+'" aria-pressed="'+(filtro[key]===o[0])+'">'+esc(o[1])+'</button>'; }).join('');
@@ -246,16 +279,18 @@ footer{font-size:12px;color:var(--soft);border-top:1px solid var(--line);padding
   var frOpts = [['todos','Todos los frentes']].concat(D.frentes.map(function(f){return [f.id,f.frente];}));
   var estados = {}; D.pendientes.forEach(function(p){ estados[p.estado]=1; });
   var esOpts = [['todos','Todos los estados']].concat(Object.keys(estados).map(function(e){return [e,(EST[e]||[0,e])[1]];}));
+  var nvOpts = [['todos','Todos los niveles']].concat(NIV.map(function(n){return [n.id,n.nivel.split(' · ')[0]];}));
+  if(!nivNombre[filtro.nivel] && filtro.nivel!=='todos') filtro.nivel='todos';
   if(!nombres[filtro.frente] && filtro.frente!=='todos') filtro.frente='todos';
   if(!estados[filtro.estado] && filtro.estado!=='todos') filtro.estado='todos';
   function pintar(){
-    chips('f-frente','frente',frOpts); chips('f-estado','estado',esOpts);
-    var rows = D.pendientes.filter(function(p){ return (filtro.frente==='todos'||p.frente===filtro.frente)&&(filtro.estado==='todos'||p.estado===filtro.estado); });
+    chips('f-frente','frente',frOpts); chips('f-estado','estado',esOpts); if(NIV.length) chips('f-nivel','nivel',nvOpts);
+    var rows = D.pendientes.filter(function(p){ return (filtro.frente==='todos'||p.frente===filtro.frente)&&(filtro.estado==='todos'||p.estado===filtro.estado)&&(filtro.nivel==='todos'||p.nivel===filtro.nivel); });
     document.getElementById('pend-count').textContent = rows.length+' de '+D.pendientes.length+' en la tabla, en el orden de §4';
     document.getElementById('pend').innerHTML = rows.length? rows.map(function(p){
       var e = EST[p.estado]||['p-neutral',p.estado];
-      return '<tr><td class="n">'+esc(p.n)+'</td><td>'+esc(p.pendiente)+(p.nota?'<span class="sub">'+esc(p.nota)+'</span>':'')+(p.bloquea?'<span class="sub">Bloquea: '+esc(p.bloquea)+'</span>':'')+'</td><td>'+pill(e[0],e[1])+'</td><td class="num">'+fecha(p.fecha)+'</td><td>'+esc(p.quien)+'</td><td>'+esc(p.frente_nombre||nombres[p.frente]||p.frente)+'</td></tr>';
-    }).join('') : '<tr><td colspan="6" class="empty">Nada con ese filtro.</td></tr>';
+      return '<tr><td class="n">'+esc(p.n)+'</td><td>'+esc(p.pendiente)+(p.nota?'<span class="sub">'+esc(p.nota)+'</span>':'')+(p.bloquea?'<span class="sub">Bloquea: '+esc(p.bloquea)+'</span>':'')+'</td><td>'+pill(e[0],e[1])+'</td><td class="num">'+fecha(p.fecha)+'</td><td>'+esc(p.quien)+'</td><td>'+esc(p.frente_nombre||nombres[p.frente]||p.frente)+'</td><td>'+esc((p.nivel_nombre||nivNombre[p.nivel]||p.nivel||'').split(' · ')[0])+'</td></tr>';
+    }).join('') : '<tr><td colspan="7" class="empty">Nada con ese filtro.</td></tr>';
   }
   document.addEventListener('click', function(ev){
     var b = ev.target.closest('.chip'); if(!b) return;
@@ -271,7 +306,7 @@ footer{font-size:12px;color:var(--soft);border-top:1px solid var(--line);padding
     return '<li style="--st:'+s[1]+'"><span class="d">'+fechaLarga(h.fecha)+'</span><span class="dot" aria-hidden="true"></span><span class="t"><b>'+esc(h.hito)+'</b>'+pill(s[0],h.estado)+'<span class="f">'+esc(h.frente_nombre||'')+'</span></span></li>'; }).join('');
 
   document.getElementById('decisiones').innerHTML = D.decisiones.length? D.decisiones.map(function(d){
-    return '<div class="dc"><div class="row"><span class="id">'+esc(d.id)+'</span><span class="soft" style="font-size:12px">'+(d.fecha?'Antes del '+fecha(d.fecha):'Sin fecha')+'</span></div><p><b>'+esc(d.decision)+'</b></p><p class="muted">'+esc(d.por_que)+'</p><p class="soft" style="font-size:13px">Decide: '+esc(d.decide)+' · '+esc(d.frente_nombre||'')+'</p></div>'; }).join('') : '<p class="empty">No hay decisiones abiertas.</p>';
+    return '<div class="dc"><div class="row"><span class="id">'+esc(d.id)+'</span><span class="soft" style="font-size:12px">'+(d.fecha?'Antes del '+fecha(d.fecha):'Sin fecha')+'</span></div><p><b>'+esc(d.decision)+'</b></p><p class="muted">'+esc(d.por_que)+'</p><p class="soft" style="font-size:13px">Decide: '+esc(d.decide)+' · '+esc(d.frente_nombre||'')+(d.nivel_nombre?' · '+esc(d.nivel_nombre.split(' · ')[0]):'')+'</p></div>'; }).join('') : '<p class="empty">No hay decisiones abiertas.</p>';
 
   var max = Math.max.apply(null, D.carga.map(function(c){return c.abiertos;}).concat([1]));
   document.getElementById('carga').innerHTML = D.carga.map(function(c,i){

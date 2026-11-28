@@ -3,7 +3,8 @@
 
 Lee ESTADO.md (§0 fecha, §1 versiones, §4 pendientes), la capa curada
 tools/tablero-curado.json y el estado de git. Escribe un JSON con
-resumen, frentes, pendientes, hitos, decisiones, plan, casa y carga.
+resumen, frentes, niveles de innovación, pendientes, hitos, decisiones,
+plan, casa y carga.
 
 El tablero es una vista: no es fuente. Los pendientes mandan desde §4.
 
@@ -74,6 +75,7 @@ def pendientes_estado(es, cur, hoy):
         filas.append({
             'n': int(n), 'pendiente': titulo_corto(texto), 'frente': frente,
             'estado': estado, 'tipo': meta.get('tipo', 'tarea'), 'fecha': fecha,
+            'nivel': meta.get('nivel', 'sin-nivel'),
             'quien': limpiar(c[3]), 'bloquea': limpiar(c[2]), 'nota': meta.get('nota', ''),
             'orden': len(filas) + 1,
         })
@@ -124,6 +126,8 @@ def main():
          'detalle': ', '.join(str(p['n']) for p in pend if p['estado'] == 'vencido') or 'Ninguno', 'accion': 'Registrar resultado o reprogramar'},
         {'chequeo': 'Pendientes sin frente', 'estado': 'warn' if [p for p in pend if p['frente'] == 'sin-frente'] else 'ok',
          'detalle': ', '.join(str(p['n']) for p in pend if p['frente'] == 'sin-frente') or 'Todos tienen frente', 'accion': 'Asignar frente'},
+        {'chequeo': 'Pendientes sin nivel de innovación', 'estado': 'warn' if [p for p in pend if p['nivel'] == 'sin-nivel'] else 'ok',
+         'detalle': ', '.join(str(p['n']) for p in pend if p['nivel'] == 'sin-nivel') or 'Todos tienen nivel', 'accion': 'Asignar nivel en tools/tablero-curado.json'},
     ] + cur.get('casa_manual', [])
 
     # Frentes
@@ -145,6 +149,22 @@ def main():
             'proximo_hito': ('%s · %s' % (hit[0]['fecha'], hit[0]['hito'])) if hit else '',
             'salud': salud,
         })
+
+    # Niveles de innovación: dónde está el trabajo abierto frente a la mezcla 70/20/10
+    # (núcleo/adyacente/transformacional, «Managing Your Innovation Portfolio»).
+    # Los cimientos no entran en la mezcla. Las decisiones cuentan aparte.
+    niveles, en_mezcla = [], 0
+    for nv in cur.get('niveles', []):
+        ab = sum(1 for p in pend if p['nivel'] == nv['id'] and p['estado'] in abiertos_est + ('espera',))
+        if nv.get('apuesta') is not None:
+            en_mezcla += ab
+        niveles.append({'id': nv['id'], 'nivel': nv['nombre'], 'que': nv['que'], 'apuesta': nv.get('apuesta'),
+                        'abiertos': ab, 'decisiones': sum(1 for d in cur['decisiones'] if d.get('nivel') == nv['id'])})
+    for nv in niveles:
+        nv['peso'] = round(100 * nv['abiertos'] / en_mezcla) if nv['apuesta'] is not None and en_mezcla else None
+    nombres_nivel = {nv['id']: nv['nivel'] for nv in niveles}
+    for p in pend:
+        p['nivel_nombre'] = nombres_nivel.get(p['nivel'], p['nivel'])
 
     # Carga por persona (pendientes abiertos o vencidos o bloqueados)
     carga = {}
@@ -173,13 +193,14 @@ def main():
         h['frente_nombre'] = nombres.get(h['frente'], h['frente'])
     for d in cur['decisiones']:
         d['frente_nombre'] = nombres.get(d['frente'], d['frente'])
+        d['nivel_nombre'] = nombres_nivel.get(d.get('nivel', ''), '')
     for x in cur['plan']:
         x['frente_nombre'] = nombres.get(x['frente'], x['frente'])
 
     with open(__file__, encoding='utf-8') as f:
         codigo = f.read()
     out = {
-        'resumen': resumen, 'frentes': frentes, 'pendientes': pend, 'hitos': cur['hitos'],
+        'resumen': resumen, 'frentes': frentes, 'niveles': niveles, 'pendientes': pend, 'hitos': cur['hitos'],
         'decisiones': cur['decisiones'], 'plan': cur['plan'], 'casa': casa, 'carga': carga,
         'meta': [
             {'label': 'tablero.py', 'value': codigo, 'type': 'code', 'lang': 'python'},

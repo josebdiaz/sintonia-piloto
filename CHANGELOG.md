@@ -5,6 +5,11 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-27 · Tablero: nivel de innovación de cada pendiente
+- `tools/tablero-curado.json` gana `niveles` (cimientos, núcleo, adyacente, transformacional, con la mezcla 70/20/10 de *Managing Your Innovation Portfolio*) y un `nivel` en cada pendiente y decisión.
+- `tools/tablero.py` cuenta el trabajo abierto por nivel y suma el chequeo «Pendientes sin nivel de innovación»; el tablero muestra la sección «Niveles de innovación», la columna «Nivel» y su filtro.
+- Al 27/11: núcleo 7 abiertos (30 %, referencia 70 %), adyacente 10 (43 %, ref. 20 %), transformacional 6 (26 %, ref. 10 %) y cimientos 5, fuera de la mezcla. Es gestión del trabajo, no un resultado (n = 0).
+
 ### 2026-11-27 · Cierre del día del motor E1.5 (n = 0)
 - En el grupo del equipo funcionan clasificar, registrar sin datos de personas, responder «🧪 Prueba» y avisar al equipo. `prueba.P1`: 13 de 20 pasos ✓.
 - Construido y publicado, sin probar todavía: bienvenida automática (eventos de grupo, código en la descripción, `e15_grupos`, W0 con entrada automática). Evolution aún no manda el cambio de descripción.
