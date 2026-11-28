@@ -5,6 +5,9 @@ Las fechas son de 2026 (hora de Colombia).
 
 ## Repositorio
 
+### 2026-11-28 · Instrucciones del Proyecto v3.7 pegadas (pendiente 42)
+- José pegó en el Proyecto la v3.7 y la base de conocimiento §4, con las reglas del 27 y el 28/11, las métricas por fase y el Redactor y el Revisor con Gemini. Pendiente 42 cerrado.
+
 ### 2026-11-28 · Métricas por fase fijadas antes de los datos (pendiente 24)
 - `docs/metricas-por-fase.md` (dec. equipo 28/11): diagnóstico sin umbral salvo metas y parada; convocatoria = se apuntaron / invitadas; acompañamiento con piso de seguridad; el pagador único cae solo si la señal aparece en E1 y en E1.5.
 - Pendiente 24 cerrado. Pendiente 42: v3.7 de las instrucciones y base §4 redactadas; falta revisarlas y pegarlas en el Proyecto.
