@@ -8,7 +8,7 @@ Las fechas son de 2026 (hora de Colombia).
 ### 2026-11-27 · Cierre del día del motor E1.5 (n = 0)
 - En el grupo del equipo funcionan clasificar, registrar sin datos de personas, responder «🧪 Prueba» y avisar al equipo. `prueba.P1`: 13 de 20 pasos ✓.
 - Construido y publicado, sin probar todavía: bienvenida automática (eventos de grupo, código en la descripción, `e15_grupos`, W0 con entrada automática). Evolution aún no manda el cambio de descripción.
-- Sigue: pasos 13–18 y 20 de P1; después la Ruta A (votos al backend, W1, cierre automático de W3, relojes cortos). Pendientes 44, 48 y 49; backend nuevo después del congelamiento (37).
+- Sigue: pasos 13–18 y 20 de `prueba.P1`; después la Ruta A (votos al backend, W1, cierre automático de W3, relojes cortos). Pendientes 44, 48 y 49; backend nuevo después del congelamiento (37).
 
 ### 2026-11-27 · Aviso a una persona: probado en el grupo del equipo (n = 0)
 - 7:24 p. m.: «HUMANO» de Kathe → fila `escalar · pidio_humano` y, en el mismo minuto, la respuesta «🧪 Prueba» y el aviso «⚠️ Sintonía E1.5…» en el grupo. Paso 19 de la guía marcado como hecho.
